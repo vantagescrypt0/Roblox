@@ -4,3 +4,7 @@
 .obsidian/cache
 .trash/
 .DS_Store
+
+# Blender backups and Python cache
+*.blend1
+__pycache__/

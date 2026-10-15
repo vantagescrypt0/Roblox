@@ -2,5 +2,7 @@
   "newFileLocation": "folder",
   "newFileFolderPath": "00 Inbox",
   "alwaysUpdateLinks": true,
-  "userIgnoreFilters": []
+  "userIgnoreFilters": [
+    "game/"
+  ]
 }

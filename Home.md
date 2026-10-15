@@ -1,6 +1,6 @@
 # 🏝️ Roblox Sim — Home
 
-**Status:** Pre-production (brainstorming). Nothing is built yet.
+**Status:** Prototype started. Toolchain is set up; first greybox model built. See [[Roadmap]].
 **Working concept:** Islands + Warzone. See [[Pitch (Draft)]].
 
 ## Quick links
