@@ -6,7 +6,7 @@
 ## Quick links
 - **Vision:** [[Pitch (Draft)]] · [[Design Pillars]] · [[Target Audience]]
 - **Research:** [[Trends - Oct 2026]] · [[Islands (Roblox)]] · [[Skybounds (Minecraft)]] · [[Roblox Policies]]
-- **Design:** [[Core Loop]] · [[Warzone]] · [[Islands Feature Checklist]] · [[Mechanics to Borrow]] · [[Anti-Burnout Ideas]]
+- **Design:** [[Core Loop]] · [[Warzone]] · [[Skills & Levels]] · [[Islands Feature Checklist]] · [[Mechanics to Borrow]] · [[Anti-Burnout Ideas]]
 - **Content:** [[Content Index]]
 - **Tech:** [[Tools & Stack]] · [[Workflow]]
 - **Money:** [[Monetization Principles]]

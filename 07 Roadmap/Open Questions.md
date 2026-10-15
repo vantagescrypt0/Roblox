@@ -3,7 +3,13 @@
 ## Warzone
 - [x] Death penalty: drop a lootable head (see [[Warzone]])
 - [ ] Loot head: holds all or part of your loot? Who can open it first? How long until it despawns?
-- [ ] PvP, PvE, or both?
+- [x] PvP, PvE, or both? → Both, plus farming and chests
+- [ ] PvP fairness: zones by level, new-player protection, or an insurance slot?
+
+## Skills
+- [ ] Which skills besides Farming and Combat? See [[Skills & Levels]]
+- [ ] Which reward bonuses per level?
+- [ ] Does PvP give Combat XP?
 - [ ] Best loot types?
 - [ ] Always open or timed events?
 - [ ] What made the Skybounds Warzone fun for you?
