@@ -5,6 +5,7 @@ Inspired by the Skybounds Warzone — see [[Skybounds (Minecraft)]].
 - **Death drop (from Skybounds):** when you die, a **loot head** (your avatar's head) drops where you fell. Open it (right-click on PC) to take the loot. The loot stays in the head until someone takes it. See [[Decision Log]].
 
 - **PvP + PvE:** in the Warzone you can fight other players, fight mobs, farm, and find chests.
+- **Unlock:** you need a minimum **player level** to enter (like Skybounds), reached through [[Tutorial & Quests]]. This also keeps brand-new players out of PvP.
 - **Level gates apply:** mobs need a Combat level and crops need a Farming level. See [[Skills & Levels]].
 
 ## Warzone activities

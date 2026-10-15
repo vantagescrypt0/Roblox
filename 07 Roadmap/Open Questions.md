@@ -10,6 +10,13 @@
 - [ ] Which skills besides Farming and Combat? See [[Skills & Levels]]
 - [ ] Which reward bonuses per level?
 - [ ] Does PvP give Combat XP?
+- [ ] How does player level rise: sum of skills, its own XP, or both?
+- [ ] What player level unlocks the Warzone?
+- [ ] Do you remember the Warzone unlock level or requirements on Skybounds?
+
+## Tutorial
+- [ ] Review the draft quest chain in [[Tutorial & Quests]]
+- [ ] Can players skip the tutorial?
 - [ ] Best loot types?
 - [ ] Always open or timed events?
 - [ ] What made the Skybounds Warzone fun for you?

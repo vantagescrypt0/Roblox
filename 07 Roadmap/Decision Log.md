@@ -10,3 +10,5 @@
 | 2026-10-14 | Warzone death: your avatar's head drops as a loot container; open it to take the loot, which stays inside until taken | How Skybounds worked; keeps risk and reward |
 | 2026-10-14 | Warzone has PvP + PvE + farming + chests | Your call |
 | 2026-10-14 | Skill levels (Farming, Combat): crops and mobs are level-gated; higher level = better rewards | Long-term progression |
+| 2026-10-14 | Player level (like Skybounds); the Warzone unlocks at a set player level | Your call; also protects brand-new players from PvP |
+| 2026-10-14 | Beginner tutorial built from quests, ending at the Warzone unlock | Teach the loop to young players |

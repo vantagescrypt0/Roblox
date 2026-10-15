@@ -4,7 +4,13 @@
 - Separate skill levels, at least **Farming** and **Combat (PvE)**.
 - **Level gates:** each crop needs a minimum Farming level to plant/harvest; each mob needs a minimum Combat level to fight or loot.
 - **Better rewards as you level:** the higher your skill, the better the payoff.
+- **Player level (like Skybounds):** an overall level, separate from skill levels. You must reach a set player level to **unlock the Warzone**. The beginner quests get you there. See [[Tutorial & Quests]].
 See [[Decision Log]].
+
+## Player level vs skill levels — to decide
+- How does player level go up? Options: (a) total of all skill levels, (b) its own XP from quests/challenges, (c) both.
+- What level unlocks the Warzone? [Speculation] Somewhere around the end of the tutorial, maybe 1–2 hours of play.
+- Do later Warzone zones need higher player levels? (This would also help PvP fairness.)
 
 ## How it could work — [Speculation]
 | Level | Farming unlocks | Combat (PvE) unlocks |
