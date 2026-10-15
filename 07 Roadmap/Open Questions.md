@@ -1,7 +1,8 @@
 # Open Questions
 
 ## Warzone
-- [ ] Death penalty: lose all / part / nothing?
+- [x] Death penalty: drop a lootable head (see [[Warzone]])
+- [ ] Loot head: holds all or part of your loot? Who can open it first? How long until it despawns?
 - [ ] PvP, PvE, or both?
 - [ ] Best loot types?
 - [ ] Always open or timed events?
@@ -17,3 +18,4 @@
 
 ## Policy
 - [ ] What maturity rating would combat get?
+- [ ] Does a dropped avatar head raise the rating? If it does, use a stylized loot sack instead.
