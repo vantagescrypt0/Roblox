@@ -16,6 +16,9 @@
 
 ## Your experience
 - **Favorite moment:** the Warzone, where you could loot.
+- **Seasons:** each season lasted 2–4 months, and your **level reset** each season.
+- **Player level:** capped at **50**. You needed **level 10 to enter the Warzone**.
+- **XP:** from any PvE, from grinding, and from the quests that came with them.
 - **Death:** when you died, your **head dropped**. Players right-clicked it to open it, and your loot stayed inside until someone took it. → adopted, see [[Warzone]].
 
 ## To capture (fill in)

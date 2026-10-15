@@ -22,7 +22,7 @@
 | 7 | Defeat 5 slimes | PvE + Combat XP | Sword |
 | 8 | Smelt iron | Smelting | Iron tools |
 | 9 | Set up a conveyor | Automation | Conveyors (NPC visit) |
-| 10 | Reach player level X | — | **Warzone unlocked** + starter kit |
+| 10 | Reach player level 10 | — | **Warzone unlocked** + starter kit |
 
 After the tutorial: daily challenges plus a longer challenge list (Skybounds had 100+). See [[Mechanics to Borrow]].
 

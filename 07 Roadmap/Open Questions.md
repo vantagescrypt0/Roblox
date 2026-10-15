@@ -10,9 +10,14 @@
 - [ ] Which skills besides Farming and Combat? See [[Skills & Levels]]
 - [ ] Which reward bonuses per level?
 - [ ] Does PvP give Combat XP?
-- [ ] How does player level rise: sum of skills, its own XP, or both?
-- [ ] What player level unlocks the Warzone?
-- [ ] Do you remember the Warzone unlock level or requirements on Skybounds?
+- [x] How does player level rise? → XP from PvE, grinding, quests
+- [x] What player level unlocks the Warzone? → 10
+- [x] Skybounds Warzone requirement? → level 10 of 50, seasonal reset
+
+## Seasons
+- [ ] What resets each season: only player level, or skills / island / items too?
+- [ ] Catch-up help so veterans reach level 10 again quickly?
+- [ ] Season rewards that are kept forever (titles, cosmetics)?
 
 ## Tutorial
 - [ ] Review the draft quest chain in [[Tutorial & Quests]]

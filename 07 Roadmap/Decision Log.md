@@ -12,3 +12,5 @@
 | 2026-10-14 | Skill levels (Farming, Combat): crops and mobs are level-gated; higher level = better rewards | Long-term progression |
 | 2026-10-14 | Player level (like Skybounds); the Warzone unlocks at a set player level | Your call; also protects brand-new players from PvP |
 | 2026-10-14 | Beginner tutorial built from quests, ending at the Warzone unlock | Teach the loop to young players |
+| 2026-10-15 | Player level 1–50; level 10 unlocks the Warzone; XP from PvE, grinding and quests | Same as Skybounds |
+| 2026-10-15 | Seasons of 2–4 months; player level resets each season | Same as Skybounds; fresh start every season |
