@@ -29,6 +29,11 @@ local TEMPLATE = {
 	Flags = {
 		StarterKit = false,
 	},
+	-- Beginner quest chain: which quest you're on and how far along it is
+	Quest = {
+		Index = 1,
+		Progress = 0,
+	},
 	-- Warzone run in progress. The bag only becomes yours when you extract; leaving
 	-- the game mid-raid loses it.
 	Raid = {

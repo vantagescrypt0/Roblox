@@ -11,6 +11,7 @@ local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
 local STAND_OFFSET = Vector3.new(6, 0, 10)
@@ -35,6 +36,7 @@ local function sellCrops(player: Player)
 	if earned > 0 then
 		InventoryService.AddCoins(player, earned)
 		StateService.Notify(player, `Sold crops for {earned} coins`, "good")
+		QuestService.Record(player, "Sell")
 	else
 		StateService.Notify(player, "No crops to sell yet", "bad")
 	end
@@ -68,6 +70,7 @@ local function buySeeds(player: Player)
 	if InventoryService.SpendCoins(player, amount * price) then
 		InventoryService.Add(player, crop.Seed, amount)
 		StateService.Notify(player, `Bought {amount} {Items[crop.Seed].Name}`, "good")
+		QuestService.Record(player, "BuySeeds")
 	end
 end
 

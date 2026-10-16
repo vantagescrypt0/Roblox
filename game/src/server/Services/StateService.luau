@@ -4,6 +4,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
+local Quests = require(ReplicatedStorage.Shared.Quests)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local DataService = require(script.Parent.DataService)
 
@@ -33,7 +34,19 @@ local function snapshot(data: DataService.Data)
 		end
 	end
 
+	local quest = Quests[data.Quest.Index]
+
 	return {
+		Quest = if quest
+			then {
+				Number = data.Quest.Index,
+				Total = #Quests,
+				Text = quest.Text,
+				Progress = data.Quest.Progress,
+				Target = quest.Target,
+				Highlight = quest.Highlight,
+			}
+			else nil,
 		Raid = { Active = data.Raid.Active, Bag = bag },
 		Coins = data.Coins,
 		Level = data.Level,

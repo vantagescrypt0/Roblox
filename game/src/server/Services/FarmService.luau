@@ -14,6 +14,7 @@ local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
 -- Plot positions relative to the middle of the island's grass surface, on the open
@@ -123,6 +124,7 @@ local function onPlotTriggered(player: Player, plot: Plot)
 		elseif InventoryService.Remove(player, seed.Seed, 1) then
 			data.Farm.Plots[plot.Key] = { Crop = seed.Id, PlantedAt = os.time() }
 			DataService.MarkChanged(player)
+			QuestService.Record(player, "Plant")
 		end
 	elseif progress >= 1 then
 		data.Farm.Plots[plot.Key] = nil
@@ -136,6 +138,7 @@ local function onPlotTriggered(player: Player, plot: Plot)
 		ProgressionService.AddSkillXP(player, "Farming", crop.FarmingXP)
 		ProgressionService.AddPlayerXP(player, crop.PlayerXP)
 		StateService.Notify(player, `+{amount} {Items[crop.Product].Name}`, "good")
+		QuestService.Record(player, "Harvest")
 	end
 	refreshPlot(player, plot)
 end

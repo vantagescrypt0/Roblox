@@ -11,6 +11,7 @@ local Prompts = require(script.Parent.Parent.Util.Prompts)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
+local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
 local WORKBENCH_OFFSET = Vector3.new(9, 0, 2)
@@ -47,6 +48,7 @@ local function craft(player: Player, recipeId: unknown)
 	end
 	InventoryService.Add(player, recipe.Output, recipe.Amount)
 	StateService.Notify(player, `Crafted {Items[recipe.Output].Name}!`, "good")
+	QuestService.Record(player, "Craft")
 end
 
 local function buildWorkbench(island: IslandService.Island): BasePart

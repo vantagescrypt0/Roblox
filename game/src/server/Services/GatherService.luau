@@ -6,6 +6,7 @@ local Prompts = require(script.Parent.Parent.Util.Prompts)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
 type NodeKind = {
@@ -66,6 +67,7 @@ local function setupNode(player: Player, kind: NodeKind, promptPart: BasePart, p
 		InventoryService.Add(player, kind.Item, amount)
 		ProgressionService.AddPlayerXP(player, kind.PlayerXP)
 		StateService.Notify(player, `+{amount} {kind.Item}`, "good")
+		QuestService.Record(player, kind.Action)
 
 		task.delay(kind.Respawn, function()
 			if promptPart.Parent then
