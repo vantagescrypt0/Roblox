@@ -15,3 +15,5 @@
 | 2026-10-15 | Player level 1–50; level 10 unlocks the Warzone; XP from PvE, grinding and quests | Same as Skybounds |
 | 2026-10-15 | Seasons of 2–4 months; player level resets each season | Same as Skybounds; fresh start every season |
 | 2026-10-15 | Repo layout: `game/` = Rojo code, `art/` = Blender scripts + exports; models built by Python script | Reproducible models Claude can tweak; no extra Blender plugin needed |
+| 2026-10-15 | Player data uses ProfileStore (vendored, pinned commit) | Session locking stops the same save being open on two servers, which is a common cause of item duplication |
+| 2026-10-15 | Islands float at Y=200 on a grid of plots, one per player; falling off returns you to your island instead of killing you | Kid-friendly; the void isn't a punishment on your safe island |

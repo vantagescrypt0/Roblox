@@ -5,7 +5,9 @@ No dates — quality over speed.
 2. **Prototype** ← *we are here*: greybox island + greybox Warzone; prove the loop is fun.
    - [x] Toolchain set up (Rojo, Blender pipeline) — 2026-10-15
    - [x] Greybox starter island model
-   - [ ] Island in Studio, player spawns on it
+   - [x] Each player gets their own island plot and spawns on it; fall off → put back (playtested 2026-10-15)
+   - [x] Player data saving with ProfileStore (needs a published place + Studio API access to actually save)
+   - [ ] Swap the greybox for the Blender island (import FBX → `ServerStorage.Assets.StarterIsland`)
    - [ ] Gather → craft → farm basics
    - [ ] Greybox Warzone + loot heads
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.
