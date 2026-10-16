@@ -29,6 +29,12 @@ local TEMPLATE = {
 	Flags = {
 		StarterKit = false,
 	},
+	-- Warzone run in progress. The bag only becomes yours when you extract; leaving
+	-- the game mid-raid loses it.
+	Raid = {
+		Active = false,
+		Bag = {} :: { [string]: number },
+	},
 }
 
 export type Data = typeof(TEMPLATE)
@@ -107,6 +113,10 @@ local function onPlayerAdded(player: Player)
 	if not data.Flags.StarterKit then
 		data.Flags.StarterKit = true
 		data.Items.WheatSeeds = (data.Items.WheatSeeds or 0) + 6
+	end
+	if data.Raid.Active then
+		data.Raid.Active = false
+		data.Raid.Bag = {}
 	end
 
 	profiles[player] = profile

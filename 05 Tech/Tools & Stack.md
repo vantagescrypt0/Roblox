@@ -9,6 +9,7 @@
 | Rojo | 7.7.1 | Syncs `game/` code into Studio. Studio plugin: `%LOCALAPPDATA%\Roblox\Plugins\Rojo.rbxm` |
 | StyLua | 2.6.0 | Formatter (`game/stylua.toml`) |
 | Selene | 0.32.0 | Linter (`game/selene.toml`) |
+| luau-lsp | 1.70.1 | Type checker (`luau-lsp analyze`, see `game/README.md`) |
 | Blender | 5.2.2 LTS | Portable install in `%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64` |
 
 How to use them: `game/README.md` (code) and `art/README.md` (models). The `game/` folder is hidden from Obsidian so code doesn't clutter search.

@@ -26,7 +26,15 @@ local function snapshot(data: DataService.Data)
 		end
 	end
 
+	local bag = {}
+	for id, count in data.Raid.Bag do
+		if count > 0 then
+			bag[id] = count
+		end
+	end
+
 	return {
+		Raid = { Active = data.Raid.Active, Bag = bag },
 		Coins = data.Coins,
 		Level = data.Level,
 		XP = data.XP,

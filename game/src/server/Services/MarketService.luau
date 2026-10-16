@@ -47,10 +47,10 @@ local function buySeeds(player: Player)
 		return
 	end
 
-	-- Best seed the player has unlocked
+	-- Best seed the player has unlocked that the stand sells (Warzone seeds aren't sold)
 	local crop: Crops.Crop? = nil
 	for _, candidate in Crops.List do
-		if farmingLevel >= candidate.FarmingLevel then
+		if farmingLevel >= candidate.FarmingLevel and Items[candidate.Seed].BuyPrice then
 			crop = candidate
 		end
 	end

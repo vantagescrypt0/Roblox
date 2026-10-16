@@ -8,6 +8,16 @@ Inspired by the Skybounds Warzone — see [[Skybounds (Minecraft)]].
 - **Unlock:** you need **player level 10** to enter (like Skybounds). Player level resets each season, see [[Skills & Levels]], reached through [[Tutorial & Quests]]. This also keeps brand-new players out of PvP.
 - **Level gates apply:** mobs need a Combat level and crops need a Farming level. See [[Skills & Levels]].
 
+## Prototype (built + playtested 2026-10-15)
+Greybox arena, one shared map. These are **prototype defaults Claude picked**; change any of them. See [[Open Questions]].
+- **Getting in:** purple portal on your island → level 10 required → you appear at the arena edge.
+- **Raid bag:** everything you loot in the Warzone goes into a raid bag shown at the top of the screen. It only becomes yours when you **extract** (hold E for 3s on a green pad; there are 4 pads at the corners). Your island gear (swords) is never at risk.
+- **Death:** your whole raid bag drops as a **loot head** (a head with a face and "<name>'s loot"). **Anyone** in the Warzone can open it (hold E, works with tap on mobile); the first opener takes everything. It disappears after **2 minutes**. You respawn on your island.
+- **Leaving the game mid-raid** drops your bag as a loot head too, so logging out can't save it.
+- **Zones:** outer ring = Slimes (Combat 1) + common chests; red center = Brutes (Combat 5) + rare chests (more Crystal and Glowberry Seeds). The center really is dangerous: Brutes killed the test avatar while it was opening a chest.
+- **PvP:** sword hits only damage other players when both are in the Warzone.
+- **Loot:** Scrap and Crystal (for the Crystal Sword), Glowberry Seeds (a crop you can only get here, sells for the most). Chests refill after 60s; mobs respawn after 20s.
+
 ## Warzone activities
 | Activity | Notes |
 |---|---|

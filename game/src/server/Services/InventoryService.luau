@@ -35,6 +35,24 @@ function InventoryService.Remove(player: Player, itemId: string, amount: number)
 	return true
 end
 
+-- Removes several items at once, all or nothing. Returns whether it worked.
+function InventoryService.RemoveMany(player: Player, cost: { [string]: number }): boolean
+	local data = DataService.GetData(player)
+	if not data then
+		return false
+	end
+	for itemId, amount in cost do
+		if (data.Items[itemId] or 0) < amount then
+			return false
+		end
+	end
+	for itemId, amount in cost do
+		data.Items[itemId] -= amount
+	end
+	DataService.MarkChanged(player)
+	return true
+end
+
 function InventoryService.AddCoins(player: Player, amount: number)
 	local data = DataService.GetData(player)
 	if not data or amount <= 0 then

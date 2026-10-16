@@ -49,6 +49,8 @@ local skillsText: TextLabel
 local warzoneText: TextLabel
 local inventoryList: Frame
 local toastHolder: Frame
+local raidPanel: Frame
+local raidBagText: TextLabel
 
 local function build()
 	gui = Instance.new("ScreenGui")
@@ -119,6 +121,37 @@ local function build()
 	layout.SortOrder = Enum.SortOrder.Name
 	layout.Parent = inventoryList
 
+	-- Warzone banner + raid bag, only shown during a raid
+	raidPanel = Instance.new("Frame")
+	raidPanel.Name = "Raid"
+	raidPanel.AnchorPoint = Vector2.new(0.5, 0)
+	raidPanel.Position = UDim2.new(0.5, 0, 0, 56)
+	raidPanel.Size = UDim2.fromOffset(380, 0)
+	raidPanel.AutomaticSize = Enum.AutomaticSize.Y
+	raidPanel.BackgroundColor3 = Color3.fromRGB(90, 30, 30)
+	raidPanel.BackgroundTransparency = 0.15
+	raidPanel.Visible = false
+	raidPanel.Parent = gui
+	corner(raidPanel, 10)
+	local raidPadding = Instance.new("UIPadding")
+	raidPadding.PaddingLeft = UDim.new(0, 10)
+	raidPadding.PaddingRight = UDim.new(0, 10)
+	raidPadding.PaddingTop = UDim.new(0, 6)
+	raidPadding.PaddingBottom = UDim.new(0, 6)
+	raidPadding.Parent = raidPanel
+	local raidLayout = Instance.new("UIListLayout")
+	raidLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	raidLayout.Parent = raidPanel
+	local raidTitle = label(raidPanel, "Title", UDim2.new(1, 0, 0, 22), 17)
+	raidTitle.LayoutOrder = 1
+	raidTitle.TextXAlignment = Enum.TextXAlignment.Center
+	raidTitle.Text = "WARZONE - reach a green pad to extract"
+	raidBagText = label(raidPanel, "Bag", UDim2.fromScale(1, 0), 14)
+	raidBagText.LayoutOrder = 2
+	raidBagText.AutomaticSize = Enum.AutomaticSize.Y
+	raidBagText.TextWrapped = true
+	raidBagText.TextXAlignment = Enum.TextXAlignment.Center
+
 	-- Pop-up messages stack above the bottom of the screen
 	toastHolder = Instance.new("Frame")
 	toastHolder.Name = "Toasts"
@@ -149,11 +182,22 @@ function Hud.Render(state: any)
 	coinsText.Text = `Coins: {state.Coins}`
 
 	local farming = state.Skills.Farming
-	skillsText.Text = if farming then `Farming Lv {farming.Level}  ({farming.XP}/{farming.XPToNext})` else ""
+	local combat = state.Skills.Combat
+	skillsText.Text = `Farming Lv {farming and farming.Level or 1}  ·  Combat Lv {combat and combat.Level or 1}`
 
 	warzoneText.Text = if state.Level >= state.WarzoneLevel
 		then "Warzone unlocked!"
 		else `Warzone unlocks at level {state.WarzoneLevel}`
+
+	raidPanel.Visible = state.Raid.Active
+	local bag = {}
+	for id, count in state.Raid.Bag do
+		local item = Items[id]
+		table.insert(bag, `{item and item.Name or id} x{count}`)
+	end
+	raidBagText.Text = if #bag > 0
+		then "Raid bag: " .. table.concat(bag, ", ")
+		else "Raid bag empty - open chests, defeat monsters"
 
 	for _, child in inventoryList:GetChildren() do
 		if child:IsA("TextLabel") then

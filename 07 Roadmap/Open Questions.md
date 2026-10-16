@@ -2,14 +2,18 @@
 
 ## Warzone
 - [x] Death penalty: drop a lootable head (see [[Warzone]])
-- [ ] Loot head: holds all or part of your loot? Who can open it first? How long until it despawns?
+- [ ] Loot head: holds all or part of your loot? Who can open it first? How long until it despawns? *(Prototype: whole raid bag, anyone, 2 minutes)*
 - [x] PvP, PvE, or both? → Both, plus farming and chests
-- [ ] PvP fairness: zones by level, new-player protection, or an insurance slot?
+- [ ] PvP fairness: zones by level, new-player protection, or an insurance slot? *(Prototype: outer/center zones only)*
+- [ ] Is only the raid bag at risk, or also gear you bring in? *(Prototype: only the raid bag)*
+- [ ] Best loot types?
+- [ ] Always open or timed events? *(Prototype: always open)*
+- [ ] What made the Skybounds Warzone fun for you?
 
 ## Skills
 - [ ] Which skills besides Farming and Combat? See [[Skills & Levels]]
-- [ ] Which reward bonuses per level?
-- [ ] Does PvP give Combat XP?
+- [ ] Which reward bonuses per level? *(Prototype: Farming gives +1% bonus-crop chance per level)*
+- [ ] Does PvP give Combat XP? *(Prototype: no)*
 - [x] How does player level rise? → XP from PvE, grinding, quests
 - [x] What player level unlocks the Warzone? → 10
 - [x] Skybounds Warzone requirement? → level 10 of 50, seasonal reset
@@ -22,9 +26,6 @@
 ## Tutorial
 - [ ] Review the draft quest chain in [[Tutorial & Quests]]
 - [ ] Can players skip the tutorial?
-- [ ] Best loot types?
-- [ ] Always open or timed events?
-- [ ] What made the Skybounds Warzone fun for you?
 
 ## Islands
 - [ ] Fill in [[Islands Feature Checklist]].

@@ -8,6 +8,8 @@ local NAMES = {
 	"State", -- server -> client: full HUD snapshot
 	"Notify", -- server -> client: short pop-up message
 	"Ready", -- client -> server: HUD is ready, send the current state
+	"OpenCrafting", -- server -> client: show the workbench menu
+	"Craft", -- client -> server: craft a recipe (recipe id)
 }
 
 local folder: Instance
@@ -28,4 +30,6 @@ return {
 	State = folder:WaitForChild("State") :: RemoteEvent,
 	Notify = folder:WaitForChild("Notify") :: RemoteEvent,
 	Ready = folder:WaitForChild("Ready") :: RemoteEvent,
+	OpenCrafting = folder:WaitForChild("OpenCrafting") :: RemoteEvent,
+	Craft = folder:WaitForChild("Craft") :: RemoteEvent,
 }

@@ -8,17 +8,29 @@ export type Item = {
 }
 
 local Items: { [string]: Item } = {
+	-- Island resources
 	Wood = { Name = "Wood", SellPrice = 1 },
 	Stone = { Name = "Stone", SellPrice = 1 },
 
+	-- Crops and seeds
 	WheatSeeds = { Name = "Wheat Seeds", SellPrice = 0, BuyPrice = 2 },
 	Wheat = { Name = "Wheat", SellPrice = 3 },
-
 	CarrotSeeds = { Name = "Carrot Seeds", SellPrice = 0, BuyPrice = 6 },
 	Carrot = { Name = "Carrot", SellPrice = 8 },
-
 	PotatoSeeds = { Name = "Potato Seeds", SellPrice = 0, BuyPrice = 15 },
 	Potato = { Name = "Potato", SellPrice = 20 },
+	-- Warzone-only seeds (found in chests, never sold)
+	GlowberrySeeds = { Name = "Glowberry Seeds", SellPrice = 0 },
+	Glowberry = { Name = "Glowberry", SellPrice = 60 },
+
+	-- Warzone materials
+	Scrap = { Name = "Scrap", SellPrice = 0 },
+	Crystal = { Name = "Crystal", SellPrice = 0 },
+
+	-- Weapons (crafted at the workbench)
+	WoodenSword = { Name = "Wooden Sword", SellPrice = 0 },
+	StoneSword = { Name = "Stone Sword", SellPrice = 0 },
+	CrystalSword = { Name = "Crystal Sword", SellPrice = 0 },
 }
 
 return table.freeze(Items)

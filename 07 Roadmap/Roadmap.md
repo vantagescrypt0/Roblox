@@ -9,8 +9,10 @@ No dates — quality over speed.
    - [x] Player data saving with ProfileStore (needs a published place + Studio API access to actually save)
    - [x] Blender island imported, colored, saved as `game/assets/StarterIsland.rbxm` (synced by Rojo into `ServerStorage.Assets`) — playtested
    - [ ] Publish the place (private) + enable Studio API access so data actually saves
-   - [ ] Gather → craft → farm basics
-   - [ ] Greybox Warzone + loot heads
+   - [x] Gather → craft → farm basics: chop/mine, 6 farm plots with offline growth, market stand, workbench + swords, XP/levels, HUD (playtested 2026-10-15)
+   - [x] Greybox Warzone + loot heads: portal (level 10), chests, Slimes/Brutes, PvP, raid bag, extraction, loot heads (playtested 2026-10-15)
+   - [ ] Beginner quests ([[Tutorial & Quests]])
+   - [ ] Playtest with real people: is the loop fun?
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.
 4. **Soft launch:** small audience, measure retention, fix.
 5. **Launch + ads.**

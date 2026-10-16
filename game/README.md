@@ -25,6 +25,12 @@ Vendored: `src/server/Packages/ProfileStore.luau` (MadStudioRoblox/ProfileStore 
 ## Saving data in Studio
 ProfileStore only saves when the place is published and **Game Settings → Security → Enable Studio Access to API Services** is on. Otherwise it runs in mock mode (works, but nothing is saved).
 
+## Testing shortcuts (Studio only)
+While playtesting, switch Studio to the **Server** view and run in the command bar:
+- `game.ServerStorage.Dev:Invoke("Level", 10)` (unlock the Warzone)
+- `game.ServerStorage.Dev:Invoke("Skill", "Combat", 5)`
+- `game.ServerStorage.Dev:Invoke("Give", "Wood", 20)`
+
 ## Island model
 The server looks for a Model at `ServerStorage.Assets.StarterIsland` (with a part named `GrassTop`). It comes from `assets/StarterIsland.rbxm`, which Rojo maps into `ServerStorage.Assets`. If it's missing, the server builds a simple greybox island instead.
 

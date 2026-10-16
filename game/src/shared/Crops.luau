@@ -45,6 +45,17 @@ local Crops: { Crop } = {
 		PlayerXP = 25,
 		Color = Color3.fromRGB(196, 158, 104),
 	},
+	-- Seeds only come from Warzone chests
+	{
+		Id = "Glowberry",
+		Seed = "GlowberrySeeds",
+		Product = "Glowberry",
+		FarmingLevel = 8,
+		GrowTime = 240,
+		FarmingXP = 90,
+		PlayerXP = 45,
+		Color = Color3.fromRGB(120, 230, 255),
+	},
 }
 
 local byId: { [string]: Crop } = {}
