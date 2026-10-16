@@ -1,5 +1,6 @@
 --!strict
 -- ProximityPrompts work with keyboard, gamepad and touch, so they're our interaction system.
+-- They use the Custom style; the client draws them (client/PromptUI.luau).
 
 local Prompts = {}
 
@@ -19,6 +20,7 @@ function Prompts.Create(parent: Instance, options: PromptOptions): ProximityProm
 	prompt.KeyboardKeyCode = options.Key or Enum.KeyCode.E
 	prompt.MaxActivationDistance = options.Distance or 10
 	prompt.RequiresLineOfSight = false
+	prompt.Style = Enum.ProximityPromptStyle.Custom
 	prompt.Parent = parent
 	return prompt
 end

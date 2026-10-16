@@ -8,3 +8,6 @@
 # Blender backups and Python cache
 *.blend1
 __pycache__/
+
+# Textures Blender's FBX export unpacks next to the file
+*.fbm/

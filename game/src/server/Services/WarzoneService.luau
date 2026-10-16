@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
+local Props = require(script.Parent.Parent.Util.Props)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
@@ -397,21 +398,59 @@ local function buildArena()
 	arena.Parent = workspace
 end
 
-local function buildPortal(player: Player, island: IslandService.Island)
-	local portal = part({
-		Name = "WarzonePortal",
-		Size = Vector3.new(6, 8, 1),
-		CFrame = CFrame.new(island.Center + PORTAL_OFFSET + Vector3.new(0, 4, 0)),
-		Color = Color3.fromRGB(150, 70, 255),
-		Material = Enum.Material.Neon,
-		Transparency = 0.25,
-		CanCollide = false,
+-- Sparkles drifting up through the portal plus a purple glow
+local function addPortalEffects(surface: BasePart)
+	surface.Material = Enum.Material.Neon
+	surface.Color = Color3.fromRGB(140, 80, 255)
+	surface.Transparency = 0.3
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(170, 110, 255)
+	light.Range = 18
+	light.Brightness = 2
+	light.Parent = surface
+
+	local sparkles = Instance.new("ParticleEmitter")
+	sparkles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	sparkles.Color = ColorSequence.new(Color3.fromRGB(200, 160, 255), Color3.fromRGB(120, 80, 255))
+	sparkles.LightEmission = 1
+	sparkles.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.5),
+		NumberSequenceKeypoint.new(1, 0),
 	})
-	portal.Parent = island.Model
+	sparkles.Transparency = NumberSequence.new(0.2)
+	sparkles.Lifetime = NumberRange.new(1.2, 2)
+	sparkles.Rate = 18
+	sparkles.Speed = NumberRange.new(1, 2.5)
+	sparkles.SpreadAngle = Vector2.new(25, 25)
+	sparkles.EmissionDirection = Enum.NormalId.Top
+	sparkles.Parent = surface
+end
+
+local function buildPortal(player: Player, island: IslandService.Island)
+	local position = island.Markers.Portal or (island.Center + PORTAL_OFFSET)
+	local model = Props.Place("Portal", position, island.Markers.Spawn, island.Model)
+	local portal: BasePart
+	if model then
+		model.Name = "WarzonePortal"
+		portal = Props.Part(model, "PortalSurface") :: BasePart
+		addPortalEffects(portal)
+	else
+		portal = part({
+			Name = "WarzonePortal",
+			Size = Vector3.new(6, 8, 1),
+			CFrame = CFrame.new(position + Vector3.new(0, 4, 0)),
+			Color = Color3.fromRGB(150, 70, 255),
+			Material = Enum.Material.Neon,
+			Transparency = 0.25,
+			CanCollide = false,
+		})
+		portal.Parent = island.Model
+	end
 	local prompt = Prompts.Create(portal, {
 		Action = "Enter Warzone",
 		Object = `Warzone (level {Leveling.WarzoneLevel}+)`,
 		Hold = 0.5,
+		Distance = 12,
 	})
 	Prompts.OnTriggeredBy(prompt, player, function()
 		enter(player)

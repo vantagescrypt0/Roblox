@@ -19,7 +19,7 @@ function ProgressionService.AddPlayerXP(player: Player, amount: number)
 	while data.Level < Leveling.MaxPlayerLevel and data.XP >= Leveling.XPToNext(data.Level) do
 		data.XP -= Leveling.XPToNext(data.Level)
 		data.Level += 1
-		StateService.Notify(player, `Level up! You're now level {data.Level}`, "level")
+		StateService.Notify(player, `Level {data.Level}`, "levelup")
 		if data.Level == Leveling.WarzoneLevel then
 			StateService.Notify(player, "The Warzone is now unlocked!", "level")
 		end

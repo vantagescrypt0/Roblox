@@ -109,6 +109,8 @@ def render_preview(name, target=(0, 0, 0), distance=70, height=35, angle_deg=35)
             break
         except TypeError:
             continue
+    # Show the real palette colors (Roblox doesn't tone-map textures like Blender's default)
+    scene.view_settings.view_transform = "Standard"
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.film_transparent = False

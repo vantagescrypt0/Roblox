@@ -1,22 +1,43 @@
 --!strict
--- Client entry point.
+-- Client entry point: builds the UI and routes server messages to it.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local CraftingMenu = require(script.Parent.CraftingMenu)
+local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Hud = require(script.Parent.Hud)
+local PromptUI = require(script.Parent.PromptUI)
 local QuestTracker = require(script.Parent.QuestTracker)
+local BagWindow = require(script.Parent.Windows.BagWindow)
+local CraftingWindow = require(script.Parent.Windows.CraftingWindow)
+local IslandWindow = require(script.Parent.Windows.IslandWindow)
+local MarketWindow = require(script.Parent.Windows.MarketWindow)
 
-Hud.Start()
-CraftingMenu.Start()
+BagWindow.Start()
+IslandWindow.Start()
+MarketWindow.Start()
+CraftingWindow.Start()
 QuestTracker.Start()
+PromptUI.Start()
+Hud.Start({
+	OnBag = BagWindow.Toggle,
+	OnIsland = IslandWindow.Toggle,
+})
 
 Remotes.State.OnClientEvent:Connect(function(state)
 	Hud.Render(state)
-	CraftingMenu.SetState(state)
 	QuestTracker.Render(state)
+	BagWindow.SetState(state)
+	IslandWindow.SetState(state)
+	MarketWindow.SetState(state)
+	CraftingWindow.SetState(state)
 end)
 Remotes.Notify.OnClientEvent:Connect(Hud.Toast)
-Remotes.OpenCrafting.OnClientEvent:Connect(CraftingMenu.Open)
+Remotes.OpenCrafting.OnClientEvent:Connect(CraftingWindow.Open)
+Remotes.OpenMarket.OnClientEvent:Connect(MarketWindow.Open)
+Remotes.IslandRebuilt.OnClientEvent:Connect(function(tier: number)
+	IslandWindow.Close()
+	local info = IslandTiers[tier]
+	Hud.Celebrate("ISLAND EXPANDED!", if info then info.Name else "", Color3.fromRGB(88, 204, 102))
+end)
 Remotes.Ready:FireServer()

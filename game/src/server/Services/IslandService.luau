@@ -1,6 +1,10 @@
 --!strict
--- Gives each player their own floating island plot, spawns them on it, and puts them
--- back on it if they fall off.
+-- Gives each player their own floating island plot, built at their expansion tier
+-- (ServerStorage.Assets.Islands.TierN), spawns them on it, rebuilds it bigger when they
+-- expand, and puts them back on it if they fall off.
+--
+-- Island models carry invisible Marker_* parts (made in Blender) that say where the
+-- spawn, workbench, market, portal and farm plots go.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -8,6 +12,8 @@ local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
+local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local DataService = require(script.Parent.DataService)
 
 local ISLAND = Config.Island
@@ -18,6 +24,11 @@ export type Island = {
 	Spawn: SpawnLocation,
 	-- World position of the middle of the grass surface
 	Center: Vector3,
+	Tier: number,
+	-- Named layout points: Spawn, Workbench, Market, Portal
+	Markers: { [string]: Vector3 },
+	-- Farm plot positions, in order
+	PlotSpots: { Vector3 },
 }
 type IslandCallback = (player: Player, island: Island) -> ()
 
@@ -28,7 +39,7 @@ local usedPlots: { [number]: boolean } = {}
 local createdCallbacks: { IslandCallback } = {}
 local islandsFolder: Folder
 
--- Runs the callback for every island, now and when new ones are created.
+-- Runs the callback for every island, now and whenever one is created or rebuilt.
 function IslandService.OnIslandCreated(callback: IslandCallback)
 	table.insert(createdCallbacks, callback)
 	for player, island in islands do
@@ -79,12 +90,11 @@ local function makePart(name: string, size: Vector3, cframe: CFrame, color: Colo
 	return part
 end
 
--- Stand-in island used until the Blender model is imported into ServerStorage.Assets
+-- Stand-in island used only if the Blender islands are missing
 local function buildGreybox(): Model
 	local model = Instance.new("Model")
 	local diameter = ISLAND.Radius * 2
 	local upright = CFrame.Angles(0, 0, math.rad(90))
-
 	local grass = makePart(
 		"GrassTop",
 		Vector3.new(2, diameter, diameter),
@@ -94,34 +104,15 @@ local function buildGreybox(): Model
 	)
 	grass.Shape = Enum.PartType.Cylinder
 	grass.Parent = model
-
-	local dirt = makePart(
-		"DirtBody",
-		Vector3.new(10, diameter * 0.8, diameter * 0.8),
-		CFrame.new(0, -7, 0) * upright,
-		Color3.fromRGB(138, 90, 52),
-		Enum.Material.Ground
-	)
-	dirt.Shape = Enum.PartType.Cylinder
-	dirt.Parent = model
-
 	model.PrimaryPart = grass
 	return model
 end
 
-local function newIslandModel(): Model
+local function islandTemplate(tier: number): Model?
 	local assets = ServerStorage:FindFirstChild("Assets")
-	local template = assets and assets:FindFirstChild(ISLAND.TemplateName)
-	if template and template:IsA("Model") then
-		local model = template:Clone()
-		for _, descendant in model:GetDescendants() do
-			if descendant:IsA("BasePart") then
-				descendant.Anchored = true
-			end
-		end
-		return model
-	end
-	return buildGreybox()
+	local folder = assets and assets:FindFirstChild("Islands")
+	local template = folder and folder:FindFirstChild(`Tier{tier}`)
+	return if template and template:IsA("Model") then template else nil
 end
 
 -- Moves the model so its grass surface is centered on `center`
@@ -136,11 +127,36 @@ local function placeIsland(model: Model, center: Vector3)
 	end
 end
 
-local function makeSpawn(center: Vector3, parent: Instance): SpawnLocation
+-- Reads (and removes) the Marker_* parts
+local function readMarkers(model: Model): ({ [string]: Vector3 }, { Vector3 })
+	local markers: { [string]: Vector3 } = {}
+	local plots: { [number]: Vector3 } = {}
+	for _, part in model:GetDescendants() do
+		if part:IsA("BasePart") then
+			local name = string.match(part.Name, "^Marker_(.+)$")
+			if name then
+				local index = string.match(name, "^Plot_(%d+)$")
+				if index then
+					plots[tonumber(index) :: number] = part.Position
+				else
+					markers[name] = part.Position
+				end
+				part:Destroy()
+			end
+		end
+	end
+	local ordered = {}
+	for i = 1, #plots do
+		table.insert(ordered, plots[i])
+	end
+	return markers, ordered
+end
+
+local function makeSpawn(position: Vector3, parent: Instance): SpawnLocation
 	local spawnPoint = Instance.new("SpawnLocation")
 	spawnPoint.Name = "Spawn"
 	spawnPoint.Size = Vector3.new(4, 1, 4)
-	spawnPoint.CFrame = CFrame.new(center - Vector3.new(0, 0.5, 0))
+	spawnPoint.CFrame = CFrame.new(position - Vector3.new(0, 0.5, 0))
 	spawnPoint.Anchored = true
 	spawnPoint.CanCollide = false
 	spawnPoint.Transparency = 1
@@ -150,33 +166,70 @@ local function makeSpawn(center: Vector3, parent: Instance): SpawnLocation
 	return spawnPoint
 end
 
+local function build(player: Player, tier: number, plot: number): Island
+	local center = plotCenter(plot)
+	local template = islandTemplate(tier)
+	local model = if template then template:Clone() else buildGreybox()
+	for _, part in model:GetDescendants() do
+		if part:IsA("BasePart") then
+			part.Anchored = true
+		end
+	end
+	model.Name = `Island_{player.UserId}`
+	model:SetAttribute("OwnerUserId", player.UserId)
+	model:SetAttribute("Tier", tier)
+	placeIsland(model, center)
+
+	local markers, plotSpots = readMarkers(model)
+	if not template then
+		-- Greybox fallback layout
+		markers = {
+			Spawn = center,
+			Workbench = center + Vector3.new(9, 0, 2),
+			Market = center + Vector3.new(6, 0, 10),
+			Portal = center + Vector3.new(-1, 0, -14),
+		}
+		for i = 1, 6 do
+			table.insert(plotSpots, center + Vector3.new(-11 + ((i - 1) % 3) * 5, 0, if i <= 3 then 5 else 10))
+		end
+	end
+
+	local spawnPoint = makeSpawn(markers.Spawn or center, model)
+	model.Parent = islandsFolder
+	return {
+		Model = model,
+		Plot = plot,
+		Spawn = spawnPoint,
+		Center = center,
+		Tier = tier,
+		Markers = markers,
+		PlotSpots = plotSpots,
+	}
+end
+
+local function announce(player: Player, island: Island)
+	islands[player] = island
+	player.RespawnLocation = island.Spawn
+	for _, callback in createdCallbacks do
+		task.spawn(callback, player, island)
+	end
+end
+
 local function spawnCharacter(player: Player)
 	if player.Parent == Players then
 		player:LoadCharacterAsync()
 	end
 end
 
-local function onDataLoaded(player: Player, _data: DataService.Data)
+local function clampTier(tier: number): number
+	return math.clamp(tier, 1, #IslandTiers)
+end
+
+local function onDataLoaded(player: Player, data: DataService.Data)
 	if islands[player] then
 		return
 	end
-
-	local plot = claimPlot()
-	local center = plotCenter(plot)
-
-	local model = newIslandModel()
-	model.Name = `Island_{player.UserId}`
-	model:SetAttribute("OwnerUserId", player.UserId)
-	placeIsland(model, center)
-	local spawnPoint = makeSpawn(center, model)
-	model.Parent = islandsFolder
-
-	local island: Island = { Model = model, Plot = plot, Spawn = spawnPoint, Center = center }
-	islands[player] = island
-	player.RespawnLocation = spawnPoint
-	for _, callback in createdCallbacks do
-		task.spawn(callback, player, island)
-	end
+	announce(player, build(player, clampTier(data.Island.Tier), claimPlot()))
 
 	player.CharacterAdded:Connect(function(character)
 		local humanoid = character:WaitForChild("Humanoid") :: Humanoid
@@ -189,6 +242,24 @@ local function onDataLoaded(player: Player, _data: DataService.Data)
 	end)
 
 	spawnCharacter(player)
+end
+
+-- Rebuilds the player's island at their current tier (after expanding)
+function IslandService.Rebuild(player: Player)
+	local old = islands[player]
+	local data = DataService.GetData(player)
+	if not old or not data then
+		return
+	end
+	local island = build(player, clampTier(data.Island.Tier), old.Plot)
+	old.Model:Destroy()
+	announce(player, island)
+
+	local character = player.Character
+	if character then
+		character:PivotTo(island.Spawn.CFrame + Vector3.new(0, 4, 0))
+	end
+	Remotes.IslandRebuilt:FireClient(player, island.Tier)
 end
 
 local function onPlayerRemoving(player: Player)

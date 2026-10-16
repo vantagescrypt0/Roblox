@@ -2,27 +2,34 @@
 
 Every model is built by a Python script in `scripts/`, so it can be rebuilt or tweaked by changing numbers.
 
+**Style:** stylized low-poly, flat-shaded. Every model uses one shared **palette texture** (`textures/palette.png`, colors defined in `scripts/lowpoly.py`). Each face points at one color swatch, so a whole prop is a single mesh with many colors, and in Roblox a single MeshPart with one TextureID.
+
 | Folder | What |
 |---|---|
-| `scripts/` | Blender Python that builds each asset (`common.py` = shared helpers) |
+| `scripts/` | Blender Python. `lowpoly.py` = palette + mesh builder, `common.py` = scene/render helpers |
 | `blend/` | Saved `.blend` files you can open and edit in Blender |
-| `export/` | `.fbx` files to import into Roblox Studio |
+| `export/` | `.fbx` files to import into Roblox Studio (texture embedded) |
 | `renders/` | Preview images |
+| `textures/` | The shared palette |
 
-## Rebuild an asset
+## Rebuild
 ```
-"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/starter_island.py
+"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/props.py
+"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/islands.py
 ```
-
-## Import into Roblox Studio
-1. **Home** (or **Model**) tab → **Import 3D** → pick the file in `export/`.
-2. In the importer, set **Scale Unit** to **Stud** (1 Blender unit = 1 stud).
-3. Insert. Each part (grass, dirt, rocks, tree) comes in as its own MeshPart inside one Model.
-4. If colors don't carry over, set each MeshPart's **Color** in Properties.
 
 ## Assets
-| Asset | Script | Status |
+| File | Script | What's inside |
 |---|---|---|
-| Starter island | `scripts/starter_island.py` | Greybox (placeholder style); imported → `game/assets/StarterIsland.rbxm` |
+| `export/Props.fbx` | `props.py` | Workbench, Market (stall + sign face + lantern glow), Portal (frame + runes + surface), Planter, crops (Sprout, Young, Wheat, Carrot, Potato, Glowberry + glow) |
+| `export/Islands.fbx` | `islands.py` | Island tiers 1-4 (`*_T1`…`*_T4`): GrassTop, IslandBody, Decor, TreeTrunk_N/TreeLeaves_N, Rock_N, Marker_* layout points |
 
-After importing, colors are set in Studio (FBX colors don't carry over), then the model is saved with **Save / Export → Save to File** into `game/assets/`, which Rojo syncs into `ServerStorage.Assets`.
+Props are built at the origin, front facing -Y (becomes -Z in Roblox), bottom at z=0.
+Islands carry invisible `Marker_*` cubes (Spawn, Workbench, Market, Portal, Plot_N) that the game reads to place things.
+
+## Import into Roblox Studio
+1. **Home** → **Import 3D** → pick the FBX. Tick **Anchored**; Scale Unit **Stud**. Import.
+2. Paste `scripts/studio_restructure.luau` into the command bar. It splits islands into `Tier1..4`, groups props into models, and sets collisions and glow materials.
+3. Select the folder → **Save / Export → Save to File** → `game/assets/Islands.rbxm` / `Props.rbxm`. Rojo syncs them into `ServerStorage.Assets`.
+
+Imported meshes keep a built-in rotation; the game places props by their world-space bottom center (`game/src/server/Util/Props.luau`), so never rely on a prop's pivot rotation.

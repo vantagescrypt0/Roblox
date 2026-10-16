@@ -4,75 +4,65 @@
 
 local Players = game:GetService("Players")
 
-local QuestTracker = {}
+local Theme = require(script.Parent.UI.Theme)
 
+local C = Theme.Color
 local localPlayer = Players.LocalPlayer :: Player
 
-local panel: Frame
-local titleText: TextLabel
-local questText: TextLabel
-local progressText: TextLabel
-local highlight: Highlight
+local QuestTracker = {}
 
-local function makeLabel(parent: Instance, height: number, textSize: number, font: Enum.Font): TextLabel
-	local l = Instance.new("TextLabel")
-	l.Size = UDim2.new(1, 0, 0, height)
-	l.BackgroundTransparency = 1
-	l.TextColor3 = Color3.new(1, 1, 1)
-	l.Font = font
-	l.TextSize = textSize
-	l.TextWrapped = true
-	l.TextXAlignment = Enum.TextXAlignment.Left
-	l.Parent = parent
-	return l
-end
+local card: Frame
+local header: TextLabel
+local questText: TextLabel
+local bar: Theme.Bar
+local highlight: Highlight
+local lastQuest: number? = nil
 
 local function build()
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "Quests"
-	gui.ResetOnSpawn = false
+	local gui = Theme.screen("Quests", 1)
 
-	panel = Instance.new("Frame")
-	panel.AnchorPoint = Vector2.new(1, 0)
-	panel.Position = UDim2.new(1, -12, 0, 190)
-	panel.Size = UDim2.fromOffset(240, 0)
-	panel.AutomaticSize = Enum.AutomaticSize.Y
-	panel.BackgroundColor3 = Color3.fromRGB(30, 40, 70)
-	panel.BackgroundTransparency = 0.15
-	panel.Visible = false
-	panel.Parent = gui
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, 10)
-	c.Parent = panel
-	local padding = Instance.new("UIPadding")
-	padding.PaddingLeft = UDim.new(0, 10)
-	padding.PaddingRight = UDim.new(0, 10)
-	padding.PaddingTop = UDim.new(0, 6)
-	padding.PaddingBottom = UDim.new(0, 8)
-	padding.Parent = panel
-	local layout = Instance.new("UIListLayout")
-	layout.SortOrder = Enum.SortOrder.LayoutOrder
-	layout.Padding = UDim.new(0, 2)
-	layout.Parent = panel
+	card = Theme.panel(gui, UDim2.fromOffset(270, 0))
+	-- Right side, below Roblox's player list
+	card.AnchorPoint = Vector2.new(1, 0.5)
+	card.Position = UDim2.new(1, -12, 0.5, 0)
+	card.AutomaticSize = Enum.AutomaticSize.Y
+	card.Visible = false
+	Theme.autoScale(card)
+	Theme.padding(card, 12, 12, 0, 12)
+	Theme.list(card, Enum.FillDirection.Vertical, 6)
 
-	titleText = makeLabel(panel, 18, 13, Enum.Font.GothamBold)
-	titleText.LayoutOrder = 1
-	titleText.TextColor3 = Color3.fromRGB(255, 215, 90)
-	questText = makeLabel(panel, 0, 17, Enum.Font.GothamBold)
+	-- Gold ribbon header
+	local ribbon = Theme.make("Frame", {
+		Size = UDim2.new(1, 24, 0, 32),
+		Position = UDim2.fromOffset(-12, 0),
+		LayoutOrder = 1,
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		Parent = card,
+	})
+	Theme.gradient(ribbon, Theme.lighten(C.Gold, 0.2), Theme.darken(C.Gold, 0.1))
+	Theme.corner(ribbon, 14)
+	header = Theme.title(ribbon, "📜 QUEST", 18)
+	header.Size = UDim2.fromScale(1, 1)
+	header.TextXAlignment = Enum.TextXAlignment.Center
+
+	questText = Theme.title(card, "", 20)
 	questText.LayoutOrder = 2
+	questText.TextWrapped = true
+	questText.TextTruncate = Enum.TextTruncate.None
 	questText.AutomaticSize = Enum.AutomaticSize.Y
-	progressText = makeLabel(panel, 18, 14, Enum.Font.Gotham)
-	progressText.LayoutOrder = 3
+	questText.Size = UDim2.new(1, 0, 0, 24)
 
-	highlight = Instance.new("Highlight")
-	highlight.FillColor = Color3.fromRGB(255, 215, 90)
-	highlight.FillTransparency = 0.7
-	highlight.OutlineColor = Color3.fromRGB(255, 235, 140)
-	highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-	highlight.Enabled = false
-	highlight.Parent = gui
+	bar = Theme.bar(card, C.Gold, UDim2.new(1, 0, 0, 20))
+	bar.Track.LayoutOrder = 3
 
-	gui.Parent = localPlayer:WaitForChild("PlayerGui")
+	highlight = Theme.make("Highlight", {
+		FillColor = C.Gold,
+		FillTransparency = 0.75,
+		OutlineColor = Theme.lighten(C.Gold, 0.4),
+		DepthMode = Enum.HighlightDepthMode.AlwaysOnTop,
+		Enabled = false,
+		Parent = gui,
+	})
 end
 
 local function findOnMyIsland(name: string): Instance?
@@ -83,17 +73,22 @@ end
 
 function QuestTracker.Render(state: any)
 	local quest = state.Quest
-	-- Hide during a raid so the Warzone screen stays clear
+	-- Hidden during a raid so the Warzone screen stays clear
 	if not quest or state.Raid.Active then
-		panel.Visible = false
+		card.Visible = false
 		highlight.Enabled = false
 		return
 	end
-	panel.Visible = true
-	titleText.Text = `QUEST {quest.Number}/{quest.Total}`
+	card.Visible = true
+	header.Text = `📜 QUEST {quest.Number}/{quest.Total}`
 	questText.Text = quest.Text
-	progressText.Text = `{quest.Progress} / {quest.Target}`
+	bar.Set(quest.Progress / quest.Target, `{quest.Progress} / {quest.Target}`)
+	if lastQuest and lastQuest ~= quest.Number then
+		Theme.pop(questText, 1.25)
+	end
+	lastQuest = quest.Number
 
+	-- The island can be rebuilt (expansion), so look the target up every time
 	local target = if quest.Highlight then findOnMyIsland(quest.Highlight) else nil
 	highlight.Adornee = target
 	highlight.Enabled = target ~= nil

@@ -20,8 +20,8 @@ export type Quest = {
 }
 
 local Quests: { Quest } = {
-	{ Text = "Chop a tree", Event = "Chop", Target = 1, Highlight = "TreeTrunk", Reward = { XP = 10 } },
-	{ Text = "Mine a rock", Event = "Mine", Target = 1, Highlight = "RockA", Reward = { XP = 10 } },
+	{ Text = "Chop a tree", Event = "Chop", Target = 1, Highlight = "TreeTrunk_1", Reward = { XP = 10 } },
+	{ Text = "Mine a rock", Event = "Mine", Target = 1, Highlight = "Rock_1", Reward = { XP = 10 } },
 	{
 		Text = "Plant 3 seeds",
 		Event = "Plant",
@@ -34,14 +34,14 @@ local Quests: { Quest } = {
 		Text = "Sell crops at the Market",
 		Event = "Sell",
 		Target = 1,
-		Highlight = "MarketStand",
+		Highlight = "Market",
 		Reward = { XP = 15, Coins = 10 },
 	},
 	{
 		Text = "Buy seeds at the Market",
 		Event = "BuySeeds",
 		Target = 1,
-		Highlight = "MarketStand",
+		Highlight = "Market",
 		Reward = { XP = 15 },
 	},
 	{

@@ -3,6 +3,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Quests = require(ReplicatedStorage.Shared.Quests)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
@@ -36,7 +37,10 @@ local function snapshot(data: DataService.Data)
 
 	local quest = Quests[data.Quest.Index]
 
+	local tier = math.clamp(data.Island.Tier, 1, #IslandTiers)
+
 	return {
+		Island = { Tier = tier, MaxTier = #IslandTiers },
 		Quest = if quest
 			then {
 				Number = data.Quest.Index,

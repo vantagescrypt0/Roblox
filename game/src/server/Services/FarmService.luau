@@ -1,7 +1,8 @@
 --!strict
--- Farm plots on your island. Plant seeds, wait (time keeps counting while you're
--- offline), harvest for crops, seeds and Farming XP. Better crops need a higher
+-- Farm plots (planter beds) on your island. Plant seeds, wait (time keeps counting while
+-- you're offline), harvest for crops, seeds and Farming XP. Better crops need a higher
 -- Farming level, and a higher level gives a bigger chance of a bonus crop.
+-- Bigger islands have more plots (see IslandTiers).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -10,6 +11,7 @@ local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
+local Props = require(script.Parent.Parent.Util.Props)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
@@ -17,27 +19,22 @@ local ProgressionService = require(script.Parent.ProgressionService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
--- Plot positions relative to the middle of the island's grass surface, on the open
--- side of the starter island (the tree is at about (7, -6) and rocks at (-9, -7),
--- (-12, -4) and (12, 6))
-local PLOT_OFFSETS = {
-	Vector3.new(-11, 0, 5),
-	Vector3.new(-6, 0, 5),
-	Vector3.new(-1, 0, 5),
-	Vector3.new(-11, 0, 10),
-	Vector3.new(-6, 0, 10),
-	Vector3.new(-1, 0, 10),
-}
-local PLOT_SIZE = Vector3.new(4, 0.4, 4)
-local GROWING_COLOR = Color3.fromRGB(96, 170, 70)
 local SEED_RETURN_BONUS_CHANCE = 0.3
+-- Height of the soil surface above the planter's base
+local SOIL_HEIGHT = 0.72
+-- Growth stage thresholds
+local SPROUT_UNTIL = 0.35
 
 type Plot = {
 	Key: string,
-	Soil: BasePart,
-	Crop: BasePart,
-	Label: TextLabel,
+	Model: Model,
+	Base: CFrame, -- planter base (bottom center)
 	Prompt: ProximityPrompt,
+	Label: BillboardGui,
+	LabelText: TextLabel,
+	LabelBar: Frame,
+	Stage: string?, -- which crop model is showing
+	Visual: Model?,
 }
 
 local FarmService = {}
@@ -74,6 +71,25 @@ local function plotState(data: DataService.Data, key: string): (Crops.Crop?, num
 	return crop, math.clamp((os.time() - planted.PlantedAt) / crop.GrowTime, 0, 1)
 end
 
+-- Swaps the crop model shown in the planter when the growth stage changes
+local function setVisual(plot: Plot, stage: string?, scale: number)
+	if plot.Stage ~= stage then
+		if plot.Visual then
+			plot.Visual:Destroy()
+			plot.Visual = nil
+		end
+		plot.Stage = stage
+		if stage then
+			plot.Visual = Props.Place(stage, plot.Base.Position + Vector3.new(0, SOIL_HEIGHT, 0), nil, plot.Model)
+		end
+	end
+	local visual = plot.Visual
+	if visual and math.abs(visual:GetScale() - scale) > 0.01 then
+		visual:ScaleTo(scale)
+		visual:PivotTo(plot.Base + Vector3.new(0, SOIL_HEIGHT, 0))
+	end
+end
+
 local function refreshPlot(player: Player, plot: Plot)
 	local data = DataService.GetData(player)
 	if not data then
@@ -81,33 +97,34 @@ local function refreshPlot(player: Player, plot: Plot)
 	end
 
 	local crop, progress = plotState(data, plot.Key)
-	local cropPart = plot.Crop
-
 	if not crop then
 		local seed = bestSeed(player)
-		cropPart.Transparency = 1
+		setVisual(plot, nil, 1)
 		plot.Prompt.Enabled = true
 		plot.Prompt.ActionText = if seed then `Plant {seed.Id}` else "Need seeds"
-		plot.Label.Text = ""
+		plot.Label.Enabled = false
 		return
 	end
 
-	local height
+	plot.Label.Enabled = true
 	if progress >= 1 then
-		height = 2.2
-		cropPart.Color = crop.Color
+		setVisual(plot, `Crop_{crop.Id}`, 1)
 		plot.Prompt.Enabled = true
 		plot.Prompt.ActionText = `Harvest {crop.Id}`
-		plot.Label.Text = `{crop.Id} ready!`
+		plot.LabelText.Text = `{Items[crop.Product].Icon} Ready!`
+		plot.LabelBar.Size = UDim2.fromScale(1, 1)
+		plot.LabelBar.BackgroundColor3 = Color3.fromRGB(255, 201, 60)
 	else
-		height = 0.4 + 1.6 * progress
-		cropPart.Color = GROWING_COLOR
+		if progress < SPROUT_UNTIL then
+			setVisual(plot, "Crop_Sprout", 1)
+		else
+			setVisual(plot, "Crop_Young", 0.7 + 0.3 * (progress - SPROUT_UNTIL) / (1 - SPROUT_UNTIL))
+		end
 		plot.Prompt.Enabled = false
-		plot.Label.Text = `{crop.Id} {formatTime(math.ceil((1 - progress) * crop.GrowTime))}`
+		plot.LabelText.Text = `{Items[crop.Product].Icon} {formatTime(math.ceil((1 - progress) * crop.GrowTime))}`
+		plot.LabelBar.Size = UDim2.fromScale(progress, 1)
+		plot.LabelBar.BackgroundColor3 = Color3.fromRGB(91, 209, 107)
 	end
-	cropPart.Transparency = 0
-	cropPart.Size = Vector3.new(2.4, height, 2.4)
-	cropPart.CFrame = plot.Soil.CFrame * CFrame.new(0, plot.Soil.Size.Y / 2 + height / 2, 0)
 end
 
 local function onPlotTriggered(player: Player, plot: Plot)
@@ -120,7 +137,7 @@ local function onPlotTriggered(player: Player, plot: Plot)
 	if not crop then
 		local seed = bestSeed(player)
 		if not seed then
-			StateService.Notify(player, "You need seeds. Buy some at the market stand!", "bad")
+			StateService.Notify(player, "You need seeds. Buy some at the Market!", "bad")
 		elseif InventoryService.Remove(player, seed.Seed, 1) then
 			data.Farm.Plots[plot.Key] = { Crop = seed.Id, PlantedAt = os.time() }
 			DataService.MarkChanged(player)
@@ -143,54 +160,107 @@ local function onPlotTriggered(player: Player, plot: Plot)
 	refreshPlot(player, plot)
 end
 
-local function makeLabel(adornee: BasePart): TextLabel
+-- Floating pill above each planter: crop icon, time left, progress bar
+local function makeLabel(adornee: BasePart): (BillboardGui, TextLabel, Frame)
 	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.fromOffset(140, 30)
-	billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+	billboard.Size = UDim2.fromOffset(110, 40)
+	billboard.StudsOffsetWorldSpace = Vector3.new(0, 3.6, 0)
 	billboard.AlwaysOnTop = true
-	billboard.MaxDistance = 40
+	billboard.MaxDistance = 45
+	billboard.Enabled = false
 	billboard.Adornee = adornee
 	billboard.Parent = adornee
 
-	local label = Instance.new("TextLabel")
-	label.Size = UDim2.fromScale(1, 1)
-	label.BackgroundTransparency = 1
-	label.TextColor3 = Color3.new(1, 1, 1)
-	label.TextStrokeTransparency = 0.3
-	label.Font = Enum.Font.GothamBold
-	label.TextScaled = true
-	label.Text = ""
-	label.Parent = billboard
-	return label
+	local card = Instance.new("Frame")
+	card.Size = UDim2.fromScale(1, 1)
+	card.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
+	card.BackgroundTransparency = 0.15
+	card.Parent = billboard
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = card
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(12, 15, 24)
+	stroke.Thickness = 2
+	stroke.Parent = card
+
+	local text = Instance.new("TextLabel")
+	text.Size = UDim2.new(1, -8, 0, 24)
+	text.Position = UDim2.fromOffset(4, 2)
+	text.BackgroundTransparency = 1
+	text.FontFace = Font.fromEnum(Enum.Font.FredokaOne)
+	text.TextSize = 18
+	text.TextColor3 = Color3.new(1, 1, 1)
+	text.Text = ""
+	text.Parent = card
+
+	local track = Instance.new("Frame")
+	track.AnchorPoint = Vector2.new(0.5, 1)
+	track.Position = UDim2.new(0.5, 0, 1, -6)
+	track.Size = UDim2.new(1, -16, 0, 7)
+	track.BackgroundColor3 = Color3.fromRGB(55, 62, 84)
+	track.Parent = card
+	local trackCorner = Instance.new("UICorner")
+	trackCorner.CornerRadius = UDim.new(1, 0)
+	trackCorner.Parent = track
+	local bar = Instance.new("Frame")
+	bar.Size = UDim2.fromScale(0, 1)
+	bar.BackgroundColor3 = Color3.fromRGB(91, 209, 107)
+	bar.Parent = track
+	local barCorner = Instance.new("UICorner")
+	barCorner.CornerRadius = UDim.new(1, 0)
+	barCorner.Parent = bar
+
+	return billboard, text, bar
+end
+
+local function makePlanter(index: number, position: Vector3, island: IslandService.Island): (Model, BasePart)
+	local model = Props.Place("Planter", position, nil, island.Model)
+	if model then
+		model.Name = `FarmPlot{index}`
+		local bed = Props.Part(model, "PlanterBed") :: BasePart
+		return model, bed
+	end
+	-- Fallback if the art is missing
+	local fallback = Instance.new("Model")
+	fallback.Name = `FarmPlot{index}`
+	local soil = Instance.new("Part")
+	soil.Name = "PlanterBed"
+	soil.Size = Vector3.new(4.4, 0.7, 4.4)
+	soil.CFrame = CFrame.new(position + Vector3.new(0, 0.35, 0))
+	soil.Color = Color3.fromRGB(92, 60, 38)
+	soil.Material = Enum.Material.Ground
+	soil.Anchored = true
+	soil.Parent = fallback
+	fallback.PrimaryPart = soil
+	fallback.WorldPivot = CFrame.new(position)
+	fallback.Parent = island.Model
+	return fallback, soil
 end
 
 local function onIslandCreated(player: Player, island: IslandService.Island)
+	-- Rebuilding an island replaces the old plots
+	local old = farms[player]
+	if old then
+		for _, plot in old do
+			plot.Model:Destroy()
+		end
+	end
+
 	local plots: { Plot } = {}
-	for i, offset in PLOT_OFFSETS do
-		local soil = Instance.new("Part")
-		soil.Name = `FarmPlot{i}`
-		soil.Size = PLOT_SIZE
-		soil.CFrame = CFrame.new(island.Center + offset + Vector3.new(0, PLOT_SIZE.Y / 2, 0))
-		soil.Color = Color3.fromRGB(92, 60, 38)
-		soil.Material = Enum.Material.Ground
-		soil.Anchored = true
-		soil.Parent = island.Model
-
-		local cropPart = Instance.new("Part")
-		cropPart.Name = "Crop"
-		cropPart.Anchored = true
-		cropPart.CanCollide = false
-		cropPart.CanQuery = false
-		cropPart.Material = Enum.Material.SmoothPlastic
-		cropPart.Transparency = 1
-		cropPart.Parent = soil
-
+	for i, position in island.PlotSpots do
+		local model, bed = makePlanter(i, position, island)
+		local label, labelText, labelBar = makeLabel(bed)
 		local plot: Plot = {
 			Key = tostring(i),
-			Soil = soil,
-			Crop = cropPart,
-			Label = makeLabel(soil),
-			Prompt = Prompts.Create(soil, { Action = "Plant", Object = "Farm plot", Hold = 0.3 }),
+			Model = model,
+			Base = model:GetPivot(),
+			Prompt = Prompts.Create(bed, { Action = "Plant", Object = "Planter", Hold = 0.3 }),
+			Label = label,
+			LabelText = labelText,
+			LabelBar = labelBar,
+			Stage = nil,
+			Visual = nil,
 		}
 		Prompts.OnTriggeredBy(plot.Prompt, player, function()
 			onPlotTriggered(player, plot)
@@ -207,13 +277,15 @@ function FarmService.Start()
 		farms[player] = nil
 	end)
 
-	-- Update growth timers and prompts once a second
+	-- Update growth timers, crop models and prompts once a second
 	task.spawn(function()
 		while true do
 			task.wait(1)
 			for player, plots in farms do
 				for _, plot in plots do
-					refreshPlot(player, plot)
+					if plot.Model.Parent then
+						refreshPlot(player, plot)
+					end
 				end
 			end
 		end

@@ -16,4 +16,6 @@
 | 2026-10-15 | Seasons of 2–4 months; player level resets each season | Same as Skybounds; fresh start every season |
 | 2026-10-15 | Repo layout: `game/` = Rojo code, `art/` = Blender scripts + exports; models built by Python script | Reproducible models Claude can tweak; no extra Blender plugin needed |
 | 2026-10-15 | Player data uses ProfileStore (vendored, pinned commit) | Session locking stops the same save being open on two servers, which is a common cause of item duplication |
+| 2026-10-15 | Island expansion: spend coins to grow your island through 4 tiers (Starter → Meadow 300 → Grove 1,500 → Grand 6,000 coins; 6/9/12/16 farm plots). Prices are placeholders | Your call ("expand your island with spending money") |
+| 2026-10-15 | Art direction for now: stylized low-poly, flat-shaded, one shared color palette; chunky cartoon UI (Fredoka font, rounded dark cards, 3D buttons, emoji icons). Claude's pick after "I need nicer everything" — change anytime | Looks good, cheap to produce, reads well on phones |
 | 2026-10-15 | Islands float at Y=200 on a grid of plots, one per player; falling off returns you to your island instead of killing you | Kid-friendly; the void isn't a punishment on your safe island |

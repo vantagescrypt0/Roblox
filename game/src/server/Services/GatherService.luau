@@ -49,8 +49,11 @@ local rng = Random.new()
 
 local function setFaded(parts: { BasePart }, faded: boolean)
 	for _, part in parts do
+		if part:GetAttribute("Collides") == nil then
+			part:SetAttribute("Collides", part.CanCollide)
+		end
 		part.Transparency = if faded then 0.75 else 0
-		part.CanCollide = not faded
+		part.CanCollide = not faded and part:GetAttribute("Collides") == true
 	end
 end
 
@@ -81,18 +84,20 @@ end
 local function onIslandCreated(player: Player, island: IslandService.Island)
 	local model = island.Model
 
-	local trunk = model:FindFirstChild("TreeTrunk", true)
-	local leaves = model:FindFirstChild("TreeLeaves", true)
-	if trunk and trunk:IsA("BasePart") then
-		local parts = { trunk }
-		if leaves and leaves:IsA("BasePart") then
-			table.insert(parts, leaves)
-		end
-		setupNode(player, KINDS.Tree, trunk, parts)
-	end
-
+	-- Trees come as TreeTrunk_N + TreeLeaves_N; rocks as Rock_N
 	for _, part in model:GetDescendants() do
-		if part:IsA("BasePart") and string.match(part.Name, "^Rock") then
+		if not part:IsA("BasePart") then
+			continue
+		end
+		local treeId = string.match(part.Name, "^TreeTrunk_(%d+)$")
+		if treeId then
+			local parts = { part }
+			local leaves = model:FindFirstChild(`TreeLeaves_{treeId}`, true)
+			if leaves and leaves:IsA("BasePart") then
+				table.insert(parts, leaves)
+			end
+			setupNode(player, KINDS.Tree, part, parts)
+		elseif string.match(part.Name, "^Rock") then
 			setupNode(player, KINDS.Rock, part, { part })
 		end
 	end

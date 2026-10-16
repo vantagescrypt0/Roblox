@@ -11,7 +11,10 @@ No dates — quality over speed.
    - [ ] Publish the place (private) + enable Studio API access so data actually saves
    - [x] Gather → craft → farm basics: chop/mine, 6 farm plots with offline growth, market stand, workbench + swords, XP/levels, HUD (playtested 2026-10-15)
    - [x] Greybox Warzone + loot heads: portal (level 10), chests, Slimes/Brutes, PvP, raid bag, extraction, loot heads (playtested 2026-10-15)
-   - [ ] Beginner quests ([[Tutorial & Quests]])
+   - [x] Beginner quests ([[Tutorial & Quests]]) with tracker + highlight
+   - [x] Art + UI overhaul (2026-10-15): stylized low-poly props (workbench, market stall, portal arch, planter beds, crop growth models), 4 island tiers, new HUD/windows/prompts
+   - [x] Island expansion: buy bigger islands with coins (4 tiers) — playtested
+   - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.
 4. **Soft launch:** small audience, measure retention, fix.

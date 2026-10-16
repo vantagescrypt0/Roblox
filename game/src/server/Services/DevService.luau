@@ -31,6 +31,9 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	Give = function(player, _data, item, amount)
 		InventoryService.Add(player, item, amount)
 	end,
+	Coins = function(player, _data, amount)
+		InventoryService.AddCoins(player, amount)
+	end,
 }
 
 function DevService.Start()

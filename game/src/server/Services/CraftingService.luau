@@ -8,13 +8,13 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
+local Props = require(script.Parent.Parent.Util.Props)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
-local WORKBENCH_OFFSET = Vector3.new(9, 0, 2)
 -- How close you must be to your workbench to craft
 local MAX_CRAFT_DISTANCE = 16
 
@@ -52,30 +52,28 @@ local function craft(player: Player, recipeId: unknown)
 end
 
 local function buildWorkbench(island: IslandService.Island): BasePart
+	local position = island.Markers.Workbench or (island.Center + Vector3.new(9, 0, 2))
+	local model = Props.Place("Workbench", position, island.Markers.Spawn, island.Model)
+	if model then
+		model.Name = "Workbench"
+		return Props.Part(model, "Workbench") :: BasePart
+	end
+	-- Fallback if the art is missing
 	local bench = Instance.new("Part")
 	bench.Name = "Workbench"
 	bench.Size = Vector3.new(4, 2.6, 2.4)
-	bench.CFrame = CFrame.new(island.Center + WORKBENCH_OFFSET + Vector3.new(0, 1.3, 0))
+	bench.CFrame = CFrame.new(position + Vector3.new(0, 1.3, 0))
 	bench.Color = Color3.fromRGB(150, 100, 55)
 	bench.Material = Enum.Material.WoodPlanks
 	bench.Anchored = true
 	bench.Parent = island.Model
-
-	local top = Instance.new("Part")
-	top.Name = "Top"
-	top.Size = Vector3.new(4.4, 0.3, 2.8)
-	top.CFrame = bench.CFrame * CFrame.new(0, 1.45, 0)
-	top.Color = Color3.fromRGB(110, 75, 40)
-	top.Material = Enum.Material.Wood
-	top.Anchored = true
-	top.Parent = bench
 	return bench
 end
 
 local function onIslandCreated(player: Player, island: IslandService.Island)
 	local bench = buildWorkbench(island)
 	workbenches[player] = bench
-	local prompt = Prompts.Create(bench, { Action = "Craft", Object = "Workbench" })
+	local prompt = Prompts.Create(bench, { Action = "Craft", Object = "Workbench", Distance = 12 })
 	Prompts.OnTriggeredBy(prompt, player, function()
 		Remotes.OpenCrafting:FireClient(player)
 	end)

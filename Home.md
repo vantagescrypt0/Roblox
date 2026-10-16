@@ -1,6 +1,6 @@
 # 🏝️ Roblox Sim — Home
 
-**Status:** Prototype. The full island ⇄ Warzone loop is playable in Studio (farm, gather, craft, enter at level 10, loot, fight, die → loot head, extract). See [[Roadmap]].
+**Status:** Prototype. The full island ⇄ Warzone loop is playable in Studio (farm, gather, craft, enter at level 10, loot, fight, die → loot head, extract), with stylized low-poly art, a cartoon UI, beginner quests and island expansion. See [[Roadmap]].
 **Working concept:** Islands + Warzone. See [[Pitch (Draft)]].
 
 ## Quick links
