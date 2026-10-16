@@ -7,7 +7,8 @@ No dates — quality over speed.
    - [x] Greybox starter island model
    - [x] Each player gets their own island plot and spawns on it; fall off → put back (playtested 2026-10-15)
    - [x] Player data saving with ProfileStore (needs a published place + Studio API access to actually save)
-   - [ ] Swap the greybox for the Blender island (import FBX → `ServerStorage.Assets.StarterIsland`)
+   - [x] Blender island imported, colored, saved as `game/assets/StarterIsland.rbxm` (synced by Rojo into `ServerStorage.Assets`) — playtested
+   - [ ] Publish the place (private) + enable Studio API access so data actually saves
    - [ ] Gather → craft → farm basics
    - [ ] Greybox Warzone + loot heads
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.

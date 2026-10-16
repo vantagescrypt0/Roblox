@@ -26,7 +26,7 @@ Vendored: `src/server/Packages/ProfileStore.luau` (MadStudioRoblox/ProfileStore 
 ProfileStore only saves when the place is published and **Game Settings → Security → Enable Studio Access to API Services** is on. Otherwise it runs in mock mode (works, but nothing is saved).
 
 ## Island model
-The server looks for a Model at `ServerStorage.Assets.StarterIsland` (with a part named `GrassTop`). If it's missing, it builds a simple greybox island instead.
+The server looks for a Model at `ServerStorage.Assets.StarterIsland` (with a part named `GrassTop`). It comes from `assets/StarterIsland.rbxm`, which Rojo maps into `ServerStorage.Assets`. If it's missing, the server builds a simple greybox island instead.
 
 ## Layout
 | Folder | Ends up in Studio as |

@@ -23,4 +23,6 @@ Every model is built by a Python script in `scripts/`, so it can be rebuilt or t
 ## Assets
 | Asset | Script | Status |
 |---|---|---|
-| Starter island | `scripts/starter_island.py` | Greybox (placeholder style) |
+| Starter island | `scripts/starter_island.py` | Greybox (placeholder style); imported → `game/assets/StarterIsland.rbxm` |
+
+After importing, colors are set in Studio (FBX colors don't carry over), then the model is saved with **Save / Export → Save to File** into `game/assets/`, which Rojo syncs into `ServerStorage.Assets`.
