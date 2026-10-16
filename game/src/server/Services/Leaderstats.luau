@@ -22,8 +22,24 @@ local function onDataLoaded(player: Player, data: DataService.Data)
 	folder.Parent = player
 end
 
+local function onChanged(player: Player, data: DataService.Data)
+	local folder = player:FindFirstChild("leaderstats")
+	if not folder then
+		return
+	end
+	local level = folder:FindFirstChild("Level")
+	local coins = folder:FindFirstChild("Coins")
+	if level and level:IsA("IntValue") then
+		level.Value = data.Level
+	end
+	if coins and coins:IsA("IntValue") then
+		coins.Value = data.Coins
+	end
+end
+
 function Leaderstats.Start()
 	DataService.OnDataLoaded(onDataLoaded)
+	DataService.OnChanged(onChanged)
 end
 
 return Leaderstats

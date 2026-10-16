@@ -12,17 +12,33 @@ local DataService = require(script.Parent.DataService)
 
 local ISLAND = Config.Island
 
-type Island = {
+export type Island = {
 	Model: Model,
 	Plot: number,
 	Spawn: SpawnLocation,
+	-- World position of the middle of the grass surface
+	Center: Vector3,
 }
+type IslandCallback = (player: Player, island: Island) -> ()
 
 local IslandService = {}
 
 local islands: { [Player]: Island } = {}
 local usedPlots: { [number]: boolean } = {}
+local createdCallbacks: { IslandCallback } = {}
 local islandsFolder: Folder
+
+-- Runs the callback for every island, now and when new ones are created.
+function IslandService.OnIslandCreated(callback: IslandCallback)
+	table.insert(createdCallbacks, callback)
+	for player, island in islands do
+		task.spawn(callback, player, island)
+	end
+end
+
+function IslandService.GetIsland(player: Player): Island?
+	return islands[player]
+end
 
 local function claimPlot(): number
 	local plot = 1
@@ -155,8 +171,12 @@ local function onDataLoaded(player: Player, _data: DataService.Data)
 	local spawnPoint = makeSpawn(center, model)
 	model.Parent = islandsFolder
 
-	islands[player] = { Model = model, Plot = plot, Spawn = spawnPoint }
+	local island: Island = { Model = model, Plot = plot, Spawn = spawnPoint, Center = center }
+	islands[player] = island
 	player.RespawnLocation = spawnPoint
+	for _, callback in createdCallbacks do
+		task.spawn(callback, player, island)
+	end
 
 	player.CharacterAdded:Connect(function(character)
 		local humanoid = character:WaitForChild("Humanoid") :: Humanoid
