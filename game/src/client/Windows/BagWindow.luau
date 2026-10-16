@@ -8,6 +8,7 @@ local TweenService = game:GetService("TweenService")
 
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Parent.Hotbar)
 local ItemIcon = require(script.Parent.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.Parent.UI.Theme)
@@ -19,13 +20,14 @@ local DARK = Color3.fromRGB(55, 55, 55)
 local TEXT = Color3.fromRGB(63, 63, 63)
 local SLOT = 54
 
--- Display order: blocks, seeds, crops, Warzone materials, gear
+-- Display order: blocks, materials, seeds, crops, Warzone materials, then every tool
 local ORDER = {
 	"Grass",
 	"Dirt",
 	"Wood",
 	"Planks",
 	"Stone",
+	"Sticks",
 	"WheatSeeds",
 	"CarrotSeeds",
 	"PotatoSeeds",
@@ -36,10 +38,10 @@ local ORDER = {
 	"Glowberry",
 	"Scrap",
 	"Crystal",
-	"WoodenSword",
-	"StoneSword",
-	"CrystalSword",
 }
+for _, tool in Tools.List do
+	table.insert(ORDER, tool.Item)
+end
 
 local BagWindow = {}
 
@@ -114,7 +116,9 @@ local function render()
 			ItemIcon.create(slot, itemId, UDim2.fromScale(0.8, 0.8))
 			countLabel(slot, count)
 			slot.MouseEnter:Connect(function()
-				info.Text = `{Items[itemId].Name}  -  click to put in hotbar slot {Hotbar.Selected()}`
+				local tool = Tools.ByItem[itemId]
+				local uses = if tool then `  ({tool.Durability - (state.Wear[itemId] or 0)} uses left)` else ""
+				info.Text = `{Items[itemId].Name}{uses}  -  click to put in hotbar slot {Hotbar.Selected()}`
 			end)
 			slot.Activated:Connect(function()
 				Remotes.SetHotbar:FireServer(Hotbar.Selected(), itemId)

@@ -41,6 +41,7 @@ local function snapshot(data: DataService.Data)
 
 	return {
 		Hotbar = table.clone(data.Hotbar),
+		Wear = table.clone(data.Wear),
 		Island = { Tier = tier, MaxTier = #IslandTiers },
 		Quest = if quest
 			then {

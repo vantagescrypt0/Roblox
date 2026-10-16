@@ -1,6 +1,7 @@
 --!strict
--- Farm plots (farmland blocks) on your island. Plant seeds, wait (time keeps counting while
--- you're offline), harvest for crops, seeds and Farming XP. Better crops need a higher
+-- Farm plots (farmland blocks) on your island. Click farmland to plant the seeds you're
+-- holding (or your best seeds), wait (time keeps counting while you're offline), then
+-- click the ripe crop to harvest crops, seeds and Farming XP. Better crops need a higher
 -- Farming level, and a higher level gives a bigger chance of a bonus crop.
 -- Bigger islands have more plots (see IslandTiers).
 
@@ -11,10 +12,11 @@ local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
-local Prompts = require(script.Parent.Parent.Util.Prompts)
+local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Props = require(script.Parent.Parent.Util.Props)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local DataService = require(script.Parent.DataService)
+local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
 local ProgressionService = require(script.Parent.ProgressionService)
@@ -29,10 +31,10 @@ local SPROUT_UNTIL = 0.35
 
 type Plot = {
 	Key: string,
+	Cell: Vector3, -- grid position of the farmland block
 	Model: Model,
 	Part: BasePart, -- the farmland block
 	Base: CFrame, -- top of the farmland block
-	Prompt: ProximityPrompt,
 	Label: BillboardGui,
 	LabelText: TextLabel,
 	LabelBar: Frame,
@@ -83,7 +85,16 @@ local function setVisual(plot: Plot, stage: string?, scale: number)
 		end
 		plot.Stage = stage
 		if stage then
-			plot.Visual = Props.Place(stage, plot.Base.Position, nil, plot.Model)
+			local visual = Props.Place(stage, plot.Base.Position, nil, plot.Model)
+			-- Clicks go through the crop to the farmland underneath
+			if visual then
+				for _, part in visual:GetDescendants() do
+					if part:IsA("BasePart") then
+						part.CanQuery = false
+					end
+				end
+			end
+			plot.Visual = visual
 		end
 	end
 	local visual = plot.Visual
@@ -102,10 +113,8 @@ local function refreshPlot(player: Player, plot: Plot)
 
 	local crop, progress = plotState(data, plot.Key)
 	if not crop then
-		local seed = bestSeed(player)
 		setVisual(plot, nil, 1)
-		plot.Prompt.Enabled = true
-		plot.Prompt.ActionText = if seed then `Plant {seed.Id}` else "Need seeds"
+		plot.Part:SetAttribute("FarmState", "Empty")
 		plot.Label.Enabled = false
 		return
 	end
@@ -113,8 +122,7 @@ local function refreshPlot(player: Player, plot: Plot)
 	plot.Label.Enabled = true
 	if progress >= 1 then
 		setVisual(plot, `Crop_{crop.Id}`, 1)
-		plot.Prompt.Enabled = true
-		plot.Prompt.ActionText = `Harvest {crop.Id}`
+		plot.Part:SetAttribute("FarmState", "Ready")
 		plot.LabelText.Text = `{Items[crop.Product].Icon} Ready!`
 		plot.LabelBar.Size = UDim2.fromScale(1, 1)
 		plot.LabelBar.BackgroundColor3 = Color3.fromRGB(255, 201, 60)
@@ -124,14 +132,26 @@ local function refreshPlot(player: Player, plot: Plot)
 		else
 			setVisual(plot, "Crop_Young", 0.7 + 0.3 * (progress - SPROUT_UNTIL) / (1 - SPROUT_UNTIL))
 		end
-		plot.Prompt.Enabled = false
+		plot.Part:SetAttribute("FarmState", "Growing")
 		plot.LabelText.Text = `{Items[crop.Product].Icon} {formatTime(math.ceil((1 - progress) * crop.GrowTime))}`
 		plot.LabelBar.Size = UDim2.fromScale(progress, 1)
 		plot.LabelBar.BackgroundColor3 = Color3.fromRGB(91, 209, 107)
 	end
 end
 
-local function onPlotTriggered(player: Player, plot: Plot)
+-- The crop whose seeds the player is holding, if they can plant it
+local function heldSeed(player: Player): Crops.Crop?
+	local held = HotbarService.GetHeldItem(player)
+	local level = ProgressionService.GetSkillLevel(player, "Farming")
+	for _, crop in Crops.List do
+		if crop.Seed == held and level >= crop.FarmingLevel then
+			return crop
+		end
+	end
+	return nil
+end
+
+local function onPlotClicked(player: Player, plot: Plot)
 	local data = DataService.GetData(player)
 	if not data then
 		return
@@ -139,7 +159,8 @@ local function onPlotTriggered(player: Player, plot: Plot)
 
 	local crop, progress = plotState(data, plot.Key)
 	if not crop then
-		local seed = bestSeed(player)
+		-- Plant the seeds in your hand, otherwise your best seeds
+		local seed = heldSeed(player) or bestSeed(player)
 		if not seed then
 			StateService.Notify(player, "You need seeds. Buy some at the Market!", "bad")
 		elseif InventoryService.Remove(player, seed.Seed, 1) then
@@ -228,32 +249,58 @@ local function onIslandCreated(player: Player, island: IslandService.Island)
 		local label, labelText, labelBar = makeLabel(farmland)
 		local plot: Plot = {
 			Key = tostring(i),
+			Cell = Vector3.new(cell.X, cell.Y, cell.Z),
 			Model = island.Model,
 			Part = farmland,
 			-- Top of the farmland block
 			Base = CFrame.new(farmland.Position + Vector3.new(0, Blocks.Size / 2, 0)),
-			Prompt = Prompts.Create(farmland, { Action = "Plant", Object = "Farmland", Hold = 0.3 }),
 			Label = label,
 			LabelText = labelText,
 			LabelBar = labelBar,
 			Stage = nil,
 			Visual = nil,
 		}
-		Prompts.OnTriggeredBy(plot.Prompt, player, function()
-			onPlotTriggered(player, plot)
-		end)
+
 		refreshPlot(player, plot)
 		table.insert(plots, plot)
 	end
 	farms[player] = plots
 end
+
+-- Clicking farmland (no key press): plant if empty, harvest if ripe
+local lastClick: { [Player]: number } = {}
+local function onFarmClick(player: Player, x: unknown, y: unknown, z: unknown)
+	if type(x) ~= "number" or type(y) ~= "number" or type(z) ~= "number" then
+		return
+	end
+	local now = os.clock()
+	if now - (lastClick[player] or 0) < 0.15 then
+		return
+	end
+	lastClick[player] = now
+	local cell = Vector3.new(x, y, z)
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	local plots: { Plot } = farms[player] or {}
+	for _, plot in plots do
+		if plot.Cell == cell then
+			if root and root:IsA("BasePart") and (root.Position - plot.Part.Position).Magnitude <= Blocks.Reach + 3 then
+				onPlotClicked(player, plot)
+			end
+			return
+		end
+	end
+end
+
 function FarmService.Start()
 	IslandService.OnIslandCreated(onIslandCreated)
+	Remotes.FarmClick.OnServerEvent:Connect(onFarmClick)
 	Players.PlayerRemoving:Connect(function(player)
 		farms[player] = nil
+		lastClick[player] = nil
 	end)
 
-	-- Update growth timers, crop models and prompts once a second
+	-- Update growth timers and crop models once a second
 	task.spawn(function()
 		while true do
 			task.wait(1)

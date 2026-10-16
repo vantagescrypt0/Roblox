@@ -1,13 +1,12 @@
 --!strict
--- The crafting table block on your island. Opening it shows the crafting window;
--- crafting is checked and done entirely on the server.
+-- The crafting table block on your island. Right-clicking it (tapping on mobile) opens
+-- the crafting window on the client; crafting is checked and done entirely on the server.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Items = require(ReplicatedStorage.Shared.Items)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local Prompts = require(script.Parent.Parent.Util.Prompts)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -15,8 +14,8 @@ local IslandService = require(script.Parent.IslandService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
--- How close you must be to your workbench to craft
-local MAX_CRAFT_DISTANCE = 16
+-- How close you must be to your crafting table to craft (a bit more than block reach)
+local MAX_CRAFT_DISTANCE = 24
 
 local CraftingService = {}
 
@@ -49,6 +48,7 @@ local function craft(player: Player, recipeId: unknown)
 	InventoryService.Add(player, recipe.Output, recipe.Amount)
 	StateService.Notify(player, `Crafted {Items[recipe.Output].Name}!`, "good")
 	QuestService.Record(player, "Craft")
+	QuestService.Record(player, `Craft:{recipe.Id}`)
 end
 
 local function onIslandCreated(player: Player, island: IslandService.Island)
@@ -58,10 +58,6 @@ local function onIslandCreated(player: Player, island: IslandService.Island)
 		return
 	end
 	workbenches[player] = bench
-	local prompt = Prompts.Create(bench, { Action = "Craft", Object = "Crafting Table", Distance = 12 })
-	Prompts.OnTriggeredBy(prompt, player, function()
-		Remotes.OpenCrafting:FireClient(player)
-	end)
 	bench.Destroying:Connect(function()
 		if workbenches[player] == bench then
 			workbenches[player] = nil

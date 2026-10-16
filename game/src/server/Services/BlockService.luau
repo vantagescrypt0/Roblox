@@ -1,18 +1,22 @@
 --!strict
--- Breaking and placing blocks on your own island. The client times "hold to break";
--- the server checks the island is yours, the block is in reach, not protected, and that
--- you aren't breaking faster than the block allows.
+-- Breaking and placing blocks on your own island. The client times "hold to break"
+-- (Mining.luau: block toughness vs the tool you're holding); the server checks the island
+-- is yours, the block is in reach, not protected, that you aren't breaking faster than
+-- your tool allows, whether it drops (stone needs a pickaxe), and wears the tool down.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Items = require(ReplicatedStorage.Shared.Items)
+local Mining = require(ReplicatedStorage.Shared.Mining)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local QuestService = require(script.Parent.QuestService)
+local StateService = require(script.Parent.StateService)
 
 local PLACE_COOLDOWN = 0.12
 -- Building area around the island (in blocks)
@@ -59,21 +63,29 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	if not inReach(player, world, cx, cy, cz) then
 		return
 	end
+	-- How long this block takes with what they're holding (toughness vs tool power)
+	local held = HotbarService.GetHeldItem(player)
+	local breakTime, canHarvest = Mining.BreakTime(blockType, held)
 	local now = os.clock()
-	if now - (lastBreak[player] or 0) < def.BreakTime * 0.6 then
+	if now - (lastBreak[player] or 0) < breakTime * 0.6 then
 		return
 	end
 	lastBreak[player] = now
 
 	BlockWorld.set(world, cx, cy, cz, nil)
 	IslandService.RecordChange(player, cx, cy, cz, nil)
-	if def.Drop then
+	if def.Drop and canHarvest then
 		InventoryService.Add(player, def.Drop, 1)
+	elseif not canHarvest then
+		StateService.Notify(player, `You need a {def.Tool or "tool"} to collect {def.Name}`, "bad")
 	end
-	if blockType == "Wood" then
+	if held and Mining.UsesTool(blockType, held) and InventoryService.UseTool(player, held, 1) then
+		StateService.Notify(player, `Your {Items[held].Name} broke!`, "bad")
+	end
+	if canHarvest and blockType == "Wood" then
 		ProgressionService.AddPlayerXP(player, 2)
 		QuestService.Record(player, "Chop")
-	elseif blockType == "Stone" or blockType == "Cobblestone" then
+	elseif canHarvest and (blockType == "Stone" or blockType == "Cobblestone") then
 		ProgressionService.AddPlayerXP(player, 2)
 		QuestService.Record(player, "Mine")
 	end

@@ -1,5 +1,6 @@
 --!strict
--- The Market in Town opens the Market window: sell crops and resources, buy seeds.
+-- Trading with the Merchant in Town opens the Market window: sell crops and resources,
+-- buy seeds. (Right-click / tap the Merchant, or use its Trade prompt.)
 -- Also handles buying island expansions (from the Island window).
 -- Every purchase and sale is checked here on the server.
 
@@ -132,8 +133,9 @@ local function onExpand(player: Player)
 end
 
 function MarketService.Start()
-	local counter = TownService.GetMarketCounter()
-	local prompt = Prompts.Create(counter, { Action = "Open Market", Object = "Market", Distance = 12 })
+	local merchant = TownService.GetMerchant()
+	local prompt =
+		Prompts.Create(merchant.PrimaryPart :: BasePart, { Action = "Trade", Object = "Merchant", Distance = 12 })
 	prompt.Triggered:Connect(function(player)
 		Remotes.OpenMarket:FireClient(player)
 	end)

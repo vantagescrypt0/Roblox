@@ -12,19 +12,22 @@
 
 ## Built in the prototype (2026-10-15)
 Only uses features that exist so far. Edit it in `game/src/shared/Quests.luau`. A tracker on the right of the screen shows the current quest, and the object it's about gets a yellow outline on your island.
-Updated for the Minecraft-style blocks and Town (2026-10-15):
+Updated for tools and click farming (2026-10-15). The first quests walk you down Minecraft's tool path: wood → planks → sticks → a pickaxe → stone.
 | # | Quest | Reward |
 |---|---|---|
 | 1 | Hold click on a tree to chop 3 Wood | 10 XP |
-| 2 | Right-click to place 3 blocks | 8 Grass blocks, 10 XP |
-| 3 | Plant 3 seeds on the farmland | 3 Wheat Seeds, 15 XP |
-| 4 | Harvest 3 crops | 20 XP |
-| 5 | Step through the portal to visit Town | 15 XP |
-| 6 | Sell crops at the Market in Town | 10 coins, 15 XP |
-| 7 | Buy seeds at the Market | 15 XP |
-| 8 | Craft Planks at your Crafting Table | 3 Wood, 25 XP |
-| 9 | Reach Farming level 3 | 25 coins, 40 XP |
-| 10 | Reach level 10 | 50 coins, 8 Stone |
+| 2 | Click the Crafting Table and craft Planks | 2 Wood, 10 XP |
+| 3 | Craft Sticks | 10 XP |
+| 4 | Craft a Wooden Pickaxe | 20 XP |
+| 5 | Hold your pickaxe and mine 3 Stone | 8 Grass blocks, 20 XP |
+| 6 | Right-click to place 3 blocks | 10 XP |
+| 7 | Click the farmland to plant 3 seeds | 3 Wheat Seeds, 15 XP |
+| 8 | Click ripe crops to harvest 3 | 20 XP |
+| 9 | Step through the portal to visit Town | 15 XP |
+| 10 | Sell crops to the Merchant in Town | 10 coins, 15 XP |
+| 11 | Buy seeds from the Merchant | 15 XP |
+| 12 | Reach Farming level 3 | 25 coins, 40 XP |
+| 13 | Reach level 10 | 50 coins, 8 Stone |
 
 Generators, island expansion, smelting and conveyors from the draft below aren't built yet; they'll slot in as quests when they are.
 

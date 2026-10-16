@@ -1,14 +1,25 @@
 --!strict
--- Swords. You hold the sword in your selected hotbar slot. Hits are worked out on the
--- server: mobs anywhere, other players only when both of you are in the Warzone.
+-- Whatever is in your selected hotbar slot shows in your hand: pixel-art tool and crop
+-- models (ReplicatedStorage.ItemModels) or a small block. Swinging a tool hits what's in
+-- front of you using that tool's Damage, Range and Cooldown (Tools.luau) and wears it
+-- down. Hits are worked out on the server: mobs anywhere, other players only when both
+-- of you are in the Warzone.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Items = require(ReplicatedStorage.Shared.Items)
-local Weapons = require(ReplicatedStorage.Shared.Weapons)
+local Tools = require(ReplicatedStorage.Shared.Tools)
+local InventoryService = require(script.Parent.InventoryService)
 local MobService = require(script.Parent.MobService)
+local StateService = require(script.Parent.StateService)
 local WarzoneService = require(script.Parent.WarzoneService)
+
+-- Where the hand holds a pixel-art item model (model space: handle at bottom-right,
+-- head at top-left, flat in the XY plane), and the direction from handle to head.
+local HOLD_POINT = Vector3.new(1.0, -1.0, 0)
+local HANDLE_TO_HEAD = Vector3.new(-1, 1, 0).Unit
+local BLOCK_IN_HAND = 1.1 -- studs
 
 local CombatService = {}
 
@@ -32,9 +43,9 @@ local function targetsInFront(character: Model, root: BasePart, range: number): 
 	return found
 end
 
-local function swing(player: Player, weapon: Weapons.Weapon)
+local function swing(player: Player, tool: Tools.Tool)
 	local now = os.clock()
-	if now - (lastSwing[player] or 0) < weapon.Cooldown then
+	if now - (lastSwing[player] or 0) < tool.Cooldown then
 		return
 	end
 	lastSwing[player] = now
@@ -46,47 +57,81 @@ local function swing(player: Player, weapon: Weapons.Weapon)
 		return
 	end
 
-	for _, model in targetsInFront(character, root, weapon.Range) do
+	local landed = false
+	for _, model in targetsInFront(character, root, tool.Range) do
 		if model:GetAttribute("Mob") then
-			MobService.Damage(model, player, weapon.Damage)
+			MobService.Damage(model, player, tool.Damage)
+			landed = true
 		else
 			local victim = Players:GetPlayerFromCharacter(model)
 			local victimHumanoid = model:FindFirstChildOfClass("Humanoid")
 			if victim and victimHumanoid and WarzoneService.IsInRaid(player) and WarzoneService.IsInRaid(victim) then
 				victimHumanoid:SetAttribute("LastAttacker", player.UserId)
-				victimHumanoid:TakeDamage(weapon.Damage)
+				victimHumanoid:TakeDamage(tool.Damage)
+				landed = true
 			end
 		end
 	end
+	-- Hitting something wears the tool: swords 1 use, other tools 2 (like Minecraft)
+	if landed and InventoryService.UseTool(player, tool.Item, if tool.Kind == "Sword" then 1 else 2) then
+		StateService.Notify(player, `Your {Items[tool.Item].Name} broke!`, "bad")
+	end
 end
 
-local function makeTool(player: Player, weapon: Weapons.Weapon): Tool
-	local tool = Instance.new("Tool")
-	tool.Name = Items[weapon.Item].Name
-	tool.CanBeDropped = false
-	tool:SetAttribute("Weapon", weapon.Item)
-	-- Same grip as Roblox's classic sword
-	tool.GripPos = Vector3.new(0, 0, -1.5)
-	tool.GripForward = Vector3.new(-1, 0, 0)
-	tool.GripRight = Vector3.new(0, 1, 0)
-	tool.GripUp = Vector3.new(0, 0, 1)
+-- Builds the Handle for an item: its pixel-art model, a small block, or a plain stick
+local function makeHandle(itemId: string): (BasePart, CFrame)
+	local item = Items[itemId]
+	local models = ReplicatedStorage:FindFirstChild("ItemModels")
+	local model = item and item.Model and models and models:FindFirstChild(item.Model)
+	if model and model:IsA("BasePart") then
+		local handle = model:Clone()
+		-- Express the hold point and direction in the mesh's own space
+		local rotation = model.CFrame.Rotation
+		local up = rotation:VectorToObjectSpace(HANDLE_TO_HEAD)
+		local back = rotation:VectorToObjectSpace(Vector3.zAxis)
+		local right = up:Cross(back).Unit
+		return handle, CFrame.fromMatrix(rotation:PointToObjectSpace(HOLD_POINT), right, up, back)
+	end
 
-	local handle = Instance.new("Part")
+	local blocks = ReplicatedStorage:FindFirstChild("Blocks")
+	local block = item and item.Block and blocks and blocks:FindFirstChild(item.Block)
+	if block and block:IsA("BasePart") then
+		local handle = block:Clone()
+		handle.Size = Vector3.one * BLOCK_IN_HAND
+		return handle, CFrame.new(0, 0, 0.2)
+	end
+
+	local stick = Instance.new("Part")
+	stick.Size = Vector3.new(0.3, 0.3, 2)
+	stick.Color = Color3.fromRGB(104, 78, 46)
+	return stick, CFrame.new(0, 0, -0.6)
+end
+
+local function makeTool(player: Player, itemId: string): Tool
+	local tool = Instance.new("Tool")
+	tool.Name = Items[itemId].Name
+	tool.CanBeDropped = false
+	tool:SetAttribute("Held", itemId)
+
+	local handle, grip = makeHandle(itemId)
 	handle.Name = "Handle"
-	handle.Size = Vector3.new(0.5, 0.3, 4)
-	handle.Color = weapon.Color
-	handle.Material = weapon.Material
+	handle.Anchored = false
 	handle.CanCollide = false
+	handle.CanQuery = false
 	handle.Massless = true
 	handle.Parent = tool
+	tool.Grip = grip
 
+	local stats = Tools.ByItem[itemId]
 	tool.Activated:Connect(function()
 		-- The default animation script plays a slash when it sees this value
 		local anim = Instance.new("StringValue")
 		anim.Name = "toolanim"
 		anim.Value = "Slash"
 		anim.Parent = tool
-		swing(player, weapon)
+		if stats then
+			swing(player, stats)
+		end
 	end)
 	return tool
 end
@@ -96,7 +141,7 @@ local function currentTool(player: Player): Tool?
 	for _, container in containers do
 		if container then
 			for _, child in container:GetChildren() do
-				if child:IsA("Tool") and child:GetAttribute("Weapon") then
+				if child:IsA("Tool") and child:GetAttribute("Held") then
 					return child
 				end
 			end
@@ -105,22 +150,21 @@ local function currentTool(player: Player): Tool?
 	return nil
 end
 
--- Holds the given sword (from the selected hotbar slot), or nothing
+-- Shows the given item in the player's hand (from the selected hotbar slot), or nothing
 function CombatService.Equip(player: Player, itemId: string?)
 	local character = player.Character
 	if not character then
 		return
 	end
 	local tool = currentTool(player)
-	if tool and itemId and tool:GetAttribute("Weapon") == itemId and tool.Parent == character then
+	if tool and itemId and tool:GetAttribute("Held") == itemId and tool.Parent == character then
 		return
 	end
 	if tool then
 		tool:Destroy()
 	end
-	local weapon = itemId and Weapons.ByItem[itemId]
-	if weapon then
-		makeTool(player, weapon).Parent = character
+	if itemId and Items[itemId] then
+		makeTool(player, itemId).Parent = character
 	end
 end
 

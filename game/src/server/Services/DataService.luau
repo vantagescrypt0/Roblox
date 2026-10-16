@@ -22,6 +22,8 @@ local TEMPLATE = {
 	Items = {} :: { [string]: number },
 	-- The 5 hotbar slots: item ids ("" = empty)
 	Hotbar = { "", "", "", "", "" },
+	-- Tool wear: item id -> uses on the tool you're currently using up
+	Wear = {} :: { [string]: number },
 	Skills = {
 		Farming = { Level = 1, XP = 0 },
 		Combat = { Level = 1, XP = 0 },

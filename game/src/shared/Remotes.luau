@@ -20,6 +20,7 @@ local NAMES = {
 	"SetHotbar", -- client -> server: put an item (or "") in hotbar slot 1-5
 	"SelectSlot", -- client -> server: hotbar slot 1-5 is now selected
 	"Travel", -- server -> client: you're being moved to "Town" or "Island" (for the fade)
+	"FarmClick", -- client -> server: clicked the farmland at grid x, y, z (plant or harvest)
 }
 
 local folder: Instance
@@ -52,4 +53,5 @@ return {
 	SetHotbar = folder:WaitForChild("SetHotbar") :: RemoteEvent,
 	SelectSlot = folder:WaitForChild("SelectSlot") :: RemoteEvent,
 	Travel = folder:WaitForChild("Travel") :: RemoteEvent,
+	FarmClick = folder:WaitForChild("FarmClick") :: RemoteEvent,
 }

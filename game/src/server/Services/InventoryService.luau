@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Items = require(ReplicatedStorage.Shared.Items)
+local Tools = require(ReplicatedStorage.Shared.Tools)
 local DataService = require(script.Parent.DataService)
 
 local HOTBAR_SIZE = 5
@@ -86,6 +87,25 @@ function InventoryService.RemoveMany(player: Player, cost: { [string]: number })
 	end
 	DataService.MarkChanged(player)
 	return true
+end
+
+-- Wears a tool down. When it runs out of durability one is used up (like Minecraft).
+-- Returns true if it broke.
+function InventoryService.UseTool(player: Player, itemId: string, uses: number): boolean
+	local data = DataService.GetData(player)
+	local tool = Tools.ByItem[itemId]
+	if not data or not tool or (data.Items[itemId] or 0) <= 0 then
+		return false
+	end
+	local wear = (data.Wear[itemId] or 0) + uses
+	if wear >= tool.Durability then
+		data.Wear[itemId] = nil
+		InventoryService.Remove(player, itemId, 1)
+		return true
+	end
+	data.Wear[itemId] = wear
+	DataService.MarkChanged(player)
+	return false
 end
 
 function InventoryService.AddCoins(player: Player, amount: number)

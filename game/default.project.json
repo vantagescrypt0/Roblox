@@ -9,6 +9,9 @@
       },
       "Blocks": {
         "$path": "assets-replicated/Blocks.rbxm"
+      },
+      "ItemModels": {
+        "$path": "assets-replicated/ItemModels.rbxm"
       }
     },
 

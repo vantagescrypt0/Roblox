@@ -1,29 +1,53 @@
 --!strict
 -- Block types (Minecraft-style). Each one has a cube mesh in ReplicatedStorage.Blocks
 -- with the same name (made in art/scripts/blocks.py). Blocks are 3 studs.
+--
+-- Toughness system:
+--   Hardness     how tough it is (Minecraft values). Break time = Hardness x 1.5 / tool speed.
+--   Tool         the tool kind that breaks it fast (Pickaxe, Axe, Shovel) - see Tools.luau
+--   RequiresTool if true you need that tool (and MinTier) or it breaks very slowly and drops nothing
 
 export type Block = {
 	Name: string,
 	Drop: string?, -- item you get when you break it (nil = nothing)
-	BreakTime: number, -- seconds of holding to break it by hand
+	Hardness: number,
+	Tool: string?,
+	RequiresTool: boolean?,
+	MinTier: number?,
 	Breakable: boolean,
 	SeeThrough: boolean?, -- blocks behind it still get drawn (leaves)
 }
 
 local Blocks: { [string]: Block } = {
-	Grass = { Name = "Grass Block", Drop = "Grass", BreakTime = 0.45, Breakable = true },
-	Dirt = { Name = "Dirt", Drop = "Dirt", BreakTime = 0.45, Breakable = true },
-	Stone = { Name = "Stone", Drop = "Stone", BreakTime = 1.4, Breakable = true },
-	Cobblestone = { Name = "Cobblestone", Drop = "Stone", BreakTime = 1.4, Breakable = true },
-	Wood = { Name = "Wood", Drop = "Wood", BreakTime = 0.9, Breakable = true },
-	Planks = { Name = "Planks", Drop = "Planks", BreakTime = 0.7, Breakable = true },
-	Leaves = { Name = "Leaves", Drop = nil, BreakTime = 0.15, Breakable = true, SeeThrough = true },
-	RedWool = { Name = "Red Wool", Drop = nil, BreakTime = 0.3, Breakable = true },
-	WhiteWool = { Name = "White Wool", Drop = nil, BreakTime = 0.3, Breakable = true },
+	Grass = { Name = "Grass Block", Drop = "Grass", Hardness = 0.6, Tool = "Shovel", Breakable = true },
+	Dirt = { Name = "Dirt", Drop = "Dirt", Hardness = 0.5, Tool = "Shovel", Breakable = true },
+	Stone = {
+		Name = "Stone",
+		Drop = "Stone",
+		Hardness = 1.5,
+		Tool = "Pickaxe",
+		RequiresTool = true,
+		MinTier = 1,
+		Breakable = true,
+	},
+	Cobblestone = {
+		Name = "Cobblestone",
+		Drop = "Stone",
+		Hardness = 2,
+		Tool = "Pickaxe",
+		RequiresTool = true,
+		MinTier = 1,
+		Breakable = true,
+	},
+	Wood = { Name = "Wood", Drop = "Wood", Hardness = 2, Tool = "Axe", Breakable = true },
+	Planks = { Name = "Planks", Drop = "Planks", Hardness = 2, Tool = "Axe", Breakable = true },
+	Leaves = { Name = "Leaves", Drop = nil, Hardness = 0.2, Breakable = true, SeeThrough = true },
+	RedWool = { Name = "Red Wool", Drop = nil, Hardness = 0.8, Breakable = true },
+	WhiteWool = { Name = "White Wool", Drop = nil, Hardness = 0.8, Breakable = true },
 	-- Special blocks the game places; players can't break them
-	CraftingTable = { Name = "Crafting Table", Drop = nil, BreakTime = 1, Breakable = false },
-	Farmland = { Name = "Farmland", Drop = nil, BreakTime = 1, Breakable = false },
-	Obsidian = { Name = "Obsidian", Drop = nil, BreakTime = 1, Breakable = false },
+	CraftingTable = { Name = "Crafting Table", Drop = nil, Hardness = 2.5, Breakable = false },
+	Farmland = { Name = "Farmland", Drop = nil, Hardness = 0.6, Breakable = false },
+	Obsidian = { Name = "Obsidian", Drop = nil, Hardness = 50, Breakable = false },
 }
 
 local Size = 3

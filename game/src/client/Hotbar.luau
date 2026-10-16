@@ -1,6 +1,7 @@
 --!strict
 -- Minecraft-style hotbar: 5 slots along the bottom of the screen. Keys 1-5 or tapping a
--- slot selects it; the selected item's name pops up above the bar.
+-- slot selects it; the selected item's name pops up above the bar. Worn tools show a
+-- durability bar (green when fresh, red when nearly broken).
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -8,6 +9,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Tools = require(ReplicatedStorage.Shared.Tools)
 local ItemIcon = require(script.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.UI.Theme)
 
@@ -19,7 +21,15 @@ local KEYS = { Enum.KeyCode.One, Enum.KeyCode.Two, Enum.KeyCode.Three, Enum.KeyC
 
 local Hotbar = {}
 
-type Slot = { Frame: Frame, Icon: Frame, Count: TextLabel, CountShadow: TextLabel, ItemId: string }
+type Slot = {
+	Frame: Frame,
+	Icon: Frame,
+	Count: TextLabel,
+	CountShadow: TextLabel,
+	Durability: Frame,
+	DurabilityFill: Frame,
+	ItemId: string,
+}
 
 local slots: { Slot } = {}
 local selector: Frame
@@ -119,6 +129,16 @@ local function render()
 		local countText = if count > 1 then tostring(count) else ""
 		slot.Count.Text = countText
 		slot.CountShadow.Text = countText
+
+		-- Durability bar, only once a tool has been used
+		local tool = Tools.ByItem[itemId]
+		local wear = if tool then (state.Wear and state.Wear[itemId]) or 0 else 0
+		slot.Durability.Visible = tool ~= nil and wear > 0
+		if tool and wear > 0 then
+			local left = math.clamp(1 - wear / tool.Durability, 0, 1)
+			slot.DurabilityFill.Size = UDim2.fromScale(left, 1)
+			slot.DurabilityFill.BackgroundColor3 = Color3.fromHSV(left / 3, 1, 1)
+		end
 	end
 	for _, listener in listeners do
 		task.spawn(listener)
@@ -181,10 +201,35 @@ function Hotbar.Start()
 		shadow.Position = UDim2.new(1, -2, 1, 0)
 		shadow.Size = UDim2.fromOffset(40, 20)
 		shadow.TextXAlignment = Enum.TextXAlignment.Right
+		local durability = Theme.make("Frame", {
+			AnchorPoint = Vector2.new(0.5, 1),
+			Position = UDim2.new(0.5, 0, 1, -5),
+			Size = UDim2.new(1, -16, 0, 5),
+			BackgroundColor3 = Color3.new(0, 0, 0),
+			BorderSizePixel = 0,
+			Visible = false,
+			ZIndex = 4,
+			Parent = frame,
+		})
+		local durabilityFill = Theme.make("Frame", {
+			Size = UDim2.new(1, 0, 0, 3),
+			BackgroundColor3 = Color3.fromRGB(0, 255, 0),
+			BorderSizePixel = 0,
+			ZIndex = 4,
+			Parent = durability,
+		})
 		frame.Activated:Connect(function()
 			Hotbar.Select(index)
 		end)
-		slots[index] = { Frame = frame, Icon = icon, Count = count, CountShadow = shadow, ItemId = "" }
+		slots[index] = {
+			Frame = frame,
+			Icon = icon,
+			Count = count,
+			CountShadow = shadow,
+			Durability = durability,
+			DurabilityFill = durabilityFill,
+			ItemId = "",
+		}
 	end
 
 	-- Selected-slot frame: white with a dark outline

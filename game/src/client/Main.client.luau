@@ -9,6 +9,7 @@ local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local BlockController = require(script.Parent.BlockController)
 local Hotbar = require(script.Parent.Hotbar)
 local Hud = require(script.Parent.Hud)
+local MerchantController = require(script.Parent.MerchantController)
 local PromptUI = require(script.Parent.PromptUI)
 local QuestTracker = require(script.Parent.QuestTracker)
 local BagWindow = require(script.Parent.Windows.BagWindow)
@@ -32,7 +33,11 @@ Hud.Start({
 	OnIsland = IslandWindow.Toggle,
 })
 Hotbar.Start()
-BlockController.Start()
+BlockController.Start({
+	OpenCrafting = CraftingWindow.Open,
+	OpenMarket = MarketWindow.Open,
+})
+MerchantController.Start()
 
 Remotes.State.OnClientEvent:Connect(function(state)
 	Hud.Render(state)

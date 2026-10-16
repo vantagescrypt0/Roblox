@@ -1,13 +1,12 @@
 --!strict
--- The 5-slot hotbar: which item is in each slot, which slot is selected, and holding
--- the selected sword.
+-- The 5-slot hotbar: which item is in each slot, which slot is selected, and showing the
+-- selected item in your hand (tools, blocks and crops all show, like Minecraft).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local Weapons = require(ReplicatedStorage.Shared.Weapons)
 local CombatService = require(script.Parent.CombatService)
 local DataService = require(script.Parent.DataService)
 
@@ -21,15 +20,18 @@ local function isSlot(slot: unknown): boolean
 	return type(slot) == "number" and slot == math.floor(slot) and slot >= 1 and slot <= HOTBAR_SIZE
 end
 
--- Holds the sword in the selected slot (or nothing)
-local function refreshHeld(player: Player)
+-- The item in the player's selected hotbar slot, if they still have one
+function HotbarService.GetHeldItem(player: Player): string?
 	local data = DataService.GetData(player)
-	if not data then
-		return
+	local itemId = data and data.Hotbar[selected[player] or 1]
+	if data and itemId and itemId ~= "" and (data.Items[itemId] or 0) > 0 then
+		return itemId
 	end
-	local itemId = data.Hotbar[selected[player] or 1]
-	local isWeapon = itemId ~= nil and Weapons.ByItem[itemId] ~= nil and (data.Items[itemId] or 0) > 0
-	CombatService.Equip(player, if isWeapon then itemId else nil)
+	return nil
+end
+
+local function refreshHeld(player: Player)
+	CombatService.Equip(player, HotbarService.GetHeldItem(player))
 end
 
 local function onSetHotbar(player: Player, slot: unknown, itemId: unknown)
@@ -64,7 +66,7 @@ end
 function HotbarService.Start()
 	Remotes.SetHotbar.OnServerEvent:Connect(onSetHotbar)
 	Remotes.SelectSlot.OnServerEvent:Connect(onSelectSlot)
-	-- Re-hold the sword after respawning, and drop it if it was used up
+	-- Re-hold the item after respawning, and drop it if it was used up
 	DataService.OnChanged(function(player)
 		refreshHeld(player)
 	end)
