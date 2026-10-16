@@ -1,6 +1,6 @@
 --!strict
--- The market stall on your island opens the Market window: sell crops and resources,
--- buy seeds. Also handles buying island expansions (from the Island window).
+-- The Market in Town opens the Market window: sell crops and resources, buy seeds.
+-- Also handles buying island expansions (from the Island window).
 -- Every purchase and sale is checked here on the server.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -10,13 +10,13 @@ local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
-local Props = require(script.Parent.Parent.Util.Props)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
+local TownService = require(script.Parent.TownService)
 
 -- How close you must be to your market to trade
 local MAX_TRADE_DISTANCE = 20
@@ -24,21 +24,20 @@ local MAX_BUY = 50
 
 local MarketService = {}
 
-local stalls: { [Player]: BasePart } = {}
 local cropProducts: { [string]: boolean } = {}
 for _, crop in Crops.List do
 	cropProducts[crop.Product] = true
 end
 
 local function nearStall(player: Player): boolean
-	local stall = stalls[player]
+	local stall = TownService.GetMarketCounter()
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
 	if not stall or not root or not root:IsA("BasePart") then
 		return false
 	end
 	if (root.Position - stall.Position).Magnitude > MAX_TRADE_DISTANCE then
-		StateService.Notify(player, "Walk back to your Market to trade", "bad")
+		StateService.Notify(player, "Walk up to the Market in Town to trade", "bad")
 		return false
 	end
 	return true
@@ -132,74 +131,12 @@ local function onExpand(player: Player)
 	StateService.Notify(player, `Your island grew into a {nextTier.Name}!`, "level")
 end
 
-local function addSign(face: BasePart, front: Vector3)
-	local gui = Instance.new("SurfaceGui")
-	gui.Face = Props.FaceToward(face, front)
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 60
-	gui.LightInfluence = 0.3
-	gui.Parent = face
-	local text = Instance.new("TextLabel")
-	text.Size = UDim2.fromScale(1, 1)
-	text.BackgroundTransparency = 1
-	text.FontFace = Font.fromEnum(Enum.Font.FredokaOne)
-	text.TextScaled = true
-	text.TextColor3 = Color3.fromRGB(122, 78, 45)
-	text.Text = "MARKET"
-	text.Parent = gui
-	local padding = Instance.new("UIPadding")
-	padding.PaddingTop = UDim.new(0.12, 0)
-	padding.PaddingBottom = UDim.new(0.12, 0)
-	padding.Parent = text
-end
-
-local function buildStall(island: IslandService.Island): BasePart
-	local position = island.Markers.Market or (island.Center + Vector3.new(6, 0, 10))
-	local model = Props.Place("Market", position, island.Markers.Spawn, island.Model)
-	if model then
-		model.Name = "Market"
-		local face = Props.Part(model, "MarketSignFace")
-		if face then
-			addSign(face, model:GetPivot().LookVector)
-		end
-		local lantern = Props.Part(model, "MarketLanternGlow")
-		if lantern then
-			local light = Instance.new("PointLight")
-			light.Color = Color3.fromRGB(255, 200, 120)
-			light.Range = 14
-			light.Brightness = 1.4
-			light.Parent = lantern
-		end
-		return Props.Part(model, "MarketStall") :: BasePart
-	end
-	-- Fallback if the art is missing
-	local counter = Instance.new("Part")
-	counter.Name = "Market"
-	counter.Size = Vector3.new(6, 3, 2)
-	counter.CFrame = CFrame.new(position + Vector3.new(0, 1.5, 0))
-	counter.Color = Color3.fromRGB(160, 110, 60)
-	counter.Material = Enum.Material.WoodPlanks
-	counter.Anchored = true
-	counter.Parent = island.Model
-	return counter
-end
-
-local function onIslandCreated(player: Player, island: IslandService.Island)
-	local stall = buildStall(island)
-	stalls[player] = stall
-	local prompt = Prompts.Create(stall, { Action = "Open Market", Object = "Market", Distance = 12 })
-	Prompts.OnTriggeredBy(prompt, player, function()
+function MarketService.Start()
+	local counter = TownService.GetMarketCounter()
+	local prompt = Prompts.Create(counter, { Action = "Open Market", Object = "Market", Distance = 12 })
+	prompt.Triggered:Connect(function(player)
 		Remotes.OpenMarket:FireClient(player)
 	end)
-	stall.Destroying:Connect(function()
-		if stalls[player] == stall then
-			stalls[player] = nil
-		end
-	end)
-end
-
-function MarketService.Start()
-	IslandService.OnIslandCreated(onIslandCreated)
 	Remotes.Sell.OnServerEvent:Connect(onSell)
 	Remotes.BuySeed.OnServerEvent:Connect(onBuySeed)
 	Remotes.Expand.OnServerEvent:Connect(onExpand)

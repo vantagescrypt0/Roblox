@@ -8,6 +8,8 @@ Inspired by the Skybounds Warzone — see [[Skybounds (Minecraft)]].
 - **Unlock:** you need **player level 10** to enter (like Skybounds). Player level resets each season, see [[Skills & Levels]], reached through [[Tutorial & Quests]]. This also keeps brand-new players out of PvP.
 - **Level gates apply:** mobs need a Combat level and crops need a Farming level. See [[Skills & Levels]].
 
+> **2026-10-15:** The island portal now goes to **Town**. The Warzone will be reached from Town once you're ready to add it; its code is built but switched off (`WarzoneService`, `MobService` aren't started in `Main.server.luau`).
+
 ## Prototype (built + playtested 2026-10-15)
 Greybox arena, one shared map. These are **prototype defaults Claude picked**; change any of them. See [[Open Questions]].
 - **Getting in:** purple portal on your island → level 10 required → you appear at the arena edge.

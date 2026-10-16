@@ -15,9 +15,13 @@ local TEMPLATE = {
 	Season = 1,
 	Island = {
 		Tier = 1,
+		-- Blocks the player changed: "x,y,z" -> block type, or "Air" where they broke one
+		Blocks = {} :: { [string]: string },
 	},
 	-- item id -> count
 	Items = {} :: { [string]: number },
+	-- The 5 hotbar slots: item ids ("" = empty)
+	Hotbar = { "", "", "", "", "" },
 	Skills = {
 		Farming = { Level = 1, XP = 0 },
 		Combat = { Level = 1, XP = 0 },
@@ -118,6 +122,7 @@ local function onPlayerAdded(player: Player)
 	if not data.Flags.StarterKit then
 		data.Flags.StarterKit = true
 		data.Items.WheatSeeds = (data.Items.WheatSeeds or 0) + 6
+		data.Hotbar[1] = "WheatSeeds"
 	end
 	if data.Raid.Active then
 		data.Raid.Active = false

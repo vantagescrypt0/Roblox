@@ -1,6 +1,6 @@
 --!strict
--- The workbench on your island. Opening it shows the crafting menu; crafting is checked
--- and done entirely on the server.
+-- The crafting table block on your island. Opening it shows the crafting window;
+-- crafting is checked and done entirely on the server.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -8,7 +8,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
-local Props = require(script.Parent.Parent.Util.Props)
+local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
@@ -35,7 +35,7 @@ local function craft(player: Player, recipeId: unknown)
 		return
 	end
 	if (root.Position - bench.Position).Magnitude > MAX_CRAFT_DISTANCE then
-		StateService.Notify(player, "Get closer to your workbench", "bad")
+		StateService.Notify(player, "Get closer to your crafting table", "bad")
 		return
 	end
 	if data.Level < recipe.PlayerLevel then
@@ -51,29 +51,14 @@ local function craft(player: Player, recipeId: unknown)
 	QuestService.Record(player, "Craft")
 end
 
-local function buildWorkbench(island: IslandService.Island): BasePart
-	local position = island.Markers.Workbench or (island.Center + Vector3.new(9, 0, 2))
-	local model = Props.Place("Workbench", position, island.Markers.Spawn, island.Model)
-	if model then
-		model.Name = "Workbench"
-		return Props.Part(model, "Workbench") :: BasePart
-	end
-	-- Fallback if the art is missing
-	local bench = Instance.new("Part")
-	bench.Name = "Workbench"
-	bench.Size = Vector3.new(4, 2.6, 2.4)
-	bench.CFrame = CFrame.new(position + Vector3.new(0, 1.3, 0))
-	bench.Color = Color3.fromRGB(150, 100, 55)
-	bench.Material = Enum.Material.WoodPlanks
-	bench.Anchored = true
-	bench.Parent = island.Model
-	return bench
-end
-
 local function onIslandCreated(player: Player, island: IslandService.Island)
-	local bench = buildWorkbench(island)
+	local cell = island.CraftingTable
+	local bench = BlockWorld.part(island.World, cell.X, cell.Y, cell.Z)
+	if not bench then
+		return
+	end
 	workbenches[player] = bench
-	local prompt = Prompts.Create(bench, { Action = "Craft", Object = "Workbench", Distance = 12 })
+	local prompt = Prompts.Create(bench, { Action = "Craft", Object = "Crafting Table", Distance = 12 })
 	Prompts.OnTriggeredBy(prompt, player, function()
 		Remotes.OpenCrafting:FireClient(player)
 	end)

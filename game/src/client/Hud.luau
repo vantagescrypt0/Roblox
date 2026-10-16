@@ -28,6 +28,8 @@ local toastHolder: Frame
 local celebration: Frame
 local celebrationTitle: TextLabel
 local celebrationSub: TextLabel
+local fadeFrame: Frame
+local fadeTitle: TextLabel
 local lastCoins: number? = nil
 local lastLevel: number? = nil
 
@@ -96,6 +98,8 @@ local function buildProfile(gui: ScreenGui)
 
 	-- Warzone status sits just above the card
 	warzoneChip = Theme.chip(card, "🔒 Warzone at Lv 10", C.Purple)
+	-- Hidden until the Warzone opens in Town
+	warzoneChip.Visible = false
 	warzoneChip.AnchorPoint = Vector2.new(0, 1)
 	warzoneChip.Position = UDim2.fromOffset(4, -8)
 end
@@ -177,7 +181,7 @@ end
 local function buildToasts(gui: ScreenGui)
 	toastHolder = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 1, -100),
+		Position = UDim2.new(0.5, 0, 1, -140),
 		Size = UDim2.fromOffset(420, 220),
 		BackgroundTransparency = 1,
 		Parent = gui,
@@ -326,6 +330,27 @@ function Hud.Toast(text: string, kind: string)
 	end)
 end
 
+-- Purple fade in and out while a portal moves you
+function Hud.Travel(destination: string)
+	local title = if destination == "Town" then "Town" else "Your Island"
+	fadeTitle.Text = title
+	local quick = TweenInfo.new(0.3)
+	TweenService:Create(fadeFrame, quick, { BackgroundTransparency = 0 }):Play()
+	TweenService:Create(fadeTitle, quick, { TextTransparency = 0 }):Play()
+	local stroke = fadeTitle:FindFirstChildOfClass("UIStroke")
+	if stroke then
+		TweenService:Create(stroke, quick, { Transparency = 0 }):Play()
+	end
+	task.delay(0.9, function()
+		local slow = TweenInfo.new(0.6)
+		TweenService:Create(fadeFrame, slow, { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(fadeTitle, slow, { TextTransparency = 1 }):Play()
+		if stroke then
+			TweenService:Create(stroke, slow, { Transparency = 1 }):Play()
+		end
+	end)
+end
+
 function Hud.Start(callbacks: Callbacks)
 	local gui = Theme.screen("HUD", 1)
 	buildProfile(gui)
@@ -333,6 +358,25 @@ function Hud.Start(callbacks: Callbacks)
 	buildRaidBanner(gui)
 	buildToasts(gui)
 	buildCelebration(gui)
+
+	-- Full-screen fade for portal travel
+	local fadeGui = Theme.screen("Fade", 20)
+	fadeGui.IgnoreGuiInset = true
+	fadeFrame = Theme.make("Frame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = Color3.fromRGB(30, 10, 50),
+		BackgroundTransparency = 1,
+		Parent = fadeGui,
+	})
+	fadeTitle = Theme.title(fadeFrame, "", 56)
+	fadeTitle.Size = UDim2.new(1, 0, 0, 70)
+	fadeTitle.Position = UDim2.fromScale(0, 0.42)
+	fadeTitle.TextXAlignment = Enum.TextXAlignment.Center
+	fadeTitle.TextTransparency = 1
+	local fadeStroke = fadeTitle:FindFirstChildOfClass("UIStroke")
+	if fadeStroke then
+		fadeStroke.Transparency = 1
+	end
 end
 
 return Hud

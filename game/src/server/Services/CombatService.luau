@@ -1,29 +1,18 @@
 --!strict
--- Swords. You always carry the best sword you own. Hits are worked out on the server:
--- mobs anywhere, other players only when both of you are in the Warzone.
+-- Swords. You hold the sword in your selected hotbar slot. Hits are worked out on the
+-- server: mobs anywhere, other players only when both of you are in the Warzone.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Items = require(ReplicatedStorage.Shared.Items)
 local Weapons = require(ReplicatedStorage.Shared.Weapons)
-local DataService = require(script.Parent.DataService)
 local MobService = require(script.Parent.MobService)
 local WarzoneService = require(script.Parent.WarzoneService)
 
 local CombatService = {}
 
 local lastSwing: { [Player]: number } = {}
-
-local function bestWeapon(data: DataService.Data): Weapons.Weapon?
-	for i = #Weapons.List, 1, -1 do
-		local weapon = Weapons.List[i]
-		if (data.Items[weapon.Item] or 0) > 0 then
-			return weapon
-		end
-	end
-	return nil
-end
 
 local function targetsInFront(character: Model, root: BasePart, range: number): { Model }
 	local params = OverlapParams.new()
@@ -116,41 +105,26 @@ local function currentTool(player: Player): Tool?
 	return nil
 end
 
--- Makes sure the player holds exactly their best sword
-local function refreshTool(player: Player)
-	local data = DataService.GetData(player)
-	local backpack = player:FindFirstChildOfClass("Backpack")
-	if not data or not backpack or not player.Character then
+-- Holds the given sword (from the selected hotbar slot), or nothing
+function CombatService.Equip(player: Player, itemId: string?)
+	local character = player.Character
+	if not character then
 		return
 	end
-	local weapon = bestWeapon(data)
 	local tool = currentTool(player)
-	if tool and weapon and tool:GetAttribute("Weapon") == weapon.Item then
+	if tool and itemId and tool:GetAttribute("Weapon") == itemId and tool.Parent == character then
 		return
 	end
-	local wasEquipped = tool ~= nil and tool.Parent == player.Character
 	if tool then
 		tool:Destroy()
 	end
+	local weapon = itemId and Weapons.ByItem[itemId]
 	if weapon then
-		local newTool = makeTool(player, weapon)
-		newTool.Parent = if wasEquipped then player.Character else backpack
+		makeTool(player, weapon).Parent = character
 	end
 end
 
 function CombatService.Start()
-	DataService.OnChanged(refreshTool)
-
-	local function track(player: Player)
-		player.CharacterAdded:Connect(function()
-			-- Wait a frame so the new Backpack exists
-			task.defer(refreshTool, player)
-		end)
-	end
-	for _, player in Players:GetPlayers() do
-		track(player)
-	end
-	Players.PlayerAdded:Connect(track)
 	Players.PlayerRemoving:Connect(function(player)
 		lastSwing[player] = nil
 	end)

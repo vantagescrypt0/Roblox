@@ -1,5 +1,5 @@
 --!strict
--- Farm plots (planter beds) on your island. Plant seeds, wait (time keeps counting while
+-- Farm plots (farmland blocks) on your island. Plant seeds, wait (time keeps counting while
 -- you're offline), harvest for crops, seeds and Farming XP. Better crops need a higher
 -- Farming level, and a higher level gives a bigger chance of a bonus crop.
 -- Bigger islands have more plots (see IslandTiers).
@@ -7,11 +7,13 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
 local Props = require(script.Parent.Parent.Util.Props)
+local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
@@ -20,15 +22,16 @@ local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
 local SEED_RETURN_BONUS_CHANCE = 0.3
--- Height of the soil surface above the planter's base
-local SOIL_HEIGHT = 0.72
+-- Crop models were made for bigger planters; shrink them to fit one block
+local CROP_SCALE = 0.68
 -- Growth stage thresholds
 local SPROUT_UNTIL = 0.35
 
 type Plot = {
 	Key: string,
 	Model: Model,
-	Base: CFrame, -- planter base (bottom center)
+	Part: BasePart, -- the farmland block
+	Base: CFrame, -- top of the farmland block
 	Prompt: ProximityPrompt,
 	Label: BillboardGui,
 	LabelText: TextLabel,
@@ -80,13 +83,14 @@ local function setVisual(plot: Plot, stage: string?, scale: number)
 		end
 		plot.Stage = stage
 		if stage then
-			plot.Visual = Props.Place(stage, plot.Base.Position + Vector3.new(0, SOIL_HEIGHT, 0), nil, plot.Model)
+			plot.Visual = Props.Place(stage, plot.Base.Position, nil, plot.Model)
 		end
 	end
 	local visual = plot.Visual
-	if visual and math.abs(visual:GetScale() - scale) > 0.01 then
-		visual:ScaleTo(scale)
-		visual:PivotTo(plot.Base + Vector3.new(0, SOIL_HEIGHT, 0))
+	local target = scale * CROP_SCALE
+	if visual and math.abs(visual:GetScale() - target) > 0.01 then
+		visual:ScaleTo(target)
+		visual:PivotTo(plot.Base)
 	end
 end
 
@@ -164,7 +168,7 @@ end
 local function makeLabel(adornee: BasePart): (BillboardGui, TextLabel, Frame)
 	local billboard = Instance.new("BillboardGui")
 	billboard.Size = UDim2.fromOffset(110, 40)
-	billboard.StudsOffsetWorldSpace = Vector3.new(0, 3.6, 0)
+	billboard.StudsOffsetWorldSpace = Vector3.new(0, 4.2, 0)
 	billboard.AlwaysOnTop = true
 	billboard.MaxDistance = 45
 	billboard.Enabled = false
@@ -214,48 +218,21 @@ local function makeLabel(adornee: BasePart): (BillboardGui, TextLabel, Frame)
 	return billboard, text, bar
 end
 
-local function makePlanter(index: number, position: Vector3, island: IslandService.Island): (Model, BasePart)
-	local model = Props.Place("Planter", position, nil, island.Model)
-	if model then
-		model.Name = `FarmPlot{index}`
-		local bed = Props.Part(model, "PlanterBed") :: BasePart
-		return model, bed
-	end
-	-- Fallback if the art is missing
-	local fallback = Instance.new("Model")
-	fallback.Name = `FarmPlot{index}`
-	local soil = Instance.new("Part")
-	soil.Name = "PlanterBed"
-	soil.Size = Vector3.new(4.4, 0.7, 4.4)
-	soil.CFrame = CFrame.new(position + Vector3.new(0, 0.35, 0))
-	soil.Color = Color3.fromRGB(92, 60, 38)
-	soil.Material = Enum.Material.Ground
-	soil.Anchored = true
-	soil.Parent = fallback
-	fallback.PrimaryPart = soil
-	fallback.WorldPivot = CFrame.new(position)
-	fallback.Parent = island.Model
-	return fallback, soil
-end
-
 local function onIslandCreated(player: Player, island: IslandService.Island)
-	-- Rebuilding an island replaces the old plots
-	local old = farms[player]
-	if old then
-		for _, plot in old do
-			plot.Model:Destroy()
-		end
-	end
-
 	local plots: { Plot } = {}
-	for i, position in island.PlotSpots do
-		local model, bed = makePlanter(i, position, island)
-		local label, labelText, labelBar = makeLabel(bed)
+	for i, cell in island.FarmCells do
+		local farmland = BlockWorld.part(island.World, cell.X, cell.Y, cell.Z)
+		if not farmland then
+			continue
+		end
+		local label, labelText, labelBar = makeLabel(farmland)
 		local plot: Plot = {
 			Key = tostring(i),
-			Model = model,
-			Base = model:GetPivot(),
-			Prompt = Prompts.Create(bed, { Action = "Plant", Object = "Planter", Hold = 0.3 }),
+			Model = island.Model,
+			Part = farmland,
+			-- Top of the farmland block
+			Base = CFrame.new(farmland.Position + Vector3.new(0, Blocks.Size / 2, 0)),
+			Prompt = Prompts.Create(farmland, { Action = "Plant", Object = "Farmland", Hold = 0.3 }),
 			Label = label,
 			LabelText = labelText,
 			LabelBar = labelBar,
@@ -270,7 +247,6 @@ local function onIslandCreated(player: Player, island: IslandService.Island)
 	end
 	farms[player] = plots
 end
-
 function FarmService.Start()
 	IslandService.OnIslandCreated(onIslandCreated)
 	Players.PlayerRemoving:Connect(function(player)

@@ -14,6 +14,9 @@ No dates — quality over speed.
    - [x] Beginner quests ([[Tutorial & Quests]]) with tracker + highlight
    - [x] Art + UI overhaul (2026-10-15): stylized low-poly props (workbench, market stall, portal arch, planter beds, crop growth models), 4 island tiers, new HUD/windows/prompts
    - [x] Island expansion: buy bigger islands with coins (4 tiers) — playtested
+   - [x] Minecraft pivot (2026-10-15): block islands, break/place blocks, 5-slot hotbar + inventory, crafting table & farmland blocks, Town with the Market, portal travel — playtested
+   - [ ] More blocks + tools (pickaxe/axe for faster breaking), saplings
+   - [ ] Add the Warzone to Town (when you're ready)
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.

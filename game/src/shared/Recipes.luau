@@ -1,5 +1,5 @@
 --!strict
--- Workbench recipes. Island resources make basic gear; Warzone materials make the best.
+-- Crafting table recipes. Island resources make basic gear; Warzone materials make the best.
 
 export type Recipe = {
 	Id: string,
@@ -11,17 +11,24 @@ export type Recipe = {
 
 local Recipes: { Recipe } = {
 	{
+		Id = "Planks",
+		Output = "Planks",
+		Amount = 4,
+		Inputs = { Wood = 1 },
+		PlayerLevel = 1,
+	},
+	{
 		Id = "WoodenSword",
 		Output = "WoodenSword",
 		Amount = 1,
-		Inputs = { Wood = 6 },
+		Inputs = { Planks = 4, Wood = 1 },
 		PlayerLevel = 1,
 	},
 	{
 		Id = "StoneSword",
 		Output = "StoneSword",
 		Amount = 1,
-		Inputs = { Stone = 8, Wood = 3 },
+		Inputs = { Stone = 8, Wood = 2 },
 		PlayerLevel = 3,
 	},
 	{

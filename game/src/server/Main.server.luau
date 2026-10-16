@@ -1,31 +1,33 @@
 --!strict
 -- Server entry point. Starts each service once.
+-- The Warzone (WarzoneService, MobService) is built but switched off until it's added
+-- to the Town.
 
 local Services = script.Parent.Services
 
+local BlockService = require(Services.BlockService)
 local CombatService = require(Services.CombatService)
 local CraftingService = require(Services.CraftingService)
 local DataService = require(Services.DataService)
 local DevService = require(Services.DevService)
 local FarmService = require(Services.FarmService)
-local GatherService = require(Services.GatherService)
+local HotbarService = require(Services.HotbarService)
 local IslandService = require(Services.IslandService)
 local Leaderstats = require(Services.Leaderstats)
 local MarketService = require(Services.MarketService)
-local MobService = require(Services.MobService)
 local QuestService = require(Services.QuestService)
 local StateService = require(Services.StateService)
-local WarzoneService = require(Services.WarzoneService)
+local TownService = require(Services.TownService)
 
 StateService.Start()
 IslandService.Start()
-GatherService.Start()
+TownService.Start()
+BlockService.Start()
 FarmService.Start()
 MarketService.Start()
 CraftingService.Start()
-WarzoneService.Start()
-MobService.Start()
 CombatService.Start()
+HotbarService.Start()
 QuestService.Start()
 Leaderstats.Start()
 DevService.Start()

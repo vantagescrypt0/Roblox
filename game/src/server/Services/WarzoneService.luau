@@ -427,8 +427,8 @@ local function addPortalEffects(surface: BasePart)
 end
 
 local function buildPortal(player: Player, island: IslandService.Island)
-	local position = island.Markers.Portal or (island.Center + PORTAL_OFFSET)
-	local model = Props.Place("Portal", position, island.Markers.Spawn, island.Model)
+	local position = island.Center + PORTAL_OFFSET
+	local model = Props.Place("Portal", position, island.Spawn.Position, island.Model)
 	local portal: BasePart
 	if model then
 		model.Name = "WarzonePortal"

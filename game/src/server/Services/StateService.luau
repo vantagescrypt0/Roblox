@@ -40,6 +40,7 @@ local function snapshot(data: DataService.Data)
 	local tier = math.clamp(data.Island.Tier, 1, #IslandTiers)
 
 	return {
+		Hotbar = table.clone(data.Hotbar),
 		Island = { Tier = tier, MaxTier = #IslandTiers },
 		Quest = if quest
 			then {

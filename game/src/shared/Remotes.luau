@@ -8,13 +8,18 @@ local NAMES = {
 	"State", -- server -> client: full HUD snapshot
 	"Notify", -- server -> client: short pop-up message
 	"Ready", -- client -> server: HUD is ready, send the current state
-	"OpenCrafting", -- server -> client: show the workbench window
+	"OpenCrafting", -- server -> client: show the crafting window
 	"Craft", -- client -> server: craft a recipe (recipe id)
 	"OpenMarket", -- server -> client: show the market window
 	"Sell", -- client -> server: sell an item (item id, amount or "all"); "*" sells all crops
 	"BuySeed", -- client -> server: buy seeds (seed item id, amount)
 	"Expand", -- client -> server: buy the next island tier
 	"IslandRebuilt", -- server -> client: your island just grew (for effects)
+	"BreakBlock", -- client -> server: break the block at grid x, y, z on your island
+	"PlaceBlock", -- client -> server: place an item's block at grid x, y, z
+	"SetHotbar", -- client -> server: put an item (or "") in hotbar slot 1-5
+	"SelectSlot", -- client -> server: hotbar slot 1-5 is now selected
+	"Travel", -- server -> client: you're being moved to "Town" or "Island" (for the fade)
 }
 
 local folder: Instance
@@ -42,4 +47,9 @@ return {
 	BuySeed = folder:WaitForChild("BuySeed") :: RemoteEvent,
 	Expand = folder:WaitForChild("Expand") :: RemoteEvent,
 	IslandRebuilt = folder:WaitForChild("IslandRebuilt") :: RemoteEvent,
+	BreakBlock = folder:WaitForChild("BreakBlock") :: RemoteEvent,
+	PlaceBlock = folder:WaitForChild("PlaceBlock") :: RemoteEvent,
+	SetHotbar = folder:WaitForChild("SetHotbar") :: RemoteEvent,
+	SelectSlot = folder:WaitForChild("SelectSlot") :: RemoteEvent,
+	Travel = folder:WaitForChild("Travel") :: RemoteEvent,
 }
