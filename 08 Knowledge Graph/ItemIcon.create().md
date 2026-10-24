@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/ItemIcon.luau"
 type: "code"
-community: "Hotbar and Item Icons"
+community: "Mouse and Touch Controls"
 location: "L50"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Hotbar_and_Item_Icons
+  - community/Mouse_and_Touch_Controls
 ---
 
 # ItemIcon.create()
@@ -22,4 +22,4 @@ tags:
 - [[renderDetail()]] - `calls` [INFERRED]
 - [[viewport()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Hotbar_and_Item_Icons
+#graphify/code #graphify/INFERRED #community/Mouse_and_Touch_Controls

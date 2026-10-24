@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Warzone.md"
 type: "concept"
-community: "Skybounds and Loot Heads"
+community: "Audience, Policy and Death Drops"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skybounds_and_Loot_Heads
+  - community/Audience_Policy_and_Death_Drops
 ---
 
 # PvP fairness options: zones by level, new-player protection, insurance slot
@@ -15,4 +15,4 @@ tags:
 - [[Warzone zones outer ring Slimes, center Brutes]] - `conceptually_related_to` [EXTRACTED]
 - [[Younger Roblox players (Kids 5-8, Select 9-15)]] - `rationale_for` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skybounds_and_Loot_Heads
+#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Death_Drops

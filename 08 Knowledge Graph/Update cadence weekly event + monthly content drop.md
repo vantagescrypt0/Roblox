@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Anti-Burnout Ideas.md"
 type: "concept"
-community: "Islands Research and Pillars"
+community: "Pitch and Inspiration"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Islands_Research_and_Pillars
+  - community/Pitch_and_Inspiration
 ---
 
 # Update cadence: weekly event + monthly content drop
@@ -14,4 +14,4 @@ tags:
 - [[Anti-Burnout Ideas]] - `references` [EXTRACTED]
 - [[Pillar 5 Never abandoned (steady updates)]] - `rationale_for` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Islands_Research_and_Pillars
+#graphify/concept #graphify/EXTRACTED #community/Pitch_and_Inspiration

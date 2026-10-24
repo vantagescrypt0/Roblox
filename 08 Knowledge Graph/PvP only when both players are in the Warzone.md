@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Warzone.md"
 type: "concept"
-community: "Combat and Held Tools"
+community: "Farming, Combat and Inventory"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Combat_and_Held_Tools
+  - community/Farming_Combat_and_Inventory
 ---
 
 # PvP only when both players are in the Warzone
@@ -15,4 +15,4 @@ tags:
 - [[Warzone]] - `references` [EXTRACTED]
 - [[WarzoneService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Combat_and_Held_Tools
+#graphify/concept #graphify/INFERRED #community/Farming_Combat_and_Inventory

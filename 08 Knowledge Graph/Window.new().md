@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Window.luau"
 type: "code"
-community: "HUD and Toasts"
-location: "L55"
+community: "HUD and Hotbar"
+location: "L57"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Toasts
+  - community/HUD_and_Hotbar
 ---
 
 # Window.new()
@@ -28,4 +28,4 @@ tags:
 - [[Window.close()]] - `calls` [EXTRACTED]
 - [[Window.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Toasts
+#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

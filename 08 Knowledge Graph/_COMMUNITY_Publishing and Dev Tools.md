@@ -23,8 +23,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_Island Plots and Spawning]]
-- 1 edge to [[_COMMUNITY_Roadmap and Merchant Plans]]
+- 1 edge to [[_COMMUNITY_Farming, Combat and Inventory]]
+- 1 edge to [[_COMMUNITY_Tutorial and Roadmap]]
 
 ## Top bridge nodes
 - [[Published privately as Sky Farm Prototype]] - degree 2, connects to 1 community

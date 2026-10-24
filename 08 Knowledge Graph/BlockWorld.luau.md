@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Util/BlockWorld.luau"
 type: "code"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # BlockWorld.luau
@@ -32,4 +32,4 @@ tags:
 - [[replicatedstorage_shared_blocks]] - `imports` [EXTRACTED]
 - [[template()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

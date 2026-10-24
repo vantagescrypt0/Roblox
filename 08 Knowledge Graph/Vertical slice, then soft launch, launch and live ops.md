@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Roadmap.md"
 type: "concept"
-community: "Roadmap and Merchant Plans"
+community: "Tutorial and Roadmap"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Roadmap_and_Merchant_Plans
+  - community/Tutorial_and_Roadmap
 ---
 
 # Vertical slice, then soft launch, launch and live ops
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Roadmap]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Roadmap_and_Merchant_Plans
+#graphify/concept #graphify/EXTRACTED #community/Tutorial_and_Roadmap

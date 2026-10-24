@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/CombatService.luau"
 type: "code"
-community: "Combat and Held Tools"
+community: "Farming, Combat and Inventory"
 location: "L82"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Combat_and_Held_Tools
+  - community/Farming_Combat_and_Inventory
 ---
 
 # makeHandle()
@@ -15,4 +15,4 @@ tags:
 - [[CombatService.luau]] - `contains` [EXTRACTED]
 - [[makeTool()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Combat_and_Held_Tools
+#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

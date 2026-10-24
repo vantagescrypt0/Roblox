@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/IslandService.luau"
 type: "code"
-community: "Block Breaking and Toughness"
-location: "L59"
+community: "Breaking, Placing and Crafting"
+location: "L71"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # IslandService.GetIsland()
@@ -14,7 +14,8 @@ tags:
 ## Connections
 - [[IslandService.luau]] - `contains` [EXTRACTED]
 - [[extract()]] - `calls` [INFERRED]
+- [[nearStation()]] - `calls` [INFERRED]
 - [[onBreak()]] - `calls` [INFERRED]
 - [[onPlace()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting

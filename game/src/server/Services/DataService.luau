@@ -1,12 +1,15 @@
 --!strict
 -- Loads and saves each player's data with ProfileStore (session-locked, so the same
 -- save can't be open on two servers at once).
+-- Studio playtests use their own store, so testing (and Dev "Give"/"Level" commands)
+-- never touches anyone's real save.
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local ProfileStore = require(script.Parent.Parent.Packages.ProfileStore)
 
-local STORE_NAME = "PlayerData_v1"
+local STORE_NAME = if RunService:IsStudio() then "PlayerData_Studio_v1" else "PlayerData_v1"
 
 local TEMPLATE = {
 	Coins = 0,

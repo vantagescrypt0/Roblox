@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Hotbar and Item Icons"
+community: "Farming, Combat and Inventory"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Hotbar_and_Item_Icons
+  - community/Farming_Combat_and_Inventory
 ---
 
 # replicatedstorage_shared_crops
@@ -15,4 +15,4 @@ tags:
 - [[MarketService.luau]] - `imports` [EXTRACTED]
 - [[MarketWindow.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Hotbar_and_Item_Icons
+#graphify/concept #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

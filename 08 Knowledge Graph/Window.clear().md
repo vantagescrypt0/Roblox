@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Window.luau"
 type: "code"
-community: "HUD and Toasts"
-location: "L161"
+community: "Mouse and Touch Controls"
+location: "L165"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Toasts
+  - community/Mouse_and_Touch_Controls
 ---
 
 # Window.clear()
@@ -16,4 +16,4 @@ tags:
 - [[render()]] - `calls` [INFERRED]
 - [[renderDetail()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Toasts
+#graphify/code #graphify/INFERRED #community/Mouse_and_Touch_Controls

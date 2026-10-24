@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/shared/Mining.luau"
 type: "code"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 location: "L14"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # Mining.BreakTime()
@@ -16,4 +16,4 @@ tags:
 - [[onBreak()]] - `calls` [INFERRED]
 - [[update()_1]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting

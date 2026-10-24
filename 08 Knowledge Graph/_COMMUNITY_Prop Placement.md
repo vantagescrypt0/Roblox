@@ -27,8 +27,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_Farming]]
-- 1 edge to [[_COMMUNITY_Town and Merchant Build]]
+- 2 edges to [[_COMMUNITY_Farming, Combat and Inventory]]
 
 ## Top bridge nodes
 - [[Props.Place()]] - degree 3, connects to 1 community

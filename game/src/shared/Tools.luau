@@ -1,13 +1,13 @@
 --!strict
 -- Tool power system. Every tool has:
 --   Kind       what it's best at: Sword (fighting), Pickaxe (stone), Axe (wood), Shovel (dirt/grass)
---   Tier       1 = Wooden, 2 = Stone, 3 = Crystal; some blocks need a minimum tier to drop
+--   Tier       1 = Wooden, 2 = Stone, 3 = Iron, 4 = Crystal; some blocks need a minimum tier to drop
 --   Efficiency how much faster it breaks the blocks it's made for (hand = 1)
 --   Damage     hit damage against monsters (and players in the Warzone)
 --   Durability uses before it breaks (a block broken or a hit landed)
 --   Cooldown   seconds between swings
 --   Range      reach of a swing, in studs
--- Numbers follow Minecraft's ratios (wood 2x, stone 4x, top tier 8x mining speed).
+-- Numbers follow Minecraft's ratios (wood 2x, stone 4x, iron 6x, top tier 8x mining speed).
 
 export type Kind = "Sword" | "Pickaxe" | "Axe" | "Shovel"
 
@@ -25,7 +25,8 @@ export type Tool = {
 local TIERS = {
 	{ Name = "Wooden", Efficiency = 2, Durability = 60, DamageBonus = 0 },
 	{ Name = "Stone", Efficiency = 4, Durability = 132, DamageBonus = 1 },
-	{ Name = "Crystal", Efficiency = 8, Durability = 500, DamageBonus = 2 },
+	{ Name = "Iron", Efficiency = 6, Durability = 250, DamageBonus = 2 },
+	{ Name = "Crystal", Efficiency = 8, Durability = 600, DamageBonus = 3 },
 }
 
 -- Base damage per kind at tier 1, and how much each tier above adds
@@ -64,5 +65,5 @@ end
 return table.freeze({
 	List = table.freeze(list),
 	ByItem = table.freeze(byItem),
-	TierNames = { "Wooden", "Stone", "Crystal" },
+	TierNames = { "Wooden", "Stone", "Iron", "Crystal" },
 })

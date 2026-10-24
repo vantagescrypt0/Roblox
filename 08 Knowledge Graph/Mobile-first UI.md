@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Target Audience.md"
 type: "concept"
-community: "Audience, Policy and Tutorial"
+community: "Audience, Policy and Death Drops"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Audience_Policy_and_Tutorial
+  - community/Audience_Policy_and_Death_Drops
 ---
 
 # Mobile-first UI
@@ -15,4 +15,4 @@ tags:
 - [[Target Audience]] - `references` [EXTRACTED]
 - [[Theme.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Tutorial
+#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Death_Drops

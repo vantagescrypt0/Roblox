@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/BagWindow.luau"
 type: "code"
-community: "HUD and Toasts"
-location: "L56"
+community: "Mouse and Touch Controls"
+location: "L60"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Toasts
+  - community/Mouse_and_Touch_Controls
 ---
 
 # slotFrame()
@@ -17,4 +17,4 @@ tags:
 - [[Theme.stroke()]] - `calls` [INFERRED]
 - [[render()_2]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Toasts
+#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls

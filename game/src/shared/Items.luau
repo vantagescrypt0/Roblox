@@ -23,9 +23,13 @@ local Items: { [string]: Item } = {
 	Wood = { Name = "Wood", Icon = "🌲", SellPrice = 1, Block = "Wood" },
 	Planks = { Name = "Planks", Icon = "🟧", SellPrice = 0, Block = "Planks" },
 	Stone = { Name = "Stone", Icon = "⛰️", SellPrice = 1, Block = "Stone" },
+	Furnace = { Name = "Furnace", Icon = "🔥", SellPrice = 0, Block = "Furnace" },
 
 	-- Crafting materials
 	Sticks = { Name = "Sticks", Icon = "🥢", SellPrice = 0, Model = "Sticks" },
+	Coal = { Name = "Coal", Icon = "⚫", SellPrice = 2, Model = "Coal" },
+	RawIron = { Name = "Raw Iron", Icon = "🔸", SellPrice = 3, Model = "RawIron" },
+	IronIngot = { Name = "Iron Ingot", Icon = "⬜", SellPrice = 8, Model = "IronIngot" },
 
 	-- Crops and seeds
 	WheatSeeds = { Name = "Wheat Seeds", Icon = "🌱", SellPrice = 0, BuyPrice = 2, Model = "WheatSeeds" },

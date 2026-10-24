@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/CombatService.luau"
 type: "code"
-community: "Combat and Held Tools"
+community: "Farming, Combat and Inventory"
 location: "L139"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Combat_and_Held_Tools
+  - community/Farming_Combat_and_Inventory
 ---
 
 # currentTool()
@@ -15,4 +15,4 @@ tags:
 - [[CombatService.Equip()]] - `calls` [EXTRACTED]
 - [[CombatService.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Combat_and_Held_Tools
+#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

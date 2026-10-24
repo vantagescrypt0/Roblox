@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Decision Log.md"
 type: "concept"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # Decision: Minecraft-style block islands (break and place, saved)
@@ -17,4 +17,4 @@ tags:
 - [[Blocks.luau]] - `implements` [INFERRED]
 - [[Decision Log]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/INFERRED #community/Block_Breaking_and_Toughness
+#graphify/concept #graphify/INFERRED #community/Breaking_Placing_and_Crafting

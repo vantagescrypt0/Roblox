@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Warzone.md"
 type: "concept"
-community: "Roadmap and Merchant Plans"
+community: "Decisions and Island Tiers"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Roadmap_and_Merchant_Plans
+  - community/Decisions_and_Island_Tiers
 ---
 
 # Warzone parked until it moves into Town
@@ -15,4 +15,4 @@ tags:
 - [[Next add the Warzone to Town]] - `conceptually_related_to` [EXTRACTED]
 - [[Warzone]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Roadmap_and_Merchant_Plans
+#graphify/concept #graphify/EXTRACTED #community/Decisions_and_Island_Tiers

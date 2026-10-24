@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hud.luau"
 type: "code"
-community: "HUD and Toasts"
+community: "HUD and Hotbar"
 location: "L242"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Toasts
+  - community/HUD_and_Hotbar
 ---
 
 # Hud.Render()
@@ -16,4 +16,4 @@ tags:
 - [[Theme.formatNumber()]] - `calls` [INFERRED]
 - [[Theme.pop()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Toasts
+#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

@@ -1,8 +1,9 @@
 --!strict
 -- Gives each player their own floating island made of blocks, generated for their
 -- expansion tier, with their own block changes (data.Island.Blocks) on top. Spawns them
--- on it, rebuilds it bigger when they expand, regrows chopped trees, and puts players
--- back on it if they fall off.
+-- on it, rebuilds it bigger when they expand, regrows chopped trees and mined boulders
+-- (boulders can grow back as coal or iron ore), and puts players back on it if they
+-- fall off. The stone underside of the island has ore veins to dig for.
 --
 -- Grid: y = 0 is the top grass layer; things stand on it at y = 1.
 
@@ -20,9 +21,19 @@ local DataService = require(script.Parent.DataService)
 local ISLAND = Config.Island
 local SIZE = Blocks.Size
 local TREE_REGROW_TIME = 90
+local ROCK_REGROW_TIME = 60
+-- What each block of a regrown boulder becomes (chances add up to 1)
+local ROCK_ROLLS = {
+	{ Block = "IronOre", Below = 0.12 },
+	{ Block = "CoalOre", Below = 0.34 },
+	{ Block = "Stone", Below = 1 },
+}
+-- Ore veins in the island's stone underside: chance per stone block
+local COAL_CHANCE, IRON_CHANCE, IRON_MIN_DEPTH = 0.07, 0.04, 4
 
 type Cell = { X: number, Y: number, Z: number }
 type Tree = { Trunk: { Cell }, Leaves: { Cell }, GoneSince: number? }
+type Rock = { Cells: { Cell }, GoneSince: number? }
 
 export type Island = {
 	World: BlockWorld.World,
@@ -38,6 +49,7 @@ export type Island = {
 	FarmCells: { Cell },
 	PortalSurface: BasePart,
 	Trees: { Tree },
+	Rocks: { Rock },
 }
 type IslandCallback = (player: Player, island: Island) -> ()
 
@@ -83,6 +95,12 @@ local key = BlockWorld.key
 
 local TREE_SPOTS = { { 4, 3 }, { -5, -1 }, { 6, -3 }, { 0, 7 }, { 8, 2 }, { -8, -6 } }
 local ROCK_SPOTS = { { 2, -4 }, { 6, 0 }, { -8, 4 } }
+local ROCK_SHAPE = {
+	{ DX = 0, Y = 1, DZ = 0, Block = "Stone" },
+	{ DX = 1, Y = 1, DZ = 0, Block = "IronOre" },
+	{ DX = 0, Y = 1, DZ = 1, Block = "Stone" },
+	{ DX = 0, Y = 2, DZ = 0, Block = "CoalOre" },
+}
 local CRAFTING_TABLE = { X = 3, Y = 1, Z = -2 }
 
 -- The same noise for every tier, so bigger islands grow outward from the same shape
@@ -145,7 +163,20 @@ type Generated = {
 	FarmCells: { Cell },
 	PortalZ: number,
 	Trees: { Tree },
+	Rocks: { Rock },
 }
+
+-- The block at a spot in the island's stone underside. Seeded by position, so an island
+-- always generates the same veins (saves only store the player's changes).
+local function undergroundBlock(x: number, y: number, z: number): string
+	local roll = Random.new(x * 73856093 + y * 19349663 + z * 83492791):NextNumber()
+	if -y >= IRON_MIN_DEPTH and roll < IRON_CHANCE then
+		return "IronOre"
+	elseif roll < IRON_CHANCE + COAL_CHANCE then
+		return "CoalOre"
+	end
+	return "Stone"
+end
 
 local function generate(tier: number): Generated
 	local spec = IslandTiers[tier]
@@ -163,7 +194,7 @@ local function generate(tier: number): Generated
 				local depth = 2 + math.floor((1 - t) ^ 0.75 * radius * 0.95) + ((x * 7 + z * 13) % 3 == 0 and 1 or 0)
 				cells[key(x, 0, z)] = "Grass"
 				for y = -1, -depth, -1 do
-					cells[key(x, y, z)] = if y >= -2 then "Dirt" else "Stone"
+					cells[key(x, y, z)] = if y >= -2 then "Dirt" else undergroundBlock(x, y, z)
 				end
 			end
 		end
@@ -218,17 +249,22 @@ local function generate(tier: number): Generated
 			table.insert(trees, addTree(cells, x, z, 4 + (i % 2)))
 		end
 	end
-	local rocks = 0
+	-- Boulders: stone with a lump of coal on top and some iron showing (a reason to
+	-- upgrade to a Stone Pickaxe)
+	local rocks: { Rock } = {}
 	for _, spot in ROCK_SPOTS do
-		if rocks >= spec.Rocks then
+		if #rocks >= spec.Rocks then
 			break
 		end
 		local x, z = spot[1], spot[2]
 		if math.sqrt(x * x + z * z) <= radius - 1.5 then
-			rocks += 1
-			for _, c in { { 0, 1, 0 }, { 1, 1, 0 }, { 0, 1, 1 }, { 0, 2, 0 } } do
-				cells[key(x + c[1], c[2], z + c[3])] = "Stone"
+			local rock: Rock = { Cells = {} }
+			for _, part in ROCK_SHAPE do
+				local cell = { X = x + part.DX, Y = part.Y, Z = z + part.DZ }
+				cells[key(cell.X, cell.Y, cell.Z)] = part.Block
+				table.insert(rock.Cells, cell)
 			end
+			table.insert(rocks, rock)
 		end
 	end
 
@@ -238,6 +274,7 @@ local function generate(tier: number): Generated
 		FarmCells = farmCells,
 		PortalZ = portalZ,
 		Trees = trees,
+		Rocks = rocks,
 	}
 end
 
@@ -320,6 +357,7 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 		FarmCells = generated.FarmCells,
 		PortalSurface = makePortalSurface(world, generated.PortalZ),
 		Trees = generated.Trees,
+		Rocks = generated.Rocks,
 	}
 end
 
@@ -443,6 +481,50 @@ local function regrowTrees()
 	end
 end
 
+local rockRng = Random.new()
+local ROCK_TYPES = { Stone = true, CoalOre = true, IronOre = true }
+
+local function rollRockBlock(): string
+	local roll = rockRng:NextNumber()
+	for _, entry in ROCK_ROLLS do
+		if roll < entry.Below then
+			return entry.Block
+		end
+	end
+	return "Stone"
+end
+
+-- Fully mined boulders grow back after a while, sometimes with fresh ore
+local function regrowRocks()
+	local now = os.clock()
+	for player, island in islands do
+		for _, rock in island.Rocks do
+			local standing = false
+			for _, cell in rock.Cells do
+				local blockType = BlockWorld.get(island.World, cell.X, cell.Y, cell.Z)
+				if blockType and ROCK_TYPES[blockType] then
+					standing = true
+					break
+				end
+			end
+			if standing then
+				rock.GoneSince = nil
+			elseif not rock.GoneSince then
+				rock.GoneSince = now
+			elseif now - rock.GoneSince >= ROCK_REGROW_TIME then
+				rock.GoneSince = nil
+				for _, cell in rock.Cells do
+					if not BlockWorld.get(island.World, cell.X, cell.Y, cell.Z) then
+						local blockType = rollRockBlock()
+						BlockWorld.set(island.World, cell.X, cell.Y, cell.Z, blockType)
+						IslandService.RecordChange(player, cell.X, cell.Y, cell.Z, blockType)
+					end
+				end
+			end
+		end
+	end
+end
+
 -- Players who fall off are put back on their island instead of dying in the void
 local function catchFallers()
 	for player, island in islands do
@@ -479,6 +561,7 @@ function IslandService.Start()
 		if treeTimer >= 10 then
 			treeTimer = 0
 			regrowTrees()
+			regrowRocks()
 		end
 	end)
 end

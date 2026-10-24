@@ -2,7 +2,7 @@
 source_file: "art/scripts/blocks.py"
 type: "code"
 community: "Block Art Pipeline (Blender)"
-location: "L73"
+location: "L78"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -17,6 +17,7 @@ tags:
 - [[fill()]] - `calls` [EXTRACTED]
 - [[math]] - `calls` [EXTRACTED]
 - [[noisy()]] - `calls` [EXTRACTED]
+- [[ore()]] - `contains` [EXTRACTED]
 - [[random]] - `calls` [EXTRACTED]
 - [[speckle()]] - `calls` [EXTRACTED]
 

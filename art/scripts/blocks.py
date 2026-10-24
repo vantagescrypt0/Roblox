@@ -23,14 +23,16 @@ import common  # noqa: E402
 BLOCK = 3.0  # studs
 TILE = 16
 SCALE = 8
-GRID = 4  # 4x4 tiles
-ATLAS = TILE * SCALE * GRID  # 512 px
+GRID = 5  # 5x5 tiles
+ATLAS = TILE * SCALE * GRID  # 640 px
 
 TILES = [
     "grass_top", "grass_side", "dirt", "stone",
     "log_side", "log_top", "leaves", "planks",
     "craft_top", "craft_side", "farmland", "obsidian",
     "wool_red", "wool_white", "cobblestone", "craft_front",
+    "coal_ore", "iron_ore", "furnace_front", "furnace_side",
+    "furnace_top",
 ]  # fmt: skip
 
 # Which tile each face uses: (top, bottom, sides) or (top, bottom, front, other sides)
@@ -47,6 +49,9 @@ BLOCKS = {
     "RedWool": ("wool_red", "wool_red", "wool_red"),
     "WhiteWool": ("wool_white", "wool_white", "wool_white"),
     "Cobblestone": ("cobblestone", "cobblestone", "cobblestone"),
+    "CoalOre": ("coal_ore", "coal_ore", "coal_ore"),
+    "IronOre": ("iron_ore", "iron_ore", "iron_ore"),
+    "Furnace": ("furnace_top", "furnace_top", "furnace_front", "furnace_side"),
 }
 
 
@@ -188,6 +193,43 @@ def draw_tiles():
                 elif d < r - 1.5:
                     cobble[y][x] = noisy(rng, (145, 145, 145), 8)
     tiles["cobblestone"] = cobble
+
+    # Ores: stone with clumps of coloured pixels (drawn after the older tiles so those
+    # keep the same random sequence and look identical)
+    def ore(colors, clumps):
+        tile = [row[:] for row in stone]
+        for _ in range(clumps):
+            cx, cy = rng.randint(0, 13), rng.randint(0, 13)
+            for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1), (2, 1), (1, 2), (2, 0), (0, 2), (2, 2)):
+                if rng.random() < 0.75:
+                    tile[cy + dy][cx + dx] = noisy(rng, colors[(dx + dy) % len(colors)], 6)
+        return tile
+
+    tiles["coal_ore"] = ore([(30, 30, 30), (52, 52, 52)], 7)
+    tiles["iron_ore"] = ore([(222, 170, 132), (176, 128, 96), (240, 206, 174)], 6)
+
+    # Furnace: cobblestone sides, smooth stone top, a dark grated opening on the front
+    furnace_side = [row[:] for row in cobble]
+    for x in range(TILE):
+        furnace_side[0][x] = furnace_side[15][x] = noisy(rng, (90, 90, 90), 6)
+    tiles["furnace_side"] = furnace_side
+    furnace_top = fill(rng, (150, 150, 150), 6)
+    for i in range(TILE):
+        for edge in (furnace_top[0], furnace_top[15]):
+            edge[i] = noisy(rng, (105, 105, 105), 5)
+        furnace_top[i][0] = furnace_top[i][15] = noisy(rng, (105, 105, 105), 5)
+    tiles["furnace_top"] = furnace_top
+    front = [row[:] for row in furnace_side]
+    for y in range(8, 14):
+        for x in range(3, 13):
+            grate = y in (8, 13) or x in (3, 12)
+            front[y][x] = noisy(rng, (60, 60, 60) if grate else (22, 20, 20), 4)
+    for x in range(4, 12):  # embers
+        if rng.random() < 0.6:
+            front[12][x] = noisy(rng, (196, 92, 30), 12)
+    for x in range(3, 13):  # top ledge
+        front[3][x] = front[4][x] = noisy(rng, (100, 100, 100), 6)
+    tiles["furnace_front"] = front
     return tiles
 
 

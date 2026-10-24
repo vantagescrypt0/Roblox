@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Tutorial & Quests.md"
 type: "concept"
-community: "Audience, Policy and Tutorial"
+community: "Tutorial and Roadmap"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Audience_Policy_and_Tutorial
+  - community/Tutorial_and_Roadmap
 ---
 
 # Beginner quest chain (13 quests, ends at level 10)
@@ -18,4 +18,4 @@ tags:
 - [[QuestTracker.luau]] - `implements` [INFERRED]
 - [[Tutorial & Quests]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Tutorial
+#graphify/concept #graphify/EXTRACTED #community/Tutorial_and_Roadmap

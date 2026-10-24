@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Open Questions.md"
 type: "concept"
-community: "Seasons and Trends"
+community: "Skills, Levels and Content"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Seasons_and_Trends
+  - community/Skills_Levels_and_Content
 ---
 
 # What resets each season?
@@ -14,4 +14,4 @@ tags:
 - [[Open Questions]] - `references` [EXTRACTED]
 - [[Seasons of 2-4 months; player level resets]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Seasons_and_Trends
+#graphify/concept #graphify/EXTRACTED #community/Skills_Levels_and_Content

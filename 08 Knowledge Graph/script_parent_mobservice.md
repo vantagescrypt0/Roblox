@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Combat and Held Tools"
+community: "Farming, Combat and Inventory"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Combat_and_Held_Tools
+  - community/Farming_Combat_and_Inventory
 ---
 
 # script_parent_mobservice
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[CombatService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Combat_and_Held_Tools
+#graphify/concept #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

@@ -15,80 +15,73 @@
       }
     },
     {
-      "query": "tag:#community/HUD_and_Toasts",
+      "query": "tag:#community/HUD_and_Hotbar",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/Block_Breaking_and_Toughness",
+      "query": "tag:#community/Breaking_Placing_and_Crafting",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/Hotbar_and_Item_Icons",
+      "query": "tag:#community/Mouse_and_Touch_Controls",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/Combat_and_Held_Tools",
+      "query": "tag:#community/Player_Data_and_Held_Items",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/Mouse_and_Touch_Controls",
+      "query": "tag:#community/Knowledge_Graph_Tools",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/Islands_Research_and_Pillars",
+      "query": "tag:#community/Islands_Research",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/Island_Plots_and_Spawning",
+      "query": "tag:#community/Pitch_and_Inspiration",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/Pitch_and_Core_Loop",
+      "query": "tag:#community/Core_Loop_and_Pillars",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/Audience_Policy_and_Tutorial",
+      "query": "tag:#community/Audience_Policy_and_Death_Drops",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/Town_and_Merchant_Build",
+      "query": "tag:#community/Farming_Combat_and_Inventory",
       "color": {
         "a": 1,
         "rgb": 5142951
-      }
-    },
-    {
-      "query": "tag:#community/Inventory_and_Coins",
-      "color": {
-        "a": 1,
-        "rgb": 15896107
       }
     },
     {
@@ -99,20 +92,6 @@
       }
     },
     {
-      "query": "tag:#community/Market_Mobs_and_Quests",
-      "color": {
-        "a": 1,
-        "rgb": 7780274
-      }
-    },
-    {
-      "query": "tag:#community/Warzone_Raids",
-      "color": {
-        "a": 1,
-        "rgb": 5873999
-      }
-    },
-    {
       "query": "tag:#community/Tools_and_Workflow",
       "color": {
         "a": 1,
@@ -120,35 +99,21 @@
       }
     },
     {
-      "query": "tag:#community/Farming",
-      "color": {
-        "a": 1,
-        "rgb": 11565729
-      }
-    },
-    {
-      "query": "tag:#community/Skybounds_and_Loot_Heads",
+      "query": "tag:#community/Tutorial_and_Roadmap",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/Roadmap_and_Merchant_Plans",
+      "query": "tag:#community/Decisions_and_Island_Tiers",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/Seasons_and_Trends",
-      "color": {
-        "a": 1,
-        "rgb": 12234924
-      }
-    },
-    {
-      "query": "tag:#community/Economy_and_Anti-Burnout",
+      "query": "tag:#community/Trends_and_Anti-Burnout",
       "color": {
         "a": 1,
         "rgb": 5142951

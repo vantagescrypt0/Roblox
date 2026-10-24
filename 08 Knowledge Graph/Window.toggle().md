@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Window.luau"
 type: "code"
-community: "HUD and Toasts"
-location: "L47"
+community: "Mouse and Touch Controls"
+location: "L49"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Toasts
+  - community/Mouse_and_Touch_Controls
 ---
 
 # Window.toggle()
@@ -17,4 +17,4 @@ tags:
 - [[Window.luau]] - `contains` [EXTRACTED]
 - [[Window.open()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Toasts
+#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls

@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Skybounds (Minecraft).md"
 type: "concept"
-community: "Skybounds and Loot Heads"
+community: "Islands Research"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skybounds_and_Loot_Heads
+  - community/Islands_Research
 ---
 
 # Skybounds (Minecraft Skyblock server, now shut down)
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Skybounds (Minecraft)]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skybounds_and_Loot_Heads
+#graphify/concept #graphify/EXTRACTED #community/Islands_Research

@@ -1,18 +1,19 @@
 ---
 source_file: "game/src/server/Services/CraftingService.luau"
 type: "code"
-community: "Town and Merchant Build"
+community: "Farming, Combat and Inventory"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Town_and_Merchant_Build
+  - community/Farming_Combat_and_Inventory
 ---
 
 # CraftingService.luau
 
 ## Connections
 - [[Main.server.luau]] - `imports` [EXTRACTED]
+- [[nearStation()]] - `contains` [EXTRACTED]
 - [[replicatedstorage_shared_items]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_recipes]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_remotes]] - `imports` [EXTRACTED]
@@ -23,4 +24,4 @@ tags:
 - [[script_parent_questservice]] - `imports` [EXTRACTED]
 - [[script_parent_stateservice]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Town_and_Merchant_Build
+#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

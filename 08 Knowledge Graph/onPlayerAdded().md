@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/DataService.luau"
 type: "code"
-community: "Combat and Held Tools"
-location: "L98"
+community: "Player Data and Held Items"
+location: "L101"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Combat_and_Held_Tools
+  - community/Player_Data_and_Held_Items
 ---
 
 # onPlayerAdded()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[DataService.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Combat_and_Held_Tools
+#graphify/code #graphify/EXTRACTED #community/Player_Data_and_Held_Items

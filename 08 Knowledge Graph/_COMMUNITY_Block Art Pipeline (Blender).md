@@ -1,13 +1,13 @@
 ---
 type: community
 cohesion: 0.07
-members: 86
+members: 87
 ---
 
 # Block Art Pipeline (Blender)
 
 **Cohesion:** 0.07 - loosely connected
-**Members:** 86 nodes
+**Members:** 87 nodes
 
 ## Members
 - [[dot-__init__()]] - code - art/scripts/lowpoly.py
@@ -69,6 +69,7 @@ members: 86
 - [[matrix()]] - code - art/scripts/lowpoly.py
 - [[mesh_object()]] - code - art/scripts/common.py
 - [[noisy()]] - code - art/scripts/blocks.py
+- [[ore()]] - code - art/scripts/blocks.py
 - [[os]] - concept
 - [[outline()]] - code - art/scripts/islands.py
 - [[palette_image()]] - code - art/scripts/lowpoly.py
@@ -106,7 +107,9 @@ SORT file.name ASC
 
 ## Connections to other communities
 - 2 edges to [[_COMMUNITY_Tools and Workflow]]
+- 1 edge to [[_COMMUNITY_Knowledge Graph Tools]]
 
 ## Top bridge nodes
 - [[blocks.py]] - degree 18, connects to 1 community
 - [[tools.py]] - degree 11, connects to 1 community
+- [[sys]] - degree 6, connects to 1 community

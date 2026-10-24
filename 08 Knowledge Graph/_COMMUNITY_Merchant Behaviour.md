@@ -24,7 +24,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_Roadmap and Merchant Plans]]
+- 1 edge to [[_COMMUNITY_Decisions and Island Tiers]]
 
 ## Top bridge nodes
 - [[MerchantController.luau]] - degree 5, connects to 1 community

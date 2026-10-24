@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Anti-Burnout Ideas.md"
 type: "concept"
-community: "Economy and Anti-Burnout"
+community: "Decisions and Island Tiers"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Economy_and_Anti-Burnout
+  - community/Decisions_and_Island_Tiers
 ---
 
 # Economy sinks to slow inflation
@@ -14,4 +14,4 @@ tags:
 - [[Anti-Burnout Ideas]] - `references` [EXTRACTED]
 - [[Decision buy bigger islands with coins (4 tiers)]] - `conceptually_related_to` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Economy_and_Anti-Burnout
+#graphify/concept #graphify/EXTRACTED #community/Decisions_and_Island_Tiers

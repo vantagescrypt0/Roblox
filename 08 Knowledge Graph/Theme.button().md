@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Theme.luau"
 type: "code"
-community: "HUD and Toasts"
+community: "HUD and Hotbar"
 location: "L152"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Toasts
+  - community/HUD_and_Hotbar
 ---
 
 # Theme.button()
@@ -24,4 +24,4 @@ tags:
 - [[render()]] - `calls` [INFERRED]
 - [[sideButton()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Toasts
+#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar

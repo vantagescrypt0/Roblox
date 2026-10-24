@@ -26,10 +26,14 @@ Updated for tools and click farming (2026-10-15). The first quests walk you down
 | 9 | Step through the portal to visit Town | 15 XP |
 | 10 | Sell crops to the Merchant in Town | 10 coins, 15 XP |
 | 11 | Buy seeds from the Merchant | 15 XP |
-| 12 | Reach Farming level 3 | 25 coins, 40 XP |
-| 13 | Reach level 10 | 50 coins, 8 Stone |
+| 12 | Craft a Stone Pickaxe | 4 Stone, 20 XP |
+| 13 | Mine Iron Ore with your Stone Pickaxe | 1 Coal, 20 XP |
+| 14 | Craft a Furnace (8 Stone) | 20 XP |
+| 15 | Place your Furnace and smelt an Iron Ingot | 15 coins, 30 XP |
+| 16 | Reach Farming level 3 | 25 coins, 40 XP |
+| 17 | Reach level 10 | 50 coins, 3 Iron Ingots |
 
-Generators, island expansion, smelting and conveyors from the draft below aren't built yet; they'll slot in as quests when they are.
+Quests 12-15 (2026-10-24) teach ores and smelting. Generators and conveyors from the draft below aren't built yet; they'll slot in as quests when they are.
 
 ## Draft quest chain — [Speculation]
 | # | Quest | Teaches | Reward |

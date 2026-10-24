@@ -2,7 +2,7 @@
 source_file: "game/src/client/BlockController.luau"
 type: "code"
 community: "Mouse and Touch Controls"
-location: "L176"
+location: "L181"
 tags:
   - graphify/code
   - graphify/EXTRACTED

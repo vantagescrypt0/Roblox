@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Islands (Roblox).md"
 type: "concept"
-community: "Islands Research and Pillars"
+community: "Islands Research"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Islands_Research_and_Pillars
+  - community/Islands_Research
 ---
 
 # Key-gated adventure islands
@@ -14,4 +14,4 @@ tags:
 - [[Islands (Roblox)]] - `references` [EXTRACTED]
 - [[Warzone-only keysmaterials unlock island tiers]] - `semantically_similar_to` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Islands_Research_and_Pillars
+#graphify/concept #graphify/EXTRACTED #community/Islands_Research

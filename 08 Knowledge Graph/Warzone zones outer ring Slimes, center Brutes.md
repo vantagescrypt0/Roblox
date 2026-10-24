@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Warzone.md"
 type: "concept"
-community: "Skybounds and Loot Heads"
+community: "Audience, Policy and Death Drops"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skybounds_and_Loot_Heads
+  - community/Audience_Policy_and_Death_Drops
 ---
 
 # Warzone zones: outer ring Slimes, center Brutes
@@ -16,4 +16,4 @@ tags:
 - [[Warzone]] - `references` [EXTRACTED]
 - [[WarzoneService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skybounds_and_Loot_Heads
+#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Death_Drops

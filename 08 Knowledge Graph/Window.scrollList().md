@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Window.luau"
 type: "code"
-community: "HUD and Toasts"
-location: "L139"
+community: "HUD and Hotbar"
+location: "L143"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Toasts
+  - community/HUD_and_Hotbar
 ---
 
 # Window.scrollList()
@@ -16,4 +16,4 @@ tags:
 - [[Theme.padding()]] - `calls` [INFERRED]
 - [[Window.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Toasts
+#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

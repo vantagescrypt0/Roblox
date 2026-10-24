@@ -1,17 +1,19 @@
 ---
 source_file: "game/src/server/Util/BlockWorld.luau"
 type: "code"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 location: "L177"
 tags:
   - graphify/code
-  - graphify/EXTRACTED
-  - community/Block_Breaking_and_Toughness
+  - graphify/INFERRED
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # BlockWorld.destroy()
 
 ## Connections
 - [[BlockWorld.luau]] - `contains` [EXTRACTED]
+- [[IslandService.Rebuild()]] - `calls` [INFERRED]
+- [[onPlayerRemoving()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting

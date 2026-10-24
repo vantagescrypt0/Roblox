@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/BagWindow.luau"
 type: "code"
-community: "Hotbar and Item Icons"
-location: "L97"
+community: "Mouse and Touch Controls"
+location: "L101"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Hotbar_and_Item_Icons
+  - community/Mouse_and_Touch_Controls
 ---
 
 # render()
@@ -22,4 +22,4 @@ tags:
 - [[setOpen()]] - `calls` [EXTRACTED]
 - [[slotFrame()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Hotbar_and_Item_Icons
+#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls

@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Util/BlockWorld.luau"
 type: "code"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 location: "L149"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # BlockWorld.set()
@@ -17,5 +17,6 @@ tags:
 - [[onBreak()]] - `calls` [INFERRED]
 - [[onPlace()]] - `calls` [INFERRED]
 - [[refresh()]] - `calls` [EXTRACTED]
+- [[regrowRocks()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

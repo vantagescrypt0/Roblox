@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Util/BlockWorld.luau"
 type: "code"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 location: "L58"
 tags:
   - graphify/code
-  - graphify/EXTRACTED
-  - community/Block_Breaking_and_Toughness
+  - graphify/INFERRED
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # BlockWorld.position()
@@ -15,6 +15,8 @@ tags:
 - [[BlockWorld.luau]] - `contains` [EXTRACTED]
 - [[inReach()]] - `calls` [INFERRED]
 - [[makePart()]] - `calls` [EXTRACTED]
+- [[makePortalSurface()_1]] - `calls` [INFERRED]
+- [[nearStation()]] - `calls` [INFERRED]
 - [[onPlace()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting

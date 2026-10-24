@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Town and Merchant Build"
+community: "Farming, Combat and Inventory"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Town_and_Merchant_Build
+  - community/Farming_Combat_and_Inventory
 ---
 
 # script_parent_islandservice
@@ -18,4 +18,4 @@ tags:
 - [[TownService.luau]] - `imports` [EXTRACTED]
 - [[WarzoneService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Town_and_Merchant_Build
+#graphify/concept #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

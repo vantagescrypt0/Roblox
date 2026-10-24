@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/DataService.luau"
 type: "code"
-community: "Inventory and Coins"
-location: "L75"
+community: "Farming, Combat and Inventory"
+location: "L78"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Inventory_and_Coins
+  - community/Farming_Combat_and_Inventory
 ---
 
 # DataService.GetData()
@@ -22,6 +22,8 @@ tags:
 - [[InventoryService.RemoveMany()]] - `calls` [INFERRED]
 - [[InventoryService.SpendCoins()]] - `calls` [INFERRED]
 - [[InventoryService.UseTool()]] - `calls` [INFERRED]
+- [[IslandService.Rebuild()]] - `calls` [INFERRED]
+- [[IslandService.RecordChange()]] - `calls` [INFERRED]
 - [[ProgressionService.AddPlayerXP()]] - `calls` [INFERRED]
 - [[QuestService.Record()]] - `calls` [INFERRED]
 - [[WarzoneService.AddToBag()]] - `calls` [INFERRED]
@@ -34,4 +36,4 @@ tags:
 - [[onSetHotbar()]] - `calls` [INFERRED]
 - [[refreshPlot()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Inventory_and_Coins
+#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory

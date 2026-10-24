@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/QuestService.luau"
 type: "code"
-community: "Market, Mobs and Quests"
+community: "Farming, Combat and Inventory"
 location: "L56"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Market_Mobs_and_Quests
+  - community/Farming_Combat_and_Inventory
 ---
 
 # QuestService.Record()
@@ -24,4 +24,4 @@ tags:
 - [[onPlotClicked()]] - `calls` [INFERRED]
 - [[onSell()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Market_Mobs_and_Quests
+#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory

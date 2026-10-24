@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hotbar.luau"
 type: "code"
-community: "Hotbar and Item Icons"
+community: "Mouse and Touch Controls"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Hotbar_and_Item_Icons
+  - community/Mouse_and_Touch_Controls
 ---
 
 # Hotbar.luau
@@ -28,4 +28,4 @@ tags:
 - [[script_parent_ui_theme]] - `imports` [EXTRACTED]
 - [[showName()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Hotbar_and_Item_Icons
+#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls

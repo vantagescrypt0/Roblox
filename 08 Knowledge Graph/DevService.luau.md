@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/DevService.luau"
 type: "code"
-community: "Island Plots and Spawning"
+community: "Farming, Combat and Inventory"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Island_Plots_and_Spawning
+  - community/Farming_Combat_and_Inventory
 ---
 
 # DevService.luau
@@ -17,4 +17,4 @@ tags:
 - [[script_parent_dataservice]] - `imports` [EXTRACTED]
 - [[script_parent_inventoryservice]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Island_Plots_and_Spawning
+#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

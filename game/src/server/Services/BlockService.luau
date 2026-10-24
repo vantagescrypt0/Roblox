@@ -88,6 +88,10 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	elseif canHarvest and (blockType == "Stone" or blockType == "Cobblestone") then
 		ProgressionService.AddPlayerXP(player, 2)
 		QuestService.Record(player, "Mine")
+	elseif canHarvest and (blockType == "CoalOre" or blockType == "IronOre") then
+		ProgressionService.AddPlayerXP(player, if blockType == "IronOre" then 6 else 4)
+		QuestService.Record(player, "Mine")
+		QuestService.Record(player, `Mine:{blockType}`)
 	end
 end
 

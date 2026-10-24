@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Hotbar and Item Icons"
+community: "Mouse and Touch Controls"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Hotbar_and_Item_Icons
+  - community/Mouse_and_Touch_Controls
 ---
 
 # script_parent_ui_itemicon
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Hotbar.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Hotbar_and_Item_Icons
+#graphify/concept #graphify/EXTRACTED #community/Mouse_and_Touch_Controls

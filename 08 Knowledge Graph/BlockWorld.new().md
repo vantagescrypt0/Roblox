@@ -1,17 +1,18 @@
 ---
 source_file: "game/src/server/Util/BlockWorld.luau"
 type: "code"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 location: "L44"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # BlockWorld.new()
 
 ## Connections
 - [[BlockWorld.luau]] - `contains` [EXTRACTED]
+- [[build()_1]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

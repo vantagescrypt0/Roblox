@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/FarmService.luau"
 type: "code"
-community: "Farming"
+community: "Farming, Combat and Inventory"
 location: "L154"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Farming
+  - community/Farming_Combat_and_Inventory
 ---
 
 # onPlotClicked()
@@ -26,4 +26,4 @@ tags:
 - [[plotState()]] - `calls` [EXTRACTED]
 - [[refreshPlot()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Farming
+#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory

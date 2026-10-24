@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Theme.luau"
 type: "code"
-community: "HUD and Toasts"
+community: "HUD and Hotbar"
 location: "L318"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Toasts
+  - community/HUD_and_Hotbar
 ---
 
 # Theme.autoScale()
@@ -23,4 +23,4 @@ tags:
 - [[buildRaidBanner()]] - `calls` [INFERRED]
 - [[buildToasts()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Toasts
+#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

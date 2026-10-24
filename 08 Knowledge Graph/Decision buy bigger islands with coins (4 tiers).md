@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Decision Log.md"
 type: "concept"
-community: "Economy and Anti-Burnout"
+community: "Decisions and Island Tiers"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Economy_and_Anti-Burnout
+  - community/Decisions_and_Island_Tiers
 ---
 
 # Decision: buy bigger islands with coins (4 tiers)
@@ -16,4 +16,4 @@ tags:
 - [[IslandService.luau]] - `implements` [INFERRED]
 - [[IslandTiers.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Economy_and_Anti-Burnout
+#graphify/concept #graphify/INFERRED #community/Decisions_and_Island_Tiers

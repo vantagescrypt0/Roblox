@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/FarmService.luau"
 type: "code"
-community: "Farming"
+community: "Farming, Combat and Inventory"
 location: "L242"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming
+  - community/Farming_Combat_and_Inventory
 ---
 
 # onIslandCreated()
@@ -17,4 +17,4 @@ tags:
 - [[makeLabel()]] - `calls` [EXTRACTED]
 - [[refreshPlot()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming
+#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

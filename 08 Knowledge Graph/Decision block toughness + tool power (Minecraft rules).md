@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Decision Log.md"
 type: "concept"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # Decision: block toughness + tool power (Minecraft rules)
@@ -18,4 +18,4 @@ tags:
 - [[Tools.luau]] - `implements` [INFERRED]
 - [[Tools pickaxe, axe, shovel, sword in Wooden  Stone  Crystal]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/concept #graphify/INFERRED #community/Block_Breaking_and_Toughness
+#graphify/concept #graphify/INFERRED #community/Breaking_Placing_and_Crafting

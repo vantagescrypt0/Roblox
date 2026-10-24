@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/Leaderstats.luau"
 type: "code"
-community: "Combat and Held Tools"
+community: "Player Data and Held Items"
 location: "L40"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Combat_and_Held_Tools
+  - community/Player_Data_and_Held_Items
 ---
 
 # Leaderstats.Start()
@@ -16,4 +16,4 @@ tags:
 - [[DataService.OnDataLoaded()]] - `calls` [INFERRED]
 - [[Leaderstats.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Combat_and_Held_Tools
+#graphify/code #graphify/INFERRED #community/Player_Data_and_Held_Items

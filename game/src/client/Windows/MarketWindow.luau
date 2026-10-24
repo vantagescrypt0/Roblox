@@ -7,12 +7,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local ItemIcon = require(script.Parent.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.Parent.UI.Theme)
 local Window = require(script.Parent.Parent.UI.Window)
 
 local C = Theme.Color
 
-local SELL_ORDER = { "Wheat", "Carrot", "Potato", "Glowberry", "Wood", "Stone" }
+local SELL_ORDER = { "Wheat", "Carrot", "Potato", "Glowberry", "Wood", "Stone", "Coal", "RawIron", "IronIngot" }
 
 local MarketWindow = {}
 
@@ -39,16 +40,16 @@ local function row(parent: Instance, order: number): Frame
 	return frame
 end
 
-local function iconBox(parent: Instance, icon: string)
-	local box = Theme.make("TextLabel", {
+-- The item's 3D photo in a dark rounded box
+local function iconBox(parent: Instance, itemId: string)
+	local box = Theme.make("Frame", {
 		Size = UDim2.fromOffset(52, 52),
 		Position = UDim2.fromOffset(9, 9),
 		BackgroundColor3 = C.Inset,
-		Text = icon,
-		TextSize = 32,
 		Parent = parent,
 	})
 	Theme.corner(box, 10)
+	ItemIcon.create(box, itemId, UDim2.fromScale(0.86, 0.86))
 end
 
 local function labels(parent: Instance, title: string, subtitle: string)
@@ -98,7 +99,7 @@ local function renderSell()
 		if count > 0 then
 			shown += 1
 			local frame = row(sellList, index)
-			iconBox(frame, item.Icon)
+			iconBox(frame, itemId)
 			labels(frame, `{item.Name}  x{count}`, `💰 {item.SellPrice} each`)
 			buttonPair(frame, "Sell 1", "Sell all", C.Gold, function()
 				Remotes.Sell:FireServer(itemId, 1)
@@ -126,7 +127,7 @@ local function renderSeeds()
 		end
 		local unlocked = farmingLevel >= crop.FarmingLevel
 		local frame = row(seedList, index)
-		iconBox(frame, Items[crop.Product].Icon)
+		iconBox(frame, crop.Product)
 		local growTime = if crop.GrowTime >= 60 then `{crop.GrowTime // 60}m` else `{crop.GrowTime}s`
 		labels(
 			frame,

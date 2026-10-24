@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/HotbarService.luau"
 type: "code"
-community: "Combat and Held Tools"
+community: "Player Data and Held Items"
 location: "L37"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Combat_and_Held_Tools
+  - community/Player_Data_and_Held_Items
 ---
 
 # onSetHotbar()
@@ -18,4 +18,4 @@ tags:
 - [[isSlot()]] - `calls` [EXTRACTED]
 - [[refreshHeld()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Combat_and_Held_Tools
+#graphify/code #graphify/EXTRACTED #community/Player_Data_and_Held_Items

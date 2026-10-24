@@ -1,6 +1,7 @@
 --!strict
--- The crafting table block on your island. Right-clicking it (tapping on mobile) opens
--- the crafting window on the client; crafting is checked and done entirely on the server.
+-- Crafting at the crafting table and smelting in a furnace. Clicking either block opens
+-- the crafting window on the client (showing that station's recipes); crafting is checked
+-- and done entirely on the server, which makes sure the right station is close by.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -14,12 +15,29 @@ local IslandService = require(script.Parent.IslandService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
--- How close you must be to your crafting table to craft (a bit more than block reach)
+-- How close you must be to the station to craft (a bit more than block reach)
 local MAX_CRAFT_DISTANCE = 24
+local STATION_NAMES = { CraftingTable = "crafting table", Furnace = "furnace" }
 
 local CraftingService = {}
 
-local workbenches: { [Player]: BasePart } = {}
+-- Is a block of this type on the player's island within crafting distance?
+local function nearStation(player: Player, position: Vector3, blockType: string): boolean
+	local island = IslandService.GetIsland(player)
+	if not island then
+		return false
+	end
+	local world = island.World
+	for cellKey, cellType in world.Cells do
+		if cellType == blockType then
+			local x, y, z = BlockWorld.unkey(cellKey)
+			if (BlockWorld.position(world, x, y, z) - position).Magnitude <= MAX_CRAFT_DISTANCE then
+				return true
+			end
+		end
+	end
+	return false
+end
 
 local function craft(player: Player, recipeId: unknown)
 	if type(recipeId) ~= "string" then
@@ -27,14 +45,13 @@ local function craft(player: Player, recipeId: unknown)
 	end
 	local recipe = Recipes.ById[recipeId]
 	local data = DataService.GetData(player)
-	local bench = workbenches[player]
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if not recipe or not data or not bench or not root or not root:IsA("BasePart") then
+	if not recipe or not data or not root or not root:IsA("BasePart") then
 		return
 	end
-	if (root.Position - bench.Position).Magnitude > MAX_CRAFT_DISTANCE then
-		StateService.Notify(player, "Get closer to your crafting table", "bad")
+	if not nearStation(player, root.Position, recipe.Station) then
+		StateService.Notify(player, `Get closer to your {STATION_NAMES[recipe.Station]}`, "bad")
 		return
 	end
 	if data.Level < recipe.PlayerLevel then
@@ -46,27 +63,13 @@ local function craft(player: Player, recipeId: unknown)
 		return
 	end
 	InventoryService.Add(player, recipe.Output, recipe.Amount)
-	StateService.Notify(player, `Crafted {Items[recipe.Output].Name}!`, "good")
+	local verb = if recipe.Station == "Furnace" then "Smelted" else "Crafted"
+	StateService.Notify(player, `{verb} {Items[recipe.Output].Name}!`, "good")
 	QuestService.Record(player, "Craft")
 	QuestService.Record(player, `Craft:{recipe.Id}`)
 end
 
-local function onIslandCreated(player: Player, island: IslandService.Island)
-	local cell = island.CraftingTable
-	local bench = BlockWorld.part(island.World, cell.X, cell.Y, cell.Z)
-	if not bench then
-		return
-	end
-	workbenches[player] = bench
-	bench.Destroying:Connect(function()
-		if workbenches[player] == bench then
-			workbenches[player] = nil
-		end
-	end)
-end
-
 function CraftingService.Start()
-	IslandService.OnIslandCreated(onIslandCreated)
 	Remotes.Craft.OnServerEvent:Connect(craft)
 end
 

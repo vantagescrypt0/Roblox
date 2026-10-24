@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/BagWindow.luau"
 type: "code"
-community: "Hotbar and Item Icons"
-location: "L170"
+community: "Mouse and Touch Controls"
+location: "L174"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Hotbar_and_Item_Icons
+  - community/Mouse_and_Touch_Controls
 ---
 
 # BagWindow.Toggle()
@@ -15,4 +15,4 @@ tags:
 - [[BagWindow.luau]] - `contains` [EXTRACTED]
 - [[setOpen()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Hotbar_and_Item_Icons
+#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls

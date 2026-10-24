@@ -1,11 +1,11 @@
 ---
 source_file: "05 Tech/Tools & Stack.md"
 type: "concept"
-community: "Islands Research and Pillars"
+community: "Islands Research"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Islands_Research_and_Pillars
+  - community/Islands_Research
 ---
 
 # ProfileStore (player data with session locking)
@@ -15,4 +15,4 @@ tags:
 - [[Rule all trades, pickups and inventory changes are server-side and all-or-nothing]] - `rationale_for` [INFERRED]
 - [[Tools & Stack]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/INFERRED #community/Islands_Research_and_Pillars
+#graphify/concept #graphify/INFERRED #community/Islands_Research

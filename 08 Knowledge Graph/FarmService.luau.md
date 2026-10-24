@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/FarmService.luau"
 type: "code"
-community: "Farming"
+community: "Farming, Combat and Inventory"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming
+  - community/Farming_Combat_and_Inventory
 ---
 
 # FarmService.luau
@@ -41,4 +41,4 @@ tags:
 - [[script_parent_stateservice]] - `imports` [EXTRACTED]
 - [[setVisual()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming
+#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

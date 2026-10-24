@@ -1,8 +1,9 @@
 --!strict
--- Crafting table window, laid out like Minecraft's recipe book: a grid of item photos on
--- the left (green outline = you can craft it now), and on the right the selected item up
+-- Crafting window, laid out like Minecraft's recipe book: a grid of item photos on the
+-- left (green outline = you can craft it now), and on the right the selected item up
 -- close with its tool stats (mining speed, damage, durability), what it's good for, what
--- it costs and a Craft button. The server decides whether crafting actually works.
+-- it costs and a Craft button. The same window serves the Crafting Table and the Furnace
+-- (smelting); each shows only its own recipes. The server decides whether crafting works.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -47,12 +48,19 @@ do
 end
 
 type Tile = { Button: TextButton, Stroke: UIStroke, Lock: TextLabel }
+
+-- Window title, badge icon, button text and description for each station
+local STATIONS = {
+	CraftingTable = { Title = "Crafting Table", Icon = "🔨", Verb = "CRAFT" },
+	Furnace = { Title = "Furnace", Icon = "🔥", Verb = "SMELT" },
+}
 type StatRow = { Frame: Frame, Value: TextLabel, Bar: Theme.Bar }
 
 local CraftingWindow = {}
 
 local window: Window.Window
 local state: any = nil
+local station: Recipes.Station = "CraftingTable"
 local selectedId = Recipes.List[1].Id
 local tiles: { [string]: Tile } = {}
 
@@ -120,9 +128,15 @@ local function renderDetail()
 	if tool then
 		kindLabel.Text = `Tier {tool.Tier} {tool.Kind}`
 		goodFor.Text = GOOD_FOR[tool.Kind] or ""
+	elseif recipe.Output == "Furnace" then
+		kindLabel.Text = "Station"
+		goodFor.Text = "Place it, then right-click it to smelt ores"
 	elseif output.Block then
 		kindLabel.Text = "Building block"
 		goodFor.Text = "Place it with right click"
+	elseif recipe.Station == "Furnace" then
+		kindLabel.Text = "Smelted material"
+		goodFor.Text = "Used to make iron tools, or sell it at the Market"
 	else
 		kindLabel.Text = "Crafting material"
 		goodFor.Text = "Used to make tools"
@@ -159,6 +173,7 @@ local function render()
 	end
 	for _, recipe in Recipes.List do
 		local tile = tiles[recipe.Id]
+		tile.Button.Visible = recipe.Station == station
 		local enough, levelOk = check(recipe)
 		local selected = recipe.Id == selectedId
 		tile.Stroke.Color = if selected then C.Gold elseif enough and levelOk then C.Green else C.Stroke
@@ -328,7 +343,22 @@ function CraftingWindow.SetState(newState: any)
 	end
 end
 
-function CraftingWindow.Open()
+-- Opens the window for a station ("CraftingTable" by default, or "Furnace")
+function CraftingWindow.Open(which: Recipes.Station?)
+	local wanted: Recipes.Station = which or "CraftingTable"
+	if wanted ~= station or Recipes.ById[selectedId].Station ~= wanted then
+		station = wanted
+		for _, recipe in Recipes.List do
+			if recipe.Station == wanted then
+				selectedId = recipe.Id
+				break
+			end
+		end
+	end
+	local info = STATIONS[station]
+	window.Title.Text = info.Title
+	window.Icon.Text = info.Icon
+	craftButton.SetText(info.Verb)
 	Window.open(window)
 end
 

@@ -23,7 +23,8 @@ To build a place file from scratch: `rojo build -o game.rbxlx`
 Vendored: `src/server/Packages/ProfileStore.luau` (MadStudioRoblox/ProfileStore @ 45c9847, Apache-2.0, license in `licenses/`).
 
 ## Saving data in Studio
-ProfileStore only saves when the place is published and **Game Settings → Security → Enable Studio Access to API Services** is on. Otherwise it runs in mock mode (works, but nothing is saved).
+ProfileStore only saves when the place is published and **Game Settings → Security → Enable Studio Access to API Services** is on (it is, for "Sky Farm Prototype"). Otherwise it runs in mock mode (works, but nothing is saved) — that includes the local `game.rbxlx` built by Rojo, which isn't linked to the published game.
+Studio playtests save to a separate store (`PlayerData_Studio_v1`), so testing never touches real players' saves.
 
 ## Testing shortcuts (Studio only)
 While playtesting, switch Studio to the **Server** view and run in the command bar:

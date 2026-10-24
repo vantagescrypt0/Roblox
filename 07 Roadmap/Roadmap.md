@@ -17,7 +17,8 @@ No dates — quality over speed.
    - [x] Island expansion: buy bigger islands with coins (4 tiers) — playtested
    - [x] Minecraft pivot (2026-10-15): block islands, break/place blocks, 5-slot hotbar + inventory, crafting table & farmland blocks, Town with the Market, portal travel — playtested
    - [x] Tools + toughness (2026-10-15): pickaxe/axe/shovel/sword in Wooden/Stone/Crystal, block hardness, mining speed, durability, pixel-art tool models, crafting table with item photos, click-to-farm, Merchant NPC — playtested
-   - [ ] More blocks (ores?), saplings, a hoe to make farmland
+   - [x] Ores + smelting (2026-10-24): coal/iron ore (regrowing boulders + underside veins), Furnace, Iron tool tier, 4 new quests — playtested
+   - [ ] Saplings, a hoe to make farmland
    - [ ] Add the Warzone to Town (when you're ready)
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?

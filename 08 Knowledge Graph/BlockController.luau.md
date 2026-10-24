@@ -26,6 +26,7 @@ tags:
 - [[replicatedstorage_shared_blocks]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_items]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_mining]] - `imports` [EXTRACTED]
+- [[replicatedstorage_shared_recipes]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_remotes]] - `imports` [EXTRACTED]
 - [[rootPosition()]] - `contains` [EXTRACTED]
 - [[screenRay()]] - `contains` [EXTRACTED]

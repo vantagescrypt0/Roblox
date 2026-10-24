@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/BlockService.luau"
 type: "code"
-community: "Block Breaking and Toughness"
-location: "L145"
+community: "Breaking, Placing and Crafting"
+location: "L149"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # BlockService.Start()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[BlockService.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Block_Breaking_and_Toughness
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # replicatedstorage_shared_mining
@@ -14,4 +14,4 @@ tags:
 - [[BlockController.luau]] - `imports` [EXTRACTED]
 - [[BlockService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Block_Breaking_and_Toughness
+#graphify/concept #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

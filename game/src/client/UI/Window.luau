@@ -9,6 +9,8 @@ export type Window = {
 	Gui: ScreenGui,
 	Root: Frame,
 	Body: Frame,
+	Title: TextLabel,
+	Icon: TextLabel,
 	IsOpen: boolean,
 	OnOpen: (() -> ())?,
 }
@@ -97,7 +99,7 @@ function Window.new(name: string, title: string, icon: string, size: Vector2): W
 	Theme.gradient(badge, Theme.lighten(Theme.Color.Gold, 0.2), Theme.darken(Theme.Color.Gold, 0.15))
 	Theme.corner(badge, 999)
 	Theme.stroke(badge, Theme.Color.Stroke, 3)
-	Theme.make("TextLabel", {
+	local iconLabel = Theme.make("TextLabel", {
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		Text = icon,
@@ -129,6 +131,8 @@ function Window.new(name: string, title: string, icon: string, size: Vector2): W
 		Gui = gui,
 		Root = root,
 		Body = body,
+		Title = titleLabel,
+		Icon = iconLabel,
 		IsOpen = false,
 		OnOpen = nil,
 	}

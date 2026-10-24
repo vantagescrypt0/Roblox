@@ -1,11 +1,11 @@
 ---
 source_file: "Obsidian Setup.md"
 type: "concept"
-community: "Pitch and Core Loop"
+community: "Decisions and Island Tiers"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Pitch_and_Core_Loop
+  - community/Decisions_and_Island_Tiers
 ---
 
 # Vault rules: Inbox, Decision Log, Open Questions
@@ -14,4 +14,4 @@ tags:
 - [[Decision Log]] - `conceptually_related_to` [EXTRACTED]
 - [[Obsidian Setup]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Pitch_and_Core_Loop
+#graphify/concept #graphify/EXTRACTED #community/Decisions_and_Island_Tiers

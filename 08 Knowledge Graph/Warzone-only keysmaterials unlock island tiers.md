@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Mechanics to Borrow.md"
 type: "concept"
-community: "Islands Research and Pillars"
+community: "Islands Research"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Islands_Research_and_Pillars
+  - community/Islands_Research
 ---
 
 # Warzone-only keys/materials unlock island tiers
@@ -14,4 +14,4 @@ tags:
 - [[Key-gated adventure islands]] - `semantically_similar_to` [INFERRED]
 - [[Mechanics to Borrow]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Islands_Research_and_Pillars
+#graphify/concept #graphify/EXTRACTED #community/Islands_Research

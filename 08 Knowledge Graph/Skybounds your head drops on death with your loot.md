@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Skybounds (Minecraft).md"
 type: "concept"
-community: "Skybounds and Loot Heads"
+community: "Audience, Policy and Death Drops"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skybounds_and_Loot_Heads
+  - community/Audience_Policy_and_Death_Drops
 ---
 
 # Skybounds: your head drops on death with your loot
@@ -14,4 +14,4 @@ tags:
 - [[Loot head your loot drops in your avatar's head on death]] - `rationale_for` [EXTRACTED]
 - [[Skybounds (Minecraft)]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skybounds_and_Loot_Heads
+#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Death_Drops

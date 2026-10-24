@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/PromptUI.luau"
 type: "code"
-community: "HUD and Toasts"
+community: "HUD and Hotbar"
 location: "L32"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Toasts
+  - community/HUD_and_Hotbar
 ---
 
 # show()
@@ -23,4 +23,4 @@ tags:
 - [[Theme.title()]] - `calls` [INFERRED]
 - [[keyLabel()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Toasts
+#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

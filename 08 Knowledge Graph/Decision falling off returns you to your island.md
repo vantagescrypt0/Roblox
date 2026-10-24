@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Decision Log.md"
 type: "concept"
-community: "Island Plots and Spawning"
+community: "Decisions and Island Tiers"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Island_Plots_and_Spawning
+  - community/Decisions_and_Island_Tiers
 ---
 
 # Decision: falling off returns you to your island
@@ -14,4 +14,4 @@ tags:
 - [[Decision Log]] - `references` [EXTRACTED]
 - [[IslandService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Island_Plots_and_Spawning
+#graphify/concept #graphify/EXTRACTED #community/Decisions_and_Island_Tiers

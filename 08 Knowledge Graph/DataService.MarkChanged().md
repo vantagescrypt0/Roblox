@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/DataService.luau"
 type: "code"
-community: "Inventory and Coins"
-location: "L81"
+community: "Farming, Combat and Inventory"
+location: "L84"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Inventory_and_Coins
+  - community/Farming_Combat_and_Inventory
 ---
 
 # DataService.MarkChanged()
@@ -30,4 +30,4 @@ tags:
 - [[onPlotClicked()]] - `calls` [INFERRED]
 - [[onSetHotbar()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Inventory_and_Coins
+#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory

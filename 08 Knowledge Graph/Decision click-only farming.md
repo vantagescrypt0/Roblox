@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Decision Log.md"
 type: "concept"
-community: "Pitch and Core Loop"
+community: "Decisions and Island Tiers"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Pitch_and_Core_Loop
+  - community/Decisions_and_Island_Tiers
 ---
 
 # Decision: click-only farming
@@ -15,4 +15,4 @@ tags:
 - [[Decision Log]] - `references` [EXTRACTED]
 - [[FarmService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Pitch_and_Core_Loop
+#graphify/concept #graphify/INFERRED #community/Decisions_and_Island_Tiers

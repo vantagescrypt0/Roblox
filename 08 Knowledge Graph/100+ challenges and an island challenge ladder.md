@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Skybounds (Minecraft).md"
 type: "concept"
-community: "Skybounds and Loot Heads"
+community: "Tutorial and Roadmap"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skybounds_and_Loot_Heads
+  - community/Tutorial_and_Roadmap
 ---
 
 # 100+ challenges and an island challenge ladder
@@ -14,4 +14,4 @@ tags:
 - [[Beginner quest chain (13 quests, ends at level 10)]] - `semantically_similar_to` [INFERRED]
 - [[Skybounds (Minecraft)]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skybounds_and_Loot_Heads
+#graphify/concept #graphify/EXTRACTED #community/Tutorial_and_Roadmap

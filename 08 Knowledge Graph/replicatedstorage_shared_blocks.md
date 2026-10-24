@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Island Plots and Spawning"
+community: "Breaking, Placing and Crafting"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Island_Plots_and_Spawning
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # replicatedstorage_shared_blocks
@@ -19,4 +19,4 @@ tags:
 - [[IslandService.luau]] - `imports` [EXTRACTED]
 - [[TownService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Island_Plots_and_Spawning
+#graphify/concept #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

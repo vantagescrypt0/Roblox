@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Skills & Levels.md"
 type: "concept"
-community: "Skills, Levels and Content"
+community: "Farming, Combat and Inventory"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skills_Levels_and_Content
+  - community/Farming_Combat_and_Inventory
 ---
 
 # Farming skill
@@ -15,4 +15,4 @@ tags:
 - [[ProgressionService.luau]] - `implements` [INFERRED]
 - [[Skills & Levels]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skills_Levels_and_Content
+#graphify/concept #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

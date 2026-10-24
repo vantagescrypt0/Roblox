@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Util/BlockWorld.luau"
 type: "code"
-community: "Block Breaking and Toughness"
+community: "Breaking, Placing and Crafting"
 location: "L68"
 tags:
   - graphify/code
-  - graphify/EXTRACTED
-  - community/Block_Breaking_and_Toughness
+  - graphify/INFERRED
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # BlockWorld.get()
@@ -15,5 +15,7 @@ tags:
 - [[BlockWorld.key()]] - `calls` [EXTRACTED]
 - [[BlockWorld.luau]] - `contains` [EXTRACTED]
 - [[onBreak()]] - `calls` [INFERRED]
+- [[regrowRocks()]] - `calls` [INFERRED]
+- [[regrowTrees()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Block_Breaking_and_Toughness
+#graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Market, Mobs and Quests"
+community: "Farming, Combat and Inventory"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Market_Mobs_and_Quests
+  - community/Farming_Combat_and_Inventory
 ---
 
 # script_parent_progressionservice
@@ -17,4 +17,4 @@ tags:
 - [[MobService.luau]] - `imports` [EXTRACTED]
 - [[QuestService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Market_Mobs_and_Quests
+#graphify/concept #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

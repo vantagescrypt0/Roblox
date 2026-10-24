@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/CraftingWindow.luau"
 type: "code"
-community: "HUD and Toasts"
-location: "L252"
+community: "HUD and Hotbar"
+location: "L267"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Toasts
+  - community/HUD_and_Hotbar
 ---
 
 # buildDetail()
@@ -26,4 +26,4 @@ tags:
 - [[Theme.title()]] - `calls` [INFERRED]
 - [[statRow()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Toasts
+#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

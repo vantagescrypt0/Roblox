@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Island Plots and Spawning"
+community: "Farming, Combat and Inventory"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Island_Plots_and_Spawning
+  - community/Farming_Combat_and_Inventory
 ---
 
 # replicatedstorage_shared_islandtiers
@@ -17,4 +17,4 @@ tags:
 - [[MarketService.luau]] - `imports` [EXTRACTED]
 - [[StateService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Island_Plots_and_Spawning
+#graphify/concept #graphify/EXTRACTED #community/Farming_Combat_and_Inventory

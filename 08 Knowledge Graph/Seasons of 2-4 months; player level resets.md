@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Skills & Levels.md"
 type: "concept"
-community: "Seasons and Trends"
+community: "Skills, Levels and Content"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Seasons_and_Trends
+  - community/Skills_Levels_and_Content
 ---
 
 # Seasons of 2-4 months; player level resets
@@ -18,4 +18,4 @@ tags:
 - [[What resets each season]] - `conceptually_related_to` [EXTRACTED]
 - [[Why big hits declined event spikes, exploits, economy trust, confusing resets]] - `rationale_for` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Seasons_and_Trends
+#graphify/concept #graphify/EXTRACTED #community/Skills_Levels_and_Content

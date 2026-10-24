@@ -188,10 +188,66 @@ POTATO = [
     "................",
 ]
 
+COAL = [
+    "................",
+    "................",
+    "................",
+    "......oooo......",
+    "....ooKKKhoo....",
+    "...oKKkkKKhho...",
+    "..oKkkkkkKKKho..",
+    "..oKkkKkkkkKKo..",
+    "..okkkkkkkKkko..",
+    "..oKkkkKkkkkKo..",
+    "...okkkkkkkko...",
+    "...oKkkkkkKo....",
+    "....ookkkko.....",
+    "......oooo......",
+    "................",
+    "................",
+]
+RAW_IRON = [
+    "................",
+    "................",
+    "................",
+    ".....ooo........",
+    "....owwro.ooo...",
+    "...owrrrRowwro..",
+    "...orrRrrrrrRo..",
+    "..owrrrrRrrrro..",
+    "..orrRrrrrwrRo..",
+    "..orrrrrrrrRo...",
+    "...oRrrwrrRo....",
+    "....orrrRro.....",
+    ".....oooo.......",
+    "................",
+    "................",
+    "................",
+]
+IRON_INGOT = [
+    "................",
+    "................",
+    "................",
+    "................",
+    ".......oooooo...",
+    "......owwwwiIo..",
+    ".....owiiiiiIo..",
+    "....owiiiiiIIo..",
+    "...owiiiiiIIo...",
+    "..owiiiiiIIo....",
+    "..oIIIIIIIo.....",
+    "..oooooooo......",
+    "................",
+    "................",
+    "................",
+    "................",
+]
+
 HANDLE = {"h": (104, 78, 46), "g": (73, 54, 30), "o": (36, 26, 16)}
 TIERS = {
     "Wooden": {"m": (162, 130, 78), "l": (196, 162, 102), "d": (118, 92, 55)},
     "Stone": {"m": (125, 125, 125), "l": (165, 165, 165), "d": (88, 88, 88)},
+    "Iron": {"m": (214, 214, 214), "l": (250, 250, 250), "d": (150, 150, 152)},
     "Crystal": {"m": (80, 196, 238), "l": (176, 240, 255), "d": (36, 132, 186)},
 }
 CROPS = {
@@ -220,6 +276,17 @@ ITEMS["Wheat"] = (WHEAT, CROPS)
 ITEMS["WheatSeeds"] = (SEEDS, CROPS)
 ITEMS["Carrot"] = (CARROT, CROPS)
 ITEMS["Potato"] = (POTATO, CROPS)
+ORES = {
+    "k": (34, 34, 36), "K": (58, 58, 62), "h": (98, 98, 106), "o": (14, 14, 16),
+    "r": (198, 150, 118), "R": (156, 108, 80), "w": (232, 198, 166),
+    "i": (214, 214, 214), "I": (162, 162, 166),
+}
+ITEMS["Coal"] = (COAL, ORES)
+ITEMS["RawIron"] = (RAW_IRON, {**ORES, "o": (84, 58, 40)})
+ITEMS["IronIngot"] = (IRON_INGOT, {**ORES, "o": (84, 84, 90), "w": (255, 255, 255)})
+for _name, (_sprite, _colors) in ITEMS.items():
+    assert len(_sprite) == 16 and all(len(row) == 16 for row in _sprite), _name
+    assert all(ch == "." or ch in _colors for row in _sprite for ch in row), _name
 
 
 def build_atlas():
@@ -287,8 +354,8 @@ def main():
     objects = [make_item(i, name, sprite, mat) for i, (name, (sprite, _)) in enumerate(ITEMS.items())]
 
     for i, obj in enumerate(objects):
-        obj.location = ((i % 6) * 3.6 - 9, 0, -(i // 6) * 3.6 + 4)
-    common.render_preview("Tools", target=(0, 0, 0.5), distance=24, height=2, angle_deg=0)
+        obj.location = ((i % 8) * 3.6 - 12.6, 0, -(i // 8) * 3.6 + 3.6)
+    common.render_preview("Tools", target=(0, 0, 0), distance=30, height=2, angle_deg=0)
     for obj in objects:
         obj.location = (0, 0, 0)
 

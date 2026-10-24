@@ -6,6 +6,7 @@
 --   right click (or tap) -> place the selected hotbar block against the face you aim at
 --   click / tap farmland -> plant the seeds you hold (or harvest when it's ripe)
 --   click / tap the crafting table or the Merchant -> open crafting / the market
+--   right click / tap a furnace -> smelting (left click breaks it, so you can move it)
 -- The server double-checks everything.
 
 local Debris = game:GetService("Debris")
@@ -18,6 +19,7 @@ local Workspace = game:GetService("Workspace")
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Mining = require(ReplicatedStorage.Shared.Mining)
+local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Hotbar = require(script.Parent.Hotbar)
 local Theme = require(script.Parent.UI.Theme)
@@ -39,6 +41,9 @@ local DEBRIS_COLORS: { [string]: Color3 } = {
 	Dirt = Color3.fromRGB(134, 96, 67),
 	Stone = Color3.fromRGB(125, 125, 125),
 	Cobblestone = Color3.fromRGB(120, 120, 120),
+	CoalOre = Color3.fromRGB(70, 70, 72),
+	IronOre = Color3.fromRGB(176, 140, 112),
+	Furnace = Color3.fromRGB(110, 110, 110),
 	Wood = Color3.fromRGB(104, 82, 51),
 	Planks = Color3.fromRGB(162, 130, 78),
 	Leaves = Color3.fromRGB(58, 120, 38),
@@ -58,7 +63,7 @@ type Target = {
 }
 
 export type Callbacks = {
-	OpenCrafting: () -> (),
+	OpenCrafting: (station: Recipes.Station) -> (),
 	OpenMarket: () -> (),
 }
 
@@ -205,13 +210,18 @@ local function place()
 end
 
 -- Clicking something you use rather than break. Returns true if the click was used.
-local function interact(): boolean
+-- `secondary` is a right click or a tap; breakable stations (the furnace) only open on
+-- those, so a left click can still break them.
+local function interact(secondary: boolean): boolean
 	local current = target
 	if current and current.Part.Name == "Farmland" then
 		Remotes.FarmClick:FireServer(current.X, current.Y, current.Z)
 		return true
 	elseif current and current.Part.Name == "CraftingTable" then
-		callbacks.OpenCrafting()
+		callbacks.OpenCrafting("CraftingTable")
+		return true
+	elseif current and secondary and current.Part.Name == "Furnace" then
+		callbacks.OpenCrafting("Furnace")
 		return true
 	elseif aimingAtMerchant() then
 		callbacks.OpenMarket()
@@ -236,6 +246,8 @@ local function hintFor(current: Target?): string
 		return "Click to plant seeds"
 	elseif name == "CraftingTable" then
 		return "Click to craft"
+	elseif name == "Furnace" then
+		return "Right-click to smelt"
 	end
 	local def = Blocks.Types[name]
 	if def and def.Breakable and def.RequiresTool then
@@ -321,7 +333,7 @@ function BlockController.Start(handlers: Callbacks)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			pointer = nil
 			target = aim()
-			if not interact() then
+			if not interact(false) then
 				breaking = true
 			end
 		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
@@ -354,7 +366,7 @@ function BlockController.Start(handlers: Callbacks)
 			-- A right click (not a camera drag) uses or places
 			if start and (UserInputService:GetMouseLocation() - start).Magnitude <= CLICK_SLOP then
 				target = aim()
-				if not interact() then
+				if not interact(true) then
 					place()
 				end
 			end
@@ -364,7 +376,7 @@ function BlockController.Start(handlers: Callbacks)
 			breaking = false
 			if start and os.clock() - start.Time < TAP_TIME then
 				target = aim()
-				if not interact() then
+				if not interact(true) then
 					place()
 				end
 			end

@@ -1,17 +1,18 @@
 ---
 source_file: "game/src/server/Services/IslandService.luau"
 type: "code"
-community: "Island Plots and Spawning"
-location: "L72"
+community: "Breaking, Placing and Crafting"
+location: "L84"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Island_Plots_and_Spawning
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # plotCenter()
 
 ## Connections
 - [[IslandService.luau]] - `contains` [EXTRACTED]
+- [[build()_1]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Island_Plots_and_Spawning
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

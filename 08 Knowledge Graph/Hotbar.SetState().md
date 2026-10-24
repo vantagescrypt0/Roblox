@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hotbar.luau"
 type: "code"
-community: "Hotbar and Item Icons"
+community: "Mouse and Touch Controls"
 location: "L148"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Hotbar_and_Item_Icons
+  - community/Mouse_and_Touch_Controls
 ---
 
 # Hotbar.SetState()
@@ -15,4 +15,4 @@ tags:
 - [[Hotbar.luau]] - `contains` [EXTRACTED]
 - [[render()_1]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Hotbar_and_Item_Icons
+#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
