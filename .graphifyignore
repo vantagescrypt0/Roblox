@@ -1,0 +1,25 @@
+# What graphify (the knowledge graph tool) should skip. Same syntax as .gitignore.
+
+# Binary art: Blender files, exports, renders, textures, Roblox model files
+art/blend/
+art/export/
+art/renders/
+art/textures/
+game/assets/
+game/assets-replicated/
+*.rbxm
+*.rbxlx
+*.fbx
+*.png
+
+# Vendored library and generated / tool files
+game/src/server/Packages/
+game/sourcemap.json
+game/.vscode/
+game/licenses/
+
+# Obsidian config, note templates, and graphify's own output
+.obsidian/
+99 Templates/
+graphify-out/
+08 Knowledge Graph/

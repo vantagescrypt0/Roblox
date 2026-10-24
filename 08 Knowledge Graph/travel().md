@@ -1,0 +1,18 @@
+---
+source_file: "game/src/server/Services/TownService.luau"
+type: "code"
+community: "Town and Merchant Build"
+location: "L46"
+tags:
+  - graphify/code
+  - graphify/EXTRACTED
+  - community/Town_and_Merchant_Build
+---
+
+# travel()
+
+## Connections
+- [[TownService.Enter()]] - `calls` [EXTRACTED]
+- [[TownService.luau]] - `contains` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/Town_and_Merchant_Build

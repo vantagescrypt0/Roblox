@@ -11,3 +11,13 @@ __pycache__/
 
 # Textures Blender's FBX export unpacks next to the file
 *.fbm/
+
+# graphify: keep the graph, report, viewer and manifest; skip local paths, caches and intermediates
+graphify-out/cache/
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/.graphify_ast.json
+graphify-out/.graphify_chunk_*.json
+graphify-out/.graphify_detect.json
+graphify-out/.graphify_extract.json
+graphify-out/.graphify_semantic.json

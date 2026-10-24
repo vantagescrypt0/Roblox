@@ -8,7 +8,7 @@
 - **Research:** [[Trends - Oct 2026]] · [[Islands (Roblox)]] · [[Skybounds (Minecraft)]] · [[Roblox Policies]]
 - **Design:** [[Core Loop]] · [[Warzone]] · [[Skills & Levels]] · [[Tutorial & Quests]] · [[Islands Feature Checklist]] · [[Mechanics to Borrow]] · [[Anti-Burnout Ideas]]
 - **Content:** [[Content Index]]
-- **Tech:** [[Tools & Stack]] · [[Workflow]]
+- **Tech:** [[Tools & Stack]] · [[Workflow]] · [[graph.canvas|Knowledge graph map]] · [[GRAPH_REPORT|Graph report]]
 - **Money:** [[Monetization Principles]]
 - **Plan:** [[Roadmap]] · [[Decision Log]] · [[Open Questions]]
 - **Setup:** [[Obsidian Setup]]
