@@ -23,3 +23,7 @@ game/licenses/
 99 Templates/
 graphify-out/
 08 Knowledge Graph/
+
+# Claude Code config (written by graphify claude install)
+CLAUDE.md
+.claude/

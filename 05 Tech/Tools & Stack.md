@@ -11,7 +11,7 @@
 | Selene | 0.32.0 | Linter (`game/selene.toml`) |
 | luau-lsp | 1.70.1 | Type checker (`luau-lsp analyze`, see `game/README.md`) |
 | Blender | 5.2.2 LTS | Portable install in `%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64` |
-| graphify | 0.9.91 | Knowledge graph of the code + notes (pip package `graphifyy`, CLI in `%APPDATA%\Python\Python313\Scripts`). See below |
+| graphify | 0.9.95 | Knowledge graph of the code + notes (pip package `graphifyy`; `graphify` command is on PATH). See below |
 
 ## Knowledge graph (graphify)
 graphify maps the whole project — every Luau file and function, the Blender scripts, and these notes — into one graph, so Claude can look up how things connect instead of re-reading every file (saves usage), and you can explore it in Obsidian.
@@ -19,7 +19,7 @@ graphify maps the whole project — every Luau file and function, the Blender sc
 - **In a browser:** `graphify-out/graph.html`.
 - **What's skipped:** see `.graphifyignore` (art binaries, vendored ProfileStore, generated files).
 - **Refresh after code changes:** `graphify update .` (code only, free), then `python tools/graph_to_vault.py` to refresh the Obsidian notes. Note changes are re-read by Claude with `/graphify . --update`.
-- **Claude Code hook-up (pending your OK):** `graphify install` + `graphify claude install` add the `/graphify` skill and a hook so Claude checks the graph first.
+- **Claude Code hook-up (done 2026-10-24):** the `/graphify` skill is installed, `CLAUDE.md` tells Claude to run `graphify query` before searching files, and a hook in `.claude/settings.json` reminds it. Uninstall with `graphify claude uninstall` / `graphify uninstall`.
 - Known gap: the Lua parser trips on Luau type annotations, so some code files are only partly mapped.
 
 How to use them: `game/README.md` (code) and `art/README.md` (models). The `game/` folder is hidden from Obsidian so code doesn't clutter search.
