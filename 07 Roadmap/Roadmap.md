@@ -9,7 +9,7 @@ No dates — quality over speed.
    - [x] Player data saving with ProfileStore (needs a published place + Studio API access to actually save)
    - [x] Blender island imported, colored, saved as `game/assets/StarterIsland.rbxm` (synced by Rojo into `ServerStorage.Assets`) — playtested
    - [x] Published privately as **"Sky Farm Prototype"** (placeholder name) — 2026-10-15. Universe 10771160256, place 70908743282881. Last update published 2026-10-24 (ores, furnace, iron tools)
-   - [x] Studio access to API services enabled (2026-10-15): Studio playtests now load and save real player data (same save as the live game)
+   - [x] Studio access to API services enabled (2026-10-15): Studio playtests of the published place can save; since 2026-10-24 they use their own separate save, never real players' data
    - [x] Gather → craft → farm basics: chop/mine, 6 farm plots with offline growth, market stand, workbench + swords, XP/levels, HUD (playtested 2026-10-15)
    - [x] Greybox Warzone + loot heads: portal (level 10), chests, Slimes/Brutes, PvP, raid bag, extraction, loot heads (playtested 2026-10-15)
    - [x] Beginner quests ([[Tutorial & Quests]]) with tracker + highlight
