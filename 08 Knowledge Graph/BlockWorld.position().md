@@ -13,9 +13,9 @@ tags:
 
 ## Connections
 - [[BlockWorld.luau]] - `contains` [EXTRACTED]
+- [[Portal.makeField()]] - `calls` [INFERRED]
 - [[inReach()]] - `calls` [INFERRED]
 - [[makePart()]] - `calls` [EXTRACTED]
-- [[makePortalSurface()_1]] - `calls` [INFERRED]
 - [[nearStation()]] - `calls` [INFERRED]
 - [[onPlace()]] - `calls` [INFERRED]
 

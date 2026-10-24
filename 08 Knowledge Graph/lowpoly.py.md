@@ -19,6 +19,7 @@ tags:
 - [[bpy]] - `imports` [EXTRACTED]
 - [[export_fbx()_1]] - `contains` [EXTRACTED]
 - [[islands.py]] - `imports_from` [EXTRACTED]
+- [[items3d.py]] - `imports_from` [EXTRACTED]
 - [[marker()]] - `contains` [EXTRACTED]
 - [[math]] - `imports` [EXTRACTED]
 - [[mathutils]] - `imports_from` [EXTRACTED]

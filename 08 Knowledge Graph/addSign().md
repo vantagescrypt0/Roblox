@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/TownService.luau"
 type: "code"
-community: "Prop Placement"
-location: "L71"
+community: "Community 21"
+location: "L65"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Prop_Placement
+  - community/Community_21
 ---
 
 # addSign()
@@ -15,4 +15,4 @@ tags:
 - [[Props.FaceToward()]] - `calls` [INFERRED]
 - [[TownService.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Prop_Placement
+#graphify/code #graphify/EXTRACTED #community/Community_21

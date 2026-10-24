@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[Hud.Render()]] - `calls` [INFERRED]
 - [[Theme.luau]] - `contains` [EXTRACTED]
-- [[render()]] - `calls` [INFERRED]
+- [[render()_1]] - `calls` [INFERRED]
 
 #graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

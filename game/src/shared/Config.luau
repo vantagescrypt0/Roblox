@@ -16,4 +16,8 @@ Config.Island = table.freeze({
 	FallLimit = 120,
 })
 
+-- Uploaded copy of art/textures/item_icons.png (all item icons on one sheet, see ItemArt.luau).
+-- Empty = icons fall back to live 3D previews.
+Config.ItemIconSheet = "rbxassetid://81612619135011"
+
 return table.freeze(Config)

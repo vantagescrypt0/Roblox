@@ -1,11 +1,11 @@
 ---
 source_file: "game/README.md"
 type: "concept"
-community: "Publishing and Dev Tools"
+community: "Community 23"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Publishing_and_Dev_Tools
+  - community/Community_23
 ---
 
 # Studio dev shortcuts (Dev:Invoke Level/Skill/Give)
@@ -14,4 +14,4 @@ tags:
 - [[DevService.luau]] - `implements` [INFERRED]
 - [[Game code README]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Publishing_and_Dev_Tools
+#graphify/concept #graphify/EXTRACTED #community/Community_23

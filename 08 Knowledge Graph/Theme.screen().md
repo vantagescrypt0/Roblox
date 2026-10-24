@@ -15,6 +15,7 @@ tags:
 - [[BagWindow.Start()]] - `calls` [INFERRED]
 - [[BlockController.Start()]] - `calls` [INFERRED]
 - [[Hotbar.Start()]] - `calls` [INFERRED]
+- [[Hud.Start()]] - `calls` [INFERRED]
 - [[Theme.luau]] - `contains` [EXTRACTED]
 - [[Theme.make()]] - `calls` [EXTRACTED]
 - [[Window.new()]] - `calls` [INFERRED]

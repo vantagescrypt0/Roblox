@@ -23,7 +23,7 @@ One note per item, resource, mob, island type or event. Use the templates in `99
 - Tools: Pickaxe, Axe, Shovel, Sword in 4 tiers. Wooden (Planks + Sticks, speed x2, 60 uses), Stone (Stone + Sticks, x4, 132 uses), Iron (Iron Ingots + Sticks, x6, 250 uses, level 5), Crystal (Crystal + Sticks, x8, 600 uses, level 10). Costs like Minecraft: pickaxe/axe 3 head + 2 sticks, shovel 1 + 2, sword 2 + 1
 
 ## NPCs
-- Merchant (Town Market stall): villager-style trader in a straw hat; trade to sell crops and buy seeds
+- Merchant (Town Market stall): an original travelling trader (newsboy cap, bushy mustache, green vest, red scarf, big backpack with a bedroll and lantern); click or tap him to sell crops and buy seeds. Replaced the earlier villager-style design (too close to Minecraft)
 
 ## Resources
 - Trees (Wood) regrow after 90s once fully chopped

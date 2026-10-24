@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/BlockController.luau"
 type: "code"
-community: "Mouse and Touch Controls"
+community: "Community 3"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_3
 ---
 
 # BlockController.luau
@@ -35,4 +35,4 @@ tags:
 - [[swing()_1]] - `contains` [EXTRACTED]
 - [[update()_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/EXTRACTED #community/Community_3

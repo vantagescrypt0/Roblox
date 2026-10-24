@@ -14,7 +14,9 @@ tags:
 ## Connections
 - [[Hud.Celebrate()]] - `contains` [EXTRACTED]
 - [[Hud.Render()]] - `contains` [EXTRACTED]
+- [[Hud.Start()]] - `contains` [EXTRACTED]
 - [[Hud.Toast()]] - `contains` [EXTRACTED]
+- [[Hud.Travel()]] - `contains` [EXTRACTED]
 - [[buildButtons()]] - `contains` [EXTRACTED]
 - [[buildCelebration()]] - `contains` [EXTRACTED]
 - [[buildProfile()]] - `contains` [EXTRACTED]
@@ -22,6 +24,7 @@ tags:
 - [[buildToasts()]] - `contains` [EXTRACTED]
 - [[replicatedstorage_shared_items]] - `imports` [EXTRACTED]
 - [[script_parent_ui_theme]] - `imports` [EXTRACTED]
+- [[setFade()]] - `contains` [EXTRACTED]
 - [[sideButton()]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar

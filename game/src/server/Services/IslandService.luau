@@ -16,7 +16,10 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local Portal = require(script.Parent.Parent.Util.Portal)
 local DataService = require(script.Parent.DataService)
+local InventoryService = require(script.Parent.InventoryService)
+local StateService = require(script.Parent.StateService)
 
 local ISLAND = Config.Island
 local SIZE = Blocks.Size
@@ -220,23 +223,9 @@ local function generate(tier: number): Generated
 	-- Keep the space above it free so it can't be buried
 	protected[key(ct.X, ct.Y + 1, ct.Z)] = true
 
-	-- Obsidian portal (Nether-portal style: 4 wide, 5 tall, 2x3 opening) at the back
+	-- Runestone portal to the Town at the back (see Util/Portal)
 	local portalZ = -(radius - 2)
-	for y = 1, 5 do
-		for x = -2, 1 do
-			local frame = x == -2 or x == 1 or y == 1 or y == 5
-			if frame then
-				cells[key(x, y, portalZ)] = "Obsidian"
-			end
-			protected[key(x, y, portalZ)] = true
-		end
-	end
-	-- Keep the ground in front of and under the portal solid
-	for x = -2, 1 do
-		for z = portalZ - 1, portalZ + 1 do
-			protected[key(x, 0, z)] = true
-		end
-	end
+	Portal.addCells(cells, protected, 0, portalZ)
 
 	-- Trees and rocks on free spots that fit this island
 	local trees: { Tree } = {}
@@ -294,38 +283,6 @@ local function makeSpawn(position: Vector3, parent: Instance): SpawnLocation
 	return spawnPoint
 end
 
--- Glowing purple sheet inside the obsidian frame
-local function makePortalSurface(world: BlockWorld.World, portalZ: number): BasePart
-	local surface = Instance.new("Part")
-	surface.Name = "PortalSurface"
-	surface.Size = Vector3.new(2 * SIZE, 3 * SIZE, 0.4)
-	surface.CFrame = CFrame.new(BlockWorld.position(world, -0.5, 3, portalZ))
-	surface.Material = Enum.Material.Neon
-	surface.Color = Color3.fromRGB(140, 70, 255)
-	surface.Transparency = 0.3
-	surface.Anchored = true
-	surface.CanCollide = false
-	surface.Parent = world.Model
-
-	local light = Instance.new("PointLight")
-	light.Color = Color3.fromRGB(170, 100, 255)
-	light.Range = 16
-	light.Brightness = 2
-	light.Parent = surface
-
-	local particles = Instance.new("ParticleEmitter")
-	particles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
-	particles.Color = ColorSequence.new(Color3.fromRGB(200, 150, 255), Color3.fromRGB(110, 60, 255))
-	particles.LightEmission = 1
-	particles.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.45), NumberSequenceKeypoint.new(1, 0) })
-	particles.Lifetime = NumberRange.new(1, 1.8)
-	particles.Rate = 20
-	particles.Speed = NumberRange.new(0.5, 1.5)
-	particles.SpreadAngle = Vector2.new(180, 180)
-	particles.Parent = surface
-	return surface
-end
-
 local function build(player: Player, data: DataService.Data, tier: number, plot: number): Island
 	local center = plotCenter(plot)
 	local generated = generate(tier)
@@ -355,7 +312,7 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 		Base = base,
 		CraftingTable = CRAFTING_TABLE,
 		FarmCells = generated.FarmCells,
-		PortalSurface = makePortalSurface(world, generated.PortalZ),
+		PortalSurface = Portal.makeField(world, 0, generated.PortalZ),
 		Trees = generated.Trees,
 		Rocks = generated.Rocks,
 	}
@@ -525,6 +482,27 @@ local function regrowRocks()
 	end
 end
 
+-- Buying the next island size (from the Island window)
+local function onExpand(player: Player)
+	local data = DataService.GetData(player)
+	if not data then
+		return
+	end
+	local nextTier = IslandTiers[data.Island.Tier + 1]
+	if not nextTier then
+		StateService.Notify(player, "Your island is already the biggest it can be!", "bad")
+		return
+	end
+	if not InventoryService.SpendCoins(player, nextTier.Cost) then
+		StateService.Notify(player, `You need {nextTier.Cost} coins to expand`, "bad")
+		return
+	end
+	data.Island.Tier += 1
+	DataService.MarkChanged(player)
+	IslandService.Rebuild(player)
+	StateService.Notify(player, `Your island grew into a {nextTier.Name}!`, "level")
+end
+
 -- Players who fall off are put back on their island instead of dying in the void
 local function catchFallers()
 	for player, island in islands do
@@ -548,6 +526,7 @@ function IslandService.Start()
 	islandsFolder.Parent = workspace
 
 	DataService.OnDataLoaded(onDataLoaded)
+	Remotes.Expand.OnServerEvent:Connect(onExpand)
 	Players.PlayerRemoving:Connect(onPlayerRemoving)
 
 	local elapsed, treeTimer = 0, 0

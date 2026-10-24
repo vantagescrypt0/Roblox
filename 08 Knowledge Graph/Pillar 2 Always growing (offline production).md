@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Design Pillars.md"
 type: "rationale"
-community: "Trends and Anti-Burnout"
+community: "Islands Research"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Trends_and_Anti-Burnout
+  - community/Islands_Research
 ---
 
 # Pillar 2: Always growing (offline production)
@@ -15,4 +15,4 @@ tags:
 - [[Offline progress and timers]] - `conceptually_related_to` [INFERRED]
 - [[Passive generators with a range limit]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Trends_and_Anti-Burnout
+#graphify/rationale #graphify/EXTRACTED #community/Islands_Research

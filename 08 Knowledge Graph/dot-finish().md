@@ -2,7 +2,7 @@
 source_file: "art/scripts/lowpoly.py"
 type: "code"
 community: "Block Art Pipeline (Blender)"
-location: "L271"
+location: "L283"
 tags:
   - graphify/code
   - graphify/INFERRED
@@ -13,6 +13,7 @@ tags:
 
 ## Connections
 - [[Builder]] - `method` [EXTRACTED]
+- [[build_items()]] - `calls` [INFERRED]
 - [[build_tier()]] - `calls` [INFERRED]
 - [[crops()]] - `calls` [INFERRED]
 - [[marker()]] - `calls` [INFERRED]

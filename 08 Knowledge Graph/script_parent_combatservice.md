@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Player Data and Held Items"
+community: "Community 30"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Player_Data_and_Held_Items
+  - community/Community_30
 ---
 
 # script_parent_combatservice
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[HotbarService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Player_Data_and_Held_Items
+#graphify/concept #graphify/EXTRACTED #community/Community_30

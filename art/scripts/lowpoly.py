@@ -77,6 +77,18 @@ PALETTE = {
     "rune_dark": "#7A4BD6",
     "portal": "#8A5CF6",
     "glow": "#FFD27A",
+    # Tools and materials (items3d.py); appended so older swatches keep their place
+    "leather": "#7B4A2C",
+    "leather_dark": "#5A341F",
+    "iron": "#D3D9E0",
+    "iron_dark": "#9AA4B0",
+    "crystal": "#4FD3F2",
+    "crystal_light": "#B5F2FF",
+    "crystal_dark": "#2390B8",
+    "coal": "#2E2E33",
+    "coal_light": "#4B4B53",
+    "raw_iron": "#C99068",
+    "raw_iron_dark": "#9C6748",
 }
 
 GRID = 8

@@ -18,6 +18,9 @@ No dates — quality over speed.
    - [x] Minecraft pivot (2026-10-15): block islands, break/place blocks, 5-slot hotbar + inventory, crafting table & farmland blocks, Town with the Market, portal travel — playtested
    - [x] Tools + toughness (2026-10-15): pickaxe/axe/shovel/sword in Wooden/Stone/Crystal, block hardness, mining speed, durability, pixel-art tool models, crafting table with item photos, click-to-farm, Merchant NPC — playtested
    - [x] Ores + smelting (2026-10-24): coal/iron ore (regrowing boulders + underside veins), Furnace, Iron tool tier, 4 new quests — playtested
+   - [x] Art pass (2026-10-24): low-poly 3D tools/crops/ores with pre-rendered icon sheet, original Merchant, runestone portals
+   - [x] Town as a separate place with teleports (code done 2026-10-24) — [ ] publish the Town place and test the teleports live
+   - [ ] UI style refresh (less generic / "AI-looking")
    - [ ] Saplings, a hoe to make farmland
    - [ ] Add the Warzone to Town (when you're ready)
    - [ ] Warzone arena art (still greybox)

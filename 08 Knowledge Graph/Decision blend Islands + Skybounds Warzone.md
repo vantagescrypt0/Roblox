@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Decision Log.md"
 type: "concept"
-community: "Pitch and Inspiration"
+community: "Core Loop and Pillars"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Pitch_and_Inspiration
+  - community/Core_Loop_and_Pillars
 ---
 
 # Decision: blend Islands + Skybounds Warzone
@@ -14,4 +14,4 @@ tags:
 - [[Decision Log]] - `references` [EXTRACTED]
 - [[Pitch own a floating island, drop into a shared Warzone, bring loot home]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Pitch_and_Inspiration
+#graphify/concept #graphify/EXTRACTED #community/Core_Loop_and_Pillars

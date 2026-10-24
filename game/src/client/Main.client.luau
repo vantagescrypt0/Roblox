@@ -4,6 +4,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterGui = game:GetService("StarterGui")
 
+local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local BlockController = require(script.Parent.BlockController)
@@ -30,7 +31,13 @@ QuestTracker.Start()
 PromptUI.Start()
 Hud.Start({
 	OnBag = BagWindow.Toggle,
-	OnIsland = IslandWindow.Toggle,
+	OnIsland = function()
+		if Places.Current() == "Town" then
+			Hud.Toast("Your island is back through the portal", "info")
+		else
+			IslandWindow.Toggle()
+		end
+	end,
 })
 Hotbar.Start()
 BlockController.Start({

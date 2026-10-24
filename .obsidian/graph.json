@@ -29,20 +29,6 @@
       }
     },
     {
-      "query": "tag:#community/Mouse_and_Touch_Controls",
-      "color": {
-        "a": 1,
-        "rgb": 7780274
-      }
-    },
-    {
-      "query": "tag:#community/Player_Data_and_Held_Items",
-      "color": {
-        "a": 1,
-        "rgb": 5873999
-      }
-    },
-    {
       "query": "tag:#community/Knowledge_Graph_Tools",
       "color": {
         "a": 1,
@@ -54,13 +40,6 @@
       "color": {
         "a": 1,
         "rgb": 11565729
-      }
-    },
-    {
-      "query": "tag:#community/Pitch_and_Inspiration",
-      "color": {
-        "a": 1,
-        "rgb": 16752039
       }
     },
     {
@@ -78,13 +57,6 @@
       }
     },
     {
-      "query": "tag:#community/Farming_Combat_and_Inventory",
-      "color": {
-        "a": 1,
-        "rgb": 5142951
-      }
-    },
-    {
       "query": "tag:#community/Skills_Levels_and_Content",
       "color": {
         "a": 1,
@@ -99,52 +71,10 @@
       }
     },
     {
-      "query": "tag:#community/Tutorial_and_Roadmap",
-      "color": {
-        "a": 1,
-        "rgb": 16752039
-      }
-    },
-    {
-      "query": "tag:#community/Decisions_and_Island_Tiers",
-      "color": {
-        "a": 1,
-        "rgb": 10253663
-      }
-    },
-    {
-      "query": "tag:#community/Trends_and_Anti-Burnout",
-      "color": {
-        "a": 1,
-        "rgb": 5142951
-      }
-    },
-    {
-      "query": "tag:#community/Prop_Placement",
-      "color": {
-        "a": 1,
-        "rgb": 15896107
-      }
-    },
-    {
       "query": "tag:#community/Merchant_Behaviour",
       "color": {
         "a": 1,
         "rgb": 14767961
-      }
-    },
-    {
-      "query": "tag:#community/Publishing_and_Dev_Tools",
-      "color": {
-        "a": 1,
-        "rgb": 7780274
-      }
-    },
-    {
-      "query": "tag:#community/Prompts",
-      "color": {
-        "a": 1,
-        "rgb": 5873999
       }
     },
     {

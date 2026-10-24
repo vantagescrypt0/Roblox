@@ -2,7 +2,7 @@
 source_file: "game/src/server/Services/TownService.luau"
 type: "code"
 community: "Breaking, Placing and Crafting"
-location: "L66"
+location: "L60"
 tags:
   - graphify/code
   - graphify/INFERRED

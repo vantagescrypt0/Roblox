@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/MarketService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
-location: "L62"
+community: "Community 10"
+location: "L58"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_10
 ---
 
 # onSell()
@@ -17,4 +17,4 @@ tags:
 - [[nearStall()]] - `calls` [EXTRACTED]
 - [[sellItem()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/EXTRACTED #community/Community_10

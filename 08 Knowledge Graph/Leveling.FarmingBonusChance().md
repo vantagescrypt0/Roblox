@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/shared/Leveling.luau"
 type: "code"
-community: "Skills, Levels and Content"
+community: "Community 11"
 location: "L17"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Skills_Levels_and_Content
+  - community/Community_11
 ---
 
 # Leveling.FarmingBonusChance()
@@ -15,4 +15,4 @@ tags:
 - [[Leveling.luau]] - `contains` [EXTRACTED]
 - [[onPlotClicked()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Skills_Levels_and_Content
+#graphify/code #graphify/EXTRACTED #community/Community_11

@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Pitch (Draft).md"
 type: "concept"
-community: "Pitch and Inspiration"
+community: "Core Loop and Pillars"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Pitch_and_Inspiration
+  - community/Core_Loop_and_Pillars
 ---
 
 # Pitch: own a floating island, drop into a shared Warzone, bring loot home
@@ -17,4 +17,4 @@ tags:
 - [[Pitch (Draft)]] - `references` [EXTRACTED]
 - [[Skybounds Warzone (the user's favorite moment)]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Pitch_and_Inspiration
+#graphify/concept #graphify/EXTRACTED #community/Core_Loop_and_Pillars

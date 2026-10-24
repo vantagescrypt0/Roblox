@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Mouse and Touch Controls"
+community: "HUD and Hotbar"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/HUD_and_Hotbar
 ---
 
 # script_parent_theme
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Window.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/concept #graphify/EXTRACTED #community/HUD_and_Hotbar

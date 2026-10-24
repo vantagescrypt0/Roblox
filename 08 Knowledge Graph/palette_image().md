@@ -2,7 +2,7 @@
 source_file: "art/scripts/lowpoly.py"
 type: "code"
 community: "Block Art Pipeline (Blender)"
-location: "L101"
+location: "L113"
 tags:
   - graphify/code
   - graphify/EXTRACTED

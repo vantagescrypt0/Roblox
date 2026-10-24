@@ -21,6 +21,6 @@ tags:
 - [[buildDetail()]] - `calls` [INFERRED]
 - [[buildProfile()]] - `calls` [INFERRED]
 - [[card()]] - `calls` [INFERRED]
-- [[render()]] - `calls` [INFERRED]
+- [[render()_1]] - `calls` [INFERRED]
 
 #graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

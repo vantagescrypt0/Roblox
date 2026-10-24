@@ -1,0 +1,21 @@
+{
+  "3": "BlockController.luau",
+  "4": "DataService.luau",
+  "7": "items3d.py",
+  "10": "DataService.MarkChanged",
+  "11": "FarmService.luau",
+  "13": "Decision: block toughness + tool power (Minecraft rules)",
+  "14": "CombatService.luau",
+  "16": "WarzoneService.luau",
+  "17": "Roadmap",
+  "18": "Decision Log",
+  "19": "Warzone",
+  "20": "Anti-Burnout Ideas",
+  "21": "TownService.luau",
+  "23": "BlockService.luau",
+  "24": "Main.client.luau",
+  "29": "script_parent_dataservice",
+  "30": "HotbarService.luau",
+  "31": "ItemArt.luau",
+  "32": "Places.luau"
+}

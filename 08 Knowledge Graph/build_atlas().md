@@ -2,7 +2,7 @@
 source_file: "art/scripts/blocks.py"
 type: "code"
 community: "Block Art Pipeline (Blender)"
-location: "L236"
+location: "L264"
 tags:
   - graphify/code
   - graphify/EXTRACTED

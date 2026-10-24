@@ -17,6 +17,7 @@ tags:
 - [[CraftingWindow.luau]] - `imports` [EXTRACTED]
 - [[FarmService.luau]] - `imports` [EXTRACTED]
 - [[IslandService.luau]] - `imports` [EXTRACTED]
+- [[Portal.luau]] - `imports` [EXTRACTED]
 - [[TownService.luau]] - `imports` [EXTRACTED]
 
 #graphify/concept #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

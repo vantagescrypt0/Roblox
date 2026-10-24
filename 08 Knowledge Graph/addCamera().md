@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/ItemIcon.luau"
 type: "code"
-community: "Mouse and Touch Controls"
-location: "L31"
+community: "Community 3"
+location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_3
 ---
 
 # addCamera()
@@ -15,4 +15,4 @@ tags:
 - [[ItemIcon.create()]] - `calls` [EXTRACTED]
 - [[ItemIcon.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/EXTRACTED #community/Community_3

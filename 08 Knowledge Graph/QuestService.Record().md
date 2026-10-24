@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/QuestService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
+community: "Community 10"
 location: "L56"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_10
 ---
 
 # QuestService.Record()
@@ -15,7 +15,6 @@ tags:
 - [[DataService.GetData()]] - `calls` [INFERRED]
 - [[DataService.MarkChanged()]] - `calls` [INFERRED]
 - [[QuestService.luau]] - `contains` [EXTRACTED]
-- [[TownService.Enter()]] - `calls` [INFERRED]
 - [[complete()]] - `calls` [EXTRACTED]
 - [[currentQuest()]] - `calls` [EXTRACTED]
 - [[onBreak()]] - `calls` [INFERRED]
@@ -24,4 +23,4 @@ tags:
 - [[onPlotClicked()]] - `calls` [INFERRED]
 - [[onSell()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/INFERRED #community/Community_10

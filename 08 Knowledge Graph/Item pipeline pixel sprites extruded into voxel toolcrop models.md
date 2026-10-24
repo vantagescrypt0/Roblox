@@ -4,7 +4,7 @@ type: "concept"
 community: "Tools and Workflow"
 tags:
   - graphify/concept
-  - graphify/INFERRED
+  - graphify/EXTRACTED
   - community/Tools_and_Workflow
 ---
 
@@ -13,6 +13,5 @@ tags:
 ## Connections
 - [[Art README]] - `references` [EXTRACTED]
 - [[Model pipeline script - .blend.fbxrender - Studio import]] - `conceptually_related_to` [INFERRED]
-- [[tools.py]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Tools_and_Workflow
+#graphify/concept #graphify/EXTRACTED #community/Tools_and_Workflow

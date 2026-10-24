@@ -32,7 +32,7 @@ TILES = [
     "craft_top", "craft_side", "farmland", "obsidian",
     "wool_red", "wool_white", "cobblestone", "craft_front",
     "coal_ore", "iron_ore", "furnace_front", "furnace_side",
-    "furnace_top",
+    "furnace_top", "slate", "runestone",
 ]  # fmt: skip
 
 # Which tile each face uses: (top, bottom, sides) or (top, bottom, front, other sides)
@@ -52,6 +52,7 @@ BLOCKS = {
     "CoalOre": ("coal_ore", "coal_ore", "coal_ore"),
     "IronOre": ("iron_ore", "iron_ore", "iron_ore"),
     "Furnace": ("furnace_top", "furnace_top", "furnace_front", "furnace_side"),
+    "Runestone": ("slate", "slate", "runestone"),
 }
 
 
@@ -230,6 +231,33 @@ def draw_tiles():
     for x in range(3, 13):  # top ledge
         front[3][x] = front[4][x] = noisy(rng, (100, 100, 100), 6)
     tiles["furnace_front"] = front
+
+    # Portal stone: dark slate, and the same with a carved glowing rune (our own glyph:
+    # a diamond with a stroke through it and two side ticks)
+    slate = fill(rng, (64, 68, 86), 7)
+    speckle(rng, slate, (52, 55, 70), 0.2)
+    speckle(rng, slate, (78, 83, 104), 0.1)
+    for i in range(TILE):
+        for edge in ((0, i), (15, i), (i, 0), (i, 15)):
+            slate[edge[0]][edge[1]] = noisy(rng, (44, 46, 60), 4)
+    tiles["slate"] = slate
+    rune = [row[:] for row in slate]
+    glyph = set()
+    for i in range(5):  # diamond outline around the centre
+        for x, y in ((7 - i, 3 + i), (8 + i, 3 + i), (7 - i, 12 - i), (8 + i, 12 - i)):
+            glyph.add((x, y))
+    for y in range(2, 14):  # vertical stroke
+        glyph.add((7, y)) if y % 3 else None
+    for x in (2, 13):  # side ticks
+        for y in (7, 8):
+            glyph.add((x, y))
+    for x, y in glyph:
+        for dx, dy in ((1, 0), (0, 1), (1, 1)):  # carved shadow
+            if 0 <= x + dx < TILE and 0 <= y + dy < TILE and (x + dx, y + dy) not in glyph:
+                rune[y + dy][x + dx] = noisy(rng, (34, 36, 48), 3)
+    for x, y in glyph:
+        rune[y][x] = noisy(rng, (92, 232, 210), 10)
+    tiles["runestone"] = rune
     return tiles
 
 

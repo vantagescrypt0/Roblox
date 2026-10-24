@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/HotbarService.luau"
 type: "code"
-community: "Player Data and Held Items"
+community: "Community 30"
 location: "L19"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Player_Data_and_Held_Items
+  - community/Community_30
 ---
 
 # isSlot()
@@ -16,4 +16,4 @@ tags:
 - [[onSelectSlot()]] - `calls` [EXTRACTED]
 - [[onSetHotbar()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Player_Data_and_Held_Items
+#graphify/code #graphify/EXTRACTED #community/Community_30

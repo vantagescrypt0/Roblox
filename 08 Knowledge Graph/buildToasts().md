@@ -12,6 +12,7 @@ tags:
 # buildToasts()
 
 ## Connections
+- [[Hud.Start()]] - `calls` [EXTRACTED]
 - [[Hud.luau]] - `contains` [EXTRACTED]
 - [[Theme.autoScale()]] - `calls` [INFERRED]
 - [[Theme.list()]] - `calls` [INFERRED]

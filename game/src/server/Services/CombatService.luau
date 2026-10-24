@@ -8,6 +8,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local InventoryService = require(script.Parent.InventoryService)
@@ -15,10 +16,12 @@ local MobService = require(script.Parent.MobService)
 local StateService = require(script.Parent.StateService)
 local WarzoneService = require(script.Parent.WarzoneService)
 
--- Where the hand holds a pixel-art item model (model space: handle at bottom-right,
--- head at top-left, flat in the XY plane), and the direction from handle to head.
+-- Where the hand holds each item model and which way its head points come from
+-- ItemArt.luau (generated with the models). These are the fallback for models without
+-- an entry: handle at bottom-right, head at top-left, flat in the XY plane.
 local HOLD_POINT = Vector3.new(1.0, -1.0, 0)
 local HANDLE_TO_HEAD = Vector3.new(-1, 1, 0).Unit
+local MODEL_GRIPS = ItemArt.Models :: { [string]: { Grip: Vector3, Up: Vector3 } }
 local BLOCK_IN_HAND = 1.1 -- studs
 
 local CombatService = {}
@@ -85,12 +88,15 @@ local function makeHandle(itemId: string): (BasePart, CFrame)
 	local model = item and item.Model and models and models:FindFirstChild(item.Model)
 	if model and model:IsA("BasePart") then
 		local handle = model:Clone()
+		local art = item and item.Model and MODEL_GRIPS[item.Model]
+		local holdPoint = if art then art.Grip else HOLD_POINT
+		local towardHead = if art then art.Up else HANDLE_TO_HEAD
 		-- Express the hold point and direction in the mesh's own space
 		local rotation = model.CFrame.Rotation
-		local up = rotation:VectorToObjectSpace(HANDLE_TO_HEAD)
+		local up = rotation:VectorToObjectSpace(towardHead)
 		local back = rotation:VectorToObjectSpace(Vector3.zAxis)
 		local right = up:Cross(back).Unit
-		return handle, CFrame.fromMatrix(rotation:PointToObjectSpace(HOLD_POINT), right, up, back)
+		return handle, CFrame.fromMatrix(rotation:PointToObjectSpace(holdPoint), right, up, back)
 	end
 
 	local blocks = ReplicatedStorage:FindFirstChild("Blocks")

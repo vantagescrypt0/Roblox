@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/CombatService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
-location: "L154"
+community: "Community 14"
+location: "L160"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_14
 ---
 
 # CombatService.Equip()
@@ -17,4 +17,4 @@ tags:
 - [[makeTool()]] - `calls` [EXTRACTED]
 - [[refreshHeld()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/EXTRACTED #community/Community_14

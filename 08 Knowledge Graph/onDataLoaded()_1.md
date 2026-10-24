@@ -1,22 +1,17 @@
 ---
-source_file: "game/src/server/Services/IslandService.luau"
+source_file: "game/src/server/Services/Leaderstats.luau"
 type: "code"
-community: "Breaking, Placing and Crafting"
-location: "L397"
+community: "Community 29"
+location: "L8"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Breaking_Placing_and_Crafting
+  - community/Community_29
 ---
 
 # onDataLoaded()
 
 ## Connections
-- [[IslandService.luau]] - `contains` [EXTRACTED]
-- [[announce()]] - `calls` [EXTRACTED]
-- [[build()_1]] - `calls` [EXTRACTED]
-- [[claimPlot()]] - `calls` [EXTRACTED]
-- [[clampTier()]] - `calls` [EXTRACTED]
-- [[spawnCharacter()]] - `calls` [EXTRACTED]
+- [[Leaderstats.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting
+#graphify/code #graphify/EXTRACTED #community/Community_29

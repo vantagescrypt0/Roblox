@@ -1,17 +1,22 @@
 ---
-source_file: "game/src/server/Services/Leaderstats.luau"
+source_file: "game/src/server/Services/IslandService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
-location: "L8"
+community: "Breaking, Placing and Crafting"
+location: "L354"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # onDataLoaded()
 
 ## Connections
-- [[Leaderstats.luau]] - `contains` [EXTRACTED]
+- [[IslandService.luau]] - `contains` [EXTRACTED]
+- [[announce()]] - `calls` [EXTRACTED]
+- [[build()_1]] - `calls` [EXTRACTED]
+- [[claimPlot()]] - `calls` [EXTRACTED]
+- [[clampTier()]] - `calls` [EXTRACTED]
+- [[spawnCharacter()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

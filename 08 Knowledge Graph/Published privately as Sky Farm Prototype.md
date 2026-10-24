@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Roadmap.md"
 type: "concept"
-community: "Publishing and Dev Tools"
+community: "Community 17"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Publishing_and_Dev_Tools
+  - community/Community_17
 ---
 
 # Published privately as Sky Farm Prototype
@@ -14,4 +14,4 @@ tags:
 - [[Roadmap]] - `references` [EXTRACTED]
 - [[Saving in Studio needs a published place + Studio API access]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Publishing_and_Dev_Tools
+#graphify/concept #graphify/EXTRACTED #community/Community_17

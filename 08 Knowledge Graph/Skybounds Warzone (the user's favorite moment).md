@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Skybounds (Minecraft).md"
 type: "concept"
-community: "Pitch and Inspiration"
+community: "Skills, Levels and Content"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Pitch_and_Inspiration
+  - community/Skills_Levels_and_Content
 ---
 
 # Skybounds Warzone (the user's favorite moment)
@@ -15,4 +15,4 @@ tags:
 - [[Pitch own a floating island, drop into a shared Warzone, bring loot home]] - `references` [EXTRACTED]
 - [[Skybounds (Minecraft)]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Pitch_and_Inspiration
+#graphify/concept #graphify/EXTRACTED #community/Skills_Levels_and_Content

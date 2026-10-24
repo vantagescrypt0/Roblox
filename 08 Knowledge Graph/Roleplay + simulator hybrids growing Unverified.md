@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Trends - Oct 2026.md"
 type: "concept"
-community: "Trends and Anti-Burnout"
+community: "Skills, Levels and Content"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Trends_and_Anti-Burnout
+  - community/Skills_Levels_and_Content
 ---
 
 # Roleplay + simulator hybrids growing [Unverified]
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Trends - Oct 2026]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Trends_and_Anti-Burnout
+#graphify/concept #graphify/EXTRACTED #community/Skills_Levels_and_Content

@@ -16,7 +16,6 @@ tags:
 - [[hex_rgb()]] - `calls` [EXTRACTED]
 - [[main()]] - `calls` [EXTRACTED]
 - [[main()_1]] - `calls` [EXTRACTED]
-- [[main()_2]] - `calls` [EXTRACTED]
 - [[main()_3]] - `calls` [EXTRACTED]
 - [[main()_4]] - `calls` [EXTRACTED]
 - [[math]] - `calls` [EXTRACTED]

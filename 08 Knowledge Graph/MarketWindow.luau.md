@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/MarketWindow.luau"
 type: "code"
-community: "Mouse and Touch Controls"
+community: "Community 23"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_23
 ---
 
 # MarketWindow.luau
@@ -19,4 +19,4 @@ tags:
 - [[script_parent_parent_ui_theme]] - `imports` [EXTRACTED]
 - [[script_parent_parent_ui_window]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/EXTRACTED #community/Community_23

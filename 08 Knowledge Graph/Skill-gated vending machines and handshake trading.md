@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Islands (Roblox).md"
 type: "concept"
-community: "Trends and Anti-Burnout"
+community: "Community 20"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Trends_and_Anti-Burnout
+  - community/Community_20
 ---
 
 # Skill-gated vending machines and handshake trading
@@ -14,4 +14,4 @@ tags:
 - [[Islands (Roblox)]] - `references` [EXTRACTED]
 - [[Trading with anti-scam UI (two-step confirm, trade log)]] - `semantically_similar_to` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Trends_and_Anti-Burnout
+#graphify/concept #graphify/EXTRACTED #community/Community_20

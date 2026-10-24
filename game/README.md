@@ -18,7 +18,7 @@ To build a place file from scratch: `rojo build -o game.rbxlx`
 ## Checks
 - Format: `stylua src`
 - Lint: `selene src`
-- Types: `rojo sourcemap -o sourcemap.json` then `luau-lsp analyze --definitions=<globalTypes.d.luau> --sourcemap=sourcemap.json --ignore="src/server/Packages/**" src`
+- Types: `rojo sourcemap -o sourcemap.json` then `luau-lsp analyze --definitions="%LOCALAPPDATA%\luau-lsp\globalTypes.d.luau" --sourcemap=sourcemap.json --ignore="src/server/Packages/**" src` (definitions from https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/main/scripts/globalTypes.d.luau)
 
 Vendored: `src/server/Packages/ProfileStore.luau` (MadStudioRoblox/ProfileStore @ 45c9847, Apache-2.0, license in `licenses/`).
 

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Farming, Combat and Inventory"
+community: "Community 23"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_23
 ---
 
 # script_parent_questservice
@@ -17,4 +17,4 @@ tags:
 - [[MarketService.luau]] - `imports` [EXTRACTED]
 - [[TownService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/concept #graphify/EXTRACTED #community/Community_23

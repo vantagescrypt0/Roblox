@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Warzone.md"
 type: "concept"
-community: "Audience, Policy and Death Drops"
+community: "Community 19"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Audience_Policy_and_Death_Drops
+  - community/Community_19
 ---
 
 # Raid bag + extraction pads
@@ -15,4 +15,4 @@ tags:
 - [[Warzone]] - `references` [EXTRACTED]
 - [[WarzoneService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Death_Drops
+#graphify/concept #graphify/EXTRACTED #community/Community_19

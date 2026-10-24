@@ -1,18 +1,18 @@
 ---
 source_file: "game/src/client/Hotbar.luau"
 type: "code"
-community: "Mouse and Touch Controls"
+community: "Community 3"
 location: "L65"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_3
 ---
 
 # Hotbar.Selected()
 
 ## Connections
 - [[Hotbar.luau]] - `contains` [EXTRACTED]
-- [[render()_2]] - `calls` [INFERRED]
+- [[render()_3]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/EXTRACTED #community/Community_3

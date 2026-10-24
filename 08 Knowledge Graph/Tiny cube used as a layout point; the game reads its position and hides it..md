@@ -2,7 +2,7 @@
 source_file: "art/scripts/lowpoly.py"
 type: "rationale"
 community: "Block Art Pipeline (Blender)"
-location: "L285"
+location: "L297"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED

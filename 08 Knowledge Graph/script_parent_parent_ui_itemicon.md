@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Mouse and Touch Controls"
+community: "Community 23"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_23
 ---
 
 # script_parent_parent_ui_itemicon
@@ -15,4 +15,4 @@ tags:
 - [[CraftingWindow.luau]] - `imports` [EXTRACTED]
 - [[MarketWindow.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/concept #graphify/EXTRACTED #community/Community_23

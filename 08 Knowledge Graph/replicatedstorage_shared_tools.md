@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Mouse and Touch Controls"
+community: "Community 14"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_14
 ---
 
 # replicatedstorage_shared_tools
@@ -17,4 +17,4 @@ tags:
 - [[Hotbar.luau]] - `imports` [EXTRACTED]
 - [[InventoryService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/concept #graphify/EXTRACTED #community/Community_14

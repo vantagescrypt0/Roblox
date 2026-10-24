@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Mouse and Touch Controls"
+community: "Community 24"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_24
 ---
 
 # script_parent_windows_bagwindow
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Main.client.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/concept #graphify/EXTRACTED #community/Community_24

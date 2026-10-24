@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/InventoryService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
+community: "Community 10"
 location: "L46"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_10
 ---
 
 # InventoryService.Add()
@@ -22,4 +22,4 @@ tags:
 - [[onBuySeed()]] - `calls` [INFERRED]
 - [[onPlotClicked()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/INFERRED #community/Community_10

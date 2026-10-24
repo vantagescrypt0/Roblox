@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Util/Prompts.luau"
 type: "code"
-community: "Prompts"
+community: "Community 21"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Prompts
+  - community/Community_21
 ---
 
 # Prompts.luau
@@ -15,4 +15,4 @@ tags:
 - [[Prompts.Create()]] - `contains` [EXTRACTED]
 - [[Prompts.OnTriggeredBy()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Prompts
+#graphify/code #graphify/EXTRACTED #community/Community_21

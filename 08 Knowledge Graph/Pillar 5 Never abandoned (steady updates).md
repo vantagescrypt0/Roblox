@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Design Pillars.md"
 type: "rationale"
-community: "Pitch and Inspiration"
+community: "Islands Research"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Pitch_and_Inspiration
+  - community/Islands_Research
 ---
 
 # Pillar 5: Never abandoned (steady updates)
@@ -15,4 +15,4 @@ tags:
 - [[Islands (Roblox game by Easy.gg)]] - `rationale_for` [EXTRACTED]
 - [[Update cadence weekly event + monthly content drop]] - `rationale_for` [INFERRED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Pitch_and_Inspiration
+#graphify/rationale #graphify/EXTRACTED #community/Islands_Research

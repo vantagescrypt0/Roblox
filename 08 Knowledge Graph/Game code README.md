@@ -1,11 +1,11 @@
 ---
 source_file: "game/README.md"
 type: "document"
-community: "Publishing and Dev Tools"
+community: "Community 17"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Publishing_and_Dev_Tools
+  - community/Community_17
 ---
 
 # Game code README
@@ -14,4 +14,4 @@ tags:
 - [[Saving in Studio needs a published place + Studio API access]] - `references` [EXTRACTED]
 - [[Studio dev shortcuts (DevInvoke LevelSkillGive)]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Publishing_and_Dev_Tools
+#graphify/document #graphify/EXTRACTED #community/Community_17

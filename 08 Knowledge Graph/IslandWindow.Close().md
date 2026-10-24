@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/IslandWindow.luau"
 type: "code"
-community: "Mouse and Touch Controls"
+community: "HUD and Hotbar"
 location: "L125"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/HUD_and_Hotbar
 ---
 
 # IslandWindow.Close()
@@ -15,4 +15,4 @@ tags:
 - [[IslandWindow.luau]] - `contains` [EXTRACTED]
 - [[Window.close()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar

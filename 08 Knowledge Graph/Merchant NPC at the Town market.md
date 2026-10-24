@@ -1,11 +1,11 @@
 ---
 source_file: "04 Content/Content Index.md"
 type: "concept"
-community: "Decisions and Island Tiers"
+community: "Merchant Behaviour"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Decisions_and_Island_Tiers
+  - community/Merchant_Behaviour
 ---
 
 # Merchant NPC at the Town market
@@ -18,4 +18,4 @@ tags:
 - [[NPC visits at milestones with a starter pack]] - `semantically_similar_to` [INFERRED]
 - [[TownService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Decisions_and_Island_Tiers
+#graphify/concept #graphify/INFERRED #community/Merchant_Behaviour

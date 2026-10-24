@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/ItemIcon.luau"
 type: "code"
-community: "Mouse and Touch Controls"
-location: "L50"
+community: "Community 3"
+location: "L54"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_3
 ---
 
 # ItemIcon.create()
@@ -17,9 +17,9 @@ tags:
 - [[buildGrid()]] - `calls` [INFERRED]
 - [[halfExtents()]] - `calls` [EXTRACTED]
 - [[ingredientChip()]] - `calls` [INFERRED]
-- [[render()_1]] - `calls` [INFERRED]
 - [[render()_2]] - `calls` [INFERRED]
+- [[render()_3]] - `calls` [INFERRED]
 - [[renderDetail()]] - `calls` [INFERRED]
 - [[viewport()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/INFERRED #community/Community_3

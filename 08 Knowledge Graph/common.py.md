@@ -18,6 +18,7 @@ tags:
 - [[export_fbx()]] - `contains` [EXTRACTED]
 - [[hex_rgb()]] - `contains` [EXTRACTED]
 - [[islands.py]] - `imports` [EXTRACTED]
+- [[items3d.py]] - `imports` [EXTRACTED]
 - [[material()]] - `contains` [EXTRACTED]
 - [[math]] - `imports` [EXTRACTED]
 - [[mesh_object()]] - `contains` [EXTRACTED]
@@ -27,6 +28,5 @@ tags:
 - [[reset_scene()]] - `contains` [EXTRACTED]
 - [[save_blend()]] - `contains` [EXTRACTED]
 - [[starter_island.py]] - `imports` [EXTRACTED]
-- [[tools.py]] - `imports` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

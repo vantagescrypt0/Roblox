@@ -11,7 +11,7 @@ tags:
 # mathutils
 
 ## Connections
+- [[items3d.py]] - `imports_from` [EXTRACTED]
 - [[lowpoly.py]] - `imports_from` [EXTRACTED]
-- [[tools.py]] - `imports_from` [EXTRACTED]
 
 #graphify/concept #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

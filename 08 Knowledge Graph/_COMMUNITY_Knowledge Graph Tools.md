@@ -1,13 +1,13 @@
 ---
 type: community
-cohesion: 0.36
-members: 10
+cohesion: 0.31
+members: 11
 ---
 
 # Knowledge Graph Tools
 
-**Cohesion:** 0.36 - loosely connected
-**Members:** 10 nodes
+**Cohesion:** 0.31 - loosely connected
+**Members:** 11 nodes
 
 ## Members
 - [[Note name - vault-relative path, for every hand-written note in the vault.]] - rationale - tools/graph_to_vault.py
@@ -20,6 +20,7 @@ members: 10
 - [[real_notes()]] - code - tools/graph_to_vault.py
 - [[shutil]] - concept
 - [[subprocess]] - concept
+- [[sys]] - concept
 
 ## Live Query (requires Dataview plugin)
 
@@ -29,7 +30,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_Block Art Pipeline (Blender)]]
+- 4 edges to [[_COMMUNITY_Block Art Pipeline (Blender)]]
+- 1 edge to [[_COMMUNITY_Community 7]]
 
 ## Top bridge nodes
-- [[graph_to_vault.py]] - degree 9, connects to 1 community
+- [[sys]] - degree 6, connects to 2 communities

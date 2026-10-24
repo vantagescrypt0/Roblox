@@ -10,16 +10,23 @@ Importing:
 
 To add a block: add a tile in `draw_tiles()` + an entry in `BLOCKS`, re-run, re-import, and add it to `game/src/shared/Blocks.luau`.
 
-## Items (tools and crops)
-`scripts/tools.py` draws each item as a 16x16 pixel sprite (text grids at the top of the script; handle bottom-left, head top-right like Minecraft) into `textures/items.png`, then extrudes every pixel into a little cube (1 pixel = 0.2 studs, so a tool is 3.2 studs) → `export/Tools.fbx`, preview `renders/Tools.png`. Tools are generated per tier from one sprite + a colour palette (Wooden/Stone/Crystal). Objects are named exactly like the item ids (`StonePickaxe`, `Wheat`, ...).
+## Items (tools, crops, seeds, ores, loot) and their icons
+`scripts/items3d.py` builds every item as a low-poly 3D model with the shared palette (`lowpoly.py`): tapered wooden handles with leather grips, curved pickaxe heads, wedge axe blades, diamond-section sword blades, seed pouches tagged by crop, crops, ore lumps, an ingot, a crystal and a scrap gear. Tiers are materials: Wooden (light wood, leather lashing), Stone (rough chipped stone), Iron (steel, metal collar), Crystal (cyan, gold fittings). Tools are modelled upright and tilted 45° so the handle is bottom-left and the head top-right.
 
 ```
-"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/tools.py
+"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/items3d.py
 ```
 
-Importing: Import 3D `export/Tools.fbx` (Anchored on), wait for `MeshContent.SourceType = Uri`, move the MeshParts into a folder `ItemModels` (CanCollide/CanTouch/CanQuery off, Massless, SmoothPlastic), Save to File → `game/assets-replicated/ItemModels.rbxm` (synced to `ReplicatedStorage.ItemModels`), then rebuild the place as above. The game uses them for the item in your hand (`CombatService`) and every item icon (`client/UI/ItemIcon.luau`).
+It writes:
+- `export/Items.fbx` — one object per item, named by item id
+- `textures/item_icons.png` — every item (and the block items) rendered as a 128 px icon on one 1024 px sheet, with a dark outline; preview on a dark background in `renders/Items.png`
+- `game/src/shared/ItemArt.luau` — generated: where the hand holds each model and each item's icon cell
 
-To add an item: draw a sprite, add it to `ITEMS`, re-run, re-import, and give the item a `Model` in `game/src/shared/Items.luau`.
+Importing:
+1. Import 3D `export/Items.fbx` (Anchored on), wait for `MeshContent.SourceType = Uri`, move the MeshParts into a folder `ItemModels` (CanCollide/CanTouch/CanQuery off, Massless, SmoothPlastic), Save to File → `game/assets-replicated/ItemModels.rbxm` (synced to `ReplicatedStorage.ItemModels`), then rebuild the place as above. Used for the item in your hand (`CombatService`).
+2. Upload `textures/item_icons.png` as an image (Studio → Asset Manager → Images → Import) and put its `rbxassetid://` in `Config.ItemIconSheet`. Used for every item icon (`client/UI/ItemIcon.luau`).
+
+To add an item: write a build function, add it to `ITEMS` (and a `Model` in `game/src/shared/Items.luau`), re-run, re-import, re-upload the sheet.
 
 ---
 The low-poly props and islands below were the previous art direction; only the crop models (`Props.rbxm`) are still used.

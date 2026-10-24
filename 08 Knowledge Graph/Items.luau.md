@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/shared/Items.luau"
 type: "code"
-community: "Breaking, Placing and Crafting"
+community: "Community 13"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Breaking_Placing_and_Crafting
+  - community/Community_13
 ---
 
 # Items.luau
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[script_parent_tools]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting
+#graphify/code #graphify/EXTRACTED #community/Community_13

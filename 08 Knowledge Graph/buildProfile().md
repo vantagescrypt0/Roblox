@@ -12,6 +12,7 @@ tags:
 # buildProfile()
 
 ## Connections
+- [[Hud.Start()]] - `calls` [EXTRACTED]
 - [[Hud.luau]] - `contains` [EXTRACTED]
 - [[Theme.autoScale()]] - `calls` [INFERRED]
 - [[Theme.bar()]] - `calls` [INFERRED]

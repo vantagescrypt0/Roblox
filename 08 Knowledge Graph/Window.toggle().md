@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Window.luau"
 type: "code"
-community: "Mouse and Touch Controls"
+community: "HUD and Hotbar"
 location: "L49"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/HUD_and_Hotbar
 ---
 
 # Window.toggle()
@@ -17,4 +17,4 @@ tags:
 - [[Window.luau]] - `contains` [EXTRACTED]
 - [[Window.open()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar

@@ -18,7 +18,7 @@ tags:
 - [[dot-cylinder()]] - `calls` [INFERRED]
 - [[dot-finish()]] - `calls` [INFERRED]
 - [[Builder]] - `calls` [EXTRACTED]
-- [[main()_2]] - `calls` [EXTRACTED]
+- [[main()_3]] - `calls` [EXTRACTED]
 - [[math]] - `calls` [EXTRACTED]
 - [[props.py]] - `contains` [EXTRACTED]
 

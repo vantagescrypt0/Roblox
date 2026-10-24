@@ -1,8 +1,8 @@
 ---
-source_file: "art/scripts/tools.py"
+source_file: "art/scripts/starter_island.py"
 type: "code"
 community: "Block Art Pipeline (Blender)"
-location: "L351"
+location: "L106"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -12,11 +12,16 @@ tags:
 # main()
 
 ## Connections
-- [[build_atlas()_1]] - `calls` [EXTRACTED]
-- [[make_item()]] - `calls` [EXTRACTED]
+- [[dirt_body()]] - `calls` [EXTRACTED]
+- [[export_fbx()]] - `calls` [EXTRACTED]
+- [[grass_top()]] - `calls` [EXTRACTED]
+- [[random]] - `calls` [EXTRACTED]
 - [[render_preview()]] - `calls` [EXTRACTED]
 - [[reset_scene()]] - `calls` [EXTRACTED]
+- [[ring_radii()]] - `calls` [EXTRACTED]
+- [[rock()_1]] - `calls` [EXTRACTED]
 - [[save_blend()]] - `calls` [EXTRACTED]
-- [[tools.py]] - `contains` [EXTRACTED]
+- [[starter_island.py]] - `contains` [EXTRACTED]
+- [[tree()_1]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

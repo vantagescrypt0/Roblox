@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/WarzoneService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
+community: "Community 16"
 location: "L126"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_16
 ---
 
 # endRaid()
@@ -18,4 +18,4 @@ tags:
 - [[dropBag()]] - `calls` [EXTRACTED]
 - [[extract()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/EXTRACTED #community/Community_16

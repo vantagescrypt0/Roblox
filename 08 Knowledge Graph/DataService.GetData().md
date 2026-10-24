@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/DataService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
+community: "Community 16"
 location: "L78"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_16
 ---
 
 # DataService.GetData()
@@ -36,4 +36,4 @@ tags:
 - [[onSetHotbar()]] - `calls` [INFERRED]
 - [[refreshPlot()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/INFERRED #community/Community_16

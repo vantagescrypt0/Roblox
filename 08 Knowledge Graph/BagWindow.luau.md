@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/BagWindow.luau"
 type: "code"
-community: "Mouse and Touch Controls"
+community: "Community 3"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_3
 ---
 
 # BagWindow.luau
@@ -16,7 +16,7 @@ tags:
 - [[BagWindow.Start()]] - `contains` [EXTRACTED]
 - [[BagWindow.Toggle()]] - `contains` [EXTRACTED]
 - [[countLabel()]] - `contains` [EXTRACTED]
-- [[render()_2]] - `contains` [EXTRACTED]
+- [[render()_3]] - `contains` [EXTRACTED]
 - [[replicatedstorage_shared_items]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_remotes]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_tools]] - `imports` [EXTRACTED]
@@ -26,4 +26,4 @@ tags:
 - [[setOpen()]] - `contains` [EXTRACTED]
 - [[slotFrame()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/EXTRACTED #community/Community_3

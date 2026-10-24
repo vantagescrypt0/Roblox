@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Farming, Combat and Inventory"
+community: "Community 14"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_14
 ---
 
 # script_parent_warzoneservice
@@ -14,4 +14,4 @@ tags:
 - [[CombatService.luau]] - `imports` [EXTRACTED]
 - [[MobService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/concept #graphify/EXTRACTED #community/Community_14

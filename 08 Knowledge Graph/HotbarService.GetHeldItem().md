@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/HotbarService.luau"
 type: "code"
-community: "Player Data and Held Items"
+community: "Community 30"
 location: "L24"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Player_Data_and_Held_Items
+  - community/Community_30
 ---
 
 # HotbarService.GetHeldItem()
@@ -18,4 +18,4 @@ tags:
 - [[onBreak()]] - `calls` [INFERRED]
 - [[refreshHeld()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Player_Data_and_Held_Items
+#graphify/code #graphify/INFERRED #community/Community_30

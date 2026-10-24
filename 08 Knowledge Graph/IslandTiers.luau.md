@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/shared/IslandTiers.luau"
 type: "code"
-community: "Decisions and Island Tiers"
+community: "Community 20"
 location: "L1"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Decisions_and_Island_Tiers
+  - community/Community_20
 ---
 
 # IslandTiers.luau
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Decision buy bigger islands with coins (4 tiers)]] - `implements` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Decisions_and_Island_Tiers
+#graphify/code #graphify/INFERRED #community/Community_20

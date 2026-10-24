@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/QuestService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
+community: "Community 10"
 location: "L20"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_10
 ---
 
 # giveReward()
@@ -18,4 +18,4 @@ tags:
 - [[QuestService.luau]] - `contains` [EXTRACTED]
 - [[complete()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/INFERRED #community/Community_10

@@ -1,13 +1,17 @@
 --!strict
--- Item icons, like Minecraft's inventory: block items show a little 3D block, tools and
--- crops show their pixel-art model (ReplicatedStorage.ItemModels), anything else shows
--- its emoji.
+-- Item icons. Normally a pre-rendered picture cut from the icon sheet (Config.ItemIconSheet,
+-- cells listed in ItemArt.luau, rendered by art/scripts/items3d.py). Without one, block items
+-- show a live 3D block, items with a model show that model, and anything else its emoji.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Config = require(ReplicatedStorage.Shared.Config)
+local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
 local Items = require(ReplicatedStorage.Shared.Items)
 
 local ItemIcon = {}
+
+local ICON_CELLS = ItemArt.Icons :: { [string]: number }
 
 -- Isometric view from above-front-right
 local BLOCK_CAMERA = CFrame.lookAt(Vector3.new(1, 0.82, 1).Unit * 10.5, Vector3.zero)
@@ -49,6 +53,23 @@ end
 
 function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObject
 	local item = Items[itemId]
+
+	-- Pre-rendered picture from the icon sheet
+	local cell = ICON_CELLS[itemId]
+	if cell and Config.ItemIconSheet ~= "" then
+		local cellSize = ItemArt.CellSize
+		local image = Instance.new("ImageLabel")
+		image.Size = size
+		image.AnchorPoint = Vector2.new(0.5, 0.5)
+		image.Position = UDim2.fromScale(0.5, 0.5)
+		image.BackgroundTransparency = 1
+		image.Image = Config.ItemIconSheet
+		image.ImageRectSize = Vector2.new(cellSize, cellSize)
+		image.ImageRectOffset = Vector2.new((cell % ItemArt.Columns) * cellSize, (cell // ItemArt.Columns) * cellSize)
+		image.ScaleType = Enum.ScaleType.Fit
+		image.Parent = parent
+		return image
+	end
 
 	-- Tools and crops: their pixel-art model, filling the icon
 	local models = ReplicatedStorage:FindFirstChild("ItemModels")

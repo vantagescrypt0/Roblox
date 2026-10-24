@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Anti-Burnout Ideas.md"
 type: "concept"
-community: "Trends and Anti-Burnout"
+community: "Community 20"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Trends_and_Anti-Burnout
+  - community/Community_20
 ---
 
 # Prestige with real unlocks
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Anti-Burnout Ideas]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Trends_and_Anti-Burnout
+#graphify/concept #graphify/EXTRACTED #community/Community_20

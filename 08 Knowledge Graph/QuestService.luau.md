@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/QuestService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
+community: "Community 10"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_10
 ---
 
 # QuestService.luau
@@ -27,4 +27,4 @@ tags:
 - [[script_parent_progressionservice]] - `imports` [EXTRACTED]
 - [[script_parent_stateservice]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/EXTRACTED #community/Community_10

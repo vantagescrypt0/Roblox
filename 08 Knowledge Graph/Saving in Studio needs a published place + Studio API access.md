@@ -1,11 +1,11 @@
 ---
 source_file: "game/README.md"
 type: "concept"
-community: "Publishing and Dev Tools"
+community: "Community 17"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Publishing_and_Dev_Tools
+  - community/Community_17
 ---
 
 # Saving in Studio needs a published place + Studio API access
@@ -14,4 +14,4 @@ tags:
 - [[Game code README]] - `references` [EXTRACTED]
 - [[Published privately as Sky Farm Prototype]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Publishing_and_Dev_Tools
+#graphify/concept #graphify/EXTRACTED #community/Community_17

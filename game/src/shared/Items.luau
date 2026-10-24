@@ -2,8 +2,9 @@
 -- Every item in the game. Placeholder names and prices; tune freely.
 -- Items with a Block can be placed as that block (see Blocks.luau).
 -- Tools (swords, pickaxes, axes, shovels) get their stats from Tools.luau.
--- Icons: block items show a 3D block, items with a model in ReplicatedStorage.ItemModels
--- show that 3D model (Model = which one), everything else shows its emoji.
+-- Icons: pre-rendered pictures from the icon sheet (ItemArt.luau, made by art/scripts/items3d.py);
+-- without one, block items show a 3D block and items with a Model (ReplicatedStorage.ItemModels)
+-- show that model, and anything else its emoji.
 
 local Tools = require(script.Parent.Tools)
 
@@ -34,17 +35,17 @@ local Items: { [string]: Item } = {
 	-- Crops and seeds
 	WheatSeeds = { Name = "Wheat Seeds", Icon = "🌱", SellPrice = 0, BuyPrice = 2, Model = "WheatSeeds" },
 	Wheat = { Name = "Wheat", Icon = "🌾", SellPrice = 3, Model = "Wheat" },
-	CarrotSeeds = { Name = "Carrot Seeds", Icon = "🌱", SellPrice = 0, BuyPrice = 6, Model = "WheatSeeds" },
+	CarrotSeeds = { Name = "Carrot Seeds", Icon = "🌱", SellPrice = 0, BuyPrice = 6, Model = "CarrotSeeds" },
 	Carrot = { Name = "Carrot", Icon = "🥕", SellPrice = 8, Model = "Carrot" },
-	PotatoSeeds = { Name = "Potato Seeds", Icon = "🌱", SellPrice = 0, BuyPrice = 15, Model = "WheatSeeds" },
+	PotatoSeeds = { Name = "Potato Seeds", Icon = "🌱", SellPrice = 0, BuyPrice = 15, Model = "PotatoSeeds" },
 	Potato = { Name = "Potato", Icon = "🥔", SellPrice = 20, Model = "Potato" },
 	-- Warzone-only seeds (found in chests, never sold)
-	GlowberrySeeds = { Name = "Glowberry Seeds", Icon = "✨", SellPrice = 0 },
-	Glowberry = { Name = "Glowberry", Icon = "🍇", SellPrice = 60 },
+	GlowberrySeeds = { Name = "Glowberry Seeds", Icon = "✨", SellPrice = 0, Model = "GlowberrySeeds" },
+	Glowberry = { Name = "Glowberry", Icon = "🍇", SellPrice = 60, Model = "Glowberry" },
 
 	-- Warzone materials
-	Scrap = { Name = "Scrap", Icon = "⚙️", SellPrice = 0 },
-	Crystal = { Name = "Crystal", Icon = "💎", SellPrice = 0 },
+	Scrap = { Name = "Scrap", Icon = "⚙️", SellPrice = 0, Model = "Scrap" },
+	Crystal = { Name = "Crystal", Icon = "💎", SellPrice = 0, Model = "Crystal" },
 }
 
 -- Every tool from Tools.luau is an item too, e.g. "StonePickaxe" -> "Stone Pickaxe"

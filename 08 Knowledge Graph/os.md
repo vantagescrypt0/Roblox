@@ -17,13 +17,14 @@ tags:
 - [[export_fbx()]] - `calls` [EXTRACTED]
 - [[export_fbx()_1]] - `calls` [EXTRACTED]
 - [[islands.py]] - `imports` [EXTRACTED]
+- [[items3d.py]] - `imports` [EXTRACTED]
 - [[lowpoly.py]] - `imports` [EXTRACTED]
 - [[main()]] - `calls` [EXTRACTED]
 - [[palette_image()]] - `calls` [EXTRACTED]
 - [[props.py]] - `imports` [EXTRACTED]
+- [[render_icons()]] - `calls` [EXTRACTED]
 - [[render_preview()]] - `calls` [EXTRACTED]
 - [[save_blend()]] - `calls` [EXTRACTED]
 - [[starter_island.py]] - `imports` [EXTRACTED]
-- [[tools.py]] - `imports` [EXTRACTED]
 
 #graphify/concept #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

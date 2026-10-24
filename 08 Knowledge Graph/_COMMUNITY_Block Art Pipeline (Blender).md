@@ -1,13 +1,13 @@
 ---
 type: community
 cohesion: 0.07
-members: 87
+members: 83
 ---
 
 # Block Art Pipeline (Blender)
 
 **Cohesion:** 0.07 - loosely connected
-**Members:** 87 nodes
+**Members:** 83 nodes
 
 ## Members
 - [[dot-__init__()]] - code - art/scripts/lowpoly.py
@@ -26,7 +26,6 @@ members: 87
 - [[Greybox starter floating island grass top, dirt underside, rocks, one tree.…]] - rationale - art/scripts/starter_island.py
 - [[Island props workbench, market stall, portal, planter bed and crop growth…]] - rationale - art/scripts/props.py
 - [[Minecraft-style blocks 16x16 pixel-art tiles in one atlas, and a 3-stud cube…]] - rationale - art/scripts/blocks.py
-- [[Minecraft-style item models 16x16 pixel-art sprites (tools, sticks, crops)…]] - rationale - art/scripts/tools.py
 - [[Player islands, one per expansion tier (bigger, more trees and farm space each…]] - rationale - art/scripts/islands.py
 - [[Shared helpers for asset scripts. Run scripts with Blender in background mode…]] - rationale - art/scripts/common.py
 - [[Stacks rings of points (top to bottom, same count each) into a solid.…]] - rationale - art/scripts/lowpoly.py
@@ -38,7 +37,7 @@ members: 87
 - [[bpy]] - concept
 - [[bridge()]] - code - art/scripts/starter_island.py
 - [[build_atlas()]] - code - art/scripts/blocks.py
-- [[build_atlas()_1]] - code - art/scripts/tools.py
+- [[build_items()]] - code - art/scripts/items3d.py
 - [[build_tier()]] - code - art/scripts/islands.py
 - [[clamp()]] - code - art/scripts/blocks.py
 - [[common.py]] - code - art/scripts/common.py
@@ -56,11 +55,10 @@ members: 87
 - [[lowpoly.py]] - code - art/scripts/lowpoly.py
 - [[main()]] - code - art/scripts/blocks.py
 - [[main()_1]] - code - art/scripts/islands.py
-- [[main()_2]] - code - art/scripts/props.py
-- [[main()_3]] - code - art/scripts/starter_island.py
-- [[main()_4]] - code - art/scripts/tools.py
+- [[main()_2]] - code - art/scripts/items3d.py
+- [[main()_3]] - code - art/scripts/props.py
+- [[main()_4]] - code - art/scripts/starter_island.py
 - [[make_block()]] - code - art/scripts/blocks.py
-- [[make_item()]] - code - art/scripts/tools.py
 - [[marker()]] - code - art/scripts/lowpoly.py
 - [[market()]] - code - art/scripts/props.py
 - [[material()]] - code - art/scripts/common.py
@@ -91,9 +89,7 @@ members: 87
 - [[speckle()]] - code - art/scripts/blocks.py
 - [[starter_island.py]] - code - art/scripts/starter_island.py
 - [[swatch_uv()]] - code - art/scripts/lowpoly.py
-- [[sys]] - concept
 - [[tile_rect()]] - code - art/scripts/blocks.py
-- [[tools.py]] - code - art/scripts/tools.py
 - [[tree()]] - code - art/scripts/islands.py
 - [[tree()_1]] - code - art/scripts/starter_island.py
 - [[workbench()]] - code - art/scripts/props.py
@@ -106,10 +102,13 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 2 edges to [[_COMMUNITY_Tools and Workflow]]
-- 1 edge to [[_COMMUNITY_Knowledge Graph Tools]]
+- 20 edges to [[_COMMUNITY_Community 7]]
+- 4 edges to [[_COMMUNITY_Knowledge Graph Tools]]
+- 1 edge to [[_COMMUNITY_Tools and Workflow]]
 
 ## Top bridge nodes
-- [[blocks.py]] - degree 18, connects to 1 community
-- [[tools.py]] - degree 11, connects to 1 community
-- [[sys]] - degree 6, connects to 1 community
+- [[blocks.py]] - degree 18, connects to 2 communities
+- [[Builder]] - degree 24, connects to 1 community
+- [[math]] - degree 23, connects to 1 community
+- [[lowpoly.py]] - degree 18, connects to 1 community
+- [[islands.py]] - degree 17, connects to 1 community

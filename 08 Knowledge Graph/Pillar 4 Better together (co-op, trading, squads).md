@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Design Pillars.md"
 type: "rationale"
-community: "Core Loop and Pillars"
+community: "Islands Research"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Core_Loop_and_Pillars
+  - community/Islands_Research
 ---
 
 # Pillar 4: Better together (co-op, trading, squads)
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Design Pillars]] - `references` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Core_Loop_and_Pillars
+#graphify/rationale #graphify/EXTRACTED #community/Islands_Research

@@ -12,6 +12,7 @@ tags:
 # Theme.title()
 
 ## Connections
+- [[Hud.Start()]] - `calls` [INFERRED]
 - [[Hud.Toast()]] - `calls` [INFERRED]
 - [[Theme.luau]] - `contains` [EXTRACTED]
 - [[Theme.make()]] - `calls` [EXTRACTED]
@@ -23,7 +24,7 @@ tags:
 - [[buildGrid()]] - `calls` [INFERRED]
 - [[buildProfile()]] - `calls` [INFERRED]
 - [[buildRaidBanner()]] - `calls` [INFERRED]
-- [[render()]] - `calls` [INFERRED]
+- [[render()_1]] - `calls` [INFERRED]
 - [[show()]] - `calls` [INFERRED]
 - [[sideButton()]] - `calls` [INFERRED]
 

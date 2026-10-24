@@ -1,21 +1,25 @@
 ---
-source_file: "game/src/client/Windows/CraftingWindow.luau"
+source_file: "game/src/client/Windows/BagWindow.luau"
 type: "code"
-community: "Mouse and Touch Controls"
-location: "L170"
+community: "Community 3"
+location: "L101"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_3
 ---
 
 # render()
 
 ## Connections
-- [[CraftingWindow.SetState()]] - `calls` [EXTRACTED]
-- [[CraftingWindow.luau]] - `contains` [EXTRACTED]
-- [[check()]] - `calls` [EXTRACTED]
-- [[choose()]] - `calls` [EXTRACTED]
-- [[renderDetail()]] - `calls` [EXTRACTED]
+- [[BagWindow.SetState()]] - `calls` [EXTRACTED]
+- [[BagWindow.luau]] - `contains` [EXTRACTED]
+- [[Hotbar.Select()]] - `calls` [INFERRED]
+- [[Hotbar.Selected()]] - `calls` [INFERRED]
+- [[ItemIcon.create()]] - `calls` [INFERRED]
+- [[countLabel()]] - `calls` [EXTRACTED]
+- [[render()_3]] - `calls` [EXTRACTED]
+- [[setOpen()]] - `calls` [EXTRACTED]
+- [[slotFrame()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/code #graphify/EXTRACTED #community/Community_3

@@ -18,6 +18,7 @@ tags:
 - [[BlockWorld.part()]] - `calls` [EXTRACTED]
 - [[BlockWorld.set()]] - `calls` [EXTRACTED]
 - [[BlockWorld.setRaw()]] - `calls` [EXTRACTED]
+- [[Portal.addCells()]] - `calls` [INFERRED]
 - [[exposed()]] - `calls` [EXTRACTED]
 - [[onBreak()]] - `calls` [INFERRED]
 - [[onPlace()]] - `calls` [INFERRED]

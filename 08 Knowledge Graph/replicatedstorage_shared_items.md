@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Mouse and Touch Controls"
+community: "Community 23"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Mouse_and_Touch_Controls
+  - community/Community_23
 ---
 
 # replicatedstorage_shared_items
@@ -28,4 +28,4 @@ tags:
 - [[QuestService.luau]] - `imports` [EXTRACTED]
 - [[WarzoneService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Mouse_and_Touch_Controls
+#graphify/concept #graphify/EXTRACTED #community/Community_23

@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/Leaderstats.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
+community: "Community 29"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_29
 ---
 
 # Leaderstats.luau
@@ -15,7 +15,7 @@ tags:
 - [[Leaderstats.Start()]] - `contains` [EXTRACTED]
 - [[Main.server.luau]] - `imports` [EXTRACTED]
 - [[onChanged()]] - `contains` [EXTRACTED]
-- [[onDataLoaded()]] - `contains` [EXTRACTED]
+- [[onDataLoaded()_1]] - `contains` [EXTRACTED]
 - [[script_parent_dataservice]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/EXTRACTED #community/Community_29

@@ -1,19 +1,15 @@
 --!strict
 -- Trading with the Merchant in Town opens the Market window: sell crops and resources,
 -- buy seeds. (Right-click / tap the Merchant, or use its Trade prompt.)
--- Also handles buying island expansions (from the Island window).
 -- Every purchase and sale is checked here on the server.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Crops = require(ReplicatedStorage.Shared.Crops)
-local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
-local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
-local IslandService = require(script.Parent.IslandService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
@@ -112,26 +108,6 @@ local function onBuySeed(player: Player, seedId: unknown, amount: unknown)
 	end
 end
 
-local function onExpand(player: Player)
-	local data = DataService.GetData(player)
-	if not data then
-		return
-	end
-	local nextTier = IslandTiers[data.Island.Tier + 1]
-	if not nextTier then
-		StateService.Notify(player, "Your island is already the biggest it can be!", "bad")
-		return
-	end
-	if not InventoryService.SpendCoins(player, nextTier.Cost) then
-		StateService.Notify(player, `You need {nextTier.Cost} coins to expand`, "bad")
-		return
-	end
-	data.Island.Tier += 1
-	DataService.MarkChanged(player)
-	IslandService.Rebuild(player)
-	StateService.Notify(player, `Your island grew into a {nextTier.Name}!`, "level")
-end
-
 function MarketService.Start()
 	local merchant = TownService.GetMerchant()
 	local prompt =
@@ -141,7 +117,6 @@ function MarketService.Start()
 	end)
 	Remotes.Sell.OnServerEvent:Connect(onSell)
 	Remotes.BuySeed.OnServerEvent:Connect(onBuySeed)
-	Remotes.Expand.OnServerEvent:Connect(onExpand)
 end
 
 return MarketService

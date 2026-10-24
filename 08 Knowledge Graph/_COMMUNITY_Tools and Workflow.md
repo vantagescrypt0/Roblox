@@ -31,12 +31,11 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 2 edges to [[_COMMUNITY_Block Art Pipeline (Blender)]]
 - 2 edges to [[_COMMUNITY_Core Loop and Pillars]]
+- 1 edge to [[_COMMUNITY_Block Art Pipeline (Blender)]]
 - 1 edge to [[_COMMUNITY_Islands Research]]
 
 ## Top bridge nodes
 - [[Tools & Stack]] - degree 6, connects to 2 communities
 - [[Workflow]] - degree 5, connects to 1 community
 - [[Block pipeline 16x16 pixel tiles - atlas - 3-stud cubes]] - degree 3, connects to 1 community
-- [[Item pipeline pixel sprites extruded into voxel toolcrop models]] - degree 3, connects to 1 community

@@ -1,11 +1,11 @@
 ---
 source_file: "Obsidian Setup.md"
 type: "concept"
-community: "Decisions and Island Tiers"
+community: "Community 18"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Decisions_and_Island_Tiers
+  - community/Community_18
 ---
 
 # Vault rules: Inbox, Decision Log, Open Questions
@@ -14,4 +14,4 @@ tags:
 - [[Decision Log]] - `conceptually_related_to` [EXTRACTED]
 - [[Obsidian Setup]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Decisions_and_Island_Tiers
+#graphify/concept #graphify/EXTRACTED #community/Community_18

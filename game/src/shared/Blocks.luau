@@ -76,6 +76,8 @@ local Blocks: { [string]: Block } = {
 	CraftingTable = { Name = "Crafting Table", Drop = nil, Hardness = 2.5, Breakable = false },
 	Farmland = { Name = "Farmland", Drop = nil, Hardness = 0.6, Breakable = false },
 	Obsidian = { Name = "Obsidian", Drop = nil, Hardness = 50, Breakable = false },
+	-- Carved stone the portals are built from
+	Runestone = { Name = "Runestone", Drop = nil, Hardness = 50, Breakable = false },
 }
 
 local Size = 3

@@ -330,23 +330,33 @@ function Hud.Toast(text: string, kind: string)
 	end)
 end
 
--- Purple fade in and out while a portal moves you
-function Hud.Travel(destination: string)
-	local title = if destination == "Town" then "Town" else "Your Island"
-	fadeTitle.Text = title
-	local quick = TweenInfo.new(0.3)
-	TweenService:Create(fadeFrame, quick, { BackgroundTransparency = 0 }):Play()
-	TweenService:Create(fadeTitle, quick, { TextTransparency = 0 }):Play()
+local travelToken = 0
+
+local function setFade(visible: boolean, info: TweenInfo)
+	local goal = if visible then 0 else 1
+	TweenService:Create(fadeFrame, info, { BackgroundTransparency = goal }):Play()
+	TweenService:Create(fadeTitle, info, { TextTransparency = goal }):Play()
 	local stroke = fadeTitle:FindFirstChildOfClass("UIStroke")
 	if stroke then
-		TweenService:Create(stroke, quick, { Transparency = 0 }):Play()
+		TweenService:Create(stroke, info, { Transparency = goal }):Play()
 	end
-	task.delay(0.9, function()
-		local slow = TweenInfo.new(0.6)
-		TweenService:Create(fadeFrame, slow, { BackgroundTransparency = 1 }):Play()
-		TweenService:Create(fadeTitle, slow, { TextTransparency = 1 }):Play()
-		if stroke then
-			TweenService:Create(stroke, slow, { Transparency = 1 }):Play()
+end
+
+-- Fades the screen out while a portal teleports you to another server; "Failed" (the
+-- teleport didn't happen) fades it back in
+function Hud.Travel(destination: string)
+	travelToken += 1
+	local token = travelToken
+	if destination == "Failed" then
+		setFade(false, TweenInfo.new(0.5))
+		return
+	end
+	fadeTitle.Text = if destination == "Town" then "Travelling to Town..." else "Heading home..."
+	setFade(true, TweenInfo.new(0.35))
+	-- Never leave the screen dark if the teleport silently never happens
+	task.delay(20, function()
+		if token == travelToken then
+			setFade(false, TweenInfo.new(0.6))
 		end
 	end)
 end
@@ -364,7 +374,7 @@ function Hud.Start(callbacks: Callbacks)
 	fadeGui.IgnoreGuiInset = true
 	fadeFrame = Theme.make("Frame", {
 		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = Color3.fromRGB(30, 10, 50),
+		BackgroundColor3 = Color3.fromRGB(8, 38, 42),
 		BackgroundTransparency = 1,
 		Parent = fadeGui,
 	})

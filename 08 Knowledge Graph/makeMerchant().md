@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/TownService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
-location: "L141"
+community: "Community 21"
+location: "L136"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_21
 ---
 
 # makeMerchant()
@@ -16,4 +16,4 @@ tags:
 - [[addNameTag()]] - `calls` [EXTRACTED]
 - [[box()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/EXTRACTED #community/Community_21

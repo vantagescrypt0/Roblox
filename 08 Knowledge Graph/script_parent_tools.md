@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Breaking, Placing and Crafting"
+community: "Community 13"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Breaking_Placing_and_Crafting
+  - community/Community_13
 ---
 
 # script_parent_tools
@@ -15,4 +15,4 @@ tags:
 - [[Mining.luau]] - `imports` [EXTRACTED]
 - [[Recipes.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting
+#graphify/concept #graphify/EXTRACTED #community/Community_13

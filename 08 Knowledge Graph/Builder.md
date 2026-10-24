@@ -2,7 +2,7 @@
 source_file: "art/scripts/lowpoly.py"
 type: "code"
 community: "Block Art Pipeline (Blender)"
-location: "L148"
+location: "L160"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -24,9 +24,11 @@ tags:
 - [[dot-finish()]] - `method` [EXTRACTED]
 - [[dot-loft()]] - `method` [EXTRACTED]
 - [[Accumulates colored low-poly pieces into one mesh.]] - `rationale_for` [EXTRACTED]
+- [[build_items()]] - `calls` [EXTRACTED]
 - [[build_tier()]] - `calls` [EXTRACTED]
 - [[crops()]] - `calls` [EXTRACTED]
 - [[islands.py]] - `imports` [EXTRACTED]
+- [[items3d.py]] - `imports` [EXTRACTED]
 - [[lowpoly.py]] - `contains` [EXTRACTED]
 - [[marker()]] - `calls` [EXTRACTED]
 - [[market()]] - `calls` [EXTRACTED]

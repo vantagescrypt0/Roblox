@@ -1,16 +1,17 @@
 ---
 source_file: ""
 type: "concept"
-community: "Breaking, Placing and Crafting"
+community: "Community 3"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Breaking_Placing_and_Crafting
+  - community/Community_3
 ---
 
 # replicatedstorage_shared_config
 
 ## Connections
 - [[IslandService.luau]] - `imports` [EXTRACTED]
+- [[ItemIcon.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting
+#graphify/concept #graphify/EXTRACTED #community/Community_3

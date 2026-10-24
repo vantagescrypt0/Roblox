@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/MarketService.luau"
 type: "code"
-community: "Farming, Combat and Inventory"
-location: "L86"
+community: "Community 10"
+location: "L82"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Farming_Combat_and_Inventory
+  - community/Community_10
 ---
 
 # onBuySeed()
@@ -18,4 +18,4 @@ tags:
 - [[QuestService.Record()]] - `calls` [INFERRED]
 - [[nearStall()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Farming_Combat_and_Inventory
+#graphify/code #graphify/INFERRED #community/Community_10
