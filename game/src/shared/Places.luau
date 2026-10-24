@@ -14,7 +14,7 @@ local Places = {}
 -- Place ids in the published experience ("Sky Farm Prototype"); 0 = not published yet
 Places.Ids = table.freeze({
 	Island = 70908743282881,
-	Town = 0,
+	Town = 133194089069740,
 })
 
 function Places.Current(): Kind
