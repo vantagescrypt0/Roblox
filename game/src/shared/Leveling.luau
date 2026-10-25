@@ -25,4 +25,9 @@ function Leveling.TilledPlots(farmingLevel: number): number
 	return math.min(2 + farmingLevel // 3, 30)
 end
 
+-- How many trees you can plant on your island: 1, plus one more every 3 Woodcutting levels
+function Leveling.PlantedTrees(woodcuttingLevel: number): number
+	return math.min(1 + woodcuttingLevel // 3, 20)
+end
+
 return table.freeze(Leveling)

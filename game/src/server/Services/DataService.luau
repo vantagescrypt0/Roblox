@@ -20,6 +20,8 @@ local TEMPLATE = {
 		Tier = 1,
 		-- Blocks the player changed: "x,y,z" -> block type, or "Air" where they broke one
 		Blocks = {} :: { [string]: string },
+		-- Trees the player planted, by the cell they stand on (see IslandService)
+		Trees = {} :: { [string]: { PlantedAt: number, Height: number } },
 	},
 	-- item id -> count
 	Items = {} :: { [string]: number },

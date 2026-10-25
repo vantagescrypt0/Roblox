@@ -213,6 +213,20 @@ def seed_pouch(b, accent):
     b.box((0.26, 0.06, 0.26), location=(0, -0.42, 0.45), rotation=(0, 45, 0), color=accent)
 
 
+def sapling(b):
+    """A young tree: a thin trunk with a side twig, leafy tufts, a clump of soil at its roots."""
+    b.cylinder(0.24, 0.14, location=(0, 0, 0.07), color="soil", segments=8, radius2=0.18)
+    b.cylinder(0.075, 1.05, location=(0, 0, 0.6), color="wood_alt", segments=6, radius2=0.055)
+    b.cylinder(0.04, 0.45, location=(0.14, 0, 0.82), rotation=(0, 35, 0), color="wood_alt", segments=5)
+    for x, y, z, radius, color in (
+        (0.0, 0.0, 1.22, 0.34, "leaf"),
+        (0.32, 0.04, 1.02, 0.25, "leaf_light"),
+        (-0.27, -0.06, 0.98, 0.23, "leaf"),
+        (0.06, 0.18, 1.46, 0.21, "leaf_light"),
+    ):
+        b.blob(radius, location=(x, y, z), color=color, jitter=0.12, subdivisions=1)
+
+
 def carrot(b):
     b.cone(0.3, 1.45, location=(0, 0, 0.78), rotation=(180, 0, 0), color="carrot", segments=7)
     for angle, color in ((-25, "leaf_light"), (0, "leaf"), (22, "leaf_light")):
@@ -271,6 +285,7 @@ ITEMS.update(
         "CarrotSeeds": (lambda b: seed_pouch(b, "carrot"), False),
         "PotatoSeeds": (lambda b: seed_pouch(b, "potato"), False),
         "GlowberrySeeds": (lambda b: seed_pouch(b, "berry"), False),
+        "Sapling": (sapling, False),
         "Carrot": (carrot, False),
         "Potato": (potato, False),
         "Glowberry": (glowberry, False),

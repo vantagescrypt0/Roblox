@@ -26,6 +26,7 @@ local StateService = require(Services.StateService)
 local TownService = require(Services.TownService)
 local TradeService = require(Services.TradeService)
 local TravelService = require(Services.TravelService)
+local TreeService = require(Services.TreeService)
 
 StateService.Start()
 if Places.Current() == "Town" then
@@ -37,6 +38,7 @@ else
 	BlockService.Start()
 	FarmService.Start()
 	CraftingService.Start()
+	TreeService.Start()
 end
 TravelService.Start()
 CombatService.Start()

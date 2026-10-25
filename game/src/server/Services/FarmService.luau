@@ -318,7 +318,7 @@ local function onTill(player: Player, x: unknown, y: unknown, z: unknown)
 		return
 	end
 	-- Crops need open sky (a mined tree or boulder counts as taken: it grows back)
-	if world.Cells[above] or IslandService.GetNode(player, x, y + 1, z) then
+	if world.Cells[above] or world.Protected[above] or IslandService.GetNode(player, x, y + 1, z) then
 		StateService.Notify(player, "Clear the space on top first", "bad")
 		return
 	end

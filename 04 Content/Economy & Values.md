@@ -28,6 +28,7 @@ What everything is worth, so trading between players has a fair reference. The n
 | Potato Seeds | 120 | – | 120 |
 | Potato | 24 | 12 | – |
 | Glowberry Seeds (Warzone only) | 250 | – | – |
+| Sapling (drops from leaves) | 8 | – | – |
 | Glowberry | 70 | 35 | – |
 | Scrap (Warzone) | 6 | – | – |
 | Crystal (Warzone) | 60 | – | – |
@@ -51,7 +52,7 @@ Every tree, leaf, boulder and ore block that comes with the island is a **node**
 | Coal Ore | 30s |
 | Iron Ore | 45s |
 
-Blocks you dig out of the island underside (ore veins) and blocks you placed yourself are not nodes: once mined, they're gone.
+Blocks you dig out of the island underside (ore veins) and blocks you placed yourself are not nodes: once mined, they're gone. Trees you grow from a Sapling are nodes too (see [[Skills & Levels]]).
 
 ## Crops are perennial
 Plant once. After each harvest the plant stays and starts growing again, with no timer shown. There's a 10% chance per harvest of a spare seed to fill another plot. To change crops, hold a shovel and click the plant: it's dug up and you get the seed back.

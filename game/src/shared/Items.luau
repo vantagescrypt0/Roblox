@@ -64,6 +64,9 @@ local Items: { [string]: Item } = {
 	GlowberrySeeds = { Name = "Glowberry Seeds", Icon = "✨", Value = 250, SellPrice = 0, Model = "GlowberrySeeds" },
 	Glowberry = { Name = "Glowberry", Icon = "🍇", Value = 70, SellPrice = 35, Model = "Glowberry" },
 
+	-- Drops from leaves; plant it on grass or dirt and it grows into a tree
+	Sapling = { Name = "Sapling", Icon = "🌳", Value = 8, SellPrice = 0, Model = "Sapling" },
+
 	-- Warzone materials
 	Scrap = { Name = "Scrap", Icon = "⚙️", Value = 6, SellPrice = 0, Model = "Scrap" },
 	Crystal = { Name = "Crystal", Icon = "💎", Value = 60, SellPrice = 0, Model = "Crystal" },

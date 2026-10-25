@@ -19,6 +19,7 @@ local ORDER = {
 	"CarrotSeeds",
 	"PotatoSeeds",
 	"GlowberrySeeds",
+	"Sapling",
 	"Wheat",
 	"Carrot",
 	"Potato",

@@ -6,6 +6,8 @@
 --   right click (or tap) -> place the selected hotbar block against the face you aim at
 --   click / tap farmland -> plant the seeds you hold (or harvest when it's ripe)
 --   right click / tap grass or dirt while holding a hoe -> till it into farmland
+--   right click / tap grass or dirt while holding a sapling -> plant it
+--   click a sapling, or right click a tree you planted while holding an axe -> dig it up
 --   click / tap the crafting table or the Merchant -> open crafting / the market
 --   right click / tap a furnace -> smelting (left click breaks it, so you can move it)
 -- The server double-checks everything.
@@ -209,6 +211,27 @@ local function place()
 	Remotes.PlaceBlock:FireServer(current.PX, current.PY, current.PZ, itemId)
 end
 
+-- Right-clicking a block with something that works on it: a hoe tills grass or dirt, a
+-- sapling is planted on it, an axe digs up a tree you planted. Returns true if used.
+local function useHeld(current: Target): boolean
+	local itemId = Hotbar.SelectedItem()
+	local tool = itemId and Tools.ByItem[itemId]
+	local name = current.Part.Name
+	local remote: RemoteEvent? = nil
+	if (name == "Grass" or name == "Dirt") and tool and tool.Kind == "Hoe" then
+		remote = Remotes.Till
+	elseif (name == "Grass" or name == "Dirt") and itemId == "Sapling" then
+		remote = Remotes.PlantSapling
+	elseif name == "Wood" and tool and tool.Kind == "Axe" then
+		remote = Remotes.Uproot
+	end
+	if remote then
+		remote:FireServer(current.X, current.Y, current.Z)
+		return true
+	end
+	return false
+end
+
 -- Clicking something you use rather than break. Returns true if the click was used.
 -- `secondary` is a right click or a tap; breakable stations (the furnace) only open on
 -- those, so a left click can still break them.
@@ -223,13 +246,11 @@ local function interact(secondary: boolean): boolean
 	elseif current and secondary and current.Part.Name == "Furnace" then
 		callbacks.OpenCrafting("Furnace")
 		return true
-	elseif current and secondary and (current.Part.Name == "Grass" or current.Part.Name == "Dirt") then
-		local itemId = Hotbar.SelectedItem()
-		local tool = itemId and Tools.ByItem[itemId]
-		if tool and tool.Kind == "Hoe" then
-			Remotes.Till:FireServer(current.X, current.Y, current.Z)
-			return true
-		end
+	elseif current and current.Part.Name == "Sapling" then
+		Remotes.Uproot:FireServer(current.X, current.Y, current.Z)
+		return true
+	elseif current and secondary and useHeld(current) then
+		return true
 	elseif aimingAtMerchant() then
 		callbacks.OpenMarket()
 		return true

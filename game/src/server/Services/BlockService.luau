@@ -25,6 +25,8 @@ local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
 local PLACE_COOLDOWN = 0.12
+-- Chance that the island's leaves drop a sapling (TreeService plants it)
+local SAPLING_CHANCE = 0.08
 -- Building area around the island (in blocks)
 local MAX_HEIGHT, MAX_DEPTH, EXTRA_RADIUS = 40, 40, 12
 
@@ -131,6 +133,10 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	if gather then
 		ProgressionService.AddSkillXP(player, gather.Skill, gather.XP)
 		ProgressionService.AddPlayerXP(player, gather.PlayerXP)
+	end
+	if natural and blockType == "Leaves" and rng:NextNumber() < SAPLING_CHANCE then
+		InventoryService.Add(player, "Sapling", 1)
+		StateService.Notify(player, "Found a Sapling! Plant it on grass or dirt", "good")
 	end
 	if canHarvest and blockType == "Wood" then
 		QuestService.Record(player, "Chop")

@@ -22,6 +22,8 @@ local NAMES = {
 	"Travel", -- server -> client: you're being moved to "Town" or "Island" (for the fade)
 	"FarmClick", -- client -> server: clicked the farmland at grid x, y, z (plant or harvest)
 	"Till", -- client -> server: hoe the grass or dirt block at grid x, y, z into farmland
+	"PlantSapling", -- client -> server: plant a sapling on the grass or dirt block at grid x, y, z
+	"Uproot", -- client -> server: dig up the planted tree (or sapling) at grid x, y, z
 	"TradeRequest", -- client -> server: ask another player in Town to trade (player)
 	"TradeInvite", -- server -> client: a player wants to trade with you (player), or nil to withdraw
 	"TradeRespond", -- client -> server: answer an invite (player, accepted)
@@ -63,6 +65,8 @@ return {
 	Travel = folder:WaitForChild("Travel") :: RemoteEvent,
 	FarmClick = folder:WaitForChild("FarmClick") :: RemoteEvent,
 	Till = folder:WaitForChild("Till") :: RemoteEvent,
+	PlantSapling = folder:WaitForChild("PlantSapling") :: RemoteEvent,
+	Uproot = folder:WaitForChild("Uproot") :: RemoteEvent,
 	TradeRequest = folder:WaitForChild("TradeRequest") :: RemoteEvent,
 	TradeInvite = folder:WaitForChild("TradeInvite") :: RemoteEvent,
 	TradeRespond = folder:WaitForChild("TradeRespond") :: RemoteEvent,
