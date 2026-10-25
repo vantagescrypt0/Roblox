@@ -1,5 +1,5 @@
 --!strict
--- Draws our custom-style ProximityPrompts: a rounded card with the key to press, what it
+-- Draws our custom-style ProximityPrompts: a parchment card with the key to press, what it
 -- does, and a fill bar while holding. On phones the whole card is a tap/hold button.
 
 local Players = game:GetService("Players")
@@ -22,7 +22,7 @@ local GAMEPAD_LABELS: { [Enum.KeyCode]: string } = {
 
 local function keyLabel(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInputType): string
 	if inputType == Enum.ProximityPromptInputType.Touch then
-		return "👆"
+		return "Tap"
 	elseif inputType == Enum.ProximityPromptInputType.Gamepad then
 		return GAMEPAD_LABELS[prompt.GamepadKeyCode] or prompt.GamepadKeyCode.Name
 	end
@@ -51,49 +51,49 @@ local function show(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInpu
 		Parent = gui,
 	})
 	local card = Theme.make("TextButton", {
-		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = Color3.new(1, 1, 1),
+		Size = UDim2.new(1, -8, 1, -8),
+		Position = UDim2.fromOffset(4, 4),
+		BackgroundColor3 = C.Parchment,
 		AutoButtonColor = false,
 		Text = "",
 		Parent = billboard,
 	})
-	Theme.gradient(card, C.PanelTop, C.Panel)
-	Theme.corner(card, 16)
-	Theme.stroke(card)
-	local scale = Theme.make("UIScale", { Scale = 0.6, Parent = card })
-	TweenService:Create(scale, TweenInfo.new(0.2, Enum.EasingStyle.Back), { Scale = 1 }):Play()
+	Theme.corner(card, 7)
+	Theme.stroke(card, C.Wood, 4)
+	local scale = Theme.make("UIScale", { Scale = 0.7, Parent = card })
+	TweenService:Create(scale, TweenInfo.new(0.18, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
 
+	-- The key to press, on a wooden key cap
 	local key = Theme.make("TextLabel", {
-		Size = UDim2.fromOffset(50, 50),
-		Position = UDim2.fromOffset(10, 10),
-		BackgroundColor3 = Color3.new(1, 1, 1),
+		Size = UDim2.fromOffset(44, 44),
+		Position = UDim2.fromOffset(9, 9),
+		BackgroundColor3 = C.WoodLight,
 		Text = keyLabel(prompt, inputType),
-		FontFace = Theme.Font.Title,
-		TextSize = 26,
-		TextColor3 = C.Stroke,
+		FontFace = Theme.Font.Bold,
+		TextSize = 22,
+		TextColor3 = C.Cream,
 		Parent = card,
 	})
-	Theme.gradient(key, Color3.new(1, 1, 1), Color3.fromRGB(205, 212, 230))
-	Theme.corner(key, 12)
-	Theme.stroke(key, C.Stroke, 2.5)
+	Theme.corner(key, 6)
+	Theme.stroke(key, C.Wood, 2)
 
 	local action = Theme.title(card, prompt.ActionText, 22)
-	action.Position = UDim2.fromOffset(72, 10)
-	action.Size = UDim2.new(1, -82, 0, 28)
-	local object = Theme.text(card, prompt.ObjectText, 14, Theme.Font.Medium, C.Muted)
-	object.Position = UDim2.fromOffset(72, 38)
-	object.Size = UDim2.new(1, -82, 0, 18)
+	action.Position = UDim2.fromOffset(64, 6)
+	action.Size = UDim2.new(1, -72, 0, 28)
+	local object = Theme.text(card, prompt.ObjectText, 14, Theme.Font.Medium, C.InkMuted)
+	object.Position = UDim2.fromOffset(64, 34)
+	object.Size = UDim2.new(1, -72, 0, 18)
 
 	-- Hold progress along the bottom edge
 	local fill = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.new(0, 10, 1, -5),
-		Size = UDim2.fromOffset(0, 5),
-		BackgroundColor3 = C.Gold,
+		Position = UDim2.new(0, 9, 1, -4),
+		Size = UDim2.fromOffset(0, 4),
+		BackgroundColor3 = C.Green,
 		BorderSizePixel = 0,
 		Parent = card,
 	})
-	Theme.corner(fill, 999)
+	Theme.corner(fill, 2)
 
 	local connections = {}
 	local holdTween: Tween? = nil
@@ -108,7 +108,7 @@ local function show(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInpu
 		prompt.PromptButtonHoldBegan:Connect(function()
 			if prompt.HoldDuration > 0 then
 				holdTween = TweenService:Create(fill, TweenInfo.new(prompt.HoldDuration, Enum.EasingStyle.Linear), {
-					Size = UDim2.new(1, -20, 0, 5),
+					Size = UDim2.new(1, -18, 0, 4),
 				});
 				(holdTween :: Tween):Play()
 			end
@@ -120,7 +120,7 @@ local function show(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInpu
 			if holdTween then
 				holdTween:Cancel()
 			end
-			fill.Size = UDim2.fromOffset(0, 5)
+			fill.Size = UDim2.fromOffset(0, 4)
 		end)
 	)
 	table.insert(

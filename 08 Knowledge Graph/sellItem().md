@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/MarketService.luau"
 type: "code"
-community: "Community 18"
+community: "Community 23"
 location: "L43"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_18
+  - community/Community_23
 ---
 
 # sellItem()
@@ -18,4 +18,4 @@ tags:
 - [[MarketService.luau]] - `contains` [EXTRACTED]
 - [[onSell()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Community_18
+#graphify/code #graphify/INFERRED #community/Community_23

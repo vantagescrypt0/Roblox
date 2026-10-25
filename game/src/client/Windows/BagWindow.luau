@@ -1,10 +1,9 @@
 --!strict
--- Minecraft-style inventory: every item you own in a slot grid, with your hotbar along
--- the bottom. Click a hotbar slot to pick it, then click an item to put it there.
--- Right-click a hotbar slot to empty it.
+-- The Bag: every item you own in a slot grid, with your hotbar along the bottom. Click a
+-- hotbar slot to pick it, then click an item to put it there. Right-click a hotbar slot to
+-- empty it.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
 
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
@@ -12,13 +11,14 @@ local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Parent.Hotbar)
 local ItemIcon = require(script.Parent.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.Parent.UI.Theme)
+local Window = require(script.Parent.Parent.UI.Window)
 
-local PIXEL = Font.fromEnum(Enum.Font.Arcade)
-local PANEL = Color3.fromRGB(198, 198, 198)
-local SLOT_BG = Color3.fromRGB(139, 139, 139)
-local DARK = Color3.fromRGB(55, 55, 55)
-local TEXT = Color3.fromRGB(63, 63, 63)
+local C = Theme.Color
+
 local SLOT = 54
+local GAP = 6
+local COLUMNS = 7
+local ROWS = 3
 
 -- Display order: blocks, materials, seeds, crops, Warzone materials, then every tool
 local ORDER = {
@@ -49,29 +49,28 @@ end
 
 local BagWindow = {}
 
-local gui: ScreenGui
-local panel: Frame
+local window: Window.Window
 local grid: ScrollingFrame
 local hotbarRow: Frame
 local info: TextLabel
 local state: any = nil
-local isOpen = false
 
 local function slotFrame(parent: Instance, order: number): TextButton
 	local slot = Theme.make("TextButton", {
 		LayoutOrder = order,
 		Size = UDim2.fromOffset(SLOT, SLOT),
-		BackgroundColor3 = SLOT_BG,
+		BackgroundColor3 = C.ParchmentDark,
 		AutoButtonColor = false,
 		Text = "",
 		Parent = parent,
 	})
-	Theme.stroke(slot, DARK, 2)
+	Theme.corner(slot, 5)
+	Theme.stroke(slot, C.TanEdge, 2)
 	slot.MouseEnter:Connect(function()
-		slot.BackgroundColor3 = Color3.fromRGB(165, 165, 165)
+		slot.BackgroundColor3 = C.Parchment
 	end)
 	slot.MouseLeave:Connect(function()
-		slot.BackgroundColor3 = SLOT_BG
+		slot.BackgroundColor3 = C.ParchmentDark
 	end)
 	return slot
 end
@@ -80,35 +79,17 @@ local function countLabel(slot: Instance, count: number)
 	if count <= 1 then
 		return
 	end
-	for i, color in { Color3.fromRGB(62, 62, 62), Color3.new(1, 1, 1) } do
-		local label = Theme.make("TextLabel", {
-			AnchorPoint = Vector2.new(1, 1),
-			Position = UDim2.new(1, if i == 1 then -1 else -3, 1, if i == 1 then 1 else -1),
-			Size = UDim2.fromOffset(40, 18),
-			BackgroundTransparency = 1,
-			FontFace = PIXEL,
-			TextSize = 18,
-			TextColor3 = color,
-			TextXAlignment = Enum.TextXAlignment.Right,
-			Text = tostring(count),
-			ZIndex = 2 + i,
-			Parent = slot,
-		})
-		label.Active = false
-	end
+	local label = Theme.text(slot, tostring(count), 15, Theme.Font.Bold)
+	label.AnchorPoint = Vector2.new(1, 1)
+	label.Position = UDim2.new(1, -4, 1, 0)
+	label.Size = UDim2.fromOffset(40, 17)
+	label.TextXAlignment = Enum.TextXAlignment.Right
+	label.ZIndex = 3
 end
 
 local function render()
-	for _, child in grid:GetChildren() do
-		if child:IsA("GuiObject") then
-			child:Destroy()
-		end
-	end
-	for _, child in hotbarRow:GetChildren() do
-		if child:IsA("GuiObject") then
-			child:Destroy()
-		end
-	end
+	Window.clear(grid)
+	Window.clear(hotbarRow)
 	if not state then
 		return
 	end
@@ -121,7 +102,7 @@ local function render()
 			countLabel(slot, count)
 			slot.MouseEnter:Connect(function()
 				local tool = Tools.ByItem[itemId]
-				local uses = if tool then `  ({tool.Durability - (state.Wear[itemId] or 0)} uses left)` else ""
+				local uses = if tool then ` - {tool.Durability - (state.Wear[itemId] or 0)} uses left` else ""
 				info.Text = `{Items[itemId].Name}{uses}`
 			end)
 			slot.Activated:Connect(function()
@@ -140,7 +121,7 @@ local function render()
 		end
 		local stroke = slot:FindFirstChildOfClass("UIStroke")
 		if index == Hotbar.Selected() and stroke then
-			stroke.Color = Color3.fromRGB(250, 250, 250)
+			stroke.Color = C.Ochre
 			stroke.Thickness = 3
 		end
 		slot.Activated:Connect(function()
@@ -155,145 +136,61 @@ end
 
 function BagWindow.SetState(newState: any)
 	state = newState
-	if isOpen then
+	if window.IsOpen then
 		render()
-	end
-end
-
-local function setOpen(open: boolean)
-	isOpen = open
-	gui.Enabled = open
-	if open then
-		render()
-		local scale = panel:FindFirstChild("OpenScale") :: UIScale
-		scale.Scale = 0.85
-		TweenService:Create(scale, TweenInfo.new(0.2, Enum.EasingStyle.Back), { Scale = 1 }):Play()
 	end
 end
 
 function BagWindow.Toggle()
-	setOpen(not isOpen)
+	Window.toggle(window)
 end
 
 function BagWindow.Start()
-	gui = Theme.screen("Inventory", 10)
-	gui.IgnoreGuiInset = true
-	gui.Enabled = false
+	local gridWidth = COLUMNS * SLOT + (COLUMNS - 1) * GAP + 14
+	local gridHeight = ROWS * SLOT + (ROWS - 1) * GAP + 10
+	window = Window.new("Inventory", "Bag", Vector2.new(gridWidth + 28 + 20, gridHeight + SLOT + 184))
+	window.OnOpen = function()
+		info.Text = ""
+		render()
+	end
+	local body = window.Body
 
-	local dim = Theme.make("TextButton", {
-		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = Color3.new(0, 0, 0),
-		BackgroundTransparency = 0.5,
-		AutoButtonColor = false,
-		Text = "",
-		Parent = gui,
-	})
-	dim.Activated:Connect(function()
-		setOpen(false)
-	end)
-
-	local holder = Theme.make("Frame", {
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.fromScale(0.5, 0.5),
-		Size = UDim2.fromOffset(420, 400),
-		BackgroundTransparency = 1,
-		Parent = gui,
-	})
-	Theme.autoScale(holder)
-	panel = Theme.make("Frame", {
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.fromScale(0.5, 0.5),
-		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = PANEL,
-		Parent = holder,
-	})
-	Theme.stroke(panel, Color3.new(0, 0, 0), 3)
-	Theme.corner(panel, 4)
-	Theme.make("UIScale", { Name = "OpenScale", Parent = panel })
-
-	local title = Theme.make("TextLabel", {
-		Position = UDim2.fromOffset(14, 10),
-		Size = UDim2.new(1, -60, 0, 24),
-		BackgroundTransparency = 1,
-		FontFace = PIXEL,
-		TextSize = 24,
-		TextColor3 = TEXT,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		Text = "Inventory",
-		Parent = panel,
-	})
-	title.Active = false
-
-	local close = Theme.make("TextButton", {
-		AnchorPoint = Vector2.new(1, 0),
-		Position = UDim2.new(1, -10, 0, 8),
-		Size = UDim2.fromOffset(28, 28),
-		BackgroundColor3 = SLOT_BG,
-		FontFace = PIXEL,
-		TextSize = 22,
-		TextColor3 = TEXT,
-		Text = "X",
-		Parent = panel,
-	})
-	Theme.stroke(close, DARK, 2)
-	close.Activated:Connect(function()
-		setOpen(false)
-	end)
-
+	local well = Theme.inset(body, UDim2.new(1, 0, 0, gridHeight + 4))
 	grid = Theme.make("ScrollingFrame", {
-		Position = UDim2.fromOffset(14, 44),
-		Size = UDim2.new(1, -28, 0, 3 * (SLOT + 4) + 6),
+		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollBarThickness = 6,
-		ScrollBarImageColor3 = DARK,
+		ScrollBarImageColor3 = C.WoodLight,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		CanvasSize = UDim2.new(),
-		Parent = panel,
+		Parent = well,
 	})
 	Theme.make("UIGridLayout", {
 		CellSize = UDim2.fromOffset(SLOT, SLOT),
-		CellPadding = UDim2.fromOffset(4, 4),
+		CellPadding = UDim2.fromOffset(GAP, GAP),
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		Parent = grid,
 	})
-	Theme.padding(grid, 2, 2, 2, 2)
+	Theme.padding(grid, 7, 7, 7, 7)
 
-	info = Theme.make("TextLabel", {
-		Position = UDim2.fromOffset(14, 44 + 3 * (SLOT + 4) + 14),
-		Size = UDim2.new(1, -28, 0, 36),
-		BackgroundTransparency = 1,
-		FontFace = PIXEL,
-		TextSize = 16,
-		TextColor3 = TEXT,
-		TextWrapped = true,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		Text = "",
-		Parent = panel,
-	})
+	info = Theme.text(body, "", 15, Theme.Font.Bold, C.InkMuted)
+	info.Position = UDim2.fromOffset(2, gridHeight + 12)
+	info.Size = UDim2.new(1, -4, 0, 20)
 
-	local hotbarTitle = Theme.make("TextLabel", {
-		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.new(0, 14, 1, -(SLOT + 22)),
-		Size = UDim2.new(1, -28, 0, 20),
-		BackgroundTransparency = 1,
-		FontFace = PIXEL,
-		TextSize = 18,
-		TextColor3 = TEXT,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		Text = "Hotbar",
-		Parent = panel,
-	})
-	hotbarTitle.Active = false
+	local hotbarTitle = Theme.title(body, "Hotbar", 22)
+	hotbarTitle.AnchorPoint = Vector2.new(0, 1)
+	hotbarTitle.Position = UDim2.new(0, 2, 1, -(SLOT + 6))
+	hotbarTitle.Size = UDim2.new(1, -4, 0, 26)
 
 	hotbarRow = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 1, -14),
-		Size = UDim2.fromOffset(5 * SLOT + 4 * 6, SLOT),
+		Position = UDim2.fromScale(0.5, 1),
+		Size = UDim2.fromOffset(5 * SLOT + 4 * GAP, SLOT),
 		BackgroundTransparency = 1,
-		Parent = panel,
+		Parent = body,
 	})
-	local layout = Theme.list(hotbarRow, Enum.FillDirection.Horizontal, 6)
+	local layout = Theme.list(hotbarRow, Enum.FillDirection.Horizontal, GAP)
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 end
 

@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Warzone.md"
 type: "concept"
-community: "Community 20"
+community: "Community 9"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_20
+  - community/Community_9
 ---
 
 # PvP fairness options: zones by level, new-player protection, insurance slot
@@ -15,4 +15,4 @@ tags:
 - [[Warzone zones outer ring Slimes, center Brutes]] - `conceptually_related_to` [EXTRACTED]
 - [[Younger Roblox players (Kids 5-8, Select 9-15)]] - `rationale_for` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_20
+#graphify/concept #graphify/EXTRACTED #community/Community_9

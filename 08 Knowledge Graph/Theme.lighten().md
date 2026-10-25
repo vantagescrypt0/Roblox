@@ -1,26 +1,18 @@
 ---
 source_file: "game/src/client/UI/Theme.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L41"
+community: "Community 1"
+location: "L58"
 tags:
   - graphify/code
-  - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - graphify/EXTRACTED
+  - community/Community_1
 ---
 
 # Theme.lighten()
 
 ## Connections
-- [[Hud.Toast()]] - `calls` [INFERRED]
-- [[Theme.bar()]] - `calls` [EXTRACTED]
-- [[Theme.button()]] - `calls` [EXTRACTED]
 - [[Theme.luau]] - `contains` [EXTRACTED]
-- [[Window.new()]] - `calls` [INFERRED]
 - [[build()]] - `calls` [INFERRED]
-- [[buildDetail()]] - `calls` [INFERRED]
-- [[buildProfile()]] - `calls` [INFERRED]
-- [[card()]] - `calls` [INFERRED]
-- [[render()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

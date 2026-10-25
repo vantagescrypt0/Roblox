@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hud.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L131"
+community: "Community 1"
+location: "L117"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # buildButtons()
@@ -14,9 +14,8 @@ tags:
 ## Connections
 - [[Hud.Start()]] - `calls` [EXTRACTED]
 - [[Hud.luau]] - `contains` [EXTRACTED]
-- [[Theme.autoScale()]] - `calls` [INFERRED]
 - [[Theme.list()]] - `calls` [INFERRED]
 - [[Theme.make()]] - `calls` [INFERRED]
 - [[sideButton()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

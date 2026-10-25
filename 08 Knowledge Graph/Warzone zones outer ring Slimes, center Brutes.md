@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Warzone.md"
 type: "concept"
-community: "Community 20"
+community: "Community 9"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_20
+  - community/Community_9
 ---
 
 # Warzone zones: outer ring Slimes, center Brutes
@@ -16,4 +16,4 @@ tags:
 - [[Warzone]] - `references` [EXTRACTED]
 - [[WarzoneService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_20
+#graphify/concept #graphify/EXTRACTED #community/Community_9

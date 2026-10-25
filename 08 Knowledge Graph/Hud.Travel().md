@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hud.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L347"
+community: "Community 1"
+location: "L329"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # Hud.Travel()
@@ -15,4 +15,4 @@ tags:
 - [[Hud.luau]] - `contains` [EXTRACTED]
 - [[setFade()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

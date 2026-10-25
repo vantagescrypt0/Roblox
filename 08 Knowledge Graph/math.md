@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Block Art Pipeline (Blender)"
+community: "Community 7"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Block_Art_Pipeline_Blender
+  - community/Community_7
 ---
 
 # math
@@ -35,4 +35,4 @@ tags:
 - [[tree()]] - `calls` [EXTRACTED]
 - [[wheat()]] - `calls` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender
+#graphify/concept #graphify/EXTRACTED #community/Community_7

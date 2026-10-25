@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/PromptUI.luau"
 type: "code"
-community: "HUD and Hotbar"
+community: "Community 1"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # PromptUI.luau
@@ -17,4 +17,4 @@ tags:
 - [[script_parent_ui_theme]] - `imports` [EXTRACTED]
 - [[show()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

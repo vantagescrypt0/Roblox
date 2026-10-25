@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hotbar.luau"
 type: "code"
-community: "Community 3"
-location: "L78"
+community: "Community 1"
+location: "L57"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_1
 ---
 
 # Hotbar.OnChanged()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Hotbar.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_1

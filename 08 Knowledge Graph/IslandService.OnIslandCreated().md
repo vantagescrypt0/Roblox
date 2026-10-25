@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/IslandService.luau"
 type: "code"
-community: "Community 11"
+community: "Community 23"
 location: "L61"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_11
+  - community/Community_23
 ---
 
 # IslandService.OnIslandCreated()
@@ -16,4 +16,4 @@ tags:
 - [[IslandService.luau]] - `contains` [EXTRACTED]
 - [[TravelService.Go()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Community_11
+#graphify/code #graphify/INFERRED #community/Community_23

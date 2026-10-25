@@ -1,25 +1,25 @@
 ---
 source_file: "game/src/client/Windows/BagWindow.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L178"
+community: "Community 1"
+location: "L148"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # BagWindow.Start()
 
 ## Connections
 - [[BagWindow.luau]] - `contains` [EXTRACTED]
-- [[Theme.autoScale()]] - `calls` [INFERRED]
-- [[Theme.corner()]] - `calls` [INFERRED]
+- [[Theme.inset()]] - `calls` [INFERRED]
 - [[Theme.list()]] - `calls` [INFERRED]
 - [[Theme.make()]] - `calls` [INFERRED]
 - [[Theme.padding()]] - `calls` [INFERRED]
-- [[Theme.screen()]] - `calls` [INFERRED]
-- [[Theme.stroke()]] - `calls` [INFERRED]
-- [[setOpen()]] - `calls` [EXTRACTED]
+- [[Theme.text()]] - `calls` [INFERRED]
+- [[Theme.title()]] - `calls` [INFERRED]
+- [[Window.new()]] - `calls` [INFERRED]
+- [[render()_1]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/INFERRED #community/Community_1

@@ -9,6 +9,8 @@ local Theme = require(script.Parent.UI.Theme)
 local C = Theme.Color
 local localPlayer = Players.LocalPlayer :: Player
 
+local HEADER = 34
+
 local QuestTracker = {}
 
 local card: Frame
@@ -24,36 +26,39 @@ local function build()
 	card = Theme.panel(gui, UDim2.fromOffset(270, 0))
 	-- Right side, below Roblox's player list
 	card.AnchorPoint = Vector2.new(1, 0.5)
-	card.Position = UDim2.new(1, -12, 0.5, 0)
+	card.Position = UDim2.new(1, -14, 0.5, 0)
 	card.AutomaticSize = Enum.AutomaticSize.Y
 	card.Visible = false
 	Theme.autoScale(card)
-	Theme.padding(card, 12, 12, 0, 12)
-	Theme.list(card, Enum.FillDirection.Vertical, 6)
 
-	-- Gold ribbon header
-	local ribbon = Theme.make("Frame", {
-		Size = UDim2.new(1, 24, 0, 32),
-		Position = UDim2.fromOffset(-12, 0),
-		LayoutOrder = 1,
-		BackgroundColor3 = Color3.new(1, 1, 1),
+	Theme.header(card, "Quest", HEADER)
+	-- Quest number on the right of the title bar
+	header = Theme.text(card, "", 14, Theme.Font.Bold, C.Gold)
+	header.AnchorPoint = Vector2.new(1, 0)
+	header.Position = UDim2.new(1, -14, 0, 0)
+	header.Size = UDim2.fromOffset(80, HEADER - 3)
+	header.TextXAlignment = Enum.TextXAlignment.Right
+	header.ZIndex = 3
+
+	local body = Theme.make("Frame", {
+		Position = UDim2.fromOffset(0, HEADER),
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
 		Parent = card,
 	})
-	Theme.gradient(ribbon, Theme.lighten(C.Gold, 0.2), Theme.darken(C.Gold, 0.1))
-	Theme.corner(ribbon, 14)
-	header = Theme.title(ribbon, "📜 QUEST", 18)
-	header.Size = UDim2.fromScale(1, 1)
-	header.TextXAlignment = Enum.TextXAlignment.Center
+	Theme.padding(body, 12, 12, 10, 12)
+	Theme.list(body, Enum.FillDirection.Vertical, 8)
 
-	questText = Theme.title(card, "", 20)
-	questText.LayoutOrder = 2
+	questText = Theme.text(body, "", 17, Theme.Font.Bold)
+	questText.LayoutOrder = 1
 	questText.TextWrapped = true
 	questText.TextTruncate = Enum.TextTruncate.None
 	questText.AutomaticSize = Enum.AutomaticSize.Y
-	questText.Size = UDim2.new(1, 0, 0, 24)
+	questText.Size = UDim2.new(1, 0, 0, 20)
 
-	bar = Theme.bar(card, C.Gold, UDim2.new(1, 0, 0, 20))
-	bar.Track.LayoutOrder = 3
+	bar = Theme.bar(body, C.Ochre, UDim2.new(1, 0, 0, 18))
+	bar.Track.LayoutOrder = 2
 
 	highlight = Theme.make("Highlight", {
 		FillColor = C.Gold,
@@ -80,11 +85,11 @@ function QuestTracker.Render(state: any)
 		return
 	end
 	card.Visible = true
-	header.Text = `📜 QUEST {quest.Number}/{quest.Total}`
+	header.Text = `{quest.Number} / {quest.Total}`
 	questText.Text = quest.Text
 	bar.Set(quest.Progress / quest.Target, `{quest.Progress} / {quest.Target}`)
 	if lastQuest and lastQuest ~= quest.Number then
-		Theme.pop(questText, 1.25)
+		Theme.pop(header, 1.2)
 	end
 	lastQuest = quest.Number
 

@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hotbar.luau"
 type: "code"
-community: "Community 3"
-location: "L70"
+community: "Community 24"
+location: "L49"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_24
 ---
 
 # Hotbar.SelectedItem()
@@ -17,4 +17,4 @@ tags:
 - [[showName()]] - `calls` [EXTRACTED]
 - [[update()_1]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_24

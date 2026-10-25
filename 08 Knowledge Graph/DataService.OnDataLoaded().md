@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/DataService.luau"
 type: "code"
-community: "Community 4"
+community: "Community 23"
 location: "L66"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_4
+  - community/Community_23
 ---
 
 # DataService.OnDataLoaded()
@@ -16,4 +16,4 @@ tags:
 - [[Leaderstats.Start()]] - `calls` [INFERRED]
 - [[QuestService.Start()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Community_4
+#graphify/code #graphify/INFERRED #community/Community_23

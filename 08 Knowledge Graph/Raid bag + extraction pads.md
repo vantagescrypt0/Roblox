@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Warzone.md"
 type: "concept"
-community: "Community 19"
+community: "Community 9"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_19
+  - community/Community_9
 ---
 
 # Raid bag + extraction pads
@@ -15,4 +15,4 @@ tags:
 - [[Warzone]] - `references` [EXTRACTED]
 - [[WarzoneService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_19
+#graphify/concept #graphify/EXTRACTED #community/Community_9

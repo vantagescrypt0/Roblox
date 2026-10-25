@@ -1,16 +1,18 @@
 --!strict
--- Pop-up windows (Bag, Island, Market, Workbench). Only one is open at a time.
+-- Pop-up windows (Bag, Island, Market, Crafting): a parchment sheet in a wooden frame with
+-- a wooden title bar and a close button. Only one is open at a time.
 
 local TweenService = game:GetService("TweenService")
 
 local Theme = require(script.Parent.Theme)
+
+local HEADER = 46
 
 export type Window = {
 	Gui: ScreenGui,
 	Root: Frame,
 	Body: Frame,
 	Title: TextLabel,
-	Icon: TextLabel,
 	IsOpen: boolean,
 	OnOpen: (() -> ())?,
 }
@@ -41,8 +43,8 @@ function Window.open(window: Window)
 	end
 	window.Gui.Enabled = true
 	local scale = window.Root:FindFirstChild("OpenScale") :: UIScale
-	scale.Scale = 0.85
-	TweenService:Create(scale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 })
+	scale.Scale = 0.92
+	TweenService:Create(scale, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 })
 		:Play()
 end
 
@@ -54,7 +56,7 @@ function Window.toggle(window: Window)
 	end
 end
 
-function Window.new(name: string, title: string, icon: string, size: Vector2): Window
+function Window.new(name: string, title: string, size: Vector2): Window
 	local gui = Theme.screen(name, 10)
 	gui.Enabled = false
 	gui.IgnoreGuiInset = true
@@ -64,8 +66,8 @@ function Window.new(name: string, title: string, icon: string, size: Vector2): W
 	-- Dim the game behind the window; clicking it closes the window
 	local dim = Theme.make("TextButton", {
 		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = Color3.new(0, 0, 0),
-		BackgroundTransparency = 0.55,
+		BackgroundColor3 = Color3.fromRGB(20, 12, 6),
+		BackgroundTransparency = 0.5,
 		Text = "",
 		AutoButtonColor = false,
 		Parent = gui,
@@ -87,44 +89,22 @@ function Window.new(name: string, title: string, icon: string, size: Vector2): W
 	root.AnchorPoint = Vector2.new(0.5, 0.5)
 	root.Position = UDim2.fromScale(0.5, 0.5)
 	Theme.make("UIScale", { Name = "OpenScale", Parent = root })
-	local inner = root
 
-	-- Header: icon badge, title, close button
-	local badge = Theme.make("Frame", {
-		Size = UDim2.fromOffset(52, 52),
-		Position = UDim2.fromOffset(14, -14),
-		BackgroundColor3 = Color3.new(1, 1, 1),
-		Parent = inner,
-	})
-	Theme.gradient(badge, Theme.lighten(Theme.Color.Gold, 0.2), Theme.darken(Theme.Color.Gold, 0.15))
-	Theme.corner(badge, 999)
-	Theme.stroke(badge, Theme.Color.Stroke, 3)
-	local iconLabel = Theme.make("TextLabel", {
-		Size = UDim2.fromScale(1, 1),
-		BackgroundTransparency = 1,
-		Text = icon,
-		TextSize = 30,
-		TextColor3 = Color3.new(1, 1, 1),
-		Parent = badge,
-	})
+	local titleLabel = Theme.header(root, title, HEADER)
 
-	local titleLabel = Theme.title(inner, title, 28)
-	titleLabel.Position = UDim2.fromOffset(78, 12)
-	titleLabel.Size = UDim2.new(1, -140, 0, 34)
-
-	local close = Theme.button(inner, "X", Theme.Color.Red, UDim2.fromOffset(44, 44), function()
+	local close = Theme.closeButton(root, function()
 		Window.close(window)
 	end)
-	close.Holder.AnchorPoint = Vector2.new(1, 0)
-	close.Holder.Position = UDim2.new(1, -12, 0, 10)
-	close.Label.TextSize = 22
+	close.Holder.AnchorPoint = Vector2.new(1, 0.5)
+	close.Holder.Position = UDim2.new(1, -9, 0, HEADER / 2)
+	close.Holder.ZIndex = 3
 
 	local body = Theme.make("Frame", {
 		Name = "Body",
-		Position = UDim2.fromOffset(14, 64),
-		Size = UDim2.new(1, -28, 1, -78),
+		Position = UDim2.fromOffset(14, HEADER + 12),
+		Size = UDim2.new(1, -28, 1, -(HEADER + 26)),
 		BackgroundTransparency = 1,
-		Parent = inner,
+		Parent = root,
 	})
 
 	window = {
@@ -132,7 +112,6 @@ function Window.new(name: string, title: string, icon: string, size: Vector2): W
 		Root = root,
 		Body = body,
 		Title = titleLabel,
-		Icon = iconLabel,
 		IsOpen = false,
 		OnOpen = nil,
 	}
@@ -147,7 +126,7 @@ function Window.scrollList(parent: Instance, size: UDim2, position: UDim2?): Scr
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollBarThickness = 6,
-		ScrollBarImageColor3 = Theme.Color.Muted,
+		ScrollBarImageColor3 = Theme.Color.WoodLight,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		CanvasSize = UDim2.new(),
 		Parent = parent,

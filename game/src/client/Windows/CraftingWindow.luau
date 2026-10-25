@@ -49,10 +49,10 @@ end
 
 type Tile = { Button: TextButton, Stroke: UIStroke, Lock: TextLabel }
 
--- Window title, badge icon, button text and description for each station
+-- Window title and button text for each station
 local STATIONS = {
-	CraftingTable = { Title = "Crafting Table", Icon = "🔨", Verb = "CRAFT" },
-	Furnace = { Title = "Furnace", Icon = "🔥", Verb = "SMELT" },
+	CraftingTable = { Title = "Crafting Table", Verb = "Craft" },
+	Furnace = { Title = "Furnace", Verb = "Smelt" },
 }
 type StatRow = { Frame: Frame, Value: TextLabel, Bar: Theme.Bar }
 
@@ -87,29 +87,12 @@ end
 
 local function ingredientChip(itemId: string, need: number, order: number)
 	local have = state.Items[itemId] or 0
-	local color = if have >= need then C.Green else C.Red
-	local chip = Theme.make("Frame", {
-		AutomaticSize = Enum.AutomaticSize.X,
-		Size = UDim2.fromOffset(0, 40),
-		BackgroundColor3 = Theme.darken(color, 0.6),
-		LayoutOrder = order,
-		Parent = costRow,
-	})
-	Theme.corner(chip, 10)
-	Theme.stroke(chip, Theme.darken(color, 0.15), 2)
-	Theme.padding(chip, 4, 10, 0, 0)
-	Theme.list(chip, Enum.FillDirection.Horizontal, 4)
-	local iconHolder = Theme.make("Frame", {
-		Size = UDim2.fromOffset(34, 34),
-		BackgroundTransparency = 1,
-		LayoutOrder = 1,
-		Parent = chip,
-	})
-	ItemIcon.create(iconHolder, itemId, UDim2.fromScale(1, 1))
-	local text = Theme.text(chip, `{have}/{need}`, 17, Theme.Font.Title)
-	text.AutomaticSize = Enum.AutomaticSize.X
-	text.Size = UDim2.fromOffset(0, 34)
-	text.LayoutOrder = 2
+	local chip = Theme.iconChip(costRow, `{have}/{need}`, 40)
+	chip.Frame.LayoutOrder = order
+	chip.Label.TextSize = 17
+	-- Red when you don't have enough yet
+	chip.Label.TextColor3 = if have >= need then C.Ink else C.Red
+	ItemIcon.create(chip.Icon, itemId, UDim2.fromScale(1, 1))
 end
 
 local function renderDetail()
@@ -176,8 +159,9 @@ local function render()
 		tile.Button.Visible = recipe.Station == station
 		local enough, levelOk = check(recipe)
 		local selected = recipe.Id == selectedId
-		tile.Stroke.Color = if selected then C.Gold elseif enough and levelOk then C.Green else C.Stroke
-		tile.Stroke.Thickness = if selected then 3 else 2
+		tile.Stroke.Color = if selected then C.Ochre elseif enough and levelOk then C.Green else C.TanEdge
+		tile.Stroke.Thickness = if selected then 3.5 elseif enough and levelOk then 2.5 else 2
+		tile.Button.BackgroundColor3 = if selected then C.Parchment else C.ParchmentDark
 		tile.Lock.Visible = not levelOk
 	end
 	renderDetail()
@@ -189,17 +173,17 @@ local function choose(recipeId: string)
 end
 
 local function buildGrid(parent: Instance)
+	local well = Theme.inset(parent, UDim2.new(0, GRID_WIDTH, 1, 0))
 	local grid = Theme.make("ScrollingFrame", {
-		Size = UDim2.new(0, GRID_WIDTH, 1, 0),
-		BackgroundColor3 = C.Inset,
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollBarThickness = 5,
-		ScrollBarImageColor3 = C.Muted,
+		ScrollBarImageColor3 = C.WoodLight,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		CanvasSize = UDim2.new(),
-		Parent = parent,
+		Parent = well,
 	})
-	Theme.corner(grid, 12)
 	Theme.padding(grid, 6, 6, 6, 6)
 	Theme.make("UIGridLayout", {
 		CellSize = UDim2.fromOffset(TILE, TILE),
@@ -210,33 +194,37 @@ local function buildGrid(parent: Instance)
 
 	for index, recipe in Recipes.List do
 		local button = Theme.make("TextButton", {
-			BackgroundColor3 = C.Row,
-			AutoButtonColor = true,
+			BackgroundColor3 = C.ParchmentDark,
+			AutoButtonColor = false,
 			Text = "",
 			LayoutOrder = index,
 			Parent = grid,
 		})
-		Theme.corner(button, 10)
-		local stroke = Theme.stroke(button, C.Stroke, 2)
+		Theme.corner(button, 6)
+		local stroke = Theme.stroke(button, C.TanEdge, 2)
 		ItemIcon.create(button, recipe.Output, UDim2.fromScale(0.8, 0.8))
 		if recipe.Amount > 1 then
-			local amount = Theme.title(button, tostring(recipe.Amount), 16)
+			local amount = Theme.text(button, tostring(recipe.Amount), 15, Theme.Font.Bold)
 			amount.AnchorPoint = Vector2.new(1, 1)
-			amount.Position = UDim2.new(1, -5, 1, -2)
+			amount.Position = UDim2.new(1, -5, 1, -1)
 			amount.Size = UDim2.fromOffset(30, 18)
 			amount.TextXAlignment = Enum.TextXAlignment.Right
 			amount.ZIndex = 3
 		end
+		-- Level tag on recipes you can't make yet
 		local lock = Theme.make("TextLabel", {
-			Position = UDim2.fromOffset(4, 2),
-			Size = UDim2.fromOffset(20, 20),
-			BackgroundTransparency = 1,
-			Text = "🔒",
-			TextSize = 15,
+			Position = UDim2.fromOffset(3, 3),
+			Size = UDim2.fromOffset(30, 16),
+			BackgroundColor3 = C.WoodLight,
+			FontFace = Theme.Font.Bold,
+			TextSize = 11,
+			TextColor3 = C.Cream,
+			Text = `Lv {recipe.PlayerLevel}`,
 			ZIndex = 3,
 			Visible = false,
 			Parent = button,
 		})
+		Theme.corner(lock, 4)
 		button.Activated:Connect(function()
 			choose(recipe.Id)
 		end)
@@ -251,12 +239,12 @@ local function statRow(parent: Instance, key: string, label: string, color: Colo
 		LayoutOrder = order,
 		Parent = parent,
 	})
-	local name = Theme.text(frame, label, 14, Theme.Font.Bold, C.Muted)
+	local name = Theme.text(frame, label, 14, Theme.Font.Bold, C.InkMuted)
 	name.Size = UDim2.new(0, 104, 1, 0)
-	local bar = Theme.bar(frame, color, UDim2.new(1, -190, 0, 14))
+	local bar = Theme.bar(frame, color, UDim2.new(1, -190, 0, 12))
 	bar.Track.AnchorPoint = Vector2.new(0, 0.5)
 	bar.Track.Position = UDim2.new(0, 106, 0.5, 0)
-	local value = Theme.text(frame, "", 15, Theme.Font.Title)
+	local value = Theme.text(frame, "", 15, Theme.Font.Bold)
 	value.AnchorPoint = Vector2.new(1, 0)
 	value.Position = UDim2.fromScale(1, 0)
 	value.Size = UDim2.new(0, 76, 1, 0)
@@ -265,34 +253,19 @@ local function statRow(parent: Instance, key: string, label: string, color: Colo
 end
 
 local function buildDetail(parent: Instance)
-	local panel = Theme.make("Frame", {
-		Position = UDim2.fromOffset(GRID_WIDTH + 14, 0),
-		Size = UDim2.new(1, -(GRID_WIDTH + 14), 1, 0),
-		BackgroundColor3 = Color3.new(1, 1, 1),
-		Parent = parent,
-	})
-	Theme.gradient(panel, Theme.lighten(C.Row, 0.08), C.Row)
-	Theme.corner(panel, 12)
-	Theme.stroke(panel, C.Stroke, 2)
+	local panel = Theme.card(parent, UDim2.new(1, -(GRID_WIDTH + 14), 1, 0), UDim2.fromOffset(GRID_WIDTH + 14, 0))
 	Theme.padding(panel, 14, 14, 12, 12)
 
-	-- Photo of the item on a soft "studio" backdrop
-	photo = Theme.make("Frame", {
-		Size = UDim2.fromOffset(132, 132),
-		BackgroundColor3 = Color3.new(1, 1, 1),
-		Parent = panel,
-	})
-	Theme.gradient(photo, Color3.fromRGB(120, 170, 220), Color3.fromRGB(62, 92, 140))
-	Theme.corner(photo, 14)
-	Theme.stroke(photo, C.Stroke, 2.5)
+	-- Photo of the item in a sunken frame
+	photo = Theme.inset(panel, UDim2.fromOffset(132, 132))
 
-	nameLabel = Theme.title(panel, "", 24)
-	nameLabel.Position = UDim2.fromOffset(146, 4)
-	nameLabel.Size = UDim2.new(1, -146, 0, 30)
-	kindLabel = Theme.text(panel, "", 15, Theme.Font.Bold, C.Gold)
+	nameLabel = Theme.title(panel, "", 28)
+	nameLabel.Position = UDim2.fromOffset(146, 0)
+	nameLabel.Size = UDim2.new(1, -146, 0, 34)
+	kindLabel = Theme.text(panel, "", 15, Theme.Font.Bold, C.WoodLight)
 	kindLabel.Position = UDim2.fromOffset(146, 38)
 	kindLabel.Size = UDim2.new(1, -146, 0, 20)
-	goodFor = Theme.text(panel, "", 13, Theme.Font.Medium, C.Muted)
+	goodFor = Theme.text(panel, "", 14, Theme.Font.Medium, C.InkMuted)
 	goodFor.Position = UDim2.fromOffset(146, 62)
 	goodFor.Size = UDim2.new(1, -146, 0, 60)
 	goodFor.TextWrapped = true
@@ -306,11 +279,11 @@ local function buildDetail(parent: Instance)
 		Parent = panel,
 	})
 	Theme.list(statList, Enum.FillDirection.Vertical, 5)
-	statRow(statList, "Efficiency", "Mining speed", C.Blue, 1)
+	statRow(statList, "Efficiency", "Mining speed", C.Leaf, 1)
 	statRow(statList, "Damage", "Damage", C.Red, 2)
-	statRow(statList, "Durability", "Durability", C.Green, 3)
+	statRow(statList, "Durability", "Durability", C.Blue, 3)
 
-	local costTitle = Theme.text(panel, "NEEDS", 13, Theme.Font.Bold, C.Muted)
+	local costTitle = Theme.title(panel, "Needs", 18)
 	costTitle.AnchorPoint = Vector2.new(0, 1)
 	costTitle.Position = UDim2.new(0, 0, 1, -66)
 	costRow = Theme.make("Frame", {
@@ -322,18 +295,18 @@ local function buildDetail(parent: Instance)
 	})
 	Theme.list(costRow, Enum.FillDirection.Horizontal, 6)
 
-	lockLabel = Theme.text(panel, "", 13, Theme.Font.Bold, C.Purple)
+	lockLabel = Theme.text(panel, "", 14, Theme.Font.Bold, C.Red)
 	lockLabel.AnchorPoint = Vector2.new(1, 1)
 	lockLabel.Position = UDim2.new(1, 0, 1, -70)
-	lockLabel.Size = UDim2.fromOffset(160, 18)
+	lockLabel.Size = UDim2.fromOffset(170, 18)
 	lockLabel.TextXAlignment = Enum.TextXAlignment.Right
 
-	craftButton = Theme.button(panel, "CRAFT", C.Orange, UDim2.fromOffset(120, 58), function()
+	craftButton = Theme.button(panel, "Craft", C.Green, UDim2.fromOffset(120, 54), function()
 		Remotes.Craft:FireServer(selectedId)
 	end)
 	craftButton.Holder.AnchorPoint = Vector2.new(1, 1)
-	craftButton.Holder.Position = UDim2.new(1, 0, 1, -6)
-	craftButton.Label.TextSize = 22
+	craftButton.Holder.Position = UDim2.new(1, 0, 1, -8)
+	craftButton.Label.TextSize = 21
 end
 
 function CraftingWindow.SetState(newState: any)
@@ -357,7 +330,6 @@ function CraftingWindow.Open(which: Recipes.Station?)
 	end
 	local info = STATIONS[station]
 	window.Title.Text = info.Title
-	window.Icon.Text = info.Icon
 	craftButton.SetText(info.Verb)
 	Window.open(window)
 end
@@ -367,7 +339,7 @@ function CraftingWindow.IsOpen(): boolean
 end
 
 function CraftingWindow.Start()
-	window = Window.new("CraftingWindow", "Crafting Table", "🔨", Vector2.new(760, 470))
+	window = Window.new("CraftingWindow", "Crafting Table", Vector2.new(760, 480))
 	window.OnOpen = render
 	buildGrid(window.Body)
 	buildDetail(window.Body)

@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Tutorial & Quests.md"
 type: "concept"
-community: "Community 12"
+community: "Community 9"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_12
+  - community/Community_9
 ---
 
 # Beginner quest chain (13 quests, ends at level 10)
@@ -18,4 +18,4 @@ tags:
 - [[QuestTracker.luau]] - `implements` [INFERRED]
 - [[Tutorial & Quests]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_12
+#graphify/concept #graphify/EXTRACTED #community/Community_9

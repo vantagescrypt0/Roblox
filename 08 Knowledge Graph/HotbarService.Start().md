@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/HotbarService.luau"
 type: "code"
-community: "Community 30"
+community: "Community 23"
 location: "L66"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_30
+  - community/Community_23
 ---
 
 # HotbarService.Start()
@@ -16,4 +16,4 @@ tags:
 - [[HotbarService.luau]] - `contains` [EXTRACTED]
 - [[refreshHeld()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_30
+#graphify/code #graphify/EXTRACTED #community/Community_23

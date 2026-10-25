@@ -1,34 +1,35 @@
 ---
 source_file: "game/src/client/UI/Theme.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L59"
+community: "Community 1"
+location: "L82"
 tags:
   - graphify/code
-  - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - graphify/EXTRACTED
+  - community/Community_1
 ---
 
 # Theme.corner()
 
 ## Connections
-- [[BagWindow.Start()]] - `calls` [INFERRED]
+- [[Hotbar.Start()]] - `calls` [INFERRED]
 - [[Hud.Toast()]] - `calls` [INFERRED]
 - [[Theme.bar()]] - `calls` [EXTRACTED]
 - [[Theme.button()]] - `calls` [EXTRACTED]
+- [[Theme.card()]] - `calls` [EXTRACTED]
 - [[Theme.chip()]] - `calls` [EXTRACTED]
+- [[Theme.coin()]] - `calls` [EXTRACTED]
+- [[Theme.header()]] - `calls` [EXTRACTED]
+- [[Theme.iconChip()]] - `calls` [EXTRACTED]
+- [[Theme.inset()]] - `calls` [EXTRACTED]
 - [[Theme.luau]] - `contains` [EXTRACTED]
 - [[Theme.make()]] - `calls` [EXTRACTED]
 - [[Theme.panel()]] - `calls` [EXTRACTED]
-- [[Window.new()]] - `calls` [INFERRED]
-- [[build()]] - `calls` [INFERRED]
-- [[buildDetail()]] - `calls` [INFERRED]
 - [[buildGrid()]] - `calls` [INFERRED]
 - [[buildProfile()]] - `calls` [INFERRED]
 - [[buildRaidBanner()]] - `calls` [INFERRED]
-- [[card()]] - `calls` [INFERRED]
-- [[ingredientChip()]] - `calls` [INFERRED]
-- [[render()]] - `calls` [INFERRED]
+- [[render()_3]] - `calls` [INFERRED]
 - [[show()]] - `calls` [INFERRED]
+- [[slotFrame()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

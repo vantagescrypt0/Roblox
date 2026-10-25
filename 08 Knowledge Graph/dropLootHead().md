@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/WarzoneService.luau"
 type: "code"
-community: "Community 16"
+community: "Community 23"
 location: "L165"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_16
+  - community/Community_23
 ---
 
 # dropLootHead()
@@ -19,4 +19,4 @@ tags:
 - [[isInRaid()]] - `calls` [EXTRACTED]
 - [[part()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_16
+#graphify/code #graphify/EXTRACTED #community/Community_23

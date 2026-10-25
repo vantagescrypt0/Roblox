@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Skybounds (Minecraft).md"
 type: "concept"
-community: "Community 12"
+community: "Community 3"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_12
+  - community/Community_3
 ---
 
 # Skybounds Warzone (the user's favorite moment)
@@ -15,4 +15,4 @@ tags:
 - [[Pitch own a floating island, drop into a shared Warzone, bring loot home]] - `references` [EXTRACTED]
 - [[Skybounds (Minecraft)]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_12
+#graphify/concept #graphify/EXTRACTED #community/Community_3

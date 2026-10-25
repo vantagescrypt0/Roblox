@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/WarzoneService.luau"
 type: "code"
-community: "Community 16"
+community: "Community 23"
 location: "L225"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_16
+  - community/Community_23
 ---
 
 # dropBag()
@@ -19,4 +19,4 @@ tags:
 - [[isInRaid()]] - `calls` [EXTRACTED]
 - [[onCharacterAdded()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_16
+#graphify/code #graphify/EXTRACTED #community/Community_23

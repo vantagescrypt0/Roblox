@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/IslandWindow.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L129"
+community: "Community 1"
+location: "L130"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # IslandWindow.Start()
@@ -17,4 +17,4 @@ tags:
 - [[Theme.make()]] - `calls` [INFERRED]
 - [[Window.new()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/INFERRED #community/Community_1

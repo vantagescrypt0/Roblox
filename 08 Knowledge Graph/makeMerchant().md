@@ -2,7 +2,7 @@
 source_file: "game/src/server/Services/TownService.luau"
 type: "code"
 community: "Community 21"
-location: "L136"
+location: "L143"
 tags:
   - graphify/code
   - graphify/EXTRACTED

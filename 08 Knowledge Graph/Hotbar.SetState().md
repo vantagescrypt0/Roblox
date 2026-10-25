@@ -1,18 +1,18 @@
 ---
 source_file: "game/src/client/Hotbar.luau"
 type: "code"
-community: "Community 3"
-location: "L148"
+community: "Community 1"
+location: "L131"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_1
 ---
 
 # Hotbar.SetState()
 
 ## Connections
 - [[Hotbar.luau]] - `contains` [EXTRACTED]
-- [[render()_1]] - `calls` [EXTRACTED]
+- [[render()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_1

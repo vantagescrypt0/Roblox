@@ -1,13 +1,13 @@
 ---
 type: community
 cohesion: 0.08
-members: 43
+members: 47
 ---
 
 # Community 7
 
 **Cohesion:** 0.08 - loosely connected
-**Members:** 43 nodes
+**Members:** 47 nodes
 
 ## Members
 - [[Adds a dark outline around the icon's shape (a 'sticker' edge).]] - rationale - art/scripts/items3d.py
@@ -21,6 +21,7 @@ members: 43
 - [[axe()]] - code - art/scripts/items3d.py
 - [[build_head()]] - code - art/scripts/items3d.py
 - [[build_items()]] - code - art/scripts/items3d.py
+- [[carrot()]] - code - art/scripts/items3d.py
 - [[crystal()]] - code - art/scripts/items3d.py
 - [[downscale()]] - code - art/scripts/items3d.py
 - [[glowberry()]] - code - art/scripts/items3d.py
@@ -30,6 +31,7 @@ members: 43
 - [[load_blocks()]] - code - art/scripts/items3d.py
 - [[lump()]] - code - art/scripts/items3d.py
 - [[main()_5]] - code - art/scripts/items3d.py
+- [[math]] - concept
 - [[mathutils]] - concept
 - [[new_verts()]] - code - art/scripts/items3d.py
 - [[numpy]] - concept
@@ -39,6 +41,7 @@ members: 43
 - [[read_image()]] - code - art/scripts/items3d.py
 - [[render_icon()]] - code - art/scripts/items3d.py
 - [[render_icons()]] - code - art/scripts/items3d.py
+- [[scrap()]] - code - art/scripts/items3d.py
 - [[seed_pouch()]] - code - art/scripts/items3d.py
 - [[setup_lights()]] - code - art/scripts/items3d.py
 - [[shovel()]] - code - art/scripts/items3d.py
@@ -48,6 +51,7 @@ members: 43
 - [[thickness()]] - code - art/scripts/items3d.py
 - [[to_roblox()]] - code - art/scripts/items3d.py
 - [[vec()]] - code - art/scripts/items3d.py
+- [[wheat()]] - code - art/scripts/items3d.py
 - [[with_outline()]] - code - art/scripts/items3d.py
 - [[world_bounds()]] - code - art/scripts/items3d.py
 - [[write_image()]] - code - art/scripts/items3d.py
@@ -62,12 +66,12 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 20 edges to [[_COMMUNITY_Block Art Pipeline (Blender)]]
+- 31 edges to [[_COMMUNITY_Block Art Pipeline (Blender)]]
 - 1 edge to [[_COMMUNITY_Knowledge Graph Tools]]
 
 ## Top bridge nodes
 - [[items3d.py]] - degree 44, connects to 2 communities
+- [[math]] - degree 23, connects to 1 community
 - [[render_icons()]] - degree 12, connects to 1 community
 - [[main()_5]] - degree 7, connects to 1 community
 - [[build_items()]] - degree 5, connects to 1 community
-- [[render_icon()]] - degree 4, connects to 1 community

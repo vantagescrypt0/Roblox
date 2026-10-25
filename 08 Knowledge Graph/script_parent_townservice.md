@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Community 18"
+community: "Community 23"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_18
+  - community/Community_23
 ---
 
 # script_parent_townservice
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[MarketService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_18
+#graphify/concept #graphify/EXTRACTED #community/Community_23

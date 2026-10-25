@@ -1,11 +1,11 @@
 ---
 source_file: "02 Research/Roblox Policies.md"
 type: "concept"
-community: "Audience, Policy and Death Drops"
+community: "Community 9"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Audience_Policy_and_Death_Drops
+  - community/Community_9
 ---
 
 # Steal An Egg precedent (feature pulled, rule added)
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Roblox Policies]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Death_Drops
+#graphify/concept #graphify/EXTRACTED #community/Community_9

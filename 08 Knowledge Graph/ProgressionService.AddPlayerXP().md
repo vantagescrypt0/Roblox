@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/ProgressionService.luau"
 type: "code"
-community: "Community 10"
+community: "Community 23"
 location: "L12"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_10
+  - community/Community_23
 ---
 
 # ProgressionService.AddPlayerXP()
@@ -20,4 +20,4 @@ tags:
 - [[onBreak()]] - `calls` [INFERRED]
 - [[onPlotClicked()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Community_10
+#graphify/code #graphify/INFERRED #community/Community_23

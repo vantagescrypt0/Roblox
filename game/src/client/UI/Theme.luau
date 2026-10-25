@@ -1,6 +1,9 @@
 --!strict
--- Shared look for every screen: colors, fonts and small builders for panels, text,
--- chunky 3D buttons, progress bars and chips. Keeps the whole UI consistent.
+-- Shared look for every screen, the "Workshop" style: parchment panels in wooden frames,
+-- storybook serif titles (Fondamento) and a rounded body font (Nunito). Flat colors, no
+-- gradients and no emoji, so it reads as a crafted game UI rather than a template.
+-- Small builders for panels, cards, text, buttons, progress bars and chips keep every
+-- screen consistent. Mockup: art/renders/ui-styles.html (style A).
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -9,28 +12,42 @@ local Workspace = game:GetService("Workspace")
 local Theme = {}
 
 Theme.Color = {
-	Panel = Color3.fromRGB(30, 36, 54),
-	PanelTop = Color3.fromRGB(48, 57, 86),
-	Inset = Color3.fromRGB(20, 24, 37),
-	Row = Color3.fromRGB(39, 46, 69),
-	Stroke = Color3.fromRGB(10, 12, 20),
-	Text = Color3.fromRGB(255, 255, 255),
-	Muted = Color3.fromRGB(170, 180, 205),
-	Gold = Color3.fromRGB(255, 200, 60),
-	Green = Color3.fromRGB(88, 204, 102),
-	Red = Color3.fromRGB(240, 82, 90),
-	Blue = Color3.fromRGB(70, 160, 255),
-	Purple = Color3.fromRGB(160, 110, 255),
-	Orange = Color3.fromRGB(255, 150, 60),
-	Grey = Color3.fromRGB(95, 102, 125),
+	-- Paper
+	Parchment = Color3.fromRGB(241, 226, 192), -- panels
+	ParchmentDark = Color3.fromRGB(232, 213, 174), -- cards and slots on a panel
+	Tan = Color3.fromRGB(217, 195, 154), -- insets, bar tracks
+	TanEdge = Color3.fromRGB(184, 156, 107), -- outlines on paper
+	Chip = Color3.fromRGB(227, 207, 163),
+	-- Wood
+	WoodLight = Color3.fromRGB(122, 82, 48), -- title bars, wooden buttons
+	Wood = Color3.fromRGB(90, 59, 34), -- panel frames
+	WoodDark = Color3.fromRGB(74, 47, 27), -- the hotbar
+	WoodEdge = Color3.fromRGB(46, 28, 15), -- darkest outline
+	SlotEdge = Color3.fromRGB(107, 74, 43),
+	-- Text
+	Ink = Color3.fromRGB(74, 51, 32), -- text on paper
+	InkMuted = Color3.fromRGB(122, 90, 58),
+	Cream = Color3.fromRGB(251, 238, 211), -- text on wood and over the world
+	-- Accents
+	Gold = Color3.fromRGB(242, 193, 78),
+	Ochre = Color3.fromRGB(183, 131, 47),
+	Green = Color3.fromRGB(92, 154, 62), -- buttons
+	Leaf = Color3.fromRGB(78, 154, 107), -- bar fills
+	Red = Color3.fromRGB(182, 81, 60),
+	Blue = Color3.fromRGB(94, 127, 184),
+	Purple = Color3.fromRGB(138, 95, 176),
+	Disabled = Color3.fromRGB(179, 163, 133),
 }
+
+local NUNITO = "rbxasset://fonts/families/Nunito.json"
 
 Theme.Font = {
-	Title = Font.fromEnum(Enum.Font.FredokaOne),
-	Bold = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold),
-	Medium = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
+	Title = Font.fromEnum(Enum.Font.Fondamento),
+	Bold = Font.new(NUNITO, Enum.FontWeight.ExtraBold),
+	Medium = Font.new(NUNITO, Enum.FontWeight.SemiBold),
 }
 
+local C = Theme.Color
 local BLACK = Color3.new(0, 0, 0)
 local WHITE = Color3.new(1, 1, 1)
 
@@ -40,6 +57,12 @@ end
 
 function Theme.lighten(color: Color3, amount: number): Color3
 	return color:Lerp(WHITE, amount)
+end
+
+-- Cream text on dark colors, ink on light ones
+function Theme.textOn(color: Color3): Color3
+	local luminance = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B
+	return if luminance > 0.6 then C.Ink else C.Cream
 end
 
 -- Creates an instance from a property table (Parent is set last)
@@ -57,24 +80,15 @@ function Theme.make(className: string, props: { [string]: any }): any
 end
 
 function Theme.corner(parent: Instance, radius: number?): UICorner
-	return Theme.make("UICorner", { CornerRadius = UDim.new(0, radius or 12), Parent = parent })
+	return Theme.make("UICorner", { CornerRadius = UDim.new(0, radius or 6), Parent = parent })
 end
 
 function Theme.stroke(parent: Instance, color: Color3?, thickness: number?, transparency: number?): UIStroke
 	return Theme.make("UIStroke", {
-		Color = color or Theme.Color.Stroke,
-		Thickness = thickness or 2.5,
+		Color = color or C.Wood,
+		Thickness = thickness or 2,
 		Transparency = transparency or 0,
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-		Parent = parent,
-	})
-end
-
--- Vertical gradient. The object's BackgroundColor3 should be white.
-function Theme.gradient(parent: Instance, top: Color3, bottom: Color3): UIGradient
-	return Theme.make("UIGradient", {
-		Color = ColorSequence.new(top, bottom),
-		Rotation = 90,
 		Parent = parent,
 	})
 end
@@ -99,17 +113,42 @@ function Theme.list(parent: Instance, direction: Enum.FillDirection?, gap: numbe
 	})
 end
 
--- Dark card with a soft top highlight and a thick outline
+-- Parchment sheet in a wooden frame
 function Theme.panel(parent: Instance, size: UDim2, position: UDim2?): Frame
 	local frame = Theme.make("Frame", {
 		Size = size,
 		Position = position or UDim2.new(),
-		BackgroundColor3 = WHITE,
+		BackgroundColor3 = C.Parchment,
 		Parent = parent,
 	})
-	Theme.gradient(frame, Theme.Color.PanelTop, Theme.Color.Panel)
-	Theme.corner(frame, 14)
-	Theme.stroke(frame)
+	Theme.corner(frame, 7)
+	Theme.stroke(frame, C.Wood, 4)
+	return frame
+end
+
+-- Slightly darker paper card that sits on a panel (list rows, detail boxes)
+function Theme.card(parent: Instance, size: UDim2?, position: UDim2?): Frame
+	local frame = Theme.make("Frame", {
+		Size = size or UDim2.fromScale(1, 1),
+		Position = position or UDim2.new(),
+		BackgroundColor3 = C.ParchmentDark,
+		Parent = parent,
+	})
+	Theme.corner(frame, 6)
+	Theme.stroke(frame, C.TanEdge, 2)
+	return frame
+end
+
+-- Sunken box for icons, grids and photos
+function Theme.inset(parent: Instance, size: UDim2?, position: UDim2?): Frame
+	local frame = Theme.make("Frame", {
+		Size = size or UDim2.fromScale(1, 1),
+		Position = position or UDim2.new(),
+		BackgroundColor3 = C.Tan,
+		Parent = parent,
+	})
+	Theme.corner(frame, 5)
+	Theme.stroke(frame, C.TanEdge, 2)
 	return frame
 end
 
@@ -117,8 +156,8 @@ function Theme.text(parent: Instance, text: string, size: number, font: Font?, c
 	return Theme.make("TextLabel", {
 		Text = text,
 		TextSize = size,
-		FontFace = font or Theme.Font.Bold,
-		TextColor3 = color or Theme.Color.Text,
+		FontFace = font or Theme.Font.Medium,
+		TextColor3 = color or C.Ink,
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, size + 4),
 		TextXAlignment = Enum.TextXAlignment.Left,
@@ -127,15 +166,59 @@ function Theme.text(parent: Instance, text: string, size: number, font: Font?, c
 	})
 end
 
--- Cartoon title: chunky font with a dark outline
+-- Storybook serif title (ink on paper unless a color is given)
 function Theme.title(parent: Instance, text: string, size: number, color: Color3?): TextLabel
-	local label = Theme.text(parent, text, size, Theme.Font.Title, color)
-	Theme.make("UIStroke", {
-		Color = Theme.Color.Stroke,
-		Thickness = math.max(1.5, size / 12),
+	return Theme.text(parent, text, size, Theme.Font.Title, color or C.Ink)
+end
+
+-- Dark outline so text stays readable over the 3D world
+function Theme.outline(label: TextLabel, thickness: number?): UIStroke
+	return Theme.make("UIStroke", {
+		Color = C.WoodEdge,
+		Thickness = thickness or math.max(1.5, label.TextSize / 14),
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
 		Parent = label,
 	})
+end
+
+-- Title drawn straight over the game (no panel behind it)
+function Theme.worldTitle(parent: Instance, text: string, size: number, color: Color3?): TextLabel
+	local label = Theme.title(parent, text, size, color or C.Cream)
+	Theme.outline(label)
+	return label
+end
+
+-- Wooden title bar across the top of a panel. Returns the title label.
+function Theme.header(panel: Instance, text: string, height: number?): TextLabel
+	local h = height or 44
+	local bar = Theme.make("Frame", {
+		Name = "Header",
+		Size = UDim2.new(1, 0, 0, h),
+		BackgroundColor3 = C.WoodLight,
+		Parent = panel,
+	})
+	Theme.corner(bar, 5)
+	-- Square off the bottom corners
+	Theme.make("Frame", {
+		Position = UDim2.fromScale(0, 0.5),
+		Size = UDim2.fromScale(1, 0.5),
+		BackgroundColor3 = C.WoodLight,
+		BorderSizePixel = 0,
+		Parent = bar,
+	})
+	Theme.make("Frame", {
+		AnchorPoint = Vector2.new(0, 1),
+		Position = UDim2.fromScale(0, 1),
+		Size = UDim2.new(1, 0, 0, 3),
+		BackgroundColor3 = C.Wood,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		Parent = bar,
+	})
+	local label = Theme.title(bar, text, math.floor(h * 0.56), C.Cream)
+	label.Position = UDim2.fromOffset(16, 0)
+	label.Size = UDim2.new(1, -32, 1, -3)
+	label.ZIndex = 2
 	return label
 end
 
@@ -148,54 +231,52 @@ export type Button = {
 	SetText: (text: string) -> (),
 }
 
--- Chunky 3D button: a darker "lip" under the face; the face presses down when clicked
+-- Solid button with a darker lip underneath; the face presses down onto it when clicked
 function Theme.button(parent: Instance, text: string, color: Color3, size: UDim2, onClick: () -> ()): Button
 	local holder = Theme.make("Frame", { Size = size, BackgroundTransparency = 1, Parent = parent })
 	local lip = Theme.make("Frame", {
-		Size = UDim2.new(1, 0, 1, -2),
-		Position = UDim2.fromOffset(0, 2),
-		BackgroundColor3 = Theme.darken(color, 0.35),
+		Size = UDim2.new(1, 0, 1, -3),
+		Position = UDim2.fromOffset(0, 3),
 		Parent = holder,
 	})
-	Theme.corner(lip, 10)
-	Theme.stroke(lip, Theme.Color.Stroke, 2)
+	Theme.corner(lip, 6)
 	local face = Theme.make("TextButton", {
-		Size = UDim2.new(1, 0, 1, -5),
-		BackgroundColor3 = WHITE,
+		Size = UDim2.new(1, 0, 1, -4),
 		AutoButtonColor = false,
 		Text = "",
 		Parent = holder,
 	})
-	Theme.corner(face, 10)
-	local gradient = Theme.gradient(face, Theme.lighten(color, 0.18), color)
-	-- Text lives on its own label so the face gradient doesn't tint it
+	Theme.corner(face, 6)
+	local edge = Theme.stroke(face, BLACK, 2)
 	local label = Theme.make("TextLabel", {
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		Text = text,
-		TextSize = 18,
-		FontFace = Theme.Font.Title,
-		TextColor3 = WHITE,
+		TextSize = 17,
+		FontFace = Theme.Font.Bold,
 		Parent = face,
 	})
-	Theme.make("UIStroke", {
-		Color = Theme.Color.Stroke,
-		Thickness = 1.5,
-		ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
-		Parent = label,
-	})
-	local scale = Theme.make("UIScale", { Parent = holder })
 
 	local enabled = true
 	local current = color
-	local quick = TweenInfo.new(0.08)
+	local hovering = false
+	local function paint()
+		local shown = if enabled then current else C.Disabled
+		face.BackgroundColor3 = if hovering and enabled then Theme.lighten(shown, 0.1) else shown
+		lip.BackgroundColor3 = Theme.darken(shown, 0.4)
+		edge.Color = Theme.darken(shown, 0.4)
+		label.TextColor3 = Theme.textOn(shown)
+		label.TextTransparency = if enabled then 0 else 0.25
+	end
+	paint()
+
 	face.MouseEnter:Connect(function()
-		if enabled then
-			TweenService:Create(scale, quick, { Scale = 1.04 }):Play()
-		end
+		hovering = true
+		paint()
 	end)
 	face.MouseLeave:Connect(function()
-		TweenService:Create(scale, quick, { Scale = 1 }):Play()
+		hovering = false
+		paint()
 		face.Position = UDim2.new()
 	end)
 	face.MouseButton1Down:Connect(function()
@@ -212,58 +293,53 @@ function Theme.button(parent: Instance, text: string, color: Color3, size: UDim2
 		end
 	end)
 
-	local button: Button
-	button = {
+	return {
 		Holder = holder,
 		Face = face,
 		Label = label,
 		SetEnabled = function(value: boolean)
 			enabled = value
-			local shown = if value then current else Theme.Color.Grey
-			gradient.Color = ColorSequence.new(Theme.lighten(shown, 0.18), shown)
-			lip.BackgroundColor3 = Theme.darken(shown, 0.35)
-			label.TextTransparency = if value then 0 else 0.35
+			paint()
 		end,
 		SetColor = function(value: Color3)
 			current = value
-			button.SetEnabled(enabled)
+			paint()
 		end,
 		SetText = function(value: string)
 			label.Text = value
 		end,
 	}
+end
+
+-- Small square "X" in the corner of a window
+function Theme.closeButton(parent: Instance, onClick: () -> ()): Button
+	local button = Theme.button(parent, "X", C.Red, UDim2.fromOffset(32, 32), onClick)
+	button.Label.TextSize = 18
 	return button
 end
 
 export type Bar = { Track: Frame, Fill: Frame, Label: TextLabel, Set: (ratio: number, text: string?) -> () }
 
--- Rounded progress bar with an optional label on top
+-- Progress bar in a paper groove, with an optional label on top
 function Theme.bar(parent: Instance, color: Color3, size: UDim2): Bar
-	local track = Theme.make("Frame", { Size = size, BackgroundColor3 = Theme.Color.Inset, Parent = parent })
-	Theme.corner(track, 999)
-	Theme.stroke(track, Theme.Color.Stroke, 2)
+	local track = Theme.make("Frame", { Size = size, BackgroundColor3 = C.Tan, Parent = parent })
+	Theme.corner(track, 4)
+	Theme.stroke(track, C.TanEdge, 2)
 	local fill = Theme.make("Frame", {
 		Size = UDim2.fromScale(0, 1),
-		BackgroundColor3 = WHITE,
+		BackgroundColor3 = color,
 		Parent = track,
 	})
-	Theme.corner(fill, 999)
-	Theme.gradient(fill, Theme.lighten(color, 0.25), color)
+	Theme.corner(fill, 3)
 	local label = Theme.make("TextLabel", {
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
-		FontFace = Theme.Font.Title,
+		FontFace = Theme.Font.Bold,
 		TextSize = 13,
-		TextColor3 = WHITE,
+		TextColor3 = C.Ink,
 		Text = "",
 		ZIndex = 3,
 		Parent = track,
-	})
-	Theme.make("UIStroke", {
-		Color = Theme.Color.Stroke,
-		Thickness = 1.5,
-		ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
-		Parent = label,
 	})
 	return {
 		Track = track,
@@ -280,29 +356,85 @@ function Theme.bar(parent: Instance, color: Color3, size: UDim2): Bar
 	}
 end
 
--- Small rounded tag, e.g. "🌾 3"
-function Theme.chip(parent: Instance, text: string, color: Color3): TextLabel
+-- Small paper tag with bold text, e.g. "6 plots"
+function Theme.chip(parent: Instance, text: string, color: Color3?): TextLabel
 	local chip = Theme.make("TextLabel", {
 		AutomaticSize = Enum.AutomaticSize.X,
-		Size = UDim2.fromOffset(0, 26),
-		BackgroundColor3 = Theme.darken(color, 0.55),
+		Size = UDim2.fromOffset(0, 28),
+		BackgroundColor3 = C.Chip,
 		Text = text,
 		TextSize = 15,
-		FontFace = Theme.Font.Title,
-		-- White keeps emoji in full color
-		TextColor3 = WHITE,
+		FontFace = Theme.Font.Bold,
+		TextColor3 = color or C.Ink,
 		Parent = parent,
 	})
-	Theme.corner(chip, 999)
-	Theme.stroke(chip, Theme.darken(color, 0.2), 1.5)
-	Theme.padding(chip, 10, 10, 0, 0)
+	Theme.corner(chip, 6)
+	Theme.stroke(chip, C.TanEdge, 2)
+	Theme.padding(chip, 9, 9, 0, 0)
 	return chip
+end
+
+export type IconChip = { Frame: Frame, Icon: Frame, Label: TextLabel }
+
+-- Paper tag with a picture in front of the text; put an icon in .Icon
+function Theme.iconChip(parent: Instance, text: string, height: number?): IconChip
+	local h = height or 30
+	local chip = Theme.make("Frame", {
+		AutomaticSize = Enum.AutomaticSize.X,
+		Size = UDim2.fromOffset(0, h),
+		BackgroundColor3 = C.Chip,
+		Parent = parent,
+	})
+	Theme.corner(chip, 6)
+	Theme.stroke(chip, C.TanEdge, 2)
+	Theme.padding(chip, 3, 9, 0, 0)
+	Theme.list(chip, Enum.FillDirection.Horizontal, 4)
+	local icon = Theme.make("Frame", {
+		Size = UDim2.fromOffset(h - 4, h - 4),
+		BackgroundTransparency = 1,
+		LayoutOrder = 1,
+		Parent = chip,
+	})
+	local label = Theme.text(chip, text, 15, Theme.Font.Bold)
+	label.AutomaticSize = Enum.AutomaticSize.X
+	label.Size = UDim2.fromOffset(0, h)
+	label.TextTruncate = Enum.TextTruncate.None
+	label.LayoutOrder = 2
+	return { Frame = chip, Icon = icon, Label = label }
+end
+
+-- A gold coin drawn with two circles (fills its parent)
+function Theme.coin(parent: Instance): Frame
+	local coin = Theme.make("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(0.78, 0.78),
+		BackgroundColor3 = Color3.fromRGB(232, 179, 58),
+		Parent = parent,
+	})
+	Theme.corner(coin, 999)
+	Theme.stroke(coin, Color3.fromRGB(138, 90, 26), 2)
+	local face = Theme.make("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(0.56, 0.56),
+		BackgroundColor3 = Color3.fromRGB(246, 205, 98),
+		Parent = coin,
+	})
+	Theme.corner(face, 999)
+	Theme.stroke(face, Color3.fromRGB(196, 140, 40), 1.5)
+	return coin
 end
 
 function Theme.formatNumber(n: number): string
 	local text = tostring(math.floor(n))
 	local formatted = text:reverse():gsub("(%d%d%d)", "%1,"):reverse()
 	return (formatted:gsub("^,", ""))
+end
+
+-- "1 coin" / "25 coins"
+function Theme.coins(n: number): string
+	return if n == 1 then "1 coin" else `{Theme.formatNumber(n)} coins`
 end
 
 -- Quick "pop" bounce on any GUI object

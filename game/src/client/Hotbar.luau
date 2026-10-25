@@ -1,7 +1,7 @@
 --!strict
--- Minecraft-style hotbar: 5 slots along the bottom of the screen. Keys 1-5 or tapping a
--- slot selects it; the selected item's name pops up above the bar. Worn tools show a
--- durability bar (green when fresh, red when nearly broken).
+-- The hotbar: 5 parchment slots on a wooden bar along the bottom of the screen. Keys 1-5
+-- or tapping a slot selects it; the selected item's name shows above the bar for a moment.
+-- Worn tools show a durability bar (green when fresh, red when nearly broken).
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -13,19 +13,21 @@ local Tools = require(ReplicatedStorage.Shared.Tools)
 local ItemIcon = require(script.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.UI.Theme)
 
+local C = Theme.Color
+
 local SLOTS = 5
-local SLOT = 62
-local GAP = 4
-local PIXEL = Font.fromEnum(Enum.Font.Arcade)
+local SLOT = 60
+local GAP = 6
+local EDGE = 8
 local KEYS = { Enum.KeyCode.One, Enum.KeyCode.Two, Enum.KeyCode.Three, Enum.KeyCode.Four, Enum.KeyCode.Five }
 
 local Hotbar = {}
 
 type Slot = {
-	Frame: Frame,
+	Frame: TextButton,
+	Stroke: UIStroke,
 	Icon: Frame,
 	Count: TextLabel,
-	CountShadow: TextLabel,
 	Durability: Frame,
 	DurabilityFill: Frame,
 	ItemId: string,
@@ -34,33 +36,10 @@ type Slot = {
 local slots: { Slot } = {}
 local selector: Frame
 local nameLabel: TextLabel
-local nameShadow: TextLabel
 local selected = 1
 local state: any = nil
 local listeners: { () -> () } = {}
 local nameToken = 0
-
--- Pixel text with a dark drop shadow, like Minecraft's
-local function pixelText(parent: Instance, size: number): (TextLabel, TextLabel)
-	local shadow = Theme.make("TextLabel", {
-		BackgroundTransparency = 1,
-		FontFace = PIXEL,
-		TextSize = size,
-		TextColor3 = Color3.fromRGB(62, 62, 62),
-		Text = "",
-		Parent = parent,
-	})
-	local text = Theme.make("TextLabel", {
-		BackgroundTransparency = 1,
-		FontFace = PIXEL,
-		TextSize = size,
-		TextColor3 = Color3.new(1, 1, 1),
-		Text = "",
-		ZIndex = 3,
-		Parent = parent,
-	})
-	return text, shadow
-end
 
 function Hotbar.Selected(): number
 	return selected
@@ -83,23 +62,29 @@ local function showName()
 	nameToken += 1
 	local token = nameToken
 	local itemId = Hotbar.SelectedItem()
-	local text = if itemId then Items[itemId].Name else ""
-	nameLabel.Text = text
-	nameShadow.Text = text
+	nameLabel.Text = if itemId then Items[itemId].Name else ""
 	nameLabel.TextTransparency = 0
-	nameShadow.TextTransparency = 0
+	local stroke = nameLabel:FindFirstChildOfClass("UIStroke") :: UIStroke
+	stroke.Transparency = 0
 	task.delay(1.6, function()
 		if token == nameToken then
 			local fade = TweenInfo.new(0.4)
 			TweenService:Create(nameLabel, fade, { TextTransparency = 1 }):Play()
-			TweenService:Create(nameShadow, fade, { TextTransparency = 1 }):Play()
+			TweenService:Create(stroke, fade, { Transparency = 1 }):Play()
 		end
 	end)
 end
 
+local function slotX(index: number): number
+	return EDGE + (index - 1) * (SLOT + GAP)
+end
+
 function Hotbar.Select(slot: number)
 	selected = math.clamp(slot, 1, SLOTS)
-	selector.Position = UDim2.fromOffset(6 + (selected - 1) * (SLOT + GAP) - 4, 2)
+	selector.Position = UDim2.fromOffset(slotX(selected) - 4, EDGE - 4)
+	for index, entry in slots do
+		entry.Stroke.Color = if index == selected then C.Gold else C.SlotEdge
+	end
 	Remotes.SelectSlot:FireServer(selected)
 	showName()
 	for _, listener in listeners do
@@ -123,12 +108,10 @@ local function render()
 				child:Destroy()
 			end
 			if itemId ~= "" then
-				ItemIcon.create(slot.Icon, itemId, UDim2.fromScale(0.82, 0.82))
+				ItemIcon.create(slot.Icon, itemId, UDim2.fromScale(0.8, 0.8))
 			end
 		end
-		local countText = if count > 1 then tostring(count) else ""
-		slot.Count.Text = countText
-		slot.CountShadow.Text = countText
+		slot.Count.Text = if count > 1 then tostring(count) else ""
 
 		-- Durability bar, only once a tool has been used
 		local tool = Tools.ByItem[itemId]
@@ -137,7 +120,7 @@ local function render()
 		if tool and wear > 0 then
 			local left = math.clamp(1 - wear / tool.Durability, 0, 1)
 			slot.DurabilityFill.Size = UDim2.fromScale(left, 1)
-			slot.DurabilityFill.BackgroundColor3 = Color3.fromHSV(left / 3, 1, 1)
+			slot.DurabilityFill.BackgroundColor3 = C.Red:Lerp(C.Leaf, left)
 		end
 	end
 	for _, listener in listeners do
@@ -152,110 +135,91 @@ end
 
 function Hotbar.Start()
 	local gui = Theme.screen("Hotbar", 3)
-	local width = SLOTS * SLOT + (SLOTS - 1) * GAP + 12
+	local width = SLOTS * SLOT + (SLOTS - 1) * GAP + EDGE * 2
 	local bar = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 1, -8),
-		Size = UDim2.fromOffset(width, SLOT + 12),
-		BackgroundColor3 = Color3.fromRGB(16, 16, 16),
-		BackgroundTransparency = 0.35,
+		Position = UDim2.new(0.5, 0, 1, -10),
+		Size = UDim2.fromOffset(width, SLOT + EDGE * 2),
+		BackgroundColor3 = C.WoodDark,
 		Parent = gui,
 	})
-	Theme.stroke(bar, Color3.new(0, 0, 0), 2)
+	Theme.corner(bar, 7)
+	Theme.stroke(bar, C.WoodEdge, 3)
 	Theme.autoScale(bar)
 
 	for index = 1, SLOTS do
 		local frame = Theme.make("TextButton", {
-			Position = UDim2.fromOffset(6 + (index - 1) * (SLOT + GAP), 6),
+			Position = UDim2.fromOffset(slotX(index), EDGE),
 			Size = UDim2.fromOffset(SLOT, SLOT),
-			BackgroundColor3 = Color3.fromRGB(110, 110, 110),
-			BackgroundTransparency = 0.45,
+			BackgroundColor3 = C.ParchmentDark,
 			AutoButtonColor = false,
 			Text = "",
 			Parent = bar,
 		})
-		Theme.stroke(frame, Color3.fromRGB(58, 58, 58), 2)
-		local number = Theme.make("TextLabel", {
-			Position = UDim2.fromOffset(4, 2),
-			Size = UDim2.fromOffset(12, 12),
-			BackgroundTransparency = 1,
-			FontFace = PIXEL,
-			TextSize = 11,
-			TextColor3 = Color3.fromRGB(200, 200, 200),
-			TextTransparency = 0.3,
-			Text = tostring(index),
-			Parent = frame,
-		})
-		number.TextXAlignment = Enum.TextXAlignment.Left
+		Theme.corner(frame, 5)
+		local stroke = Theme.stroke(frame, C.SlotEdge, 3)
+		local number = Theme.text(frame, tostring(index), 11, Theme.Font.Bold, C.InkMuted)
+		number.Position = UDim2.fromOffset(5, 2)
+		number.Size = UDim2.fromOffset(12, 13)
 		local icon = Theme.make("Frame", {
 			Size = UDim2.fromScale(1, 1),
 			BackgroundTransparency = 1,
 			Parent = frame,
 		})
-		local count, shadow = pixelText(frame, 20)
+		local count = Theme.text(frame, "", 16, Theme.Font.Bold, C.Ink)
 		count.AnchorPoint = Vector2.new(1, 1)
-		count.Position = UDim2.new(1, -4, 1, -2)
-		count.Size = UDim2.fromOffset(40, 20)
+		count.Position = UDim2.new(1, -5, 1, -1)
+		count.Size = UDim2.fromOffset(40, 18)
 		count.TextXAlignment = Enum.TextXAlignment.Right
-		shadow.AnchorPoint = Vector2.new(1, 1)
-		shadow.Position = UDim2.new(1, -2, 1, 0)
-		shadow.Size = UDim2.fromOffset(40, 20)
-		shadow.TextXAlignment = Enum.TextXAlignment.Right
+		count.ZIndex = 3
 		local durability = Theme.make("Frame", {
 			AnchorPoint = Vector2.new(0.5, 1),
 			Position = UDim2.new(0.5, 0, 1, -5),
 			Size = UDim2.new(1, -16, 0, 5),
-			BackgroundColor3 = Color3.new(0, 0, 0),
+			BackgroundColor3 = C.WoodEdge,
 			BorderSizePixel = 0,
 			Visible = false,
 			ZIndex = 4,
 			Parent = frame,
 		})
+		Theme.corner(durability, 2)
 		local durabilityFill = Theme.make("Frame", {
-			Size = UDim2.new(1, 0, 0, 3),
-			BackgroundColor3 = Color3.fromRGB(0, 255, 0),
+			Size = UDim2.fromScale(1, 1),
+			BackgroundColor3 = C.Leaf,
 			BorderSizePixel = 0,
 			ZIndex = 4,
 			Parent = durability,
 		})
+		Theme.corner(durabilityFill, 2)
 		frame.Activated:Connect(function()
 			Hotbar.Select(index)
 		end)
 		slots[index] = {
 			Frame = frame,
+			Stroke = stroke,
 			Icon = icon,
 			Count = count,
-			CountShadow = shadow,
 			Durability = durability,
 			DurabilityFill = durabilityFill,
 			ItemId = "",
 		}
 	end
 
-	-- Selected-slot frame: white with a dark outline
+	-- Dark ring around the selected slot (its own outline turns gold)
 	selector = Theme.make("Frame", {
 		Size = UDim2.fromOffset(SLOT + 8, SLOT + 8),
 		BackgroundTransparency = 1,
-		ZIndex = 5,
+		ZIndex = 0,
 		Parent = bar,
 	})
-	Theme.stroke(selector, Color3.new(0, 0, 0), 2)
-	local inner = Theme.make("Frame", {
-		Position = UDim2.fromOffset(2, 2),
-		Size = UDim2.new(1, -4, 1, -4),
-		BackgroundTransparency = 1,
-		ZIndex = 5,
-		Parent = selector,
-	})
-	Theme.stroke(inner, Color3.fromRGB(240, 240, 240), 3)
+	Theme.corner(selector, 7)
+	Theme.stroke(selector, C.WoodEdge, 2)
 
-	nameLabel, nameShadow = pixelText(bar, 22)
+	nameLabel = Theme.worldTitle(bar, "", 24)
 	nameLabel.AnchorPoint = Vector2.new(0.5, 1)
-	nameLabel.Position = UDim2.new(0.5, 0, 0, -10)
-	nameLabel.Size = UDim2.fromOffset(width, 24)
-	nameShadow.AnchorPoint = Vector2.new(0.5, 1)
-	nameShadow.Position = UDim2.new(0.5, 2, 0, -8)
-	nameShadow.Size = UDim2.fromOffset(width, 24)
+	nameLabel.Position = UDim2.new(0.5, 0, 0, -8)
+	nameLabel.Size = UDim2.fromOffset(width, 28)
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 	UserInputService.InputBegan:Connect(function(input, processed)
 		if processed then

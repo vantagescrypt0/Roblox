@@ -15,13 +15,6 @@
       }
     },
     {
-      "query": "tag:#community/HUD_and_Hotbar",
-      "color": {
-        "a": 1,
-        "rgb": 15896107
-      }
-    },
-    {
       "query": "tag:#community/Breaking_Placing_and_Crafting",
       "color": {
         "a": 1,
@@ -33,20 +26,6 @@
       "color": {
         "a": 1,
         "rgb": 15583560
-      }
-    },
-    {
-      "query": "tag:#community/Core_Loop_and_Pillars",
-      "color": {
-        "a": 1,
-        "rgb": 10253663
-      }
-    },
-    {
-      "query": "tag:#community/Audience_Policy_and_Death_Drops",
-      "color": {
-        "a": 1,
-        "rgb": 12234924
       }
     },
     {

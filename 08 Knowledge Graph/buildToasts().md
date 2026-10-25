@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hud.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L181"
+community: "Community 1"
+location: "L160"
 tags:
   - graphify/code
-  - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - graphify/EXTRACTED
+  - community/Community_1
 ---
 
 # buildToasts()
@@ -14,8 +14,7 @@ tags:
 ## Connections
 - [[Hud.Start()]] - `calls` [EXTRACTED]
 - [[Hud.luau]] - `contains` [EXTRACTED]
-- [[Theme.autoScale()]] - `calls` [INFERRED]
 - [[Theme.list()]] - `calls` [INFERRED]
 - [[Theme.make()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

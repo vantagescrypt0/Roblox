@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hud.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L242"
+community: "Community 1"
+location: "L237"
 tags:
   - graphify/code
-  - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - graphify/EXTRACTED
+  - community/Community_1
 ---
 
 # Hud.Render()
@@ -14,6 +14,5 @@ tags:
 ## Connections
 - [[Hud.luau]] - `contains` [EXTRACTED]
 - [[Theme.formatNumber()]] - `calls` [INFERRED]
-- [[Theme.pop()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

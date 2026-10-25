@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hud.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L364"
+community: "Community 1"
+location: "L346"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # Hud.Start()
@@ -14,12 +14,12 @@ tags:
 ## Connections
 - [[Hud.luau]] - `contains` [EXTRACTED]
 - [[Theme.make()]] - `calls` [INFERRED]
-- [[Theme.screen()]] - `calls` [INFERRED]
-- [[Theme.title()]] - `calls` [INFERRED]
+- [[Theme.worldTitle()]] - `calls` [INFERRED]
 - [[buildButtons()]] - `calls` [EXTRACTED]
 - [[buildCelebration()]] - `calls` [EXTRACTED]
 - [[buildProfile()]] - `calls` [EXTRACTED]
 - [[buildRaidBanner()]] - `calls` [EXTRACTED]
 - [[buildToasts()]] - `calls` [EXTRACTED]
+- [[fadeLabel()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

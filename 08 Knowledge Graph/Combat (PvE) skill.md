@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Skills & Levels.md"
 type: "concept"
-community: "Community 17"
+community: "Community 12"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_17
+  - community/Community_12
 ---
 
 # Combat (PvE) skill
@@ -14,4 +14,4 @@ tags:
 - [[Level gates crops need Farming level, mobs need Combat level]] - `conceptually_related_to` [EXTRACTED]
 - [[Skills & Levels]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_17
+#graphify/concept #graphify/EXTRACTED #community/Community_12

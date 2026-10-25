@@ -1,17 +1,15 @@
 ---
 type: community
-cohesion: 0.06
-members: 69
+cohesion: 0.07
+members: 59
 ---
 
 # Breaking, Placing and Crafting
 
-**Cohesion:** 0.06 - loosely connected
-**Members:** 69 nodes
+**Cohesion:** 0.07 - loosely connected
+**Members:** 59 nodes
 
 ## Members
-- [[BlockService.Start()]] - code - game/src/server/Services/BlockService.luau
-- [[BlockService.luau]] - code - game/src/server/Services/BlockService.luau
 - [[BlockWorld.cellAt()]] - code - game/src/server/Util/BlockWorld.luau
 - [[BlockWorld.destroy()]] - code - game/src/server/Util/BlockWorld.luau
 - [[BlockWorld.drawAll()]] - code - game/src/server/Util/BlockWorld.luau
@@ -25,9 +23,6 @@ members: 69
 - [[BlockWorld.set()]] - code - game/src/server/Util/BlockWorld.luau
 - [[BlockWorld.setRaw()]] - code - game/src/server/Util/BlockWorld.luau
 - [[BlockWorld.unkey()]] - code - game/src/server/Util/BlockWorld.luau
-- [[Blocks.luau]] - code - game/src/shared/Blocks.luau
-- [[Decision Minecraft-style block islands (break and place, saved)]] - concept - 07 Roadmap/Decision Log.md
-- [[Decision block toughness + tool power (Minecraft rules)]] - concept - 07 Roadmap/Decision Log.md
 - [[Decision falling off returns you to your island]] - concept - 07 Roadmap/Decision Log.md
 - [[IslandService.DepleteNode()]] - code - game/src/server/Services/IslandService.luau
 - [[IslandService.GetIsland()]] - code - game/src/server/Services/IslandService.luau
@@ -42,10 +37,6 @@ members: 69
 - [[Portal.addCells()]] - code - game/src/server/Util/Portal.luau
 - [[Portal.luau]] - code - game/src/server/Util/Portal.luau
 - [[Portal.makeField()]] - code - game/src/server/Util/Portal.luau
-- [[Quests.luau]] - code - game/src/shared/Quests.luau
-- [[Tool path quests wood - planks - sticks - pickaxe - stone]] - concept - 03 Design/Tutorial & Quests.md
-- [[Tools.luau]] - code - game/src/shared/Tools.luau
-- [[Tools pickaxe, axe, shovel, sword in Wooden  Stone  Crystal]] - concept - 04 Content/Content Index.md
 - [[addNode()]] - code - game/src/server/Services/IslandService.luau
 - [[addTree()]] - code - game/src/server/Services/IslandService.luau
 - [[announce()]] - code - game/src/server/Services/IslandService.luau
@@ -73,7 +64,6 @@ members: 69
 - [[respawnNodes()]] - code - game/src/server/Services/IslandService.luau
 - [[script_parent_blocks]] - concept
 - [[script_parent_blockworld]] - concept
-- [[script_parent_hotbarservice]] - concept
 - [[set()]] - code - game/src/server/Services/TownService.luau
 - [[sheet()]] - code - game/src/server/Util/Portal.luau
 - [[spawnCharacter()]] - code - game/src/server/Services/IslandService.luau
@@ -88,22 +78,19 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 14 edges to [[_COMMUNITY_Community 23]]
-- 7 edges to [[_COMMUNITY_Community 10]]
-- 5 edges to [[_COMMUNITY_Community 3]]
-- 4 edges to [[_COMMUNITY_Community 11]]
-- 4 edges to [[_COMMUNITY_Community 24]]
-- 4 edges to [[_COMMUNITY_Community 17]]
-- 3 edges to [[_COMMUNITY_Community 18]]
+- 26 edges to [[_COMMUNITY_Community 23]]
 - 3 edges to [[_COMMUNITY_Community 21]]
-- 1 edge to [[_COMMUNITY_Community 30]]
+- 2 edges to [[_COMMUNITY_Community 24]]
+- 2 edges to [[_COMMUNITY_Community 1]]
+- 2 edges to [[_COMMUNITY_Community 4]]
+- 1 edge to [[_COMMUNITY_Community 14]]
 - 1 edge to [[_COMMUNITY_Community 20]]
 - 1 edge to [[_COMMUNITY_Community 13]]
-- 1 edge to [[_COMMUNITY_Core Loop and Pillars]]
+- 1 edge to [[_COMMUNITY_Community 8]]
 
 ## Top bridge nodes
 - [[IslandService.luau]] - degree 35, connects to 5 communities
-- [[BlockService.luau]] - degree 19, connects to 4 communities
 - [[replicatedstorage_shared_blocks]] - degree 8, connects to 4 communities
-- [[onBreak()]] - degree 17, connects to 3 communities
-- [[onPlace()]] - degree 13, connects to 2 communities
+- [[Mining.luau]] - degree 5, connects to 2 communities
+- [[BlockWorld.luau]] - degree 19, connects to 1 community
+- [[onBreak()]] - degree 17, connects to 1 community

@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/Leaderstats.luau"
 type: "code"
-community: "Community 4"
+community: "Community 23"
 location: "L40"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_4
+  - community/Community_23
 ---
 
 # Leaderstats.Start()
@@ -16,4 +16,4 @@ tags:
 - [[DataService.OnDataLoaded()]] - `calls` [INFERRED]
 - [[Leaderstats.luau]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Community_4
+#graphify/code #graphify/INFERRED #community/Community_23

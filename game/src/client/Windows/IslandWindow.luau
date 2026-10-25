@@ -17,30 +17,23 @@ local content: Frame
 local state: any = nil
 
 local function card(parent: Instance, height: number, order: number): Frame
-	local frame = Theme.make("Frame", {
-		Size = UDim2.new(1, 0, 0, height),
-		LayoutOrder = order,
-		BackgroundColor3 = Color3.new(1, 1, 1),
-		Parent = parent,
-	})
-	Theme.gradient(frame, Theme.lighten(C.Row, 0.08), C.Row)
-	Theme.corner(frame, 12)
-	Theme.stroke(frame, C.Stroke, 2)
+	local frame = Theme.card(parent, UDim2.new(1, 0, 0, height))
+	frame.LayoutOrder = order
 	Theme.padding(frame, 14, 14, 10, 10)
 	return frame
 end
 
-local function statRow(parent: Instance, tier: IslandTiers.Tier, prefix: string?)
+local function statRow(parent: Instance, tier: IslandTiers.Tier)
 	local row = Theme.make("Frame", {
-		Size = UDim2.new(1, 0, 0, 28),
+		Size = UDim2.new(1, 0, 0, 30),
 		Position = UDim2.fromOffset(0, 36),
 		BackgroundTransparency = 1,
 		Parent = parent,
 	})
 	Theme.list(row, Enum.FillDirection.Horizontal, 8)
-	Theme.chip(row, `🌱 {prefix or ""}{tier.Plots} plots`, C.Green).LayoutOrder = 1
-	Theme.chip(row, `🌳 {tier.Trees} trees`, C.Green).LayoutOrder = 2
-	Theme.chip(row, `⛰️ {tier.Rocks} rocks`, C.Grey).LayoutOrder = 3
+	Theme.chip(row, `{tier.Plots} farm plots`).LayoutOrder = 1
+	Theme.chip(row, `{tier.Trees} trees`).LayoutOrder = 2
+	Theme.chip(row, `{tier.Rocks} boulders`).LayoutOrder = 3
 end
 
 local function render()
@@ -52,60 +45,68 @@ local function render()
 	local tier = IslandTiers[tierIndex]
 	local nextTier = IslandTiers[tierIndex + 1]
 
-	-- Size progress dots
-	local dots = Theme.make("Frame", {
+	-- Size progress: one marker per tier, joined by a line
+	local track = Theme.make("Frame", {
 		Size = UDim2.new(1, 0, 0, 44),
 		LayoutOrder = 1,
 		BackgroundTransparency = 1,
 		Parent = content,
 	})
-	local dotsLayout = Theme.list(dots, Enum.FillDirection.Horizontal, 14)
-	dotsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	for i = 1, #IslandTiers do
+	local count = #IslandTiers
+	Theme.make("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromOffset((count - 1) * 76, 4),
+		BackgroundColor3 = C.TanEdge,
+		BorderSizePixel = 0,
+		Parent = track,
+	})
+	for i = 1, count do
 		local reached = i <= tierIndex
-		local dot = Theme.make("Frame", {
-			Size = UDim2.fromOffset(40, 40),
-			LayoutOrder = i,
-			BackgroundColor3 = Color3.new(1, 1, 1),
-			Parent = dots,
+		local marker = Theme.make("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0.5, (i - (count + 1) / 2) * 76, 0.5, 0),
+			Size = UDim2.fromOffset(38, 38),
+			BackgroundColor3 = if reached then C.Green else C.ParchmentDark,
+			ZIndex = 2,
+			Parent = track,
 		})
-		local color = if reached then C.Green else C.Grey
-		Theme.gradient(dot, Theme.lighten(color, 0.2), color)
-		Theme.corner(dot, 999)
-		Theme.stroke(dot, C.Stroke, 2.5)
-		local number = Theme.title(dot, tostring(i), 20)
+		Theme.corner(marker, 999)
+		Theme.stroke(marker, if reached then Theme.darken(C.Green, 0.4) else C.TanEdge, 2.5)
+		local number = Theme.text(marker, tostring(i), 18, Theme.Font.Bold, if reached then C.Cream else C.InkMuted)
 		number.Size = UDim2.fromScale(1, 1)
 		number.TextXAlignment = Enum.TextXAlignment.Center
+		number.ZIndex = 2
 	end
 
 	local now = card(content, 84, 2)
-	local nowTitle = Theme.title(now, `🏝️ {tier.Name}`, 24)
+	local nowTitle = Theme.title(now, tier.Name, 26)
 	nowTitle.Size = UDim2.new(1, 0, 0, 30)
 	statRow(now, tier)
 
 	local nextCard = card(content, 150, 3)
 	if nextTier then
-		local nextTitle = Theme.title(nextCard, `NEXT: {nextTier.Name}`, 22, C.Gold)
+		local nextTitle = Theme.title(nextCard, `Next: {nextTier.Name}`, 24, C.WoodLight)
 		nextTitle.Size = UDim2.new(1, 0, 0, 30)
 		statRow(nextCard, nextTier)
 		local affordable = state.Coins >= nextTier.Cost
 		local button = Theme.button(
 			nextCard,
-			`Expand for 💰 {Theme.formatNumber(nextTier.Cost)}`,
+			`Expand for {Theme.coins(nextTier.Cost)}`,
 			C.Green,
-			UDim2.new(1, 0, 0, 50),
+			UDim2.new(1, 0, 0, 48),
 			function()
 				Remotes.Expand:FireServer()
 			end
 		)
-		button.Holder.Position = UDim2.new(0, 0, 1, -52)
-		button.Label.TextSize = 22
+		button.Holder.Position = UDim2.new(0, 0, 1, -50)
+		button.Label.TextSize = 19
 		button.SetEnabled(affordable)
 		if not affordable then
-			button.SetText(`Need 💰 {Theme.formatNumber(nextTier.Cost - state.Coins)} more`)
+			button.SetText(`Need {Theme.coins(nextTier.Cost - state.Coins)} more`)
 		end
 	else
-		local done = Theme.title(nextCard, "Your island is fully grown! 🎉", 24, C.Gold)
+		local done = Theme.title(nextCard, "Your island is fully grown!", 26, C.WoodLight)
 		done.Size = UDim2.fromScale(1, 1)
 		done.TextXAlignment = Enum.TextXAlignment.Center
 	end
@@ -127,7 +128,7 @@ function IslandWindow.Close()
 end
 
 function IslandWindow.Start()
-	window = Window.new("IslandWindow", "My Island", "🏝️", Vector2.new(500, 420))
+	window = Window.new("IslandWindow", "My Island", Vector2.new(500, 400))
 	window.OnOpen = render
 	content = Theme.make("Frame", {
 		Size = UDim2.fromScale(1, 1),

@@ -1,18 +1,18 @@
 ---
 source_file: "game/src/client/Windows/IslandWindow.luau"
 type: "code"
-community: "Community 3"
-location: "L114"
+community: "Community 1"
+location: "L115"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_1
 ---
 
 # IslandWindow.SetState()
 
 ## Connections
 - [[IslandWindow.luau]] - `contains` [EXTRACTED]
-- [[render()]] - `calls` [EXTRACTED]
+- [[render()_3]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_1

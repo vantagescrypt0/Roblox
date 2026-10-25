@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/ItemIcon.luau"
 type: "code"
-community: "Community 3"
+community: "Community 14"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_14
 ---
 
 # ItemIcon.luau
@@ -20,4 +20,4 @@ tags:
 - [[replicatedstorage_shared_items]] - `imports` [EXTRACTED]
 - [[viewport()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_14

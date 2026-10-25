@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local Items = require(ReplicatedStorage.Shared.Items)
+local ItemIcon = require(script.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.UI.Theme)
 
 local C = Theme.Color
@@ -19,8 +20,9 @@ export type Callbacks = { OnBag: () -> (), OnIsland: () -> () }
 local levelNumber: TextLabel
 local xpBar: Theme.Bar
 local coinsText: TextLabel
-local farmingChip: TextLabel
-local combatChip: TextLabel
+local coinsChip: Frame
+local farmingText: TextLabel
+local combatText: TextLabel
 local warzoneChip: TextLabel
 local raidBanner: Frame
 local raidBag: TextLabel
@@ -33,113 +35,97 @@ local fadeTitle: TextLabel
 local lastCoins: number? = nil
 local lastLevel: number? = nil
 
+-- The colored edge on each kind of message
 local TOAST_COLORS: { [string]: Color3 } = {
 	info = C.Blue,
-	good = C.Green,
-	coins = C.Gold,
+	good = C.Leaf,
+	coins = C.Ochre,
 	bad = C.Red,
 	level = C.Purple,
 	levelup = C.Gold,
 }
-local TOAST_ICONS: { [string]: string } = {
-	info = "💬",
-	good = "✅",
-	coins = "💰",
-	bad = "⛔",
-	level = "⭐",
-	levelup = "⭐",
-}
 
 local function buildProfile(gui: ScreenGui)
 	-- Bottom-left, so it never sits under Roblox's chat window (top-left)
-	local card = Theme.panel(gui, UDim2.fromOffset(318, 104))
+	local card = Theme.panel(gui, UDim2.fromOffset(316, 100))
 	card.AnchorPoint = Vector2.new(0, 1)
-	card.Position = UDim2.new(0, 12, 1, -12)
+	card.Position = UDim2.new(0, 14, 1, -14)
 	Theme.autoScale(card)
 
-	-- Round gold level badge
+	-- Level badge: a round wooden plaque with a gold rim
 	local badge = Theme.make("Frame", {
-		Size = UDim2.fromOffset(78, 78),
+		Size = UDim2.fromOffset(74, 74),
 		Position = UDim2.fromOffset(12, 13),
-		BackgroundColor3 = Color3.new(1, 1, 1),
+		BackgroundColor3 = C.WoodLight,
 		Parent = card,
 	})
-	Theme.gradient(badge, Theme.lighten(C.Gold, 0.25), Theme.darken(C.Gold, 0.2))
 	Theme.corner(badge, 999)
-	Theme.stroke(badge, C.Stroke, 3)
-	local lv = Theme.title(badge, "LV", 14)
-	lv.Position = UDim2.fromOffset(0, 8)
+	Theme.stroke(badge, C.Gold, 3)
+	local lv = Theme.text(badge, "LEVEL", 10, Theme.Font.Bold, C.Gold)
+	lv.Position = UDim2.fromOffset(0, 11)
 	lv.TextXAlignment = Enum.TextXAlignment.Center
-	levelNumber = Theme.title(badge, "1", 36)
+	-- Numbers in the rounded font: Fondamento's old-style digits are hard to read
+	levelNumber = Theme.text(badge, "1", 32, Theme.Font.Bold, C.Cream)
 	levelNumber.Position = UDim2.fromOffset(0, 24)
-	levelNumber.Size = UDim2.new(1, 0, 0, 40)
+	levelNumber.Size = UDim2.new(1, 0, 0, 36)
 	levelNumber.TextXAlignment = Enum.TextXAlignment.Center
 
-	local name = Theme.title(card, localPlayer.DisplayName, 20)
-	name.Position = UDim2.fromOffset(102, 10)
-	name.Size = UDim2.new(1, -112, 0, 24)
+	local name = Theme.title(card, localPlayer.DisplayName, 22)
+	name.Position = UDim2.fromOffset(98, 6)
+	name.Size = UDim2.new(1, -108, 0, 26)
 
-	xpBar = Theme.bar(card, C.Green, UDim2.fromOffset(204, 20))
-	xpBar.Track.Position = UDim2.fromOffset(102, 38)
+	xpBar = Theme.bar(card, C.Leaf, UDim2.fromOffset(206, 18))
+	xpBar.Track.Position = UDim2.fromOffset(98, 36)
 
 	local row = Theme.make("Frame", {
-		Position = UDim2.fromOffset(102, 66),
-		Size = UDim2.fromOffset(210, 28),
+		Position = UDim2.fromOffset(98, 62),
+		Size = UDim2.fromOffset(212, 30),
 		BackgroundTransparency = 1,
 		Parent = card,
 	})
-	Theme.list(row, Enum.FillDirection.Horizontal, 6)
-	coinsText = Theme.chip(row, "💰 0", C.Gold)
-	coinsText.LayoutOrder = 1
-	farmingChip = Theme.chip(row, "🌾 1", C.Green)
-	farmingChip.LayoutOrder = 2
-	combatChip = Theme.chip(row, "🗡️ 1", C.Red)
-	combatChip.LayoutOrder = 3
+	Theme.list(row, Enum.FillDirection.Horizontal, 5)
+	local coins = Theme.iconChip(row, "0")
+	coins.Frame.LayoutOrder = 1
+	Theme.coin(coins.Icon)
+	coinsText = coins.Label
+	coinsChip = coins.Frame
+	local farming = Theme.iconChip(row, "1")
+	farming.Frame.LayoutOrder = 2
+	ItemIcon.create(farming.Icon, "Wheat", UDim2.fromScale(1, 1))
+	farmingText = farming.Label
+	local combat = Theme.iconChip(row, "1")
+	combat.Frame.LayoutOrder = 3
+	ItemIcon.create(combat.Icon, "WoodenSword", UDim2.fromScale(1, 1))
+	combatText = combat.Label
 
 	-- Warzone status sits just above the card
-	warzoneChip = Theme.chip(card, "🔒 Warzone at Lv 10", C.Purple)
+	warzoneChip = Theme.chip(card, "Warzone at level 10", C.Purple)
 	-- Hidden until the Warzone opens in Town
 	warzoneChip.Visible = false
 	warzoneChip.AnchorPoint = Vector2.new(0, 1)
-	warzoneChip.Position = UDim2.fromOffset(4, -8)
+	warzoneChip.Position = UDim2.fromOffset(0, -10)
 end
 
-local function sideButton(
-	parent: Instance,
-	icon: string,
-	label: string,
-	color: Color3,
-	order: number,
-	onClick: () -> ()
-)
-	local button = Theme.button(parent, "", color, UDim2.fromOffset(74, 74), onClick)
+-- Wooden sign button on the left edge
+local function sideButton(parent: Instance, label: string, order: number, onClick: () -> ())
+	local button = Theme.button(parent, label, C.WoodLight, UDim2.fromOffset(104, 46), onClick)
 	button.Holder.LayoutOrder = order
-	local iconLabel = Theme.make("TextLabel", {
-		Size = UDim2.new(1, 0, 0, 44),
-		Position = UDim2.fromOffset(0, 4),
-		BackgroundTransparency = 1,
-		Text = icon,
-		TextSize = 32,
-		Parent = button.Face,
-	})
-	iconLabel.Active = false
-	local text = Theme.title(button.Face, label, 14)
-	text.Position = UDim2.new(0, 0, 1, -22)
-	text.TextXAlignment = Enum.TextXAlignment.Center
+	button.Label.FontFace = Theme.Font.Title
+	button.Label.TextSize = 22
 end
 
 local function buildButtons(gui: ScreenGui, callbacks: Callbacks)
 	local column = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 0.5),
-		Position = UDim2.new(0, 12, 0.5, 0),
-		Size = UDim2.fromOffset(80, 170),
+		Position = UDim2.new(0, 14, 0.5, 0),
+		Size = UDim2.fromOffset(110, 110),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	})
 	Theme.autoScale(column)
 	Theme.list(column, Enum.FillDirection.Vertical, 10)
-	sideButton(column, "🎒", "BAG", C.Blue, 1, callbacks.OnBag)
-	sideButton(column, "🏝️", "ISLAND", C.Green, 2, callbacks.OnIsland)
+	sideButton(column, "Bag", 1, callbacks.OnBag)
+	sideButton(column, "Island", 2, callbacks.OnIsland)
 end
 
 local function buildRaidBanner(gui: ScreenGui)
@@ -148,29 +134,22 @@ local function buildRaidBanner(gui: ScreenGui)
 		Position = UDim2.new(0.5, 0, 0, 10),
 		Size = UDim2.fromOffset(440, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
-		BackgroundColor3 = Color3.new(1, 1, 1),
+		BackgroundColor3 = Color3.fromRGB(122, 44, 32),
 		Visible = false,
 		Parent = gui,
 	})
-	Theme.gradient(raidBanner, Color3.fromRGB(200, 60, 60), Color3.fromRGB(120, 25, 35))
-	Theme.corner(raidBanner, 14)
-	Theme.stroke(raidBanner)
+	Theme.corner(raidBanner, 7)
+	Theme.stroke(raidBanner, C.WoodEdge, 4)
 	Theme.padding(raidBanner, 12, 12, 8, 10)
 	Theme.list(raidBanner, Enum.FillDirection.Vertical, 2)
 	Theme.autoScale(raidBanner)
-	local title = Theme.title(raidBanner, "🗡️ WARZONE", 26)
+	local title = Theme.title(raidBanner, "Warzone", 28, C.Gold)
 	title.TextXAlignment = Enum.TextXAlignment.Center
 	title.LayoutOrder = 1
-	local hint = Theme.text(
-		raidBanner,
-		"Reach a green pad to extract your loot",
-		14,
-		Theme.Font.Medium,
-		Color3.fromRGB(255, 220, 220)
-	)
+	local hint = Theme.text(raidBanner, "Reach a green pad to extract your loot", 14, Theme.Font.Medium, C.Cream)
 	hint.TextXAlignment = Enum.TextXAlignment.Center
 	hint.LayoutOrder = 2
-	raidBag = Theme.text(raidBanner, "", 16, Theme.Font.Title)
+	raidBag = Theme.text(raidBanner, "", 16, Theme.Font.Bold, C.Cream)
 	raidBag.TextXAlignment = Enum.TextXAlignment.Center
 	raidBag.TextWrapped = true
 	raidBag.AutomaticSize = Enum.AutomaticSize.Y
@@ -196,19 +175,35 @@ local function buildCelebration(gui: ScreenGui)
 	celebration = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.38),
-		Size = UDim2.fromOffset(600, 150),
+		Size = UDim2.fromOffset(640, 150),
 		BackgroundTransparency = 1,
 		Visible = false,
 		Parent = gui,
 	})
-	celebrationTitle = Theme.title(celebration, "LEVEL UP!", 72, C.Gold)
-	celebrationTitle.Size = UDim2.new(1, 0, 0, 84)
+	celebrationTitle = Theme.worldTitle(celebration, "Level Up!", 76, C.Gold)
+	celebrationTitle.Size = UDim2.new(1, 0, 0, 86)
 	celebrationTitle.TextXAlignment = Enum.TextXAlignment.Center
-	celebrationSub = Theme.title(celebration, "", 34)
+	celebrationSub = Theme.worldTitle(celebration, "", 34)
 	celebrationSub.Position = UDim2.fromOffset(0, 88)
 	celebrationSub.Size = UDim2.new(1, 0, 0, 40)
 	celebrationSub.TextXAlignment = Enum.TextXAlignment.Center
 	Theme.make("UIScale", { Parent = celebration })
+end
+
+-- Fades a label and its outline in or out (straight away without `info`)
+local function fadeLabel(label: TextLabel, info: TweenInfo?, transparency: number)
+	local stroke = label:FindFirstChildOfClass("UIStroke")
+	if info then
+		TweenService:Create(label, info, { TextTransparency = transparency }):Play()
+		if stroke then
+			TweenService:Create(stroke, info, { Transparency = transparency }):Play()
+		end
+	else
+		label.TextTransparency = transparency
+		if stroke then
+			stroke.Transparency = transparency
+		end
+	end
 end
 
 local celebrateToken = 0
@@ -218,11 +213,11 @@ function Hud.Celebrate(title: string, subtitle: string, color: Color3?)
 	celebrationTitle.Text = title
 	celebrationTitle.TextColor3 = color or C.Gold
 	celebrationSub.Text = subtitle
-	celebrationTitle.TextTransparency = 0
-	celebrationSub.TextTransparency = 0
+	fadeLabel(celebrationTitle, nil, 0)
+	fadeLabel(celebrationSub, nil, 0)
 	celebration.Visible = true
 	local scale = celebration:FindFirstChildOfClass("UIScale") :: UIScale
-	scale.Scale = 0.3
+	scale.Scale = 0.4
 	TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 })
 		:Play()
 	task.delay(2.2, function()
@@ -230,8 +225,8 @@ function Hud.Celebrate(title: string, subtitle: string, color: Color3?)
 			return
 		end
 		local fade = TweenInfo.new(0.5)
-		TweenService:Create(celebrationTitle, fade, { TextTransparency = 1 }):Play()
-		TweenService:Create(celebrationSub, fade, { TextTransparency = 1 }):Play()
+		fadeLabel(celebrationTitle, fade, 1)
+		fadeLabel(celebrationSub, fade, 1)
 		task.wait(0.5)
 		if token == celebrateToken then
 			celebration.Visible = false
@@ -247,31 +242,31 @@ function Hud.Render(state: any)
 	lastLevel = state.Level
 
 	if state.Level >= state.MaxLevel then
-		xpBar.Set(1, "MAX LEVEL")
+		xpBar.Set(1, "Max level")
 	else
 		xpBar.Set(state.XP / state.XPToNext, `{state.XP} / {state.XPToNext} XP`)
 	end
 
-	coinsText.Text = `💰 {Theme.formatNumber(state.Coins)}`
+	coinsText.Text = Theme.formatNumber(state.Coins)
 	if lastCoins and state.Coins ~= lastCoins then
-		Theme.pop(coinsText, 1.2)
+		Theme.pop(coinsChip, 1.15)
 	end
 	lastCoins = state.Coins
 
-	farmingChip.Text = `🌾 {state.Skills.Farming and state.Skills.Farming.Level or 1}`
-	combatChip.Text = `🗡️ {state.Skills.Combat and state.Skills.Combat.Level or 1}`
+	farmingText.Text = tostring(state.Skills.Farming and state.Skills.Farming.Level or 1)
+	combatText.Text = tostring(state.Skills.Combat and state.Skills.Combat.Level or 1)
 
 	if state.Level >= state.WarzoneLevel then
-		warzoneChip.Text = "🗡️ Warzone open!"
+		warzoneChip.Text = "Warzone open!"
 	else
-		warzoneChip.Text = `🔒 Warzone at Lv {state.WarzoneLevel}`
+		warzoneChip.Text = `Warzone at level {state.WarzoneLevel}`
 	end
 
 	raidBanner.Visible = state.Raid.Active
 	local bag = {}
 	for id, count in state.Raid.Bag do
 		local item = Items[id]
-		table.insert(bag, `{item and item.Icon or ""} {count}`)
+		table.insert(bag, `{item and item.Name or id} x{count}`)
 	end
 	raidBag.Text = if #bag > 0 then table.concat(bag, "   ") else "Bag empty - open chests, beat monsters"
 end
@@ -279,52 +274,43 @@ end
 local toastCount = 0
 function Hud.Toast(text: string, kind: string)
 	if kind == "levelup" then
-		Hud.Celebrate("LEVEL UP!", text, C.Gold)
+		Hud.Celebrate("Level Up!", text, C.Gold)
 		return
 	end
 	toastCount += 1
 	local color = TOAST_COLORS[kind] or C.Blue
+	-- A paper tag with a colored edge on the left
 	local toast = Theme.make("Frame", {
 		LayoutOrder = toastCount,
 		AutomaticSize = Enum.AutomaticSize.X,
-		Size = UDim2.fromOffset(0, 40),
-		BackgroundColor3 = Color3.new(1, 1, 1),
+		Size = UDim2.fromOffset(0, 38),
+		BackgroundColor3 = C.Parchment,
 		Parent = toastHolder,
 	})
-	Theme.gradient(toast, Theme.lighten(C.Panel, 0.12), C.Panel)
-	Theme.corner(toast, 999)
-	Theme.stroke(toast, color, 2.5)
-	Theme.padding(toast, 6, 16, 0, 0)
-	Theme.list(toast, Enum.FillDirection.Horizontal, 8)
-	local icon = Theme.make("TextLabel", {
-		Size = UDim2.fromOffset(30, 30),
+	Theme.corner(toast, 6)
+	local stroke = Theme.stroke(toast, C.Wood, 2.5)
+	Theme.padding(toast, 0, 14, 0, 0)
+	Theme.list(toast, Enum.FillDirection.Horizontal, 10)
+	local edge = Theme.make("Frame", {
+		Size = UDim2.fromOffset(8, 38),
 		BackgroundColor3 = color,
-		Text = TOAST_ICONS[kind] or "💬",
-		TextSize = 16,
 		LayoutOrder = 1,
 		Parent = toast,
 	})
-	Theme.corner(icon, 999)
-	local label = Theme.title(toast, text, 18)
+	Theme.corner(edge, 5)
+	local label = Theme.text(toast, text, 17, Theme.Font.Bold)
 	label.AutomaticSize = Enum.AutomaticSize.X
 	label.Size = UDim2.fromOffset(0, 30)
 	label.LayoutOrder = 2
 	label.TextTruncate = Enum.TextTruncate.None
-	Theme.pop(toast, 0.6)
+	Theme.pop(toast, 0.7)
 
 	task.delay(if kind == "level" then 3.5 else 2.2, function()
 		local fade = TweenInfo.new(0.35)
 		TweenService:Create(toast, fade, { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(edge, fade, { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(stroke, fade, { Transparency = 1 }):Play()
 		TweenService:Create(label, fade, { TextTransparency = 1 }):Play()
-		TweenService:Create(icon, fade, { BackgroundTransparency = 1, TextTransparency = 1 }):Play()
-		local stroke = toast:FindFirstChildOfClass("UIStroke")
-		if stroke then
-			TweenService:Create(stroke, fade, { Transparency = 1 }):Play()
-		end
-		local labelStroke = label:FindFirstChildOfClass("UIStroke")
-		if labelStroke then
-			TweenService:Create(labelStroke, fade, { Transparency = 1 }):Play()
-		end
 		task.wait(0.35)
 		toast:Destroy()
 	end)
@@ -335,11 +321,7 @@ local travelToken = 0
 local function setFade(visible: boolean, info: TweenInfo)
 	local goal = if visible then 0 else 1
 	TweenService:Create(fadeFrame, info, { BackgroundTransparency = goal }):Play()
-	TweenService:Create(fadeTitle, info, { TextTransparency = goal }):Play()
-	local stroke = fadeTitle:FindFirstChildOfClass("UIStroke")
-	if stroke then
-		TweenService:Create(stroke, info, { Transparency = goal }):Play()
-	end
+	fadeLabel(fadeTitle, info, goal)
 end
 
 -- Fades the screen out while a portal teleports you to another server; "Failed" (the
@@ -378,15 +360,11 @@ function Hud.Start(callbacks: Callbacks)
 		BackgroundTransparency = 1,
 		Parent = fadeGui,
 	})
-	fadeTitle = Theme.title(fadeFrame, "", 56)
+	fadeTitle = Theme.worldTitle(fadeFrame, "", 56)
 	fadeTitle.Size = UDim2.new(1, 0, 0, 70)
 	fadeTitle.Position = UDim2.fromScale(0, 0.42)
 	fadeTitle.TextXAlignment = Enum.TextXAlignment.Center
-	fadeTitle.TextTransparency = 1
-	local fadeStroke = fadeTitle:FindFirstChildOfClass("UIStroke")
-	if fadeStroke then
-		fadeStroke.Transparency = 1
-	end
+	fadeLabel(fadeTitle, nil, 1)
 end
 
 return Hud

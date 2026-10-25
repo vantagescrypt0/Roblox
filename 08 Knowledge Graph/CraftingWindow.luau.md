@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/CraftingWindow.luau"
 type: "code"
-community: "Community 3"
+community: "Community 1"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_1
 ---
 
 # CraftingWindow.luau
@@ -22,7 +22,7 @@ tags:
 - [[check()]] - `contains` [EXTRACTED]
 - [[choose()]] - `contains` [EXTRACTED]
 - [[ingredientChip()]] - `contains` [EXTRACTED]
-- [[render()_3]] - `contains` [EXTRACTED]
+- [[render()_2]] - `contains` [EXTRACTED]
 - [[renderDetail()]] - `contains` [EXTRACTED]
 - [[replicatedstorage_shared_blocks]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_items]] - `imports` [EXTRACTED]
@@ -34,4 +34,4 @@ tags:
 - [[script_parent_parent_ui_window]] - `imports` [EXTRACTED]
 - [[statRow()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_1

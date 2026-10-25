@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Target Audience.md"
 type: "concept"
-community: "Community 12"
+community: "Community 9"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_12
+  - community/Community_9
 ---
 
 # Mobile-first UI
@@ -15,4 +15,4 @@ tags:
 - [[Target Audience]] - `references` [EXTRACTED]
 - [[Theme.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_12
+#graphify/concept #graphify/EXTRACTED #community/Community_9

@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Util/Props.luau"
 type: "code"
-community: "Community 33"
+community: "Community 21"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_33
+  - community/Community_21
 ---
 
 # Props.luau
@@ -19,4 +19,4 @@ tags:
 - [[Props.WorldExtents()]] - `contains` [EXTRACTED]
 - [[baseOf()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_33
+#graphify/code #graphify/EXTRACTED #community/Community_21

@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/QuestTracker.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L97"
+community: "Community 1"
+location: "L102"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # QuestTracker.Start()
@@ -15,4 +15,4 @@ tags:
 - [[QuestTracker.luau]] - `contains` [EXTRACTED]
 - [[build()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

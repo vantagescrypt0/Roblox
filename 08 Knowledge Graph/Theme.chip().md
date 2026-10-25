@@ -1,19 +1,18 @@
 ---
 source_file: "game/src/client/UI/Theme.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L284"
+community: "Community 1"
+location: "L360"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # Theme.chip()
 
 ## Connections
 - [[Theme.corner()]] - `calls` [EXTRACTED]
-- [[Theme.darken()]] - `calls` [EXTRACTED]
 - [[Theme.luau]] - `contains` [EXTRACTED]
 - [[Theme.make()]] - `calls` [EXTRACTED]
 - [[Theme.padding()]] - `calls` [EXTRACTED]
@@ -21,4 +20,4 @@ tags:
 - [[buildProfile()]] - `calls` [INFERRED]
 - [[statRow()_1]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

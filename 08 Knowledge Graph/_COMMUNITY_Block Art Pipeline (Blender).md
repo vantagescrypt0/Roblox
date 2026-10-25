@@ -1,13 +1,13 @@
 ---
 type: community
 cohesion: 0.07
-members: 83
+members: 79
 ---
 
 # Block Art Pipeline (Blender)
 
 **Cohesion:** 0.07 - loosely connected
-**Members:** 83 nodes
+**Members:** 79 nodes
 
 ## Members
 - [[dot-__init__()]] - code - art/scripts/lowpoly.py
@@ -38,7 +38,6 @@ members: 83
 - [[bridge()]] - code - art/scripts/starter_island.py
 - [[build_atlas()]] - code - art/scripts/blocks.py
 - [[build_tier()]] - code - art/scripts/islands.py
-- [[carrot()]] - code - art/scripts/items3d.py
 - [[clamp()]] - code - art/scripts/blocks.py
 - [[common.py]] - code - art/scripts/common.py
 - [[crops()]] - code - art/scripts/props.py
@@ -61,7 +60,6 @@ members: 83
 - [[marker()]] - code - art/scripts/lowpoly.py
 - [[market()]] - code - art/scripts/props.py
 - [[material()]] - code - art/scripts/common.py
-- [[math]] - concept
 - [[matrix()]] - code - art/scripts/lowpoly.py
 - [[mesh_object()]] - code - art/scripts/common.py
 - [[noisy()]] - code - art/scripts/blocks.py
@@ -84,14 +82,12 @@ members: 83
 - [[rock()]] - code - art/scripts/islands.py
 - [[rock()_1]] - code - art/scripts/starter_island.py
 - [[save_blend()]] - code - art/scripts/common.py
-- [[scrap()]] - code - art/scripts/items3d.py
 - [[speckle()]] - code - art/scripts/blocks.py
 - [[starter_island.py]] - code - art/scripts/starter_island.py
 - [[swatch_uv()]] - code - art/scripts/lowpoly.py
 - [[tile_rect()]] - code - art/scripts/blocks.py
 - [[tree()]] - code - art/scripts/islands.py
 - [[tree()_1]] - code - art/scripts/starter_island.py
-- [[wheat()]] - code - art/scripts/items3d.py
 - [[workbench()]] - code - art/scripts/props.py
 
 ## Live Query (requires Dataview plugin)
@@ -102,13 +98,13 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 20 edges to [[_COMMUNITY_Community 7]]
+- 31 edges to [[_COMMUNITY_Community 7]]
 - 4 edges to [[_COMMUNITY_Knowledge Graph Tools]]
 - 1 edge to [[_COMMUNITY_Tools and Workflow]]
 
 ## Top bridge nodes
-- [[blocks.py]] - degree 18, connects to 2 communities
+- [[blocks.py]] - degree 18, connects to 3 communities
+- [[islands.py]] - degree 17, connects to 2 communities
+- [[starter_island.py]] - degree 16, connects to 2 communities
+- [[props.py]] - degree 14, connects to 2 communities
 - [[Builder]] - degree 24, connects to 1 community
-- [[math]] - degree 23, connects to 1 community
-- [[lowpoly.py]] - degree 18, connects to 1 community
-- [[islands.py]] - degree 17, connects to 1 community

@@ -31,7 +31,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 2 edges to [[_COMMUNITY_Core Loop and Pillars]]
+- 2 edges to [[_COMMUNITY_Community 8]]
 - 1 edge to [[_COMMUNITY_Block Art Pipeline (Blender)]]
 - 1 edge to [[_COMMUNITY_Community 6]]
 

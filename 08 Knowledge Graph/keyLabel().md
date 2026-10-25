@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/PromptUI.luau"
 type: "code"
-community: "HUD and Hotbar"
+community: "Community 1"
 location: "L23"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # keyLabel()
@@ -15,4 +15,4 @@ tags:
 - [[PromptUI.luau]] - `contains` [EXTRACTED]
 - [[show()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

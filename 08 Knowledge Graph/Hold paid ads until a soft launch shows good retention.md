@@ -1,11 +1,11 @@
 ---
 source_file: "06 Monetization/Monetization Principles.md"
 type: "rationale"
-community: "Audience, Policy and Death Drops"
+community: "Community 9"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Audience_Policy_and_Death_Drops
+  - community/Community_9
 ---
 
 # Hold paid ads until a soft launch shows good retention
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Monetization Principles]] - `references` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Audience_Policy_and_Death_Drops
+#graphify/rationale #graphify/EXTRACTED #community/Community_9

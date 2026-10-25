@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/WarzoneService.luau"
 type: "code"
-community: "Community 10"
+community: "Community 23"
 location: "L136"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_10
+  - community/Community_23
 ---
 
 # extract()
@@ -19,4 +19,4 @@ tags:
 - [[endRaid()]] - `calls` [EXTRACTED]
 - [[isInRaid()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_10
+#graphify/code #graphify/EXTRACTED #community/Community_23

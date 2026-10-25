@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/InventoryService.luau"
 type: "code"
-community: "Community 18"
+community: "Community 23"
 location: "L15"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_18
+  - community/Community_23
 ---
 
 # InventoryService.Count()
@@ -17,4 +17,4 @@ tags:
 - [[bestSeed()]] - `calls` [INFERRED]
 - [[sellItem()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Community_18
+#graphify/code #graphify/INFERRED #community/Community_23

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "HUD and Hotbar"
+community: "Community 1"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # script_parent_ui_theme
@@ -16,4 +16,4 @@ tags:
 - [[PromptUI.luau]] - `imports` [EXTRACTED]
 - [[QuestTracker.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/concept #graphify/EXTRACTED #community/Community_1

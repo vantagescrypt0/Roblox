@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hud.luau"
 type: "code"
-community: "HUD and Hotbar"
+community: "Community 1"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # Hud.luau
@@ -22,9 +22,11 @@ tags:
 - [[buildProfile()]] - `contains` [EXTRACTED]
 - [[buildRaidBanner()]] - `contains` [EXTRACTED]
 - [[buildToasts()]] - `contains` [EXTRACTED]
+- [[fadeLabel()]] - `contains` [EXTRACTED]
 - [[replicatedstorage_shared_items]] - `imports` [EXTRACTED]
+- [[script_parent_ui_itemicon]] - `imports` [EXTRACTED]
 - [[script_parent_ui_theme]] - `imports` [EXTRACTED]
 - [[setFade()]] - `contains` [EXTRACTED]
 - [[sideButton()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

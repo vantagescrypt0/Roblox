@@ -1,26 +1,19 @@
 ---
 source_file: "game/src/client/Windows/CraftingWindow.luau"
 type: "code"
-community: "HUD and Hotbar"
+community: "Community 1"
 location: "L88"
 tags:
   - graphify/code
-  - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - graphify/EXTRACTED
+  - community/Community_1
 ---
 
 # ingredientChip()
 
 ## Connections
 - [[CraftingWindow.luau]] - `contains` [EXTRACTED]
-- [[ItemIcon.create()]] - `calls` [INFERRED]
-- [[Theme.corner()]] - `calls` [INFERRED]
-- [[Theme.darken()]] - `calls` [INFERRED]
-- [[Theme.list()]] - `calls` [INFERRED]
-- [[Theme.make()]] - `calls` [INFERRED]
-- [[Theme.padding()]] - `calls` [INFERRED]
-- [[Theme.stroke()]] - `calls` [INFERRED]
-- [[Theme.text()]] - `calls` [INFERRED]
+- [[Theme.iconChip()]] - `calls` [INFERRED]
 - [[renderDetail()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

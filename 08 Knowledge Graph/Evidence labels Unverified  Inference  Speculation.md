@@ -1,11 +1,11 @@
 ---
 source_file: "Home.md"
 type: "concept"
-community: "Core Loop and Pillars"
+community: "Community 8"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Core_Loop_and_Pillars
+  - community/Community_8
 ---
 
 # Evidence labels: Unverified / Inference / Speculation
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Home]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Core_Loop_and_Pillars
+#graphify/concept #graphify/EXTRACTED #community/Community_8

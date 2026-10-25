@@ -1,29 +1,19 @@
 ---
-source_file: "game/src/client/Windows/IslandWindow.luau"
+source_file: "game/src/client/Hotbar.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L46"
+community: "Community 1"
+location: "L95"
 tags:
   - graphify/code
-  - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - graphify/EXTRACTED
+  - community/Community_1
 ---
 
 # render()
 
 ## Connections
-- [[IslandWindow.SetState()]] - `calls` [EXTRACTED]
-- [[IslandWindow.luau]] - `contains` [EXTRACTED]
-- [[Theme.button()]] - `calls` [INFERRED]
-- [[Theme.corner()]] - `calls` [INFERRED]
-- [[Theme.formatNumber()]] - `calls` [INFERRED]
-- [[Theme.lighten()]] - `calls` [INFERRED]
-- [[Theme.list()]] - `calls` [INFERRED]
-- [[Theme.make()]] - `calls` [INFERRED]
-- [[Theme.stroke()]] - `calls` [INFERRED]
-- [[Theme.title()]] - `calls` [INFERRED]
-- [[Window.clear()]] - `calls` [INFERRED]
-- [[card()]] - `calls` [EXTRACTED]
-- [[statRow()_1]] - `calls` [EXTRACTED]
+- [[Hotbar.SetState()]] - `calls` [EXTRACTED]
+- [[Hotbar.luau]] - `contains` [EXTRACTED]
+- [[ItemIcon.create()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_1

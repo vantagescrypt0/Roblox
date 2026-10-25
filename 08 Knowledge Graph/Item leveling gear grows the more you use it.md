@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Mechanics to Borrow.md"
 type: "concept"
-community: "Community 12"
+community: "Community 6"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_12
+  - community/Community_6
 ---
 
 # Item leveling: gear grows the more you use it
@@ -14,4 +14,4 @@ tags:
 - [[Fly tokens tradeable timed power]] - `semantically_similar_to` [INFERRED]
 - [[Mechanics to Borrow]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_12
+#graphify/concept #graphify/EXTRACTED #community/Community_6

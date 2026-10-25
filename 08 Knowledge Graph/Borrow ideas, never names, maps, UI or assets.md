@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Pitch (Draft).md"
 type: "rationale"
-community: "Core Loop and Pillars"
+community: "Community 8"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Core_Loop_and_Pillars
+  - community/Community_8
 ---
 
 # Borrow ideas, never names, maps, UI or assets
@@ -14,4 +14,4 @@ tags:
 - [[Game name still undecided (can't reuse IslandsSkyblockSkybounds)]] - `conceptually_related_to` [EXTRACTED]
 - [[Pitch (Draft)]] - `references` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Core_Loop_and_Pillars
+#graphify/rationale #graphify/EXTRACTED #community/Community_8

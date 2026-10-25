@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/shared/Leveling.luau"
 type: "code"
-community: "Community 11"
+community: "Community 12"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_11
+  - community/Community_12
 ---
 
 # Leveling.luau
@@ -17,4 +17,4 @@ tags:
 - [[Leveling.FarmingBonusChance()]] - `contains` [EXTRACTED]
 - [[Leveling.XPToNext()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_11
+#graphify/code #graphify/EXTRACTED #community/Community_12

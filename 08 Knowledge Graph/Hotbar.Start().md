@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Hotbar.luau"
 type: "code"
-community: "Community 3"
-location: "L153"
+community: "Community 1"
+location: "L136"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_3
+  - community/Community_1
 ---
 
 # Hotbar.Start()
@@ -14,10 +14,11 @@ tags:
 ## Connections
 - [[Hotbar.Select()]] - `calls` [EXTRACTED]
 - [[Hotbar.luau]] - `contains` [EXTRACTED]
-- [[Theme.autoScale()]] - `calls` [INFERRED]
+- [[Theme.corner()]] - `calls` [INFERRED]
 - [[Theme.make()]] - `calls` [INFERRED]
-- [[Theme.screen()]] - `calls` [INFERRED]
 - [[Theme.stroke()]] - `calls` [INFERRED]
-- [[pixelText()]] - `calls` [EXTRACTED]
+- [[Theme.text()]] - `calls` [INFERRED]
+- [[Theme.worldTitle()]] - `calls` [INFERRED]
+- [[slotX()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Community_3
+#graphify/code #graphify/INFERRED #community/Community_1

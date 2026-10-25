@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Target Audience.md"
 type: "concept"
-community: "Audience, Policy and Death Drops"
+community: "Community 9"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Audience_Policy_and_Death_Drops
+  - community/Community_9
 ---
 
 # Younger Roblox players (Kids 5-8, Select 9-15)
@@ -16,4 +16,4 @@ tags:
 - [[Roblox Kids & Select age bands and content ratings]] - `conceptually_related_to` [EXTRACTED]
 - [[Target Audience]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Audience_Policy_and_Death_Drops
+#graphify/concept #graphify/EXTRACTED #community/Community_9

@@ -1,20 +1,21 @@
 ---
 source_file: "game/src/client/Windows/BagWindow.luau"
 type: "code"
-community: "Community 3"
-location: "L60"
+community: "Community 1"
+location: "L58"
 tags:
   - graphify/code
-  - graphify/EXTRACTED
-  - community/Community_3
+  - graphify/INFERRED
+  - community/Community_1
 ---
 
 # slotFrame()
 
 ## Connections
 - [[BagWindow.luau]] - `contains` [EXTRACTED]
+- [[Theme.corner()]] - `calls` [INFERRED]
 - [[Theme.make()]] - `calls` [INFERRED]
 - [[Theme.stroke()]] - `calls` [INFERRED]
-- [[render()_2]] - `calls` [EXTRACTED]
+- [[render()_1]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/INFERRED #community/Community_1

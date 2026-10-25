@@ -1,21 +1,29 @@
 ---
-source_file: "game/src/client/Windows/CraftingWindow.luau"
+source_file: "game/src/client/Windows/IslandWindow.luau"
 type: "code"
-community: "Community 3"
-location: "L170"
+community: "Community 1"
+location: "L39"
 tags:
   - graphify/code
-  - graphify/EXTRACTED
-  - community/Community_3
+  - graphify/INFERRED
+  - community/Community_1
 ---
 
 # render()
 
 ## Connections
-- [[CraftingWindow.SetState()]] - `calls` [EXTRACTED]
-- [[CraftingWindow.luau]] - `contains` [EXTRACTED]
-- [[check()]] - `calls` [EXTRACTED]
-- [[choose()]] - `calls` [EXTRACTED]
-- [[renderDetail()]] - `calls` [EXTRACTED]
+- [[IslandWindow.SetState()]] - `calls` [EXTRACTED]
+- [[IslandWindow.luau]] - `contains` [EXTRACTED]
+- [[Theme.button()]] - `calls` [INFERRED]
+- [[Theme.coins()]] - `calls` [INFERRED]
+- [[Theme.corner()]] - `calls` [INFERRED]
+- [[Theme.darken()]] - `calls` [INFERRED]
+- [[Theme.make()]] - `calls` [INFERRED]
+- [[Theme.stroke()]] - `calls` [INFERRED]
+- [[Theme.text()]] - `calls` [INFERRED]
+- [[Theme.title()]] - `calls` [INFERRED]
+- [[Window.clear()]] - `calls` [INFERRED]
+- [[card()]] - `calls` [EXTRACTED]
+- [[statRow()_1]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/INFERRED #community/Community_1

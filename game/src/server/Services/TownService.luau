@@ -71,13 +71,13 @@ local function addSign(part: BasePart, text: string, front: Vector3)
 	local label = Instance.new("TextLabel")
 	label.Size = UDim2.fromScale(1, 1)
 	label.BackgroundTransparency = 1
-	label.FontFace = Font.fromEnum(Enum.Font.Arcade)
+	label.FontFace = Font.fromEnum(Enum.Font.Fondamento)
 	label.TextScaled = true
-	label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	label.TextColor3 = Color3.fromRGB(251, 238, 211)
 	label.Text = text
 	label.Parent = gui
 	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.fromRGB(50, 30, 10)
+	stroke.Color = Color3.fromRGB(46, 28, 15)
 	stroke.Thickness = 3
 	stroke.Parent = label
 	local padding = Instance.new("UIPadding")
@@ -112,23 +112,30 @@ local function addNameTag(head: BasePart)
 	gui.AlwaysOnTop = true
 	gui.Adornee = head
 	gui.Parent = head
-	local function line(text: string, size: number, y: number, color: Color3)
+	local function line(text: string, size: number, y: number, color: Color3, font: Font)
 		local label = Instance.new("TextLabel")
 		label.Size = UDim2.new(1, 0, 0, size + 4)
 		label.Position = UDim2.fromOffset(0, y)
 		label.BackgroundTransparency = 1
-		label.FontFace = Font.fromEnum(Enum.Font.FredokaOne)
+		label.FontFace = font
 		label.TextSize = size
 		label.TextColor3 = color
 		label.Text = text
 		label.Parent = gui
 		local stroke = Instance.new("UIStroke")
-		stroke.Color = Color3.fromRGB(20, 22, 32)
+		stroke.Color = Color3.fromRGB(46, 28, 15)
 		stroke.Thickness = 2
 		stroke.Parent = label
 	end
-	line("Merchant", 24, 0, Color3.fromRGB(255, 214, 92))
-	line("Buys crops - Sells seeds", 15, 30, Color3.fromRGB(235, 238, 245))
+	-- Same fonts as the game's UI (client/UI/Theme.luau)
+	line("Merchant", 26, 0, Color3.fromRGB(242, 193, 78), Font.fromEnum(Enum.Font.Fondamento))
+	line(
+		"Buys crops, sells seeds",
+		15,
+		31,
+		Color3.fromRGB(251, 238, 211),
+		Font.new("rbxasset://fonts/families/Nunito.json", Enum.FontWeight.ExtraBold)
+	)
 end
 
 -- The travelling trader: newsboy cap, bushy mustache, green vest, red scarf, arms at his

@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/WarzoneService.luau"
 type: "code"
-community: "Community 16"
+community: "Community 23"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_16
+  - community/Community_23
 ---
 
 # WarzoneService.luau
@@ -38,4 +38,4 @@ tags:
 - [[script_parent_parent_util_props]] - `imports` [EXTRACTED]
 - [[script_parent_stateservice]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_16
+#graphify/code #graphify/EXTRACTED #community/Community_23

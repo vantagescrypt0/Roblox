@@ -62,6 +62,6 @@ Remotes.Travel.OnClientEvent:Connect(Hud.Travel)
 Remotes.IslandRebuilt.OnClientEvent:Connect(function(tier: number)
 	IslandWindow.Close()
 	local info = IslandTiers[tier]
-	Hud.Celebrate("ISLAND EXPANDED!", if info then info.Name else "", Color3.fromRGB(88, 204, 102))
+	Hud.Celebrate("Island Expanded!", if info then info.Name else "", Color3.fromRGB(150, 214, 110))
 end)
 Remotes.Ready:FireServer()

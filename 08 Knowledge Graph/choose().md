@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/CraftingWindow.luau"
 type: "code"
-community: "Community 3"
-location: "L186"
+community: "Community 1"
+location: "L170"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_1
 ---
 
 # choose()
@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[CraftingWindow.luau]] - `contains` [EXTRACTED]
 - [[buildGrid()]] - `calls` [EXTRACTED]
-- [[render()_3]] - `calls` [EXTRACTED]
+- [[render()_2]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_1

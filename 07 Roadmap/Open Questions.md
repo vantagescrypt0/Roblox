@@ -32,7 +32,7 @@
 - [ ] Anything that frustrated you in Islands before it stopped updating?
 
 ## Theme / look
-- [ ] Art style: stylized/cartoon vs realistic? *(Now: stylized low-poly + cartoon UI. Keep it?)*
+- [x] Art style: stylized/cartoon vs realistic? *(Decided: Minecraft-style blocks, low-poly 3D items, "Workshop" parchment-and-wood UI. See [[Decision Log]])*
 - [ ] Island expansion prices and sizes OK? (300 / 1,500 / 6,000 coins)
 - [ ] Game name (must not reuse Islands/Skyblock/Skybounds).
 

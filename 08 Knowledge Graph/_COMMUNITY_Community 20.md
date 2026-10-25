@@ -1,13 +1,13 @@
 ---
 type: community
-cohesion: 0.20
-members: 10
+cohesion: 0.25
+members: 8
 ---
 
 # Community 20
 
-**Cohesion:** 0.20 - loosely connected
-**Members:** 10 nodes
+**Cohesion:** 0.25 - loosely connected
+**Members:** 8 nodes
 
 ## Members
 - [[Anti-Burnout Ideas]] - document - 03 Design/Anti-Burnout Ideas.md
@@ -15,11 +15,9 @@ members: 10
 - [[Economy sinks to slow inflation]] - concept - 03 Design/Anti-Burnout Ideas.md
 - [[IslandTiers.luau]] - code - game/src/shared/IslandTiers.luau
 - [[Prestige with real unlocks]] - concept - 03 Design/Anti-Burnout Ideas.md
-- [[PvP fairness options zones by level, new-player protection, insurance slot]] - concept - 03 Design/Warzone.md
 - [[Seasonal Warzone maps and loot tables]] - concept - 03 Design/Anti-Burnout Ideas.md
 - [[Skill-gated vending machines and handshake trading]] - concept - 02 Research/Islands (Roblox).md
 - [[Trading with anti-scam UI (two-step confirm, trade log)]] - concept - 03 Design/Anti-Burnout Ideas.md
-- [[Warzone zones outer ring Slimes, center Brutes]] - concept - 03 Design/Warzone.md
 
 ## Live Query (requires Dataview plugin)
 
@@ -29,18 +27,16 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 5 edges to [[_COMMUNITY_Core Loop and Pillars]]
-- 2 edges to [[_COMMUNITY_Community 17]]
-- 1 edge to [[_COMMUNITY_Community 16]]
+- 3 edges to [[_COMMUNITY_Community 6]]
+- 2 edges to [[_COMMUNITY_Community 8]]
 - 1 edge to [[_COMMUNITY_Breaking, Placing and Crafting]]
+- 1 edge to [[_COMMUNITY_Community 12]]
+- 1 edge to [[_COMMUNITY_Community 17]]
 - 1 edge to [[_COMMUNITY_Community 19]]
-- 1 edge to [[_COMMUNITY_Community 6]]
-- 1 edge to [[_COMMUNITY_Audience, Policy and Death Drops]]
-- 1 edge to [[_COMMUNITY_Community 29]]
+- 1 edge to [[_COMMUNITY_Community 9]]
 
 ## Top bridge nodes
-- [[Anti-Burnout Ideas]] - degree 10, connects to 4 communities
-- [[Warzone zones outer ring Slimes, center Brutes]] - degree 4, connects to 2 communities
+- [[Anti-Burnout Ideas]] - degree 10, connects to 5 communities
 - [[Decision buy bigger islands with coins (4 tiers)]] - degree 4, connects to 2 communities
-- [[PvP fairness options zones by level, new-player protection, insurance slot]] - degree 3, connects to 2 communities
 - [[Skill-gated vending machines and handshake trading]] - degree 2, connects to 1 community
+- [[Seasonal Warzone maps and loot tables]] - degree 2, connects to 1 community

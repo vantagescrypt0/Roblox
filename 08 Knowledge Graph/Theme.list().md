@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Theme.luau"
 type: "code"
-community: "HUD and Hotbar"
-location: "L92"
+community: "Community 1"
+location: "L106"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - community/Community_1
 ---
 
 # Theme.list()
@@ -15,6 +15,7 @@ tags:
 - [[BagWindow.Start()]] - `calls` [INFERRED]
 - [[Hud.Toast()]] - `calls` [INFERRED]
 - [[IslandWindow.Start()]] - `calls` [INFERRED]
+- [[Theme.iconChip()]] - `calls` [EXTRACTED]
 - [[Theme.luau]] - `contains` [EXTRACTED]
 - [[Theme.make()]] - `calls` [EXTRACTED]
 - [[build()]] - `calls` [INFERRED]
@@ -23,8 +24,6 @@ tags:
 - [[buildProfile()]] - `calls` [INFERRED]
 - [[buildRaidBanner()]] - `calls` [INFERRED]
 - [[buildToasts()]] - `calls` [INFERRED]
-- [[ingredientChip()]] - `calls` [INFERRED]
-- [[render()]] - `calls` [INFERRED]
 - [[statRow()_1]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/INFERRED #community/Community_1
