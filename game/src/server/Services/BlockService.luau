@@ -5,11 +5,15 @@
 -- your tool allows, whether it drops (stone needs a pickaxe), and wears the tool down.
 -- Mining a resource node (tree, boulder, ore) doesn't leave a saved hole: the node grows
 -- back (IslandService), and nobody can build in its spot meanwhile.
+-- Mining the island's own stone and ore trains Mining, chopping its trees trains
+-- Woodcutting, and those skills give a growing chance of a double drop. Blocks you placed
+-- give no XP and no bonus, so placing and re-mining can't farm XP or copy items.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Items = require(ReplicatedStorage.Shared.Items)
+local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Mining = require(ReplicatedStorage.Shared.Mining)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
@@ -24,10 +28,34 @@ local PLACE_COOLDOWN = 0.12
 -- Building area around the island (in blocks)
 local MAX_HEIGHT, MAX_DEPTH, EXTRA_RADIUS = 40, 40, 12
 
+-- What gathering each natural block is worth: skill XP and player XP
+local GATHER: { [string]: { Skill: string, XP: number, PlayerXP: number } } = {
+	Stone = { Skill = "Mining", XP = 5, PlayerXP = 2 },
+	Cobblestone = { Skill = "Mining", XP = 5, PlayerXP = 2 },
+	CoalOre = { Skill = "Mining", XP = 12, PlayerXP = 4 },
+	IronOre = { Skill = "Mining", XP = 20, PlayerXP = 6 },
+	Wood = { Skill = "Woodcutting", XP = 6, PlayerXP = 2 },
+}
+
+-- Block types some item can place (so a block of that type might be player-made)
+local placeable: { [string]: boolean } = {}
+for _, item in Items do
+	if item.Block then
+		placeable[item.Block] = true
+	end
+end
+
 local BlockService = {}
 
 local lastBreak: { [Player]: number } = {}
 local lastPlace: { [Player]: number } = {}
+local rng = Random.new()
+
+-- Is this block part of the island itself: a resource node, or an ore vein (a block type
+-- no item can place, still as the island was made)?
+local function isNatural(island: IslandService.Island, isNode: boolean, cellKey: string, blockType: string): boolean
+	return isNode or (not placeable[blockType] and island.Base[cellKey] == blockType)
+end
 
 local function isCell(x: unknown, y: unknown, z: unknown): boolean
 	for _, value in { x, y, z } do
@@ -74,28 +102,41 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	end
 	lastBreak[player] = now
 
+	local isNode = IslandService.GetNode(player, cx, cy, cz) ~= nil
+	local natural = isNatural(island, isNode, BlockWorld.key(cx, cy, cz), blockType)
 	BlockWorld.set(world, cx, cy, cz, nil)
-	if IslandService.GetNode(player, cx, cy, cz) then
+	if isNode then
 		IslandService.DepleteNode(player, cx, cy, cz)
 	else
 		IslandService.RecordChange(player, cx, cy, cz, nil)
 	end
+
+	local gather = if natural and canHarvest then GATHER[blockType] else nil
 	if def.Drop and canHarvest then
-		InventoryService.Add(player, def.Drop, 1)
+		local amount = 1
+		if gather then
+			local level = ProgressionService.GetSkillLevel(player, gather.Skill)
+			if rng:NextNumber() < Leveling.BonusChance(level) then
+				amount = 2
+				StateService.Notify(player, `Double drop! +2 {Items[def.Drop].Name}`, "good")
+			end
+		end
+		InventoryService.Add(player, def.Drop, amount)
 	elseif not canHarvest then
 		StateService.Notify(player, `You need a {def.Tool or "tool"} to collect {def.Name}`, "bad")
 	end
 	if held and Mining.UsesTool(blockType, held) and InventoryService.UseTool(player, held, 1) then
 		StateService.Notify(player, `Your {Items[held].Name} broke!`, "bad")
 	end
+	if gather then
+		ProgressionService.AddSkillXP(player, gather.Skill, gather.XP)
+		ProgressionService.AddPlayerXP(player, gather.PlayerXP)
+	end
 	if canHarvest and blockType == "Wood" then
-		ProgressionService.AddPlayerXP(player, 2)
 		QuestService.Record(player, "Chop")
 	elseif canHarvest and (blockType == "Stone" or blockType == "Cobblestone") then
-		ProgressionService.AddPlayerXP(player, 2)
 		QuestService.Record(player, "Mine")
 	elseif canHarvest and (blockType == "CoalOre" or blockType == "IronOre") then
-		ProgressionService.AddPlayerXP(player, if blockType == "IronOre" then 6 else 4)
 		QuestService.Record(player, "Mine")
 		QuestService.Record(player, `Mine:{blockType}`)
 	end

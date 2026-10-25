@@ -1,13 +1,37 @@
 --!strict
--- Player level (1-50, seasonal) and skill levels (Farming, Combat, ...).
+-- Player level (1-50, seasonal) and skill levels (Skills.luau: Farming, Mining,
+-- Woodcutting, Crafting, Combat). A skill level-up that unlocks recipes says which.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
+local Recipes = require(ReplicatedStorage.Shared.Recipes)
+local Skills = require(ReplicatedStorage.Shared.Skills)
 local DataService = require(script.Parent.DataService)
 local StateService = require(script.Parent.StateService)
 
 local ProgressionService = {}
+
+-- Names of the recipes that reaching `toLevel` in a skill made craftable (every other
+-- skill they need is already high enough)
+local function unlockedBy(data: DataService.Data, skillId: string, fromLevel: number, toLevel: number): { string }
+	local function levelOf(id: string): number
+		local skill = (data.Skills :: any)[id]
+		return if skill then skill.Level else 1
+	end
+	local names = {}
+	for _, recipe in Recipes.List do
+		local need = recipe.Requires[skillId]
+		if need and need > fromLevel and need <= toLevel then
+			local _, ok = Skills.Check(recipe.Requires, levelOf)
+			if ok then
+				table.insert(names, Items[recipe.Output].Name)
+			end
+		end
+	end
+	return names
+end
 
 function ProgressionService.AddPlayerXP(player: Player, amount: number)
 	local data = DataService.GetData(player)
@@ -37,11 +61,19 @@ function ProgressionService.AddSkillXP(player: Player, skillName: string, amount
 		return
 	end
 
+	local before = skill.Level
+	local info = Skills.ById[skillName]
 	skill.XP += amount
 	while skill.Level < Leveling.MaxSkillLevel and skill.XP >= Leveling.XPToNext(skill.Level) do
 		skill.XP -= Leveling.XPToNext(skill.Level)
 		skill.Level += 1
-		StateService.Notify(player, `{skillName} level {skill.Level}!`, "level")
+		StateService.Notify(player, `{if info then info.Name else skillName} level {skill.Level}!`, "level")
+	end
+	if skill.Level > before and data then
+		local names = unlockedBy(data, skillName, before, skill.Level)
+		if #names > 0 then
+			StateService.Notify(player, `You can now craft: {table.concat(names, ", ")}`, "level")
+		end
 	end
 	DataService.MarkChanged(player)
 end

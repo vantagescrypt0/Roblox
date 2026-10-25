@@ -17,6 +17,7 @@ local BagWindow = require(script.Parent.Windows.BagWindow)
 local CraftingWindow = require(script.Parent.Windows.CraftingWindow)
 local IslandWindow = require(script.Parent.Windows.IslandWindow)
 local MarketWindow = require(script.Parent.Windows.MarketWindow)
+local SkillsWindow = require(script.Parent.Windows.SkillsWindow)
 local TradeWindow = require(script.Parent.Windows.TradeWindow)
 
 -- Our own hotbar replaces Roblox's backpack bar
@@ -29,10 +30,12 @@ IslandWindow.Start()
 MarketWindow.Start()
 CraftingWindow.Start()
 TradeWindow.Start()
+SkillsWindow.Start()
 QuestTracker.Start()
 PromptUI.Start()
 Hud.Start({
 	OnBag = BagWindow.Toggle,
+	OnSkills = SkillsWindow.Toggle,
 	OnIsland = function()
 		if Places.Current() == "Town" then
 			Hud.Toast("Your island is back through the portal", "info")
@@ -57,6 +60,7 @@ Remotes.State.OnClientEvent:Connect(function(state)
 	MarketWindow.SetState(state)
 	CraftingWindow.SetState(state)
 	TradeWindow.SetState(state)
+	SkillsWindow.SetState(state)
 end)
 Remotes.Notify.OnClientEvent:Connect(Hud.Toast)
 Remotes.OpenCrafting.OnClientEvent:Connect(CraftingWindow.Open)

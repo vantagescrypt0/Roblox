@@ -1,13 +1,13 @@
 --!strict
--- The always-on HUD: profile card (level badge, XP bar, coins, skills), Warzone status,
--- Bag/Island buttons, the raid banner, pop-up messages and big celebrations.
+-- The always-on HUD: profile card (level badge, XP bar, coins; click it for the Skills
+-- window), Warzone status, Bag/Island/Skills buttons, the raid banner, pop-up messages and
+-- big celebrations.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local Items = require(ReplicatedStorage.Shared.Items)
-local ItemIcon = require(script.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.UI.Theme)
 
 local C = Theme.Color
@@ -15,14 +15,12 @@ local localPlayer = Players.LocalPlayer :: Player
 
 local Hud = {}
 
-export type Callbacks = { OnBag: () -> (), OnIsland: () -> () }
+export type Callbacks = { OnBag: () -> (), OnIsland: () -> (), OnSkills: () -> () }
 
 local levelNumber: TextLabel
 local xpBar: Theme.Bar
 local coinsText: TextLabel
 local coinsChip: Frame
-local farmingText: TextLabel
-local combatText: TextLabel
 local warzoneChip: TextLabel
 local raidBanner: Frame
 local raidBag: TextLabel
@@ -45,12 +43,21 @@ local TOAST_COLORS: { [string]: Color3 } = {
 	levelup = C.Gold,
 }
 
-local function buildProfile(gui: ScreenGui)
+local function buildProfile(gui: ScreenGui, onSkills: () -> ())
 	-- Bottom-left, so it never sits under Roblox's chat window (top-left)
 	local card = Theme.panel(gui, UDim2.fromOffset(316, 100))
 	card.AnchorPoint = Vector2.new(0, 1)
 	card.Position = UDim2.new(0, 14, 1, -14)
 	Theme.autoScale(card)
+	-- The whole card opens the Skills window
+	local open = Theme.make("TextButton", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Text = "",
+		ZIndex = 5,
+		Parent = card,
+	})
+	open.Activated:Connect(onSkills)
 
 	-- Level badge: a round wooden plaque with a gold rim
 	local badge = Theme.make("Frame", {
@@ -89,14 +96,9 @@ local function buildProfile(gui: ScreenGui)
 	Theme.coin(coins.Icon)
 	coinsText = coins.Label
 	coinsChip = coins.Frame
-	local farming = Theme.iconChip(row, "1")
-	farming.Frame.LayoutOrder = 2
-	ItemIcon.create(farming.Icon, "Wheat", UDim2.fromScale(1, 1))
-	farmingText = farming.Label
-	local combat = Theme.iconChip(row, "1")
-	combat.Frame.LayoutOrder = 3
-	ItemIcon.create(combat.Icon, "WoodenSword", UDim2.fromScale(1, 1))
-	combatText = combat.Label
+	-- Skill levels live in the Skills window; this hints the card opens it
+	local skills = Theme.chip(row, "Skills", C.WoodLight)
+	skills.LayoutOrder = 2
 
 	-- Warzone status sits just above the card
 	warzoneChip = Theme.chip(card, "Warzone at level 10", C.Purple)
@@ -118,7 +120,7 @@ local function buildButtons(gui: ScreenGui, callbacks: Callbacks)
 	local column = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 0.5),
 		Position = UDim2.new(0, 14, 0.5, 0),
-		Size = UDim2.fromOffset(110, 110),
+		Size = UDim2.fromOffset(110, 160),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	})
@@ -126,6 +128,7 @@ local function buildButtons(gui: ScreenGui, callbacks: Callbacks)
 	Theme.list(column, Enum.FillDirection.Vertical, 10)
 	sideButton(column, "Bag", 1, callbacks.OnBag)
 	sideButton(column, "Island", 2, callbacks.OnIsland)
+	sideButton(column, "Skills", 3, callbacks.OnSkills)
 end
 
 local function buildRaidBanner(gui: ScreenGui)
@@ -253,9 +256,6 @@ function Hud.Render(state: any)
 	end
 	lastCoins = state.Coins
 
-	farmingText.Text = tostring(state.Skills.Farming and state.Skills.Farming.Level or 1)
-	combatText.Text = tostring(state.Skills.Combat and state.Skills.Combat.Level or 1)
-
 	if state.Level >= state.WarzoneLevel then
 		warzoneChip.Text = "Warzone open!"
 	else
@@ -345,7 +345,7 @@ end
 
 function Hud.Start(callbacks: Callbacks)
 	local gui = Theme.screen("HUD", 1)
-	buildProfile(gui)
+	buildProfile(gui, callbacks.OnSkills)
 	buildButtons(gui, callbacks)
 	buildRaidBanner(gui)
 	buildToasts(gui)

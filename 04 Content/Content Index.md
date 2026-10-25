@@ -22,7 +22,7 @@ One note per item, resource, mob, island type or event. Use the templates in `99
 - Materials: Sticks (2 Planks -> 4), Coal, Raw Iron, Iron Ingot (smelt 1 Raw Iron + 1 Coal in a Furnace)
 - Crops: Wheat (Farming 1), Carrot (5), Potato (10), Glowberry (8, Warzone seeds only). Perennial: plant once, they regrow after every harvest (10% spare-seed chance); dig up with a shovel to get the seed back
 - Warzone materials: Scrap, Crystal
-- Tools: Pickaxe, Axe, Shovel, Sword in 4 tiers. Wooden (Planks + Sticks, speed x2, 60 uses), Stone (Stone + Sticks, x4, 132 uses), Iron (Iron Ingots + Sticks, x6, 250 uses, level 5), Crystal (Crystal + Sticks, x8, 600 uses, level 10). Costs like Minecraft: pickaxe/axe 3 head + 2 sticks, shovel 1 + 2, sword 2 + 1
+- Tools: Pickaxe, Axe, Shovel, Sword in 4 tiers. Wooden (Planks + Sticks, speed x2, 60 uses), Stone (Stone + Sticks, x4, 132 uses), Iron (Iron Ingots + Sticks, x6, 250 uses, Crafting 3 + the tool's skill 4), Crystal (Crystal + Sticks, x8, 600 uses, Crafting 8 + the tool's skill 8). See [[Skills & Levels]]. Costs like Minecraft: pickaxe/axe 3 head + 2 sticks, shovel 1 + 2, sword 2 + 1
 
 ## NPCs
 - Merchant (Town Market stall): an original travelling trader (newsboy cap, bushy mustache, green vest, red scarf, big backpack with a bedroll and lantern); click or tap him to sell crops and buy seeds. Replaced the earlier villager-style design (too close to Minecraft)

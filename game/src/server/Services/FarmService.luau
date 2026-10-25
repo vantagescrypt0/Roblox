@@ -170,7 +170,7 @@ local function onPlotClicked(player: Player, plot: Plot)
 		data.Farm.Plots[plot.Key] = { Crop = crop.Id, PlantedAt = os.time() }
 
 		local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
-		local amount = if rng:NextNumber() < Leveling.FarmingBonusChance(farmingLevel) then 2 else 1
+		local amount = if rng:NextNumber() < Leveling.BonusChance(farmingLevel) then 2 else 1
 
 		InventoryService.Add(player, crop.Product, amount)
 		if rng:NextNumber() < SPARE_SEED_CHANCE then

@@ -2,6 +2,7 @@
 -- Item icons. Normally a pre-rendered picture cut from the icon sheet (Config.ItemIconSheet,
 -- cells listed in ItemArt.luau, rendered by art/scripts/items3d.py). Without one, block items
 -- show a live 3D block, items with a model show that model, and anything else its emoji.
+-- A block type that isn't an item (e.g. "CraftingTable") also works.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -90,9 +91,11 @@ function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObje
 		return frame
 	end
 
-	-- Blocks: a small isometric cube
+	-- Blocks: a small isometric cube (for a block item, or a block type by name, such as
+	-- the Crafting Table)
 	local blocks = ReplicatedStorage:FindFirstChild("Blocks")
-	local template = item and item.Block and blocks and blocks:FindFirstChild(item.Block)
+	local blockName = if item then item.Block else itemId
+	local template = blockName and blocks and blocks:FindFirstChild(blockName)
 	if template and template:IsA("BasePart") then
 		local frame = viewport(parent, size)
 		local block = template:Clone()

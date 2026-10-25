@@ -27,8 +27,12 @@ local TEMPLATE = {
 	Hotbar = { "", "", "", "", "" },
 	-- Tool wear: item id -> uses on the tool you're currently using up
 	Wear = {} :: { [string]: number },
+	-- See Skills.luau; new skills reach old saves through Reconcile
 	Skills = {
 		Farming = { Level = 1, XP = 0 },
+		Mining = { Level = 1, XP = 0 },
+		Woodcutting = { Level = 1, XP = 0 },
+		Crafting = { Level = 1, XP = 0 },
 		Combat = { Level = 1, XP = 0 },
 	},
 	Farm = {

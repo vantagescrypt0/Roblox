@@ -1,9 +1,10 @@
 --!strict
 -- Crafting window, laid out like Minecraft's recipe book: a grid of item photos on the
 -- left (green outline = you can craft it now), and on the right the selected item up
--- close with its tool stats (mining speed, damage, durability), what it's good for, what
--- it costs and a Craft button. The same window serves the Crafting Table and the Furnace
--- (smelting); each shows only its own recipes. The server decides whether crafting works.
+-- close with its tool stats (mining speed, damage, durability), what it's good for, the
+-- skill levels it needs (red until you have them), what it costs and a Craft button. The
+-- same window serves the Crafting Table and the Furnace (smelting); each shows only its
+-- own recipes. The server decides whether crafting works.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -11,6 +12,7 @@ local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Skills = require(ReplicatedStorage.Shared.Skills)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local ItemIcon = require(script.Parent.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.Parent.UI.Theme)
@@ -70,11 +72,17 @@ local nameLabel: TextLabel
 local kindLabel: TextLabel
 local goodFor: TextLabel
 local stats: { [string]: StatRow } = {}
+local needsRow: Frame
 local costRow: Frame
 local lockLabel: TextLabel
 local craftButton: Theme.Button
 
--- Is the recipe craftable right now? (enough materials, high enough level)
+local function levelOf(skillId: string): number
+	local skill = state.Skills[skillId]
+	return if skill then skill.Level else 1
+end
+
+-- Is the recipe craftable right now? (enough materials, high enough skill levels)
 local function check(recipe: Recipes.Recipe): (boolean, boolean)
 	local enough = true
 	for itemId, need in recipe.Inputs do
@@ -82,7 +90,16 @@ local function check(recipe: Recipes.Recipe): (boolean, boolean)
 			enough = false
 		end
 	end
-	return enough, state.Level >= recipe.PlayerLevel
+	local _, skilled = Skills.Check(recipe.Requires, levelOf)
+	return enough, skilled
+end
+
+-- "Mining 4" with the skill's picture; red until you reach it
+local function skillChip(need: Skills.Need, order: number)
+	local chip = Theme.iconChip(needsRow, `{need.Skill.Name} {need.Level}`, 32)
+	chip.Frame.LayoutOrder = order
+	chip.Label.TextColor3 = if levelOf(need.Skill.Id) >= need.Level then C.Ink else C.Red
+	ItemIcon.create(chip.Icon, need.Skill.Icon, UDim2.fromScale(1, 1))
 end
 
 local function ingredientChip(itemId: string, need: number, order: number)
@@ -144,10 +161,22 @@ local function renderDetail()
 		ingredientChip(itemId, need, order)
 	end
 
-	local enough, levelOk = check(recipe)
-	lockLabel.Visible = not levelOk
-	lockLabel.Text = `Unlocks at level {recipe.PlayerLevel}`
-	craftButton.SetEnabled(enough and levelOk)
+	-- Skill levels it needs (the row's title stays; chips are rebuilt)
+	local needs = Skills.Check(recipe.Requires, levelOf)
+	needsRow.Visible = #needs > 0
+	for _, child in needsRow:GetChildren() do
+		if child:IsA("Frame") then
+			child:Destroy()
+		end
+	end
+	for index, need in needs do
+		skillChip(need, index + 1)
+	end
+
+	local enough, skilled = check(recipe)
+	lockLabel.Visible = not skilled
+	lockLabel.Text = `Needs {Skills.Describe(recipe.Requires, levelOf)}`
+	craftButton.SetEnabled(enough and skilled)
 end
 
 local function render()
@@ -157,12 +186,12 @@ local function render()
 	for _, recipe in Recipes.List do
 		local tile = tiles[recipe.Id]
 		tile.Button.Visible = recipe.Station == station
-		local enough, levelOk = check(recipe)
+		local enough, skilled = check(recipe)
 		local selected = recipe.Id == selectedId
-		tile.Stroke.Color = if selected then C.Ochre elseif enough and levelOk then C.Green else C.TanEdge
-		tile.Stroke.Thickness = if selected then 3.5 elseif enough and levelOk then 2.5 else 2
+		tile.Stroke.Color = if selected then C.Ochre elseif enough and skilled then C.Green else C.TanEdge
+		tile.Stroke.Thickness = if selected then 3.5 elseif enough and skilled then 2.5 else 2
 		tile.Button.BackgroundColor3 = if selected then C.Parchment else C.ParchmentDark
-		tile.Lock.Visible = not levelOk
+		tile.Lock.Visible = not skilled
 	end
 	renderDetail()
 end
@@ -211,15 +240,15 @@ local function buildGrid(parent: Instance)
 			amount.TextXAlignment = Enum.TextXAlignment.Right
 			amount.ZIndex = 3
 		end
-		-- Level tag on recipes you can't make yet
+		-- Tag on recipes your skills can't make yet
 		local lock = Theme.make("TextLabel", {
 			Position = UDim2.fromOffset(3, 3),
-			Size = UDim2.fromOffset(30, 16),
+			Size = UDim2.fromOffset(46, 16),
 			BackgroundColor3 = C.WoodLight,
 			FontFace = Theme.Font.Bold,
 			TextSize = 11,
 			TextColor3 = C.Cream,
-			Text = `Lv {recipe.PlayerLevel}`,
+			Text = "Locked",
 			ZIndex = 3,
 			Visible = false,
 			Parent = button,
@@ -283,6 +312,21 @@ local function buildDetail(parent: Instance)
 	statRow(statList, "Damage", "Damage", C.Red, 2)
 	statRow(statList, "Durability", "Durability", C.Blue, 3)
 
+	-- Skill levels the recipe needs
+	needsRow = Theme.make("Frame", {
+		Position = UDim2.fromOffset(0, 234),
+		Size = UDim2.new(1, 0, 0, 34),
+		BackgroundTransparency = 1,
+		Parent = panel,
+	})
+	local needsLayout = Theme.list(needsRow, Enum.FillDirection.Horizontal, 6)
+	needsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	local needsTitle = Theme.title(needsRow, "Skills", 18)
+	needsTitle.AutomaticSize = Enum.AutomaticSize.X
+	needsTitle.Size = UDim2.fromOffset(0, 24)
+	needsTitle.TextTruncate = Enum.TextTruncate.None
+	needsTitle.LayoutOrder = 1
+
 	local costTitle = Theme.title(panel, "Needs", 18)
 	costTitle.AnchorPoint = Vector2.new(0, 1)
 	costTitle.Position = UDim2.new(0, 0, 1, -66)
@@ -298,7 +342,7 @@ local function buildDetail(parent: Instance)
 	lockLabel = Theme.text(panel, "", 14, Theme.Font.Bold, C.Red)
 	lockLabel.AnchorPoint = Vector2.new(1, 1)
 	lockLabel.Position = UDim2.new(1, 0, 1, -70)
-	lockLabel.Size = UDim2.fromOffset(170, 18)
+	lockLabel.Size = UDim2.fromOffset(280, 18)
 	lockLabel.TextXAlignment = Enum.TextXAlignment.Right
 
 	craftButton = Theme.button(panel, "Craft", C.Green, UDim2.fromOffset(120, 54), function()

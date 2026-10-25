@@ -1,7 +1,26 @@
 # Skills & Levels (Draft)
 
+## Built (2026-10-24)
+Five skills, each with its own level (1–99), next to the player level. Code: `Skills.luau` (the list), `Recipes.luau` (what each recipe needs), `ProgressionService.luau`.
+
+| Skill | How you train it | XP | What it unlocks |
+|---|---|---|---|
+| **Farming** | Harvest ripe crops | Wheat 10, Carrot 25, Potato 55, Glowberry 90 | Carrot seeds (5), Glowberry (8), Potato (10); hoes later |
+| **Mining** | Mine the island's boulders and ore with a pickaxe | Stone 5, Coal Ore 12, Iron Ore 20 | Iron Pickaxe and Shovel (4), Crystal ones (8) |
+| **Woodcutting** | Chop the island's trees | Wood 6 | Iron Axe (4), Crystal Axe (8) |
+| **Crafting** | Craft or smelt anything | Planks/Sticks 4, Iron Ingot 10, Furnace 25; tools 10 / 20 / 50 / 120 by tier | Every Iron tool (3) and Crystal tool (8) |
+| **Combat** (the PvE level) | Defeat monsters in the Warzone | per monster | Crystal Sword (8); tougher monsters (Brute needs 5) |
+
+- **Crafting needs skill levels.** Every Iron and Crystal tool needs a Crafting level *and* the tool's own skill: an Iron Pickaxe needs Crafting 3 and Mining 4, a Crystal Axe needs Crafting 8 and Woodcutting 8. Wooden and Stone tools, Planks, Sticks, the Furnace and Iron Ingots need nothing, so the beginner quests always work. Swords only need Combat at the Crystal tier, because Combat XP only comes from the Warzone (which is switched off for now).
+- **Better rewards:** Farming, Mining and Woodcutting give a +1% chance per level of a double drop (Farming already did; now all three).
+- **No XP from blocks you placed.** Only the island's own resource nodes (trees, boulders) and ore veins give Mining/Woodcutting XP and double drops, so placing and re-mining a block can't farm XP or copy items. (Before this, player XP had that hole.)
+- **Level-up messages:** "Mining level 4!", and when a level-up makes recipes craftable: "You can now craft: Iron Pickaxe, Iron Shovel".
+- **Skills window:** the **Skills** button (or clicking your profile card) shows your player level and every skill's level and XP. Pick a skill to see how to train it, its double-drop chance and all its unlocks (green = ready, gold = this skill is high enough but another isn't yet). Screenshot: `art/renders/ui-skills-window.jpg`.
+- **Crafting window:** locked recipes have a "Locked" tag; the details show a Skills row (red until you have the level) and "Needs Woodcutting 4". Screenshot: `art/renders/ui-crafting-skills.jpg`.
+- **Planned hoe requirements** (when hoes and tilling are built): Wooden Hoe nothing, Stone Hoe Farming 3, Iron Hoe Crafting 3 + Farming 6, Crystal Hoe (our top tier, like a diamond hoe) Crafting 8 + Farming 12.
+
 ## Decided
-- Separate skill levels, at least **Farming** and **Combat (PvE)**.
+- Separate skill levels: **Farming**, **Mining**, **Woodcutting**, **Crafting** and **Combat (PvE)** (see above).
 - **Level gates:** each crop needs a minimum Farming level to plant/harvest; each mob needs a minimum Combat level to fight or loot.
 - **Better rewards as you level:** the higher your skill, the better the payoff.
 - **Player level (copied from Skybounds):**
@@ -41,7 +60,7 @@ See [[Decision Log]].
 [Inference] Bonuses should also apply to low-tier crops/mobs, so old content stays worth something instead of dead.
 
 ## Open questions
-- Which other skills? Mining, Fishing, Crafting, Woodcutting?
+- Any more skills later (Fishing?)
 - XP sources: is it only doing the activity, or also quests and challenges?
 - Does PvP (killing players) give Combat XP? [Inference] If it does, high-level players could farm new players for XP.
 - Are Warzone mobs and crops level-gated the same way as on the island?
