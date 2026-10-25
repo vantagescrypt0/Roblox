@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Decision Log.md"
 type: "concept"
-community: "Merchant Behaviour"
+community: "Community 17"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Merchant_Behaviour
+  - community/Community_17
 ---
 
 # Decision: villager-style Merchant runs the Market
@@ -14,4 +14,4 @@ tags:
 - [[Decision Log]] - `references` [EXTRACTED]
 - [[Merchant NPC at the Town market]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Merchant_Behaviour
+#graphify/concept #graphify/EXTRACTED #community/Community_17

@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[Put the graphify knowledge graph into this Obsidian vault as `08 Knowledge…]] - `rationale_for` [EXTRACTED]
 - [[json]] - `imports` [EXTRACTED]
-- [[main()_5]] - `contains` [EXTRACTED]
+- [[main()_4]] - `contains` [EXTRACTED]
 - [[merge_color_groups()]] - `contains` [EXTRACTED]
 - [[pathlib]] - `imports_from` [EXTRACTED]
 - [[real_notes()]] - `contains` [EXTRACTED]

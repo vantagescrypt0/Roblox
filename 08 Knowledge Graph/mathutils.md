@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Block Art Pipeline (Blender)"
+community: "Community 7"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Block_Art_Pipeline_Blender
+  - community/Community_7
 ---
 
 # mathutils
@@ -14,4 +14,4 @@ tags:
 - [[items3d.py]] - `imports_from` [EXTRACTED]
 - [[lowpoly.py]] - `imports_from` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender
+#graphify/concept #graphify/EXTRACTED #community/Community_7

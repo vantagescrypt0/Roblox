@@ -20,7 +20,7 @@ members: 43
 - [[Tapered wooden handle from z = 0 to z = length, leather grip, dark end cap.]] - rationale - art/scripts/items3d.py
 - [[axe()]] - code - art/scripts/items3d.py
 - [[build_head()]] - code - art/scripts/items3d.py
-- [[carrot()]] - code - art/scripts/items3d.py
+- [[build_items()]] - code - art/scripts/items3d.py
 - [[crystal()]] - code - art/scripts/items3d.py
 - [[downscale()]] - code - art/scripts/items3d.py
 - [[glowberry()]] - code - art/scripts/items3d.py
@@ -29,6 +29,8 @@ members: 43
 - [[items3d.py]] - code - art/scripts/items3d.py
 - [[load_blocks()]] - code - art/scripts/items3d.py
 - [[lump()]] - code - art/scripts/items3d.py
+- [[main()_5]] - code - art/scripts/items3d.py
+- [[mathutils]] - concept
 - [[new_verts()]] - code - art/scripts/items3d.py
 - [[numpy]] - concept
 - [[over()]] - code - art/scripts/items3d.py
@@ -37,7 +39,6 @@ members: 43
 - [[read_image()]] - code - art/scripts/items3d.py
 - [[render_icon()]] - code - art/scripts/items3d.py
 - [[render_icons()]] - code - art/scripts/items3d.py
-- [[scrap()]] - code - art/scripts/items3d.py
 - [[seed_pouch()]] - code - art/scripts/items3d.py
 - [[setup_lights()]] - code - art/scripts/items3d.py
 - [[shovel()]] - code - art/scripts/items3d.py
@@ -47,7 +48,6 @@ members: 43
 - [[thickness()]] - code - art/scripts/items3d.py
 - [[to_roblox()]] - code - art/scripts/items3d.py
 - [[vec()]] - code - art/scripts/items3d.py
-- [[wheat()]] - code - art/scripts/items3d.py
 - [[with_outline()]] - code - art/scripts/items3d.py
 - [[world_bounds()]] - code - art/scripts/items3d.py
 - [[write_image()]] - code - art/scripts/items3d.py
@@ -68,6 +68,6 @@ SORT file.name ASC
 ## Top bridge nodes
 - [[items3d.py]] - degree 44, connects to 2 communities
 - [[render_icons()]] - degree 12, connects to 1 community
+- [[main()_5]] - degree 7, connects to 1 community
+- [[build_items()]] - degree 5, connects to 1 community
 - [[render_icon()]] - degree 4, connects to 1 community
-- [[setup_lights()]] - degree 3, connects to 1 community
-- [[to_roblox()]] - degree 3, connects to 1 community

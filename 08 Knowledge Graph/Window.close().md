@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/UI/Window.luau"
 type: "code"
-community: "HUD and Hotbar"
+community: "Community 3"
 location: "L22"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_3
 ---
 
 # Window.close()
@@ -18,4 +18,4 @@ tags:
 - [[Window.open()]] - `calls` [EXTRACTED]
 - [[Window.toggle()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_3

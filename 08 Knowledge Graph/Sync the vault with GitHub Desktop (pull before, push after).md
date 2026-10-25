@@ -1,11 +1,11 @@
 ---
 source_file: "Obsidian Setup.md"
 type: "concept"
-community: "Community 18"
+community: "Community 17"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_18
+  - community/Community_17
 ---
 
 # Sync the vault with GitHub Desktop (pull before, push after)
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Obsidian Setup]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_18
+#graphify/concept #graphify/EXTRACTED #community/Community_17

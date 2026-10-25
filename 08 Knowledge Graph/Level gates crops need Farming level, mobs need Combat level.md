@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Skills & Levels.md"
 type: "concept"
-community: "Skills, Levels and Content"
+community: "Community 17"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skills_Levels_and_Content
+  - community/Community_17
 ---
 
 # Level gates: crops need Farming level, mobs need Combat level
@@ -18,4 +18,4 @@ tags:
 - [[Mobs Slime (Combat 1), Brute (Combat 5)]] - `conceptually_related_to` [INFERRED]
 - [[Skills & Levels]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skills_Levels_and_Content
+#graphify/concept #graphify/EXTRACTED #community/Community_17

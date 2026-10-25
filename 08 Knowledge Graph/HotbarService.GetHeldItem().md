@@ -15,6 +15,7 @@ tags:
 - [[DataService.GetData()]] - `calls` [INFERRED]
 - [[HotbarService.luau]] - `contains` [EXTRACTED]
 - [[heldSeed()]] - `calls` [INFERRED]
+- [[holdingShovel()]] - `calls` [INFERRED]
 - [[onBreak()]] - `calls` [INFERRED]
 - [[refreshHeld()]] - `calls` [EXTRACTED]
 

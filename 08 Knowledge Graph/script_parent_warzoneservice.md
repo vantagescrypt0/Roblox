@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Community 14"
+community: "Community 18"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_14
+  - community/Community_18
 ---
 
 # script_parent_warzoneservice
@@ -14,4 +14,4 @@ tags:
 - [[CombatService.luau]] - `imports` [EXTRACTED]
 - [[MobService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_14
+#graphify/concept #graphify/EXTRACTED #community/Community_18

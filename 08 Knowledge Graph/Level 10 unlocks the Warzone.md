@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Skills & Levels.md"
 type: "concept"
-community: "Skills, Levels and Content"
+community: "Community 12"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skills_Levels_and_Content
+  - community/Community_12
 ---
 
 # Level 10 unlocks the Warzone
@@ -17,4 +17,4 @@ tags:
 - [[Skills & Levels]] - `references` [EXTRACTED]
 - [[Skybounds Warzone (the user's favorite moment)]] - `rationale_for` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skills_Levels_and_Content
+#graphify/concept #graphify/EXTRACTED #community/Community_12

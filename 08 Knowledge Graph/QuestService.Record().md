@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/QuestService.luau"
 type: "code"
-community: "Community 10"
+community: "Community 18"
 location: "L56"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_10
+  - community/Community_18
 ---
 
 # QuestService.Record()
@@ -23,4 +23,4 @@ tags:
 - [[onPlotClicked()]] - `calls` [INFERRED]
 - [[onSell()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Community_10
+#graphify/code #graphify/INFERRED #community/Community_18

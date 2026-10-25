@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Community 23"
+community: "Breaking, Placing and Crafting"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_23
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # script_parent_hotbarservice
@@ -14,4 +14,4 @@ tags:
 - [[BlockService.luau]] - `imports` [EXTRACTED]
 - [[FarmService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_23
+#graphify/concept #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

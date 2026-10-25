@@ -17,6 +17,6 @@ tags:
 - [[onBreak()]] - `calls` [INFERRED]
 - [[onPlace()]] - `calls` [INFERRED]
 - [[refresh()]] - `calls` [EXTRACTED]
-- [[regrowRocks()]] - `calls` [INFERRED]
+- [[respawnNodes()]] - `calls` [INFERRED]
 
 #graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

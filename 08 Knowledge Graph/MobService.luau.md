@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/MobService.luau"
 type: "code"
-community: "Community 14"
+community: "Community 18"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_14
+  - community/Community_18
 ---
 
 # MobService.luau
@@ -17,4 +17,4 @@ tags:
 - [[script_parent_stateservice]] - `imports` [EXTRACTED]
 - [[script_parent_warzoneservice]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_14
+#graphify/code #graphify/EXTRACTED #community/Community_18

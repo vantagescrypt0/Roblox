@@ -1,11 +1,11 @@
 ---
 source_file: "04 Content/Content Index.md"
 type: "concept"
-community: "Merchant Behaviour"
+community: "Community 17"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Merchant_Behaviour
+  - community/Community_17
 ---
 
 # Merchant NPC at the Town market
@@ -18,4 +18,4 @@ tags:
 - [[NPC visits at milestones with a starter pack]] - `semantically_similar_to` [INFERRED]
 - [[TownService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Merchant_Behaviour
+#graphify/concept #graphify/INFERRED #community/Community_17

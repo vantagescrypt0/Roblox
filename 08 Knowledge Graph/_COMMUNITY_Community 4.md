@@ -28,14 +28,13 @@ SORT file.name ASC
 
 ## Connections to other communities
 - 2 edges to [[_COMMUNITY_Community 10]]
-- 1 edge to [[_COMMUNITY_Community 16]]
+- 2 edges to [[_COMMUNITY_Community 23]]
 - 1 edge to [[_COMMUNITY_Community 30]]
-- 1 edge to [[_COMMUNITY_Community 29]]
-- 1 edge to [[_COMMUNITY_Community 23]]
-- 1 edge to [[_COMMUNITY_Islands Research]]
+- 1 edge to [[_COMMUNITY_Community 18]]
+- 1 edge to [[_COMMUNITY_Community 6]]
 
 ## Top bridge nodes
-- [[DataService.luau]] - degree 9, connects to 4 communities
+- [[DataService.luau]] - degree 9, connects to 3 communities
 - [[DataService.OnChanged()]] - degree 4, connects to 1 community
 - [[Leaderstats.Start()]] - degree 3, connects to 1 community
 - [[QuestService.Start()]] - degree 3, connects to 1 community

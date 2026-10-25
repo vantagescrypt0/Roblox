@@ -1,11 +1,11 @@
 ---
 source_file: "07 Roadmap/Decision Log.md"
 type: "concept"
-community: "Community 18"
+community: "Community 24"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Community_18
+  - community/Community_24
 ---
 
 # Decision: click-only farming
@@ -15,4 +15,4 @@ tags:
 - [[Decision Log]] - `references` [EXTRACTED]
 - [[FarmService.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Community_18
+#graphify/concept #graphify/INFERRED #community/Community_24

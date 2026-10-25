@@ -24,7 +24,7 @@ tags:
 - [[buildGrid()]] - `calls` [INFERRED]
 - [[buildProfile()]] - `calls` [INFERRED]
 - [[buildRaidBanner()]] - `calls` [INFERRED]
-- [[render()_1]] - `calls` [INFERRED]
+- [[render()]] - `calls` [INFERRED]
 - [[show()]] - `calls` [INFERRED]
 - [[sideButton()]] - `calls` [INFERRED]
 

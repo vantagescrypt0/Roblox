@@ -5,7 +5,7 @@ community: "Breaking, Placing and Crafting"
 location: "L68"
 tags:
   - graphify/code
-  - graphify/INFERRED
+  - graphify/EXTRACTED
   - community/Breaking_Placing_and_Crafting
 ---
 
@@ -15,7 +15,6 @@ tags:
 - [[BlockWorld.key()]] - `calls` [EXTRACTED]
 - [[BlockWorld.luau]] - `contains` [EXTRACTED]
 - [[onBreak()]] - `calls` [INFERRED]
-- [[regrowRocks()]] - `calls` [INFERRED]
-- [[regrowTrees()]] - `calls` [INFERRED]
+- [[respawnNodes()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

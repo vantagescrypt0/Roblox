@@ -2,7 +2,7 @@
 source_file: "game/src/server/Services/BlockService.luau"
 type: "code"
 community: "Breaking, Placing and Crafting"
-location: "L48"
+location: "L50"
 tags:
   - graphify/code
   - graphify/INFERRED
@@ -19,7 +19,9 @@ tags:
 - [[HotbarService.GetHeldItem()]] - `calls` [INFERRED]
 - [[InventoryService.Add()]] - `calls` [INFERRED]
 - [[InventoryService.UseTool()]] - `calls` [INFERRED]
+- [[IslandService.DepleteNode()]] - `calls` [INFERRED]
 - [[IslandService.GetIsland()]] - `calls` [INFERRED]
+- [[IslandService.GetNode()]] - `calls` [INFERRED]
 - [[IslandService.RecordChange()]] - `calls` [INFERRED]
 - [[Mining.BreakTime()]] - `calls` [INFERRED]
 - [[Mining.UsesTool()]] - `calls` [INFERRED]

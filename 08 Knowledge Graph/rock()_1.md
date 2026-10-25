@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[bmesh]] - `calls` [EXTRACTED]
 - [[hex_rgb()]] - `calls` [EXTRACTED]
-- [[main()_4]] - `calls` [EXTRACTED]
+- [[main()_3]] - `calls` [EXTRACTED]
 - [[material()]] - `calls` [EXTRACTED]
 - [[mesh_object()]] - `calls` [EXTRACTED]
 - [[starter_island.py]] - `contains` [EXTRACTED]

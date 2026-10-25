@@ -36,13 +36,6 @@
       }
     },
     {
-      "query": "tag:#community/Islands_Research",
-      "color": {
-        "a": 1,
-        "rgb": 11565729
-      }
-    },
-    {
       "query": "tag:#community/Core_Loop_and_Pillars",
       "color": {
         "a": 1,
@@ -54,13 +47,6 @@
       "color": {
         "a": 1,
         "rgb": 12234924
-      }
-    },
-    {
-      "query": "tag:#community/Skills_Levels_and_Content",
-      "color": {
-        "a": 1,
-        "rgb": 14767961
       }
     },
     {

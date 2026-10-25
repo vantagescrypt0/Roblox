@@ -16,7 +16,7 @@ tags:
 - [[draw_tiles()]] - `calls` [EXTRACTED]
 - [[islands.py]] - `imports` [EXTRACTED]
 - [[lowpoly.py]] - `imports` [EXTRACTED]
-- [[main()_4]] - `calls` [EXTRACTED]
+- [[main()_3]] - `calls` [EXTRACTED]
 - [[starter_island.py]] - `imports` [EXTRACTED]
 
 #graphify/concept #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

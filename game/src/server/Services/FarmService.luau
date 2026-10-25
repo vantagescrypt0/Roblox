@@ -1,9 +1,11 @@
 --!strict
--- Farm plots (farmland blocks) on your island. Click farmland to plant the seeds you're
--- holding (or your best seeds), wait (time keeps counting while you're offline), then
--- click the ripe crop to harvest crops, seeds and Farming XP. Better crops need a higher
--- Farming level, and a higher level gives a bigger chance of a bonus crop.
--- Bigger islands have more plots (see IslandTiers).
+-- Farm plots (farmland blocks) on your island. Crops are perennial nodes: click farmland
+-- to plant the seeds you're holding (or your best seeds) once, and from then on the crop
+-- regrows by itself after every harvest (time keeps counting while you're offline). Click
+-- a ripe crop to harvest it for crops and Farming XP, with a small chance of a spare seed.
+-- Hold a shovel and click a crop to dig it up (you get the seed back) to plant something
+-- else. Better crops need a higher Farming level, and a higher level gives a bigger chance
+-- of a bonus crop. Bigger islands have more plots (see IslandTiers).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -13,6 +15,7 @@ local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Tools = require(ReplicatedStorage.Shared.Tools)
 local Props = require(script.Parent.Parent.Util.Props)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local DataService = require(script.Parent.DataService)
@@ -23,7 +26,9 @@ local ProgressionService = require(script.Parent.ProgressionService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
-local SEED_RETURN_BONUS_CHANCE = 0.3
+-- Crops regrow, so seeds are only needed to start a plot; a harvest sometimes gives a
+-- spare one (to fill another plot)
+local SPARE_SEED_CHANCE = 0.1
 -- Crop models were made for bigger planters; shrink them to fit one block
 local CROP_SCALE = 0.68
 -- Growth stage thresholds
@@ -35,9 +40,6 @@ type Plot = {
 	Model: Model,
 	Part: BasePart, -- the farmland block
 	Base: CFrame, -- top of the farmland block
-	Label: BillboardGui,
-	LabelText: TextLabel,
-	LabelBar: Frame,
 	Stage: string?, -- which crop model is showing
 	Visual: Model?,
 }
@@ -46,13 +48,6 @@ local FarmService = {}
 
 local farms: { [Player]: { Plot } } = {}
 local rng = Random.new()
-
-local function formatTime(seconds: number): string
-	if seconds >= 60 then
-		return string.format("%dm %02ds", seconds // 60, seconds % 60)
-	end
-	return `{seconds}s`
-end
 
 -- The best crop the player can plant right now (level unlocked and has seeds)
 local function bestSeed(player: Player): Crops.Crop?
@@ -111,21 +106,14 @@ local function refreshPlot(player: Player, plot: Plot)
 		return
 	end
 
+	-- The crop model shows how far along it is: sprout, young plant, ripe crop
 	local crop, progress = plotState(data, plot.Key)
 	if not crop then
 		setVisual(plot, nil, 1)
 		plot.Part:SetAttribute("FarmState", "Empty")
-		plot.Label.Enabled = false
-		return
-	end
-
-	plot.Label.Enabled = true
-	if progress >= 1 then
+	elseif progress >= 1 then
 		setVisual(plot, `Crop_{crop.Id}`, 1)
 		plot.Part:SetAttribute("FarmState", "Ready")
-		plot.LabelText.Text = `{Items[crop.Product].Icon} Ready!`
-		plot.LabelBar.Size = UDim2.fromScale(1, 1)
-		plot.LabelBar.BackgroundColor3 = Color3.fromRGB(255, 201, 60)
 	else
 		if progress < SPROUT_UNTIL then
 			setVisual(plot, "Crop_Sprout", 1)
@@ -133,10 +121,13 @@ local function refreshPlot(player: Player, plot: Plot)
 			setVisual(plot, "Crop_Young", 0.7 + 0.3 * (progress - SPROUT_UNTIL) / (1 - SPROUT_UNTIL))
 		end
 		plot.Part:SetAttribute("FarmState", "Growing")
-		plot.LabelText.Text = `{Items[crop.Product].Icon} {formatTime(math.ceil((1 - progress) * crop.GrowTime))}`
-		plot.LabelBar.Size = UDim2.fromScale(progress, 1)
-		plot.LabelBar.BackgroundColor3 = Color3.fromRGB(91, 209, 107)
 	end
+end
+
+local function holdingShovel(player: Player): boolean
+	local held = HotbarService.GetHeldItem(player)
+	local tool = held and Tools.ByItem[held]
+	return tool ~= nil and tool.Kind == "Shovel"
 end
 
 -- The crop whose seeds the player is holding, if they can plant it
@@ -158,7 +149,13 @@ local function onPlotClicked(player: Player, plot: Plot)
 	end
 
 	local crop, progress = plotState(data, plot.Key)
-	if not crop then
+	if crop and holdingShovel(player) then
+		-- Dig the plant up to plant something else; the seed comes back
+		data.Farm.Plots[plot.Key] = nil
+		DataService.MarkChanged(player)
+		InventoryService.Add(player, crop.Seed, 1)
+		StateService.Notify(player, `Dug up the {crop.Id}`, "info")
+	elseif not crop then
 		-- Plant the seeds in your hand, otherwise your best seeds
 		local seed = heldSeed(player) or bestSeed(player)
 		if not seed then
@@ -169,74 +166,22 @@ local function onPlotClicked(player: Player, plot: Plot)
 			QuestService.Record(player, "Plant")
 		end
 	elseif progress >= 1 then
-		data.Farm.Plots[plot.Key] = nil
+		-- The plant stays and starts growing again
+		data.Farm.Plots[plot.Key] = { Crop = crop.Id, PlantedAt = os.time() }
 
 		local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
 		local amount = if rng:NextNumber() < Leveling.FarmingBonusChance(farmingLevel) then 2 else 1
-		local seeds = if rng:NextNumber() < SEED_RETURN_BONUS_CHANCE then 2 else 1
 
 		InventoryService.Add(player, crop.Product, amount)
-		InventoryService.Add(player, crop.Seed, seeds)
+		if rng:NextNumber() < SPARE_SEED_CHANCE then
+			InventoryService.Add(player, crop.Seed, 1)
+		end
 		ProgressionService.AddSkillXP(player, "Farming", crop.FarmingXP)
 		ProgressionService.AddPlayerXP(player, crop.PlayerXP)
 		StateService.Notify(player, `+{amount} {Items[crop.Product].Name}`, "good")
 		QuestService.Record(player, "Harvest")
 	end
 	refreshPlot(player, plot)
-end
-
--- Floating pill above each planter: crop icon, time left, progress bar
-local function makeLabel(adornee: BasePart): (BillboardGui, TextLabel, Frame)
-	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.fromOffset(110, 40)
-	billboard.StudsOffsetWorldSpace = Vector3.new(0, 4.2, 0)
-	billboard.AlwaysOnTop = true
-	billboard.MaxDistance = 45
-	billboard.Enabled = false
-	billboard.Adornee = adornee
-	billboard.Parent = adornee
-
-	local card = Instance.new("Frame")
-	card.Size = UDim2.fromScale(1, 1)
-	card.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
-	card.BackgroundTransparency = 0.15
-	card.Parent = billboard
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 10)
-	corner.Parent = card
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.fromRGB(12, 15, 24)
-	stroke.Thickness = 2
-	stroke.Parent = card
-
-	local text = Instance.new("TextLabel")
-	text.Size = UDim2.new(1, -8, 0, 24)
-	text.Position = UDim2.fromOffset(4, 2)
-	text.BackgroundTransparency = 1
-	text.FontFace = Font.fromEnum(Enum.Font.FredokaOne)
-	text.TextSize = 18
-	text.TextColor3 = Color3.new(1, 1, 1)
-	text.Text = ""
-	text.Parent = card
-
-	local track = Instance.new("Frame")
-	track.AnchorPoint = Vector2.new(0.5, 1)
-	track.Position = UDim2.new(0.5, 0, 1, -6)
-	track.Size = UDim2.new(1, -16, 0, 7)
-	track.BackgroundColor3 = Color3.fromRGB(55, 62, 84)
-	track.Parent = card
-	local trackCorner = Instance.new("UICorner")
-	trackCorner.CornerRadius = UDim.new(1, 0)
-	trackCorner.Parent = track
-	local bar = Instance.new("Frame")
-	bar.Size = UDim2.fromScale(0, 1)
-	bar.BackgroundColor3 = Color3.fromRGB(91, 209, 107)
-	bar.Parent = track
-	local barCorner = Instance.new("UICorner")
-	barCorner.CornerRadius = UDim.new(1, 0)
-	barCorner.Parent = bar
-
-	return billboard, text, bar
 end
 
 local function onIslandCreated(player: Player, island: IslandService.Island)
@@ -246,7 +191,6 @@ local function onIslandCreated(player: Player, island: IslandService.Island)
 		if not farmland then
 			continue
 		end
-		local label, labelText, labelBar = makeLabel(farmland)
 		local plot: Plot = {
 			Key = tostring(i),
 			Cell = Vector3.new(cell.X, cell.Y, cell.Z),
@@ -254,9 +198,6 @@ local function onIslandCreated(player: Player, island: IslandService.Island)
 			Part = farmland,
 			-- Top of the farmland block
 			Base = CFrame.new(farmland.Position + Vector3.new(0, Blocks.Size / 2, 0)),
-			Label = label,
-			LabelText = labelText,
-			LabelBar = labelBar,
 			Stage = nil,
 			Visual = nil,
 		}
@@ -267,7 +208,7 @@ local function onIslandCreated(player: Player, island: IslandService.Island)
 	farms[player] = plots
 end
 
--- Clicking farmland (no key press): plant if empty, harvest if ripe
+-- Clicking farmland (no key press): plant if empty, harvest if ripe, dig up with a shovel
 local lastClick: { [Player]: number } = {}
 local function onFarmClick(player: Player, x: unknown, y: unknown, z: unknown)
 	if type(x) ~= "number" or type(y) ~= "number" or type(z) ~= "number" then

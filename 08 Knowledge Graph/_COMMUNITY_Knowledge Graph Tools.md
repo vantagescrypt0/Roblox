@@ -14,7 +14,7 @@ members: 11
 - [[Put the graphify knowledge graph into this Obsidian vault as `08 Knowledge…]] - rationale - tools/graph_to_vault.py
 - [[graph_to_vault.py]] - code - tools/graph_to_vault.py
 - [[json]] - concept
-- [[main()_5]] - code - tools/graph_to_vault.py
+- [[main()_4]] - code - tools/graph_to_vault.py
 - [[merge_color_groups()]] - code - tools/graph_to_vault.py
 - [[pathlib]] - concept
 - [[real_notes()]] - code - tools/graph_to_vault.py

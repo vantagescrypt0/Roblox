@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Tutorial & Quests.md"
 type: "concept"
-community: "Community 13"
+community: "Breaking, Placing and Crafting"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Community_13
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # Tool path quests: wood -> planks -> sticks -> pickaxe -> stone
@@ -15,4 +15,4 @@ tags:
 - [[Quests.luau]] - `implements` [INFERRED]
 - [[Tutorial & Quests]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/INFERRED #community/Community_13
+#graphify/concept #graphify/INFERRED #community/Breaking_Placing_and_Crafting

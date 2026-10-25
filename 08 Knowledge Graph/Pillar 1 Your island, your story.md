@@ -1,11 +1,11 @@
 ---
 source_file: "01 Vision/Design Pillars.md"
 type: "rationale"
-community: "Skills, Levels and Content"
+community: "Community 12"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Skills_Levels_and_Content
+  - community/Community_12
 ---
 
 # Pillar 1: Your island, your story
@@ -14,4 +14,4 @@ tags:
 - [[Design Pillars]] - `references` [EXTRACTED]
 - [[Seasons of 2-4 months; player level resets]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Skills_Levels_and_Content
+#graphify/rationale #graphify/EXTRACTED #community/Community_12

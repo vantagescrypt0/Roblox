@@ -2,10 +2,10 @@
 source_file: "game/src/server/Services/FarmService.luau"
 type: "code"
 community: "Community 11"
-location: "L154"
+location: "L145"
 tags:
   - graphify/code
-  - graphify/INFERRED
+  - graphify/EXTRACTED
   - community/Community_11
 ---
 
@@ -22,8 +22,9 @@ tags:
 - [[QuestService.Record()]] - `calls` [INFERRED]
 - [[bestSeed()]] - `calls` [EXTRACTED]
 - [[heldSeed()]] - `calls` [EXTRACTED]
+- [[holdingShovel()]] - `calls` [EXTRACTED]
 - [[onFarmClick()]] - `calls` [EXTRACTED]
 - [[plotState()]] - `calls` [EXTRACTED]
 - [[refreshPlot()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Community_11
+#graphify/code #graphify/EXTRACTED #community/Community_11

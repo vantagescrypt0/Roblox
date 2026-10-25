@@ -17,8 +17,8 @@ tags:
 - [[buildGrid()]] - `calls` [INFERRED]
 - [[halfExtents()]] - `calls` [EXTRACTED]
 - [[ingredientChip()]] - `calls` [INFERRED]
+- [[render()_1]] - `calls` [INFERRED]
 - [[render()_2]] - `calls` [INFERRED]
-- [[render()_3]] - `calls` [INFERRED]
 - [[renderDetail()]] - `calls` [INFERRED]
 - [[viewport()]] - `calls` [EXTRACTED]
 

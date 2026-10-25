@@ -2,7 +2,7 @@
 source_file: "game/src/server/Services/IslandService.luau"
 type: "code"
 community: "Breaking, Placing and Crafting"
-location: "L330"
+location: "L331"
 tags:
   - graphify/code
   - graphify/INFERRED
@@ -16,6 +16,5 @@ tags:
 - [[IslandService.luau]] - `contains` [EXTRACTED]
 - [[onBreak()]] - `calls` [INFERRED]
 - [[onPlace()]] - `calls` [INFERRED]
-- [[regrowRocks()]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting

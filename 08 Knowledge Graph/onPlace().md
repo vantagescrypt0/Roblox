@@ -2,7 +2,7 @@
 source_file: "game/src/server/Services/BlockService.luau"
 type: "code"
 community: "Breaking, Placing and Crafting"
-location: "L110"
+location: "L116"
 tags:
   - graphify/code
   - graphify/INFERRED
@@ -19,6 +19,7 @@ tags:
 - [[BlockWorld.set()]] - `calls` [INFERRED]
 - [[InventoryService.Remove()]] - `calls` [INFERRED]
 - [[IslandService.GetIsland()]] - `calls` [INFERRED]
+- [[IslandService.GetNode()]] - `calls` [INFERRED]
 - [[IslandService.RecordChange()]] - `calls` [INFERRED]
 - [[QuestService.Record()]] - `calls` [INFERRED]
 - [[blockedByCharacter()]] - `calls` [EXTRACTED]

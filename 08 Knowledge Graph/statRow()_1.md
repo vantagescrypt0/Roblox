@@ -16,6 +16,6 @@ tags:
 - [[Theme.chip()]] - `calls` [INFERRED]
 - [[Theme.list()]] - `calls` [INFERRED]
 - [[Theme.make()]] - `calls` [INFERRED]
-- [[render()_1]] - `calls` [EXTRACTED]
+- [[render()]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

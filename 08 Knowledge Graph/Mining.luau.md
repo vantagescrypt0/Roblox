@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/shared/Mining.luau"
 type: "code"
-community: "Community 13"
+community: "Breaking, Placing and Crafting"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_13
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # Mining.luau
@@ -18,4 +18,4 @@ tags:
 - [[script_parent_blocks]] - `imports` [EXTRACTED]
 - [[script_parent_tools]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_13
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

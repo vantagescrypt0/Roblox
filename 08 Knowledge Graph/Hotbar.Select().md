@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[Hotbar.Start()]] - `calls` [EXTRACTED]
 - [[Hotbar.luau]] - `contains` [EXTRACTED]
-- [[render()_3]] - `calls` [INFERRED]
+- [[render()_2]] - `calls` [INFERRED]
 - [[showName()]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_3

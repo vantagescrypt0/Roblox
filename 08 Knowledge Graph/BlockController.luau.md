@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/BlockController.luau"
 type: "code"
-community: "Community 3"
+community: "Community 24"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_24
 ---
 
 # BlockController.luau
@@ -18,7 +18,6 @@ tags:
 - [[aim()]] - `contains` [EXTRACTED]
 - [[aimingAtMerchant()]] - `contains` [EXTRACTED]
 - [[burst()]] - `contains` [EXTRACTED]
-- [[hintFor()]] - `contains` [EXTRACTED]
 - [[interact()]] - `contains` [EXTRACTED]
 - [[merchant()]] - `contains` [EXTRACTED]
 - [[myIsland()]] - `contains` [EXTRACTED]
@@ -31,8 +30,7 @@ tags:
 - [[rootPosition()]] - `contains` [EXTRACTED]
 - [[screenRay()]] - `contains` [EXTRACTED]
 - [[script_parent_hotbar]] - `imports` [EXTRACTED]
-- [[script_parent_ui_theme]] - `imports` [EXTRACTED]
 - [[swing()_1]] - `contains` [EXTRACTED]
 - [[update()_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_24

@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Skills & Levels.md"
 type: "concept"
-community: "Skills, Levels and Content"
+community: "Community 23"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Skills_Levels_and_Content
+  - community/Community_23
 ---
 
 # Farming skill
@@ -15,4 +15,4 @@ tags:
 - [[ProgressionService.luau]] - `implements` [INFERRED]
 - [[Skills & Levels]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Skills_Levels_and_Content
+#graphify/concept #graphify/EXTRACTED #community/Community_23

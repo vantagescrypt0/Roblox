@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/QuestService.luau"
 type: "code"
-community: "Community 10"
+community: "Community 18"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_10
+  - community/Community_18
 ---
 
 # QuestService.luau
@@ -27,4 +27,4 @@ tags:
 - [[script_parent_progressionservice]] - `imports` [EXTRACTED]
 - [[script_parent_stateservice]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_10
+#graphify/code #graphify/EXTRACTED #community/Community_18

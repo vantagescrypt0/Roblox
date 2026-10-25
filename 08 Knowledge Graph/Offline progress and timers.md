@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Anti-Burnout Ideas.md"
 type: "concept"
-community: "Islands Research"
+community: "Community 19"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Islands_Research
+  - community/Community_19
 ---
 
 # Offline progress and timers
@@ -16,4 +16,4 @@ tags:
 - [[Idle-grow  cozy trend (Grow a Garden spike and decay)]] - `semantically_similar_to` [INFERRED]
 - [[Pillar 2 Always growing (offline production)]] - `conceptually_related_to` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Islands_Research
+#graphify/concept #graphify/INFERRED #community/Community_19

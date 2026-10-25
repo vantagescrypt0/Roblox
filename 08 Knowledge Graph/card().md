@@ -19,6 +19,6 @@ tags:
 - [[Theme.make()]] - `calls` [INFERRED]
 - [[Theme.padding()]] - `calls` [INFERRED]
 - [[Theme.stroke()]] - `calls` [INFERRED]
-- [[render()_1]] - `calls` [EXTRACTED]
+- [[render()]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

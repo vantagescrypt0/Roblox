@@ -21,7 +21,7 @@ tags:
 - [[Theme.stroke()]] - `calls` [EXTRACTED]
 - [[Window.new()]] - `calls` [INFERRED]
 - [[buildDetail()]] - `calls` [INFERRED]
-- [[render()_1]] - `calls` [INFERRED]
+- [[render()]] - `calls` [INFERRED]
 - [[sideButton()]] - `calls` [INFERRED]
 
 #graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar

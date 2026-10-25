@@ -13,7 +13,6 @@ tags:
 
 ## Connections
 - [[BagWindow.Start()]] - `calls` [INFERRED]
-- [[BlockController.Start()]] - `calls` [INFERRED]
 - [[Hotbar.Start()]] - `calls` [INFERRED]
 - [[Hud.Start()]] - `calls` [INFERRED]
 - [[Hud.Toast()]] - `calls` [INFERRED]
@@ -47,7 +46,7 @@ tags:
 - [[countLabel()]] - `calls` [INFERRED]
 - [[ingredientChip()]] - `calls` [INFERRED]
 - [[pixelText()]] - `calls` [INFERRED]
-- [[render()_1]] - `calls` [INFERRED]
+- [[render()]] - `calls` [INFERRED]
 - [[show()]] - `calls` [INFERRED]
 - [[sideButton()]] - `calls` [INFERRED]
 - [[slotFrame()]] - `calls` [INFERRED]

@@ -2,7 +2,7 @@
 source_file: "game/src/server/Services/BlockService.luau"
 type: "code"
 community: "Breaking, Placing and Crafting"
-location: "L30"
+location: "L32"
 tags:
   - graphify/code
   - graphify/EXTRACTED

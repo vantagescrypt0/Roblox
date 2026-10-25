@@ -122,7 +122,7 @@ local function render()
 			slot.MouseEnter:Connect(function()
 				local tool = Tools.ByItem[itemId]
 				local uses = if tool then `  ({tool.Durability - (state.Wear[itemId] or 0)} uses left)` else ""
-				info.Text = `{Items[itemId].Name}{uses}  -  click to put in hotbar slot {Hotbar.Selected()}`
+				info.Text = `{Items[itemId].Name}{uses}`
 			end)
 			slot.Activated:Connect(function()
 				Remotes.SetHotbar:FireServer(Hotbar.Selected(), itemId)
@@ -268,7 +268,7 @@ function BagWindow.Start()
 		TextColor3 = TEXT,
 		TextWrapped = true,
 		TextXAlignment = Enum.TextXAlignment.Left,
-		Text = "Pick a hotbar slot below, then click an item to put it there.",
+		Text = "",
 		Parent = panel,
 	})
 
@@ -281,7 +281,7 @@ function BagWindow.Start()
 		TextSize = 18,
 		TextColor3 = TEXT,
 		TextXAlignment = Enum.TextXAlignment.Left,
-		Text = "Hotbar  (right-click a slot to empty it)",
+		Text = "Hotbar",
 		Parent = panel,
 	})
 	hotbarTitle.Active = false

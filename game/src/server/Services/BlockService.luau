@@ -3,6 +3,8 @@
 -- (Mining.luau: block toughness vs the tool you're holding); the server checks the island
 -- is yours, the block is in reach, not protected, that you aren't breaking faster than
 -- your tool allows, whether it drops (stone needs a pickaxe), and wears the tool down.
+-- Mining a resource node (tree, boulder, ore) doesn't leave a saved hole: the node grows
+-- back (IslandService), and nobody can build in its spot meanwhile.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -73,7 +75,11 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	lastBreak[player] = now
 
 	BlockWorld.set(world, cx, cy, cz, nil)
-	IslandService.RecordChange(player, cx, cy, cz, nil)
+	if IslandService.GetNode(player, cx, cy, cz) then
+		IslandService.DepleteNode(player, cx, cy, cz)
+	else
+		IslandService.RecordChange(player, cx, cy, cz, nil)
+	end
 	if def.Drop and canHarvest then
 		InventoryService.Add(player, def.Drop, 1)
 	elseif not canHarvest then
@@ -119,7 +125,7 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	end
 	local world = island.World
 	local cellKey = BlockWorld.key(cx, cy, cz)
-	if world.Cells[cellKey] or world.Protected[cellKey] then
+	if world.Cells[cellKey] or world.Protected[cellKey] or IslandService.GetNode(player, cx, cy, cz) then
 		return
 	end
 	local limit = 13 + EXTRA_RADIUS

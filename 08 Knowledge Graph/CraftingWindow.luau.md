@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/CraftingWindow.luau"
 type: "code"
-community: "HUD and Hotbar"
+community: "Community 3"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_3
 ---
 
 # CraftingWindow.luau
@@ -22,7 +22,7 @@ tags:
 - [[check()]] - `contains` [EXTRACTED]
 - [[choose()]] - `contains` [EXTRACTED]
 - [[ingredientChip()]] - `contains` [EXTRACTED]
-- [[render()]] - `contains` [EXTRACTED]
+- [[render()_3]] - `contains` [EXTRACTED]
 - [[renderDetail()]] - `contains` [EXTRACTED]
 - [[replicatedstorage_shared_blocks]] - `imports` [EXTRACTED]
 - [[replicatedstorage_shared_items]] - `imports` [EXTRACTED]
@@ -34,4 +34,4 @@ tags:
 - [[script_parent_parent_ui_window]] - `imports` [EXTRACTED]
 - [[statRow()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_3

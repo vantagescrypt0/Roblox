@@ -1,25 +1,24 @@
 ---
 type: community
 cohesion: 0.22
-members: 10
+members: 9
 ---
 
 # Community 29
 
 **Cohesion:** 0.22 - loosely connected
-**Members:** 10 nodes
+**Members:** 9 nodes
 
 ## Members
-- [[Leaderstats.luau]] - code - game/src/server/Services/Leaderstats.luau
-- [[ProgressionService.luau]] - code - game/src/server/Services/ProgressionService.luau
-- [[StateService.luau]] - code - game/src/server/Services/StateService.luau
-- [[onChanged()]] - code - game/src/server/Services/Leaderstats.luau
-- [[onDataLoaded()_1]] - code - game/src/server/Services/Leaderstats.luau
-- [[replicatedstorage_shared_islandtiers]] - concept
-- [[replicatedstorage_shared_leveling]] - concept
-- [[replicatedstorage_shared_quests]] - concept
-- [[script_parent_dataservice]] - concept
-- [[script_parent_stateservice]] - concept
+- [[Decision blend Islands + Skybounds Warzone]] - concept - 07 Roadmap/Decision Log.md
+- [[Island (safe) - Warzone (risky) loop]] - concept - 03 Design/Core Loop.md
+- [[Island loop gather, craft, expand, automate, earn offline]] - concept - 03 Design/Core Loop.md
+- [[Islands (Roblox game by Easy.gg)]] - concept - 02 Research/Islands (Roblox).md
+- [[Pillar 3 Risk and reward (the Warzone)]] - rationale - 01 Vision/Design Pillars.md
+- [[Pillar 5 Never abandoned (steady updates)]] - rationale - 01 Vision/Design Pillars.md
+- [[Pitch own a floating island, drop into a shared Warzone, bring loot home]] - concept - 01 Vision/Pitch (Draft).md
+- [[Update cadence weekly event + monthly content drop]] - concept - 03 Design/Anti-Burnout Ideas.md
+- [[Warzone loop gear up, drop in, loot, survive, extract]] - concept - 03 Design/Core Loop.md
 
 ## Live Query (requires Dataview plugin)
 
@@ -29,22 +28,15 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 8 edges to [[_COMMUNITY_Community 23]]
-- 6 edges to [[_COMMUNITY_Community 10]]
-- 3 edges to [[_COMMUNITY_Community 11]]
-- 3 edges to [[_COMMUNITY_Community 16]]
-- 3 edges to [[_COMMUNITY_Breaking, Placing and Crafting]]
-- 2 edges to [[_COMMUNITY_Community 14]]
-- 2 edges to [[_COMMUNITY_Skills, Levels and Content]]
-- 1 edge to [[_COMMUNITY_Community 4]]
-- 1 edge to [[_COMMUNITY_HUD and Hotbar]]
-- 1 edge to [[_COMMUNITY_Community 21]]
-- 1 edge to [[_COMMUNITY_Community 24]]
-- 1 edge to [[_COMMUNITY_Community 30]]
+- 6 edges to [[_COMMUNITY_Core Loop and Pillars]]
+- 1 edge to [[_COMMUNITY_Community 12]]
+- 1 edge to [[_COMMUNITY_Community 17]]
+- 1 edge to [[_COMMUNITY_Community 20]]
+- 1 edge to [[_COMMUNITY_Community 6]]
 
 ## Top bridge nodes
-- [[script_parent_dataservice]] - degree 12, connects to 7 communities
-- [[script_parent_stateservice]] - degree 11, connects to 6 communities
-- [[replicatedstorage_shared_islandtiers]] - degree 4, connects to 3 communities
-- [[ProgressionService.luau]] - degree 6, connects to 2 communities
-- [[Leaderstats.luau]] - degree 5, connects to 2 communities
+- [[Pitch own a floating island, drop into a shared Warzone, bring loot home]] - degree 5, connects to 2 communities
+- [[Island (safe) - Warzone (risky) loop]] - degree 4, connects to 1 community
+- [[Islands (Roblox game by Easy.gg)]] - degree 3, connects to 1 community
+- [[Warzone loop gear up, drop in, loot, survive, extract]] - degree 3, connects to 1 community
+- [[Pillar 5 Never abandoned (steady updates)]] - degree 3, connects to 1 community

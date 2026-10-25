@@ -13,6 +13,6 @@ tags:
 
 ## Connections
 - [[Hotbar.luau]] - `contains` [EXTRACTED]
-- [[render()_3]] - `calls` [INFERRED]
+- [[render()_2]] - `calls` [INFERRED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_3

@@ -254,18 +254,18 @@
       "height": 60
     },
     {
-      "id": "n_art_scripts_items3d_build_items",
+      "id": "n_art_scripts_islands_build_tier",
       "type": "file",
-      "file": "08 Knowledge Graph/build_items().md",
+      "file": "08 Knowledge Graph/build_tier().md",
       "x": 1420,
       "y": 240,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_art_scripts_islands_build_tier",
+      "id": "n_art_scripts_items3d_carrot",
       "type": "file",
-      "file": "08 Knowledge Graph/build_tier().md",
+      "file": "08 Knowledge Graph/carrot().md",
       "x": 1620,
       "y": 240,
       "width": 180,
@@ -416,7 +416,7 @@
       "height": 60
     },
     {
-      "id": "n_art_scripts_items3d_main",
+      "id": "n_art_scripts_props_main",
       "type": "file",
       "file": "08 Knowledge Graph/main()_2.md",
       "x": 1020,
@@ -425,7 +425,7 @@
       "height": 60
     },
     {
-      "id": "n_art_scripts_props_main",
+      "id": "n_art_scripts_starter_island_main",
       "type": "file",
       "file": "08 Knowledge Graph/main()_3.md",
       "x": 1220,
@@ -434,19 +434,10 @@
       "height": 60
     },
     {
-      "id": "n_art_scripts_starter_island_main",
-      "type": "file",
-      "file": "08 Knowledge Graph/main()_4.md",
-      "x": 1420,
-      "y": 400,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "n_art_scripts_blocks_make_block",
       "type": "file",
       "file": "08 Knowledge Graph/make_block().md",
-      "x": 1620,
+      "x": 1420,
       "y": 400,
       "width": 180,
       "height": 60
@@ -455,7 +446,7 @@
       "id": "n_art_scripts_lowpoly_marker",
       "type": "file",
       "file": "08 Knowledge Graph/marker().md",
-      "x": 1820,
+      "x": 1620,
       "y": 400,
       "width": 180,
       "height": 60
@@ -464,8 +455,8 @@
       "id": "n_art_scripts_props_market",
       "type": "file",
       "file": "08 Knowledge Graph/market().md",
-      "x": 20,
-      "y": 480,
+      "x": 1820,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -473,7 +464,7 @@
       "id": "n_art_scripts_common_material",
       "type": "file",
       "file": "08 Knowledge Graph/material().md",
-      "x": 220,
+      "x": 20,
       "y": 480,
       "width": 180,
       "height": 60
@@ -482,16 +473,7 @@
       "id": "n_math",
       "type": "file",
       "file": "08 Knowledge Graph/math.md",
-      "x": 420,
-      "y": 480,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_mathutils",
-      "type": "file",
-      "file": "08 Knowledge Graph/mathutils.md",
-      "x": 620,
+      "x": 220,
       "y": 480,
       "width": 180,
       "height": 60
@@ -500,7 +482,7 @@
       "id": "n_art_scripts_lowpoly_matrix",
       "type": "file",
       "file": "08 Knowledge Graph/matrix().md",
-      "x": 820,
+      "x": 420,
       "y": 480,
       "width": 180,
       "height": 60
@@ -509,7 +491,7 @@
       "id": "n_art_scripts_common_mesh_object",
       "type": "file",
       "file": "08 Knowledge Graph/mesh_object().md",
-      "x": 1020,
+      "x": 620,
       "y": 480,
       "width": 180,
       "height": 60
@@ -518,7 +500,7 @@
       "id": "n_art_scripts_blocks_noisy",
       "type": "file",
       "file": "08 Knowledge Graph/noisy().md",
-      "x": 1220,
+      "x": 820,
       "y": 480,
       "width": 180,
       "height": 60
@@ -527,7 +509,7 @@
       "id": "n_art_scripts_blocks_draw_tiles_ore",
       "type": "file",
       "file": "08 Knowledge Graph/ore().md",
-      "x": 1420,
+      "x": 1020,
       "y": 480,
       "width": 180,
       "height": 60
@@ -536,7 +518,7 @@
       "id": "n_os",
       "type": "file",
       "file": "08 Knowledge Graph/os.md",
-      "x": 1620,
+      "x": 1220,
       "y": 480,
       "width": 180,
       "height": 60
@@ -545,7 +527,7 @@
       "id": "n_art_scripts_islands_outline",
       "type": "file",
       "file": "08 Knowledge Graph/outline().md",
-      "x": 1820,
+      "x": 1420,
       "y": 480,
       "width": 180,
       "height": 60
@@ -554,8 +536,8 @@
       "id": "n_art_scripts_lowpoly_palette_image",
       "type": "file",
       "file": "08 Knowledge Graph/palette_image().md",
-      "x": 20,
-      "y": 560,
+      "x": 1620,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -563,8 +545,8 @@
       "id": "n_art_scripts_lowpoly_palette_material",
       "type": "file",
       "file": "08 Knowledge Graph/palette_material().md",
-      "x": 220,
-      "y": 560,
+      "x": 1820,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -572,7 +554,7 @@
       "id": "n_art_scripts_props_planter",
       "type": "file",
       "file": "08 Knowledge Graph/planter().md",
-      "x": 420,
+      "x": 20,
       "y": 560,
       "width": 180,
       "height": 60
@@ -581,7 +563,7 @@
       "id": "n_art_scripts_islands_plot_positions",
       "type": "file",
       "file": "08 Knowledge Graph/plot_positions().md",
-      "x": 620,
+      "x": 220,
       "y": 560,
       "width": 180,
       "height": 60
@@ -590,7 +572,7 @@
       "id": "n_art_scripts_props_portal",
       "type": "file",
       "file": "08 Knowledge Graph/portal().md",
-      "x": 820,
+      "x": 420,
       "y": 560,
       "width": 180,
       "height": 60
@@ -599,7 +581,7 @@
       "id": "n_art_scripts_props",
       "type": "file",
       "file": "08 Knowledge Graph/props.py.md",
-      "x": 1020,
+      "x": 620,
       "y": 560,
       "width": 180,
       "height": 60
@@ -608,7 +590,7 @@
       "id": "n_art_scripts_islands_radius_at",
       "type": "file",
       "file": "08 Knowledge Graph/radius_at().md",
-      "x": 1220,
+      "x": 820,
       "y": 560,
       "width": 180,
       "height": 60
@@ -617,7 +599,7 @@
       "id": "n_random",
       "type": "file",
       "file": "08 Knowledge Graph/random.md",
-      "x": 1420,
+      "x": 1020,
       "y": 560,
       "width": 180,
       "height": 60
@@ -626,7 +608,7 @@
       "id": "n_art_scripts_common_render_preview",
       "type": "file",
       "file": "08 Knowledge Graph/render_preview().md",
-      "x": 1620,
+      "x": 1220,
       "y": 560,
       "width": 180,
       "height": 60
@@ -635,7 +617,7 @@
       "id": "n_art_scripts_common_reset_scene",
       "type": "file",
       "file": "08 Knowledge Graph/reset_scene().md",
-      "x": 1820,
+      "x": 1420,
       "y": 560,
       "width": 180,
       "height": 60
@@ -644,8 +626,8 @@
       "id": "n_art_scripts_islands_ring",
       "type": "file",
       "file": "08 Knowledge Graph/ring().md",
-      "x": 20,
-      "y": 640,
+      "x": 1620,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -653,8 +635,8 @@
       "id": "n_art_scripts_starter_island_ring",
       "type": "file",
       "file": "08 Knowledge Graph/ring()_1.md",
-      "x": 220,
-      "y": 640,
+      "x": 1820,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -662,7 +644,7 @@
       "id": "n_art_scripts_starter_island_ring_radii",
       "type": "file",
       "file": "08 Knowledge Graph/ring_radii().md",
-      "x": 420,
+      "x": 20,
       "y": 640,
       "width": 180,
       "height": 60
@@ -671,7 +653,7 @@
       "id": "n_art_scripts_islands_rock",
       "type": "file",
       "file": "08 Knowledge Graph/rock().md",
-      "x": 620,
+      "x": 220,
       "y": 640,
       "width": 180,
       "height": 60
@@ -680,7 +662,7 @@
       "id": "n_art_scripts_starter_island_rock",
       "type": "file",
       "file": "08 Knowledge Graph/rock()_1.md",
-      "x": 820,
+      "x": 420,
       "y": 640,
       "width": 180,
       "height": 60
@@ -689,7 +671,16 @@
       "id": "n_art_scripts_common_save_blend",
       "type": "file",
       "file": "08 Knowledge Graph/save_blend().md",
-      "x": 1020,
+      "x": 620,
+      "y": 640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_art_scripts_items3d_scrap",
+      "type": "file",
+      "file": "08 Knowledge Graph/scrap().md",
+      "x": 820,
       "y": 640,
       "width": 180,
       "height": 60
@@ -698,7 +689,7 @@
       "id": "n_art_scripts_blocks_speckle",
       "type": "file",
       "file": "08 Knowledge Graph/speckle().md",
-      "x": 1220,
+      "x": 1020,
       "y": 640,
       "width": 180,
       "height": 60
@@ -707,7 +698,7 @@
       "id": "n_art_scripts_starter_island",
       "type": "file",
       "file": "08 Knowledge Graph/starter_island.py.md",
-      "x": 1420,
+      "x": 1220,
       "y": 640,
       "width": 180,
       "height": 60
@@ -716,7 +707,7 @@
       "id": "n_art_scripts_lowpoly_swatch_uv",
       "type": "file",
       "file": "08 Knowledge Graph/swatch_uv().md",
-      "x": 1620,
+      "x": 1420,
       "y": 640,
       "width": 180,
       "height": 60
@@ -725,7 +716,7 @@
       "id": "n_art_scripts_blocks_tile_rect",
       "type": "file",
       "file": "08 Knowledge Graph/tile_rect().md",
-      "x": 1820,
+      "x": 1620,
       "y": 640,
       "width": 180,
       "height": 60
@@ -734,8 +725,8 @@
       "id": "n_art_scripts_islands_tree",
       "type": "file",
       "file": "08 Knowledge Graph/tree().md",
-      "x": 20,
-      "y": 720,
+      "x": 1820,
+      "y": 640,
       "width": 180,
       "height": 60
     },
@@ -743,6 +734,15 @@
       "id": "n_art_scripts_starter_island_tree",
       "type": "file",
       "file": "08 Knowledge Graph/tree()_1.md",
+      "x": 20,
+      "y": 720,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_art_scripts_items3d_wheat",
+      "type": "file",
+      "file": "08 Knowledge Graph/wheat().md",
       "x": 220,
       "y": 720,
       "width": 180,
@@ -763,8 +763,8 @@
       "label": "HUD and Hotbar",
       "x": 2280,
       "y": 0,
-      "width": 1980,
-      "height": 1020,
+      "width": 1760,
+      "height": 820,
       "color": "2"
     },
     {
@@ -777,64 +777,10 @@
       "height": 60
     },
     {
-      "id": "n_game_src_client_windows_craftingwindow_craftingwindow_isopen",
-      "type": "file",
-      "file": "08 Knowledge Graph/CraftingWindow.IsOpen().md",
-      "x": 2500,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow_craftingwindow_open",
-      "type": "file",
-      "file": "08 Knowledge Graph/CraftingWindow.Open().md",
-      "x": 2700,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow_craftingwindow_setstate",
-      "type": "file",
-      "file": "08 Knowledge Graph/CraftingWindow.SetState().md",
-      "x": 2900,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow_craftingwindow_start",
-      "type": "file",
-      "file": "08 Knowledge Graph/CraftingWindow.Start().md",
-      "x": 3100,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow",
-      "type": "file",
-      "file": "08 Knowledge Graph/CraftingWindow.luau.md",
-      "x": 3300,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_hotbar_hotbar_start",
-      "type": "file",
-      "file": "08 Knowledge Graph/Hotbar.Start().md",
-      "x": 3500,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "n_game_src_client_hud_hud_celebrate",
       "type": "file",
       "file": "08 Knowledge Graph/Hud.Celebrate().md",
-      "x": 3700,
+      "x": 2500,
       "y": 80,
       "width": 180,
       "height": 60
@@ -843,7 +789,7 @@
       "id": "n_game_src_client_hud_hud_render",
       "type": "file",
       "file": "08 Knowledge Graph/Hud.Render().md",
-      "x": 3900,
+      "x": 2700,
       "y": 80,
       "width": 180,
       "height": 60
@@ -852,8 +798,8 @@
       "id": "n_game_src_client_hud_hud_start",
       "type": "file",
       "file": "08 Knowledge Graph/Hud.Start().md",
-      "x": 2300,
-      "y": 160,
+      "x": 2900,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -861,8 +807,8 @@
       "id": "n_game_src_client_hud_hud_toast",
       "type": "file",
       "file": "08 Knowledge Graph/Hud.Toast().md",
-      "x": 2500,
-      "y": 160,
+      "x": 3100,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -870,8 +816,8 @@
       "id": "n_game_src_client_hud_hud_travel",
       "type": "file",
       "file": "08 Knowledge Graph/Hud.Travel().md",
-      "x": 2700,
-      "y": 160,
+      "x": 3300,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -879,26 +825,8 @@
       "id": "n_game_src_client_hud",
       "type": "file",
       "file": "08 Knowledge Graph/Hud.luau.md",
-      "x": 2900,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_islandwindow_islandwindow_close",
-      "type": "file",
-      "file": "08 Knowledge Graph/IslandWindow.Close().md",
-      "x": 3100,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_islandwindow_islandwindow_setstate",
-      "type": "file",
-      "file": "08 Knowledge Graph/IslandWindow.SetState().md",
-      "x": 3300,
-      "y": 160,
+      "x": 3500,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -906,26 +834,8 @@
       "id": "n_game_src_client_windows_islandwindow_islandwindow_start",
       "type": "file",
       "file": "08 Knowledge Graph/IslandWindow.Start().md",
-      "x": 3500,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_islandwindow_islandwindow_toggle",
-      "type": "file",
-      "file": "08 Knowledge Graph/IslandWindow.Toggle().md",
       "x": 3700,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_islandwindow",
-      "type": "file",
-      "file": "08 Knowledge Graph/IslandWindow.luau.md",
-      "x": 3900,
-      "y": 160,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -934,7 +844,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/PromptUI.Start().md",
       "x": 2300,
-      "y": 240,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -943,7 +853,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/PromptUI.luau.md",
       "x": 2500,
-      "y": 240,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -952,7 +862,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/QuestTracker.Render().md",
       "x": 2700,
-      "y": 240,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -961,7 +871,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/QuestTracker.Start().md",
       "x": 2900,
-      "y": 240,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -970,7 +880,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/QuestTracker.luau.md",
       "x": 3100,
-      "y": 240,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -979,7 +889,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/Theme.autoScale().md",
       "x": 3300,
-      "y": 240,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -988,7 +898,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/Theme.bar().md",
       "x": 3500,
-      "y": 240,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -997,7 +907,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/Theme.button().md",
       "x": 3700,
-      "y": 240,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -1005,7 +915,7 @@
       "id": "n_game_src_client_ui_theme_theme_chip",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.chip().md",
-      "x": 3900,
+      "x": 2300,
       "y": 240,
       "width": 180,
       "height": 60
@@ -1014,8 +924,8 @@
       "id": "n_game_src_client_ui_theme_theme_corner",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.corner().md",
-      "x": 2300,
-      "y": 320,
+      "x": 2500,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1023,8 +933,8 @@
       "id": "n_game_src_client_ui_theme_theme_darken",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.darken().md",
-      "x": 2500,
-      "y": 320,
+      "x": 2700,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1032,8 +942,8 @@
       "id": "n_game_src_client_ui_theme_theme_formatnumber",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.formatNumber().md",
-      "x": 2700,
-      "y": 320,
+      "x": 2900,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1041,8 +951,8 @@
       "id": "n_game_src_client_ui_theme_theme_gradient",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.gradient().md",
-      "x": 2900,
-      "y": 320,
+      "x": 3100,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1050,8 +960,8 @@
       "id": "n_game_src_client_ui_theme_theme_lighten",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.lighten().md",
-      "x": 3100,
-      "y": 320,
+      "x": 3300,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1059,8 +969,8 @@
       "id": "n_game_src_client_ui_theme_theme_list",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.list().md",
-      "x": 3300,
-      "y": 320,
+      "x": 3500,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1068,8 +978,8 @@
       "id": "n_game_src_client_ui_theme",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.luau.md",
-      "x": 3500,
-      "y": 320,
+      "x": 3700,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1077,7 +987,7 @@
       "id": "n_game_src_client_ui_theme_theme_make",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.make().md",
-      "x": 3700,
+      "x": 2300,
       "y": 320,
       "width": 180,
       "height": 60
@@ -1086,7 +996,7 @@
       "id": "n_game_src_client_ui_theme_theme_padding",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.padding().md",
-      "x": 3900,
+      "x": 2500,
       "y": 320,
       "width": 180,
       "height": 60
@@ -1095,8 +1005,8 @@
       "id": "n_game_src_client_ui_theme_theme_panel",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.panel().md",
-      "x": 2300,
-      "y": 400,
+      "x": 2700,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1104,8 +1014,8 @@
       "id": "n_game_src_client_ui_theme_theme_pop",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.pop().md",
-      "x": 2500,
-      "y": 400,
+      "x": 2900,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1113,8 +1023,8 @@
       "id": "n_game_src_client_ui_theme_theme_screen",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.screen().md",
-      "x": 2700,
-      "y": 400,
+      "x": 3100,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1122,8 +1032,8 @@
       "id": "n_game_src_client_ui_theme_theme_stroke",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.stroke().md",
-      "x": 2900,
-      "y": 400,
+      "x": 3300,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1131,8 +1041,8 @@
       "id": "n_game_src_client_ui_theme_theme_text",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.text().md",
-      "x": 3100,
-      "y": 400,
+      "x": 3500,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1140,35 +1050,8 @@
       "id": "n_game_src_client_ui_theme_theme_title",
       "type": "file",
       "file": "08 Knowledge Graph/Theme.title().md",
-      "x": 3300,
-      "y": 400,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_ui_window_window_clear",
-      "type": "file",
-      "file": "08 Knowledge Graph/Window.clear().md",
-      "x": 3500,
-      "y": 400,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_ui_window_window_close",
-      "type": "file",
-      "file": "08 Knowledge Graph/Window.close().md",
       "x": 3700,
-      "y": 400,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_ui_window",
-      "type": "file",
-      "file": "08 Knowledge Graph/Window.luau.md",
-      "x": 3900,
-      "y": 400,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1177,34 +1060,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/Window.new().md",
       "x": 2300,
-      "y": 480,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_ui_window_window_open",
-      "type": "file",
-      "file": "08 Knowledge Graph/Window.open().md",
-      "x": 2500,
-      "y": 480,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_ui_window_window_scrolllist",
-      "type": "file",
-      "file": "08 Knowledge Graph/Window.scrollList().md",
-      "x": 2700,
-      "y": 480,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_ui_window_window_toggle",
-      "type": "file",
-      "file": "08 Knowledge Graph/Window.toggle().md",
-      "x": 2900,
-      "y": 480,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1212,8 +1068,8 @@
       "id": "n_game_src_client_questtracker_build",
       "type": "file",
       "file": "08 Knowledge Graph/build().md",
-      "x": 3100,
-      "y": 480,
+      "x": 2500,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1221,8 +1077,8 @@
       "id": "n_game_src_client_hud_buildbuttons",
       "type": "file",
       "file": "08 Knowledge Graph/buildButtons().md",
-      "x": 3300,
-      "y": 480,
+      "x": 2700,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1230,8 +1086,8 @@
       "id": "n_game_src_client_hud_buildcelebration",
       "type": "file",
       "file": "08 Knowledge Graph/buildCelebration().md",
-      "x": 3500,
-      "y": 480,
+      "x": 2900,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1239,17 +1095,8 @@
       "id": "n_game_src_client_windows_craftingwindow_builddetail",
       "type": "file",
       "file": "08 Knowledge Graph/buildDetail().md",
-      "x": 3700,
-      "y": 480,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow_buildgrid",
-      "type": "file",
-      "file": "08 Knowledge Graph/buildGrid().md",
-      "x": 3900,
-      "y": 480,
+      "x": 3100,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1257,8 +1104,8 @@
       "id": "n_game_src_client_hud_buildprofile",
       "type": "file",
       "file": "08 Knowledge Graph/buildProfile().md",
-      "x": 2300,
-      "y": 560,
+      "x": 3300,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1266,8 +1113,8 @@
       "id": "n_game_src_client_hud_buildraidbanner",
       "type": "file",
       "file": "08 Knowledge Graph/buildRaidBanner().md",
-      "x": 2500,
-      "y": 560,
+      "x": 3500,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1275,8 +1122,8 @@
       "id": "n_game_src_client_hud_buildtoasts",
       "type": "file",
       "file": "08 Knowledge Graph/buildToasts().md",
-      "x": 2700,
-      "y": 560,
+      "x": 3700,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1284,26 +1131,8 @@
       "id": "n_game_src_client_windows_islandwindow_card",
       "type": "file",
       "file": "08 Knowledge Graph/card().md",
-      "x": 2900,
-      "y": 560,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow_check",
-      "type": "file",
-      "file": "08 Knowledge Graph/check().md",
-      "x": 3100,
-      "y": 560,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow_choose",
-      "type": "file",
-      "file": "08 Knowledge Graph/choose().md",
-      "x": 3300,
-      "y": 560,
+      "x": 2300,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1311,8 +1140,8 @@
       "id": "n_game_src_client_questtracker_findonmyisland",
       "type": "file",
       "file": "08 Knowledge Graph/findOnMyIsland().md",
-      "x": 3500,
-      "y": 560,
+      "x": 2500,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1320,8 +1149,8 @@
       "id": "n_game_src_client_windows_craftingwindow_ingredientchip",
       "type": "file",
       "file": "08 Knowledge Graph/ingredientChip().md",
-      "x": 3700,
-      "y": 560,
+      "x": 2700,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1329,71 +1158,17 @@
       "id": "n_game_src_client_promptui_keylabel",
       "type": "file",
       "file": "08 Knowledge Graph/keyLabel().md",
-      "x": 3900,
-      "y": 560,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_hotbar_pixeltext",
-      "type": "file",
-      "file": "08 Knowledge Graph/pixelText().md",
-      "x": 2300,
-      "y": 640,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow_render",
-      "type": "file",
-      "file": "08 Knowledge Graph/render().md",
-      "x": 2500,
-      "y": 640,
+      "x": 2900,
+      "y": 480,
       "width": 180,
       "height": 60
     },
     {
       "id": "n_game_src_client_windows_islandwindow_render",
       "type": "file",
-      "file": "08 Knowledge Graph/render()_1.md",
-      "x": 2700,
-      "y": 640,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_windows_craftingwindow_renderdetail",
-      "type": "file",
-      "file": "08 Knowledge Graph/renderDetail().md",
-      "x": 2900,
-      "y": 640,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_script_parent_parent_ui_theme",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_parent_ui_theme.md",
+      "file": "08 Knowledge Graph/render().md",
       "x": 3100,
-      "y": 640,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_script_parent_parent_ui_window",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_parent_ui_window.md",
-      "x": 3300,
-      "y": 640,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_script_parent_theme",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_theme.md",
-      "x": 3500,
-      "y": 640,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1401,8 +1176,8 @@
       "id": "n_script_parent_ui_theme",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_ui_theme.md",
-      "x": 3700,
-      "y": 640,
+      "x": 3300,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1410,8 +1185,8 @@
       "id": "n_game_src_client_hud_setfade",
       "type": "file",
       "file": "08 Knowledge Graph/setFade().md",
-      "x": 3900,
-      "y": 640,
+      "x": 3500,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1419,8 +1194,8 @@
       "id": "n_game_src_client_promptui_show",
       "type": "file",
       "file": "08 Knowledge Graph/show().md",
-      "x": 2300,
-      "y": 720,
+      "x": 3700,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1428,8 +1203,8 @@
       "id": "n_game_src_client_hud_sidebutton",
       "type": "file",
       "file": "08 Knowledge Graph/sideButton().md",
-      "x": 2500,
-      "y": 720,
+      "x": 2300,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1437,8 +1212,8 @@
       "id": "n_game_src_client_windows_craftingwindow_statrow",
       "type": "file",
       "file": "08 Knowledge Graph/statRow().md",
-      "x": 2700,
-      "y": 720,
+      "x": 2500,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1446,8 +1221,8 @@
       "id": "n_game_src_client_windows_islandwindow_statrow",
       "type": "file",
       "file": "08 Knowledge Graph/statRow()_1.md",
-      "x": 2900,
-      "y": 720,
+      "x": 2700,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1455,17 +1230,35 @@
       "id": "g2",
       "type": "group",
       "label": "Breaking, Placing and Crafting",
-      "x": 4340,
+      "x": 4120,
       "y": 0,
-      "width": 1760,
-      "height": 820,
+      "width": 1980,
+      "height": 920,
       "color": "3"
+    },
+    {
+      "id": "n_game_src_server_services_blockservice_blockservice_start",
+      "type": "file",
+      "file": "08 Knowledge Graph/BlockService.Start().md",
+      "x": 4140,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_blockservice",
+      "type": "file",
+      "file": "08 Knowledge Graph/BlockService.luau.md",
+      "x": 4340,
+      "y": 80,
+      "width": 180,
+      "height": 60
     },
     {
       "id": "n_game_src_server_util_blockworld_blockworld_cellat",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.cellAt().md",
-      "x": 4360,
+      "x": 4540,
       "y": 80,
       "width": 180,
       "height": 60
@@ -1474,7 +1267,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_destroy",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.destroy().md",
-      "x": 4560,
+      "x": 4740,
       "y": 80,
       "width": 180,
       "height": 60
@@ -1483,7 +1276,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_drawall",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.drawAll().md",
-      "x": 4760,
+      "x": 4940,
       "y": 80,
       "width": 180,
       "height": 60
@@ -1492,7 +1285,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_get",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.get().md",
-      "x": 4960,
+      "x": 5140,
       "y": 80,
       "width": 180,
       "height": 60
@@ -1501,7 +1294,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_hasneighbour",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.hasNeighbour().md",
-      "x": 5160,
+      "x": 5340,
       "y": 80,
       "width": 180,
       "height": 60
@@ -1510,7 +1303,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_key",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.key().md",
-      "x": 5360,
+      "x": 5540,
       "y": 80,
       "width": 180,
       "height": 60
@@ -1519,7 +1312,7 @@
       "id": "n_game_src_server_util_blockworld",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.luau.md",
-      "x": 5560,
+      "x": 5740,
       "y": 80,
       "width": 180,
       "height": 60
@@ -1528,8 +1321,8 @@
       "id": "n_game_src_server_util_blockworld_blockworld_new",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.new().md",
-      "x": 5760,
-      "y": 80,
+      "x": 4140,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -1537,7 +1330,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_part",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.part().md",
-      "x": 4360,
+      "x": 4340,
       "y": 160,
       "width": 180,
       "height": 60
@@ -1546,7 +1339,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_position",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.position().md",
-      "x": 4560,
+      "x": 4540,
       "y": 160,
       "width": 180,
       "height": 60
@@ -1555,7 +1348,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_set",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.set().md",
-      "x": 4760,
+      "x": 4740,
       "y": 160,
       "width": 180,
       "height": 60
@@ -1564,7 +1357,7 @@
       "id": "n_game_src_server_util_blockworld_blockworld_setraw",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.setRaw().md",
-      "x": 4960,
+      "x": 4940,
       "y": 160,
       "width": 180,
       "height": 60
@@ -1573,8 +1366,53 @@
       "id": "n_game_src_server_util_blockworld_blockworld_unkey",
       "type": "file",
       "file": "08 Knowledge Graph/BlockWorld.unkey().md",
-      "x": 5160,
+      "x": 5140,
       "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_shared_blocks",
+      "type": "file",
+      "file": "08 Knowledge Graph/Blocks.luau.md",
+      "x": 5340,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_07_roadmap_decision_log_dec_minecraft_blocks",
+      "type": "file",
+      "file": "08 Knowledge Graph/Decision Minecraft-style block islands (break and place, saved).md",
+      "x": 5540,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_07_roadmap_decision_log_dec_toughness",
+      "type": "file",
+      "file": "08 Knowledge Graph/Decision block toughness + tool power (Minecraft rules).md",
+      "x": 5740,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_07_roadmap_decision_log_dec_fall_returns_home",
+      "type": "file",
+      "file": "08 Knowledge Graph/Decision falling off returns you to your island.md",
+      "x": 4140,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_islandservice_islandservice_depletenode",
+      "type": "file",
+      "file": "08 Knowledge Graph/IslandService.DepleteNode().md",
+      "x": 4340,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1582,17 +1420,17 @@
       "id": "n_game_src_server_services_islandservice_islandservice_getisland",
       "type": "file",
       "file": "08 Knowledge Graph/IslandService.GetIsland().md",
-      "x": 5360,
-      "y": 160,
+      "x": 4540,
+      "y": 240,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_islandservice_islandservice_onislandcreated",
+      "id": "n_game_src_server_services_islandservice_islandservice_getnode",
       "type": "file",
-      "file": "08 Knowledge Graph/IslandService.OnIslandCreated().md",
-      "x": 5560,
-      "y": 160,
+      "file": "08 Knowledge Graph/IslandService.GetNode().md",
+      "x": 4740,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1600,8 +1438,8 @@
       "id": "n_game_src_server_services_islandservice_islandservice_rebuild",
       "type": "file",
       "file": "08 Knowledge Graph/IslandService.Rebuild().md",
-      "x": 5760,
-      "y": 160,
+      "x": 4940,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1609,7 +1447,7 @@
       "id": "n_game_src_server_services_islandservice_islandservice_recordchange",
       "type": "file",
       "file": "08 Knowledge Graph/IslandService.RecordChange().md",
-      "x": 4360,
+      "x": 5140,
       "y": 240,
       "width": 180,
       "height": 60
@@ -1618,7 +1456,7 @@
       "id": "n_game_src_server_services_islandservice_islandservice_sendhome",
       "type": "file",
       "file": "08 Knowledge Graph/IslandService.SendHome().md",
-      "x": 4560,
+      "x": 5340,
       "y": 240,
       "width": 180,
       "height": 60
@@ -1627,8 +1465,35 @@
       "id": "n_game_src_server_services_islandservice",
       "type": "file",
       "file": "08 Knowledge Graph/IslandService.luau.md",
-      "x": 4760,
+      "x": 5540,
       "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_shared_mining_mining_breaktime",
+      "type": "file",
+      "file": "08 Knowledge Graph/Mining.BreakTime().md",
+      "x": 5740,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_shared_mining_mining_usestool",
+      "type": "file",
+      "file": "08 Knowledge Graph/Mining.UsesTool().md",
+      "x": 4140,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_shared_mining",
+      "type": "file",
+      "file": "08 Knowledge Graph/Mining.luau.md",
+      "x": 4340,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1636,8 +1501,8 @@
       "id": "n_game_src_server_util_portal_portal_addcells",
       "type": "file",
       "file": "08 Knowledge Graph/Portal.addCells().md",
-      "x": 4960,
-      "y": 240,
+      "x": 4540,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1645,8 +1510,8 @@
       "id": "n_game_src_server_util_portal",
       "type": "file",
       "file": "08 Knowledge Graph/Portal.luau.md",
-      "x": 5160,
-      "y": 240,
+      "x": 4740,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1654,17 +1519,53 @@
       "id": "n_game_src_server_util_portal_portal_makefield",
       "type": "file",
       "file": "08 Knowledge Graph/Portal.makeField().md",
-      "x": 5360,
-      "y": 240,
+      "x": 4940,
+      "y": 320,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_travelservice_travelservice_go",
+      "id": "n_game_src_shared_quests",
       "type": "file",
-      "file": "08 Knowledge Graph/TravelService.Go().md",
-      "x": 5560,
-      "y": 240,
+      "file": "08 Knowledge Graph/Quests.luau.md",
+      "x": 5140,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_tutorial_quests_tool_path_quests",
+      "type": "file",
+      "file": "08 Knowledge Graph/Tool path quests wood - planks - sticks - pickaxe - stone.md",
+      "x": 5340,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_shared_tools",
+      "type": "file",
+      "file": "08 Knowledge Graph/Tools.luau.md",
+      "x": 5540,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_content_index_tool_tiers",
+      "type": "file",
+      "file": "08 Knowledge Graph/Tools pickaxe, axe, shovel, sword in Wooden  Stone  Crystal.md",
+      "x": 5740,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_islandservice_addnode",
+      "type": "file",
+      "file": "08 Knowledge Graph/addNode().md",
+      "x": 4140,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1672,8 +1573,8 @@
       "id": "n_game_src_server_services_islandservice_addtree",
       "type": "file",
       "file": "08 Knowledge Graph/addTree().md",
-      "x": 5760,
-      "y": 240,
+      "x": 4340,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1681,8 +1582,17 @@
       "id": "n_game_src_server_services_islandservice_announce",
       "type": "file",
       "file": "08 Knowledge Graph/announce().md",
-      "x": 4360,
-      "y": 320,
+      "x": 4540,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_blockservice_blockedbycharacter",
+      "type": "file",
+      "file": "08 Knowledge Graph/blockedByCharacter().md",
+      "x": 4740,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1690,8 +1600,17 @@
       "id": "n_game_src_server_services_islandservice_build",
       "type": "file",
       "file": "08 Knowledge Graph/build()_1.md",
-      "x": 4560,
-      "y": 320,
+      "x": 4940,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_islandservice_celloccupied",
+      "type": "file",
+      "file": "08 Knowledge Graph/cellOccupied().md",
+      "x": 5140,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1699,8 +1618,8 @@
       "id": "n_game_src_server_services_islandservice_claimplot",
       "type": "file",
       "file": "08 Knowledge Graph/claimPlot().md",
-      "x": 4760,
-      "y": 320,
+      "x": 5340,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1708,8 +1627,8 @@
       "id": "n_game_src_server_services_islandservice_clamptier",
       "type": "file",
       "file": "08 Knowledge Graph/clampTier().md",
-      "x": 4960,
-      "y": 320,
+      "x": 5540,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1717,8 +1636,8 @@
       "id": "n_game_src_server_services_islandservice_edgeradius",
       "type": "file",
       "file": "08 Knowledge Graph/edgeRadius().md",
-      "x": 5160,
-      "y": 320,
+      "x": 5740,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -1726,8 +1645,8 @@
       "id": "n_game_src_server_util_blockworld_exposed",
       "type": "file",
       "file": "08 Knowledge Graph/exposed().md",
-      "x": 5360,
-      "y": 320,
+      "x": 4140,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1735,8 +1654,8 @@
       "id": "n_game_src_server_services_islandservice_generate",
       "type": "file",
       "file": "08 Knowledge Graph/generate().md",
-      "x": 5560,
-      "y": 320,
+      "x": 4340,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1744,8 +1663,8 @@
       "id": "n_game_src_server_services_blockservice_inreach",
       "type": "file",
       "file": "08 Knowledge Graph/inReach().md",
-      "x": 5760,
-      "y": 320,
+      "x": 4540,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1753,8 +1672,8 @@
       "id": "n_game_src_server_services_blockservice_iscell",
       "type": "file",
       "file": "08 Knowledge Graph/isCell().md",
-      "x": 4360,
-      "y": 400,
+      "x": 4740,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1762,8 +1681,8 @@
       "id": "n_game_src_server_util_blockworld_makepart",
       "type": "file",
       "file": "08 Knowledge Graph/makePart().md",
-      "x": 4560,
-      "y": 400,
+      "x": 4940,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1771,8 +1690,8 @@
       "id": "n_game_src_server_services_islandservice_makespawn",
       "type": "file",
       "file": "08 Knowledge Graph/makeSpawn().md",
-      "x": 4760,
-      "y": 400,
+      "x": 5140,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1780,8 +1699,8 @@
       "id": "n_game_src_server_services_craftingservice_nearstation",
       "type": "file",
       "file": "08 Knowledge Graph/nearStation().md",
-      "x": 4960,
-      "y": 400,
+      "x": 5340,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1789,8 +1708,8 @@
       "id": "n_game_src_server_util_blockworld_occludes",
       "type": "file",
       "file": "08 Knowledge Graph/occludes().md",
-      "x": 5160,
-      "y": 400,
+      "x": 5540,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1798,8 +1717,8 @@
       "id": "n_game_src_server_services_blockservice_onbreak",
       "type": "file",
       "file": "08 Knowledge Graph/onBreak().md",
-      "x": 5360,
-      "y": 400,
+      "x": 5740,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -1807,8 +1726,8 @@
       "id": "n_game_src_server_services_islandservice_ondataloaded",
       "type": "file",
       "file": "08 Knowledge Graph/onDataLoaded().md",
-      "x": 5560,
-      "y": 400,
+      "x": 4140,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1816,8 +1735,8 @@
       "id": "n_game_src_server_services_blockservice_onplace",
       "type": "file",
       "file": "08 Knowledge Graph/onPlace().md",
-      "x": 5760,
-      "y": 400,
+      "x": 4340,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1825,8 +1744,8 @@
       "id": "n_game_src_server_services_islandservice_onplayerremoving",
       "type": "file",
       "file": "08 Knowledge Graph/onPlayerRemoving().md",
-      "x": 4360,
-      "y": 480,
+      "x": 4540,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1834,8 +1753,8 @@
       "id": "n_game_src_server_services_islandservice_plotcenter",
       "type": "file",
       "file": "08 Knowledge Graph/plotCenter().md",
-      "x": 4560,
-      "y": 480,
+      "x": 4740,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1843,26 +1762,8 @@
       "id": "n_game_src_server_util_blockworld_refresh",
       "type": "file",
       "file": "08 Knowledge Graph/refresh().md",
-      "x": 4760,
-      "y": 480,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_islandservice_regrowrocks",
-      "type": "file",
-      "file": "08 Knowledge Graph/regrowRocks().md",
-      "x": 4960,
-      "y": 480,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_islandservice_regrowtrees",
-      "type": "file",
-      "file": "08 Knowledge Graph/regrowTrees().md",
-      "x": 5160,
-      "y": 480,
+      "x": 4940,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1870,17 +1771,26 @@
       "id": "n_replicatedstorage_shared_blocks",
       "type": "file",
       "file": "08 Knowledge Graph/replicatedstorage_shared_blocks.md",
-      "x": 5360,
-      "y": 480,
+      "x": 5140,
+      "y": 560,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_islandservice_rollrockblock",
+      "id": "n_game_src_server_services_islandservice_respawnnodes",
       "type": "file",
-      "file": "08 Knowledge Graph/rollRockBlock().md",
-      "x": 5560,
-      "y": 480,
+      "file": "08 Knowledge Graph/respawnNodes().md",
+      "x": 5340,
+      "y": 560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_blocks",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_blocks.md",
+      "x": 5540,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -1888,8 +1798,17 @@
       "id": "n_script_parent_blockworld",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_blockworld.md",
-      "x": 5760,
-      "y": 480,
+      "x": 5740,
+      "y": 560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_hotbarservice",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_hotbarservice.md",
+      "x": 4140,
+      "y": 640,
       "width": 180,
       "height": 60
     },
@@ -1897,8 +1816,8 @@
       "id": "n_game_src_server_services_townservice_set",
       "type": "file",
       "file": "08 Knowledge Graph/set().md",
-      "x": 4360,
-      "y": 560,
+      "x": 4340,
+      "y": 640,
       "width": 180,
       "height": 60
     },
@@ -1906,8 +1825,8 @@
       "id": "n_game_src_server_util_portal_sheet",
       "type": "file",
       "file": "08 Knowledge Graph/sheet().md",
-      "x": 4560,
-      "y": 560,
+      "x": 4540,
+      "y": 640,
       "width": 180,
       "height": 60
     },
@@ -1915,8 +1834,8 @@
       "id": "n_game_src_server_services_islandservice_spawncharacter",
       "type": "file",
       "file": "08 Knowledge Graph/spawnCharacter().md",
-      "x": 4760,
-      "y": 560,
+      "x": 4740,
+      "y": 640,
       "width": 180,
       "height": 60
     },
@@ -1924,8 +1843,8 @@
       "id": "n_game_src_server_util_blockworld_template",
       "type": "file",
       "file": "08 Knowledge Graph/template().md",
-      "x": 4960,
-      "y": 560,
+      "x": 4940,
+      "y": 640,
       "width": 180,
       "height": 60
     },
@@ -1933,8 +1852,8 @@
       "id": "n_game_src_server_services_islandservice_undergroundblock",
       "type": "file",
       "file": "08 Knowledge Graph/undergroundBlock().md",
-      "x": 5160,
-      "y": 560,
+      "x": 5140,
+      "y": 640,
       "width": 180,
       "height": 60
     },
@@ -1944,8 +1863,8 @@
       "label": "Community 3",
       "x": 6180,
       "y": 0,
-      "width": 1540,
-      "height": 720,
+      "width": 1760,
+      "height": 820,
       "color": "4"
     },
     {
@@ -1976,19 +1895,46 @@
       "height": 60
     },
     {
-      "id": "n_game_src_client_blockcontroller_blockcontroller_start",
+      "id": "n_game_src_client_windows_craftingwindow_craftingwindow_isopen",
       "type": "file",
-      "file": "08 Knowledge Graph/BlockController.Start().md",
+      "file": "08 Knowledge Graph/CraftingWindow.IsOpen().md",
       "x": 6800,
       "y": 80,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_client_blockcontroller",
+      "id": "n_game_src_client_windows_craftingwindow_craftingwindow_open",
       "type": "file",
-      "file": "08 Knowledge Graph/BlockController.luau.md",
+      "file": "08 Knowledge Graph/CraftingWindow.Open().md",
       "x": 7000,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_craftingwindow_craftingwindow_setstate",
+      "type": "file",
+      "file": "08 Knowledge Graph/CraftingWindow.SetState().md",
+      "x": 7200,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_craftingwindow_craftingwindow_start",
+      "type": "file",
+      "file": "08 Knowledge Graph/CraftingWindow.Start().md",
+      "x": 7400,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_craftingwindow",
+      "type": "file",
+      "file": "08 Knowledge Graph/CraftingWindow.luau.md",
+      "x": 7600,
       "y": 80,
       "width": 180,
       "height": 60
@@ -1997,8 +1943,8 @@
       "id": "n_game_src_client_hotbar_hotbar_onchanged",
       "type": "file",
       "file": "08 Knowledge Graph/Hotbar.OnChanged().md",
-      "x": 7200,
-      "y": 80,
+      "x": 6200,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -2006,8 +1952,8 @@
       "id": "n_game_src_client_hotbar_hotbar_select",
       "type": "file",
       "file": "08 Knowledge Graph/Hotbar.Select().md",
-      "x": 7400,
-      "y": 80,
+      "x": 6400,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -2015,7 +1961,7 @@
       "id": "n_game_src_client_hotbar_hotbar_selected",
       "type": "file",
       "file": "08 Knowledge Graph/Hotbar.Selected().md",
-      "x": 6200,
+      "x": 6600,
       "y": 160,
       "width": 180,
       "height": 60
@@ -2024,7 +1970,7 @@
       "id": "n_game_src_client_hotbar_hotbar_selecteditem",
       "type": "file",
       "file": "08 Knowledge Graph/Hotbar.SelectedItem().md",
-      "x": 6400,
+      "x": 6800,
       "y": 160,
       "width": 180,
       "height": 60
@@ -2033,7 +1979,16 @@
       "id": "n_game_src_client_hotbar_hotbar_setstate",
       "type": "file",
       "file": "08 Knowledge Graph/Hotbar.SetState().md",
-      "x": 6600,
+      "x": 7000,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_hotbar_hotbar_start",
+      "type": "file",
+      "file": "08 Knowledge Graph/Hotbar.Start().md",
+      "x": 7200,
       "y": 160,
       "width": 180,
       "height": 60
@@ -2042,8 +1997,44 @@
       "id": "n_game_src_client_hotbar",
       "type": "file",
       "file": "08 Knowledge Graph/Hotbar.luau.md",
-      "x": 6800,
+      "x": 7400,
       "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_islandwindow_islandwindow_close",
+      "type": "file",
+      "file": "08 Knowledge Graph/IslandWindow.Close().md",
+      "x": 7600,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_islandwindow_islandwindow_setstate",
+      "type": "file",
+      "file": "08 Knowledge Graph/IslandWindow.SetState().md",
+      "x": 6200,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_islandwindow_islandwindow_toggle",
+      "type": "file",
+      "file": "08 Knowledge Graph/IslandWindow.Toggle().md",
+      "x": 6400,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_islandwindow",
+      "type": "file",
+      "file": "08 Knowledge Graph/IslandWindow.luau.md",
+      "x": 6600,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -2051,8 +2042,8 @@
       "id": "n_game_src_client_ui_itemicon_itemicon_create",
       "type": "file",
       "file": "08 Knowledge Graph/ItemIcon.create().md",
-      "x": 7000,
-      "y": 160,
+      "x": 6800,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -2060,8 +2051,71 @@
       "id": "n_game_src_client_ui_itemicon",
       "type": "file",
       "file": "08 Knowledge Graph/ItemIcon.luau.md",
+      "x": 7000,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_marketwindow",
+      "type": "file",
+      "file": "08 Knowledge Graph/MarketWindow.luau.md",
       "x": 7200,
-      "y": 160,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_ui_window_window_clear",
+      "type": "file",
+      "file": "08 Knowledge Graph/Window.clear().md",
+      "x": 7400,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_ui_window_window_close",
+      "type": "file",
+      "file": "08 Knowledge Graph/Window.close().md",
+      "x": 7600,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_ui_window",
+      "type": "file",
+      "file": "08 Knowledge Graph/Window.luau.md",
+      "x": 6200,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_ui_window_window_open",
+      "type": "file",
+      "file": "08 Knowledge Graph/Window.open().md",
+      "x": 6400,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_ui_window_window_scrolllist",
+      "type": "file",
+      "file": "08 Knowledge Graph/Window.scrollList().md",
+      "x": 6600,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_ui_window_window_toggle",
+      "type": "file",
+      "file": "08 Knowledge Graph/Window.toggle().md",
+      "x": 6800,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -2069,35 +2123,35 @@
       "id": "n_game_src_client_ui_itemicon_addcamera",
       "type": "file",
       "file": "08 Knowledge Graph/addCamera().md",
+      "x": 7000,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_craftingwindow_buildgrid",
+      "type": "file",
+      "file": "08 Knowledge Graph/buildGrid().md",
+      "x": 7200,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_craftingwindow_check",
+      "type": "file",
+      "file": "08 Knowledge Graph/check().md",
       "x": 7400,
-      "y": 160,
+      "y": 320,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_client_blockcontroller_aim",
+      "id": "n_game_src_client_windows_craftingwindow_choose",
       "type": "file",
-      "file": "08 Knowledge Graph/aim().md",
-      "x": 6200,
-      "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_aimingatmerchant",
-      "type": "file",
-      "file": "08 Knowledge Graph/aimingAtMerchant().md",
-      "x": 6400,
-      "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_burst",
-      "type": "file",
-      "file": "08 Knowledge Graph/burst().md",
-      "x": 6600,
-      "y": 240,
+      "file": "08 Knowledge Graph/choose().md",
+      "x": 7600,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -2105,8 +2159,8 @@
       "id": "n_game_src_client_windows_bagwindow_countlabel",
       "type": "file",
       "file": "08 Knowledge Graph/countLabel().md",
-      "x": 6800,
-      "y": 240,
+      "x": 6200,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -2114,71 +2168,53 @@
       "id": "n_game_src_client_ui_itemicon_halfextents",
       "type": "file",
       "file": "08 Knowledge Graph/halfExtents().md",
-      "x": 7000,
-      "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_hintfor",
-      "type": "file",
-      "file": "08 Knowledge Graph/hintFor().md",
-      "x": 7200,
-      "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_interact",
-      "type": "file",
-      "file": "08 Knowledge Graph/interact().md",
-      "x": 7400,
-      "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_merchant",
-      "type": "file",
-      "file": "08 Knowledge Graph/merchant().md",
-      "x": 6200,
-      "y": 320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_myisland",
-      "type": "file",
-      "file": "08 Knowledge Graph/myIsland().md",
       "x": 6400,
-      "y": 320,
+      "y": 400,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_client_blockcontroller_place",
+      "id": "n_game_src_client_hotbar_pixeltext",
       "type": "file",
-      "file": "08 Knowledge Graph/place().md",
+      "file": "08 Knowledge Graph/pixelText().md",
       "x": 6600,
-      "y": 320,
+      "y": 400,
       "width": 180,
       "height": 60
     },
     {
       "id": "n_game_src_client_hotbar_render",
       "type": "file",
-      "file": "08 Knowledge Graph/render()_2.md",
+      "file": "08 Knowledge Graph/render()_1.md",
       "x": 6800,
-      "y": 320,
+      "y": 400,
       "width": 180,
       "height": 60
     },
     {
       "id": "n_game_src_client_windows_bagwindow_render",
       "type": "file",
-      "file": "08 Knowledge Graph/render()_3.md",
+      "file": "08 Knowledge Graph/render()_2.md",
       "x": 7000,
-      "y": 320,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_craftingwindow_render",
+      "type": "file",
+      "file": "08 Knowledge Graph/render()_3.md",
+      "x": 7200,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_windows_craftingwindow_renderdetail",
+      "type": "file",
+      "file": "08 Knowledge Graph/renderDetail().md",
+      "x": 7400,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -2186,8 +2222,26 @@
       "id": "n_replicatedstorage_shared_config",
       "type": "file",
       "file": "08 Knowledge Graph/replicatedstorage_shared_config.md",
-      "x": 7200,
-      "y": 320,
+      "x": 7600,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_replicatedstorage_shared_crops",
+      "type": "file",
+      "file": "08 Knowledge Graph/replicatedstorage_shared_crops.md",
+      "x": 6200,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_replicatedstorage_shared_islandtiers",
+      "type": "file",
+      "file": "08 Knowledge Graph/replicatedstorage_shared_islandtiers.md",
+      "x": 6400,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -2195,26 +2249,17 @@
       "id": "n_replicatedstorage_shared_itemart",
       "type": "file",
       "file": "08 Knowledge Graph/replicatedstorage_shared_itemart.md",
-      "x": 7400,
-      "y": 320,
+      "x": 6600,
+      "y": 480,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_client_blockcontroller_rootposition",
+      "id": "n_replicatedstorage_shared_items",
       "type": "file",
-      "file": "08 Knowledge Graph/rootPosition().md",
-      "x": 6200,
-      "y": 400,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_screenray",
-      "type": "file",
-      "file": "08 Knowledge Graph/screenRay().md",
-      "x": 6400,
-      "y": 400,
+      "file": "08 Knowledge Graph/replicatedstorage_shared_items.md",
+      "x": 6800,
+      "y": 480,
       "width": 180,
       "height": 60
     },
@@ -2222,8 +2267,44 @@
       "id": "n_script_parent_parent_hotbar",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_parent_hotbar.md",
-      "x": 6600,
-      "y": 400,
+      "x": 7000,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_parent_ui_itemicon",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_parent_ui_itemicon.md",
+      "x": 7200,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_parent_ui_theme",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_parent_ui_theme.md",
+      "x": 7400,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_parent_ui_window",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_parent_ui_window.md",
+      "x": 7600,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_theme",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_theme.md",
+      "x": 6200,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -2231,8 +2312,8 @@
       "id": "n_script_parent_ui_itemicon",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_ui_itemicon.md",
-      "x": 6800,
-      "y": 400,
+      "x": 6400,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -2240,8 +2321,8 @@
       "id": "n_game_src_client_windows_bagwindow_setopen",
       "type": "file",
       "file": "08 Knowledge Graph/setOpen().md",
-      "x": 7000,
-      "y": 400,
+      "x": 6600,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -2249,8 +2330,8 @@
       "id": "n_game_src_client_hotbar_showname",
       "type": "file",
       "file": "08 Knowledge Graph/showName().md",
-      "x": 7200,
-      "y": 400,
+      "x": 6800,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -2258,26 +2339,8 @@
       "id": "n_game_src_client_windows_bagwindow_slotframe",
       "type": "file",
       "file": "08 Knowledge Graph/slotFrame().md",
-      "x": 7400,
-      "y": 400,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_swing",
-      "type": "file",
-      "file": "08 Knowledge Graph/swing()_1.md",
-      "x": 6200,
-      "y": 480,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_client_blockcontroller_update",
-      "type": "file",
-      "file": "08 Knowledge Graph/update()_1.md",
-      "x": 6400,
-      "y": 480,
+      "x": 7000,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -2285,8 +2348,8 @@
       "id": "n_game_src_client_ui_itemicon_viewport",
       "type": "file",
       "file": "08 Knowledge Graph/viewport().md",
-      "x": 6600,
-      "y": 480,
+      "x": 7200,
+      "y": 560,
       "width": 180,
       "height": 60
     },
@@ -2294,7 +2357,7 @@
       "id": "g4",
       "type": "group",
       "label": "Community 4",
-      "x": 7800,
+      "x": 8020,
       "y": 0,
       "width": 660,
       "height": 420,
@@ -2304,7 +2367,7 @@
       "id": "n_game_src_server_services_dataservice_dataservice_onchanged",
       "type": "file",
       "file": "08 Knowledge Graph/DataService.OnChanged().md",
-      "x": 7820,
+      "x": 8040,
       "y": 80,
       "width": 180,
       "height": 60
@@ -2313,7 +2376,7 @@
       "id": "n_game_src_server_services_dataservice_dataservice_ondataloaded",
       "type": "file",
       "file": "08 Knowledge Graph/DataService.OnDataLoaded().md",
-      "x": 8020,
+      "x": 8240,
       "y": 80,
       "width": 180,
       "height": 60
@@ -2322,7 +2385,7 @@
       "id": "n_game_src_server_services_dataservice_dataservice_start",
       "type": "file",
       "file": "08 Knowledge Graph/DataService.Start().md",
-      "x": 8220,
+      "x": 8440,
       "y": 80,
       "width": 180,
       "height": 60
@@ -2331,7 +2394,7 @@
       "id": "n_game_src_server_services_dataservice",
       "type": "file",
       "file": "08 Knowledge Graph/DataService.luau.md",
-      "x": 7820,
+      "x": 8040,
       "y": 160,
       "width": 180,
       "height": 60
@@ -2340,7 +2403,7 @@
       "id": "n_game_src_server_services_leaderstats_leaderstats_start",
       "type": "file",
       "file": "08 Knowledge Graph/Leaderstats.Start().md",
-      "x": 8020,
+      "x": 8240,
       "y": 160,
       "width": 180,
       "height": 60
@@ -2349,7 +2412,7 @@
       "id": "n_game_src_server_services_questservice_questservice_start",
       "type": "file",
       "file": "08 Knowledge Graph/QuestService.Start().md",
-      "x": 8220,
+      "x": 8440,
       "y": 160,
       "width": 180,
       "height": 60
@@ -2358,7 +2421,7 @@
       "id": "n_game_src_server_services_dataservice_onplayeradded",
       "type": "file",
       "file": "08 Knowledge Graph/onPlayerAdded().md",
-      "x": 7820,
+      "x": 8040,
       "y": 240,
       "width": 180,
       "height": 60
@@ -2367,7 +2430,7 @@
       "id": "n_script_parent_parent_packages_profilestore",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_parent_packages_profilestore.md",
-      "x": 8020,
+      "x": 8240,
       "y": 240,
       "width": 180,
       "height": 60
@@ -2421,7 +2484,7 @@
     {
       "id": "n_tools_graph_to_vault_main",
       "type": "file",
-      "file": "08 Knowledge Graph/main()_5.md",
+      "file": "08 Knowledge Graph/main()_4.md",
       "x": 9000,
       "y": 160,
       "width": 180,
@@ -2484,11 +2547,11 @@
     {
       "id": "g6",
       "type": "group",
-      "label": "Islands Research",
+      "label": "Community 6",
       "x": 0,
       "y": 1100,
-      "width": 1100,
-      "height": 620,
+      "width": 660,
+      "height": 420,
       "color": "1"
     },
     {
@@ -2501,37 +2564,10 @@
       "height": 60
     },
     {
-      "id": "n_01_vision_design_pillars_pillars",
-      "type": "file",
-      "file": "01 Vision/Design Pillars.md",
-      "x": 220,
-      "y": 1180,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "n_02_research_islands_roblox_fossil_collection",
       "type": "file",
       "file": "08 Knowledge Graph/Hidden fossil collection quests.md",
-      "x": 420,
-      "y": 1180,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_02_research_trends_oct_2026_idle_grow",
-      "type": "file",
-      "file": "08 Knowledge Graph/Idle-grow  cozy trend (Grow a Garden spike and decay).md",
-      "x": 620,
-      "y": 1180,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_02_research_islands_roblox_islands_game",
-      "type": "file",
-      "file": "08 Knowledge Graph/Islands (Roblox game by Easy.gg).md",
-      "x": 820,
+      "x": 220,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -2540,17 +2576,8 @@
       "id": "n_02_research_islands_roblox_islands_research",
       "type": "file",
       "file": "02 Research/Islands (Roblox).md",
-      "x": 20,
-      "y": 1260,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_mechanics_to_borrow_item_leveling",
-      "type": "file",
-      "file": "08 Knowledge Graph/Item leveling gear grows the more you use it.md",
-      "x": 220,
-      "y": 1260,
+      "x": 420,
+      "y": 1180,
       "width": 180,
       "height": 60
     },
@@ -2558,71 +2585,8 @@
       "id": "n_02_research_islands_roblox_key_gated_islands",
       "type": "file",
       "file": "08 Knowledge Graph/Key-gated adventure islands.md",
-      "x": 420,
-      "y": 1260,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_mechanics_to_borrow_mechanics_to_borrow",
-      "type": "file",
-      "file": "03 Design/Mechanics to Borrow.md",
-      "x": 620,
-      "y": 1260,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_anti_burnout_ideas_offline_progress",
-      "type": "file",
-      "file": "08 Knowledge Graph/Offline progress and timers.md",
-      "x": 820,
-      "y": 1260,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_mechanics_to_borrow_passive_generators",
-      "type": "file",
-      "file": "08 Knowledge Graph/Passive generators with a range limit.md",
       "x": 20,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_01_vision_design_pillars_always_growing",
-      "type": "file",
-      "file": "08 Knowledge Graph/Pillar 2 Always growing (offline production).md",
-      "x": 220,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_01_vision_design_pillars_risk_and_reward",
-      "type": "file",
-      "file": "08 Knowledge Graph/Pillar 3 Risk and reward (the Warzone).md",
-      "x": 420,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_01_vision_design_pillars_better_together",
-      "type": "file",
-      "file": "08 Knowledge Graph/Pillar 4 Better together (co-op, trading, squads).md",
-      "x": 620,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_01_vision_design_pillars_never_abandoned",
-      "type": "file",
-      "file": "08 Knowledge Graph/Pillar 5 Never abandoned (steady updates).md",
-      "x": 820,
-      "y": 1340,
+      "y": 1260,
       "width": 180,
       "height": 60
     },
@@ -2630,8 +2594,8 @@
       "id": "n_05_tech_tools_stack_profilestore",
       "type": "file",
       "file": "08 Knowledge Graph/ProfileStore (player data with session locking).md",
-      "x": 20,
-      "y": 1420,
+      "x": 220,
+      "y": 1260,
       "width": 180,
       "height": 60
     },
@@ -2639,8 +2603,8 @@
       "id": "n_03_design_mechanics_to_borrow_atomic_server_trades",
       "type": "file",
       "file": "08 Knowledge Graph/Rule all trades, pickups and inventory changes are server-side and all-or-nothing.md",
-      "x": 220,
-      "y": 1420,
+      "x": 420,
+      "y": 1260,
       "width": 180,
       "height": 60
     },
@@ -2648,17 +2612,8 @@
       "id": "n_02_research_islands_roblox_token_bosses",
       "type": "file",
       "file": "08 Knowledge Graph/Token-summoned bosses with cooldowns.md",
-      "x": 420,
-      "y": 1420,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_02_research_islands_roblox_totems",
-      "type": "file",
-      "file": "08 Knowledge Graph/Totems passive resource generators with a range.md",
-      "x": 620,
-      "y": 1420,
+      "x": 20,
+      "y": 1340,
       "width": 180,
       "height": 60
     },
@@ -2666,17 +2621,8 @@
       "id": "n_02_research_islands_roblox_dupe_exploit",
       "type": "file",
       "file": "08 Knowledge Graph/Trading shut down after a duplication exploit Unverified.md",
-      "x": 820,
-      "y": 1420,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_anti_burnout_ideas_update_cadence",
-      "type": "file",
-      "file": "08 Knowledge Graph/Update cadence weekly event + monthly content drop.md",
-      "x": 20,
-      "y": 1500,
+      "x": 220,
+      "y": 1340,
       "width": 180,
       "height": 60
     },
@@ -2684,8 +2630,8 @@
       "id": "n_03_design_mechanics_to_borrow_warzone_keys",
       "type": "file",
       "file": "08 Knowledge Graph/Warzone-only keysmaterials unlock island tiers.md",
-      "x": 220,
-      "y": 1500,
+      "x": 420,
+      "y": 1340,
       "width": 180,
       "height": 60
     },
@@ -2790,9 +2736,9 @@
       "height": 60
     },
     {
-      "id": "n_art_scripts_items3d_carrot",
+      "id": "n_art_scripts_items3d_build_items",
       "type": "file",
-      "file": "08 Knowledge Graph/carrot().md",
+      "file": "08 Knowledge Graph/build_items().md",
       "x": 2900,
       "y": 1260,
       "width": 180,
@@ -2871,11 +2817,29 @@
       "height": 60
     },
     {
+      "id": "n_art_scripts_items3d_main",
+      "type": "file",
+      "file": "08 Knowledge Graph/main()_5.md",
+      "x": 3300,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_mathutils",
+      "type": "file",
+      "file": "08 Knowledge Graph/mathutils.md",
+      "x": 3500,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
       "id": "n_art_scripts_items3d_new_verts",
       "type": "file",
       "file": "08 Knowledge Graph/new_verts().md",
-      "x": 3300,
-      "y": 1340,
+      "x": 2300,
+      "y": 1420,
       "width": 180,
       "height": 60
     },
@@ -2883,8 +2847,8 @@
       "id": "n_numpy",
       "type": "file",
       "file": "08 Knowledge Graph/numpy.md",
-      "x": 3500,
-      "y": 1340,
+      "x": 2500,
+      "y": 1420,
       "width": 180,
       "height": 60
     },
@@ -2892,7 +2856,7 @@
       "id": "n_art_scripts_items3d_over",
       "type": "file",
       "file": "08 Knowledge Graph/over().md",
-      "x": 2300,
+      "x": 2700,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -2901,7 +2865,7 @@
       "id": "n_art_scripts_items3d_pickaxe",
       "type": "file",
       "file": "08 Knowledge Graph/pickaxe().md",
-      "x": 2500,
+      "x": 2900,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -2910,7 +2874,7 @@
       "id": "n_art_scripts_items3d_potato",
       "type": "file",
       "file": "08 Knowledge Graph/potato().md",
-      "x": 2700,
+      "x": 3100,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -2919,7 +2883,7 @@
       "id": "n_art_scripts_items3d_read_image",
       "type": "file",
       "file": "08 Knowledge Graph/read_image().md",
-      "x": 2900,
+      "x": 3300,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -2928,7 +2892,7 @@
       "id": "n_art_scripts_items3d_render_icon",
       "type": "file",
       "file": "08 Knowledge Graph/render_icon().md",
-      "x": 3100,
+      "x": 3500,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -2937,17 +2901,8 @@
       "id": "n_art_scripts_items3d_render_icons",
       "type": "file",
       "file": "08 Knowledge Graph/render_icons().md",
-      "x": 3300,
-      "y": 1420,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_art_scripts_items3d_scrap",
-      "type": "file",
-      "file": "08 Knowledge Graph/scrap().md",
-      "x": 3500,
-      "y": 1420,
+      "x": 2300,
+      "y": 1500,
       "width": 180,
       "height": 60
     },
@@ -2955,7 +2910,7 @@
       "id": "n_art_scripts_items3d_seed_pouch",
       "type": "file",
       "file": "08 Knowledge Graph/seed_pouch().md",
-      "x": 2300,
+      "x": 2500,
       "y": 1500,
       "width": 180,
       "height": 60
@@ -2964,7 +2919,7 @@
       "id": "n_art_scripts_items3d_setup_lights",
       "type": "file",
       "file": "08 Knowledge Graph/setup_lights().md",
-      "x": 2500,
+      "x": 2700,
       "y": 1500,
       "width": 180,
       "height": 60
@@ -2973,7 +2928,7 @@
       "id": "n_art_scripts_items3d_shovel",
       "type": "file",
       "file": "08 Knowledge Graph/shovel().md",
-      "x": 2700,
+      "x": 2900,
       "y": 1500,
       "width": 180,
       "height": 60
@@ -2982,7 +2937,7 @@
       "id": "n_art_scripts_items3d_slab",
       "type": "file",
       "file": "08 Knowledge Graph/slab().md",
-      "x": 2900,
+      "x": 3100,
       "y": 1500,
       "width": 180,
       "height": 60
@@ -2991,7 +2946,7 @@
       "id": "n_art_scripts_items3d_sticks",
       "type": "file",
       "file": "08 Knowledge Graph/sticks().md",
-      "x": 3100,
+      "x": 3300,
       "y": 1500,
       "width": 180,
       "height": 60
@@ -3000,7 +2955,7 @@
       "id": "n_art_scripts_items3d_sword",
       "type": "file",
       "file": "08 Knowledge Graph/sword().md",
-      "x": 3300,
+      "x": 3500,
       "y": 1500,
       "width": 180,
       "height": 60
@@ -3009,8 +2964,8 @@
       "id": "n_art_scripts_items3d_axe_thickness",
       "type": "file",
       "file": "08 Knowledge Graph/thickness().md",
-      "x": 3500,
-      "y": 1500,
+      "x": 2300,
+      "y": 1580,
       "width": 180,
       "height": 60
     },
@@ -3018,7 +2973,7 @@
       "id": "n_art_scripts_items3d_to_roblox",
       "type": "file",
       "file": "08 Knowledge Graph/to_roblox().md",
-      "x": 2300,
+      "x": 2500,
       "y": 1580,
       "width": 180,
       "height": 60
@@ -3027,15 +2982,6 @@
       "id": "n_art_scripts_items3d_vec",
       "type": "file",
       "file": "08 Knowledge Graph/vec().md",
-      "x": 2500,
-      "y": 1580,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_art_scripts_items3d_wheat",
-      "type": "file",
-      "file": "08 Knowledge Graph/wheat().md",
       "x": 2700,
       "y": 1580,
       "width": 180,
@@ -3090,7 +3036,7 @@
       "id": "g8",
       "type": "group",
       "label": "Core Loop and Pillars",
-      "x": 4340,
+      "x": 4120,
       "y": 1100,
       "width": 880,
       "height": 520,
@@ -3100,7 +3046,7 @@
       "id": "n_01_vision_pitch_draft_take_ideas_not_assets",
       "type": "file",
       "file": "08 Knowledge Graph/Borrow ideas, never names, maps, UI or assets.md",
-      "x": 4360,
+      "x": 4140,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3109,16 +3055,16 @@
       "id": "n_03_design_core_loop_core_loop",
       "type": "file",
       "file": "03 Design/Core Loop.md",
-      "x": 4560,
+      "x": 4340,
       "y": 1180,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_07_roadmap_decision_log_dec_blend_direction",
+      "id": "n_01_vision_design_pillars_pillars",
       "type": "file",
-      "file": "08 Knowledge Graph/Decision blend Islands + Skybounds Warzone.md",
-      "x": 4760,
+      "file": "01 Vision/Design Pillars.md",
+      "x": 4540,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3127,7 +3073,7 @@
       "id": "n_home_evidence_labels",
       "type": "file",
       "file": "08 Knowledge Graph/Evidence labels Unverified  Inference  Speculation.md",
-      "x": 4960,
+      "x": 4740,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3136,7 +3082,7 @@
       "id": "n_07_roadmap_open_questions_game_name",
       "type": "file",
       "file": "08 Knowledge Graph/Game name still undecided (can't reuse IslandsSkyblockSkybounds).md",
-      "x": 4360,
+      "x": 4140,
       "y": 1260,
       "width": 180,
       "height": 60
@@ -3145,25 +3091,7 @@
       "id": "n_home_home",
       "type": "file",
       "file": "Home.md",
-      "x": 4560,
-      "y": 1260,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_core_loop_island_warzone_loop",
-      "type": "file",
-      "file": "08 Knowledge Graph/Island (safe) - Warzone (risky) loop.md",
-      "x": 4760,
-      "y": 1260,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_core_loop_island_loop",
-      "type": "file",
-      "file": "08 Knowledge Graph/Island loop gather, craft, expand, automate, earn offline.md",
-      "x": 4960,
+      "x": 4340,
       "y": 1260,
       "width": 180,
       "height": 60
@@ -3172,8 +3100,17 @@
       "id": "n_03_design_islands_feature_checklist_feature_checklist",
       "type": "file",
       "file": "03 Design/Islands Feature Checklist.md",
-      "x": 4360,
-      "y": 1340,
+      "x": 4540,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_mechanics_to_borrow_mechanics_to_borrow",
+      "type": "file",
+      "file": "03 Design/Mechanics to Borrow.md",
+      "x": 4740,
+      "y": 1260,
       "width": 180,
       "height": 60
     },
@@ -3181,7 +3118,16 @@
       "id": "n_07_roadmap_open_questions_open_questions",
       "type": "file",
       "file": "07 Roadmap/Open Questions.md",
-      "x": 4560,
+      "x": 4140,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_01_vision_design_pillars_better_together",
+      "type": "file",
+      "file": "08 Knowledge Graph/Pillar 4 Better together (co-op, trading, squads).md",
+      "x": 4340,
       "y": 1340,
       "width": 180,
       "height": 60
@@ -3190,25 +3136,43 @@
       "id": "n_01_vision_pitch_draft_pitch",
       "type": "file",
       "file": "01 Vision/Pitch (Draft).md",
-      "x": 4760,
+      "x": 4540,
       "y": 1340,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_01_vision_pitch_draft_one_line",
+      "id": "n_03_design_skills_levels_skills_levels",
       "type": "file",
-      "file": "08 Knowledge Graph/Pitch own a floating island, drop into a shared Warzone, bring loot home.md",
-      "x": 4960,
+      "file": "03 Design/Skills & Levels.md",
+      "x": 4740,
       "y": 1340,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_03_design_core_loop_warzone_loop",
+      "id": "n_01_vision_target_audience_target_audience",
       "type": "file",
-      "file": "08 Knowledge Graph/Warzone loop gear up, drop in, loot, survive, extract.md",
-      "x": 4360,
+      "file": "01 Vision/Target Audience.md",
+      "x": 4140,
+      "y": 1420,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_tutorial_quests_tutorial",
+      "type": "file",
+      "file": "03 Design/Tutorial & Quests.md",
+      "x": 4340,
+      "y": 1420,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_warzone_warzone",
+      "type": "file",
+      "file": "03 Design/Warzone.md",
+      "x": 4540,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -3220,23 +3184,14 @@
       "x": 6180,
       "y": 1100,
       "width": 880,
-      "height": 520,
+      "height": 420,
       "color": "4"
-    },
-    {
-      "id": "n_03_design_tutorial_quests_quest_chain",
-      "type": "file",
-      "file": "08 Knowledge Graph/Beginner quest chain (13 quests, ends at level 10).md",
-      "x": 6200,
-      "y": 1180,
-      "width": 180,
-      "height": 60
     },
     {
       "id": "n_06_monetization_monetization_principles_fair_value",
       "type": "file",
       "file": "08 Knowledge Graph/Fair value passes, cosmetics over power, clear prices.md",
-      "x": 6400,
+      "x": 6200,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3245,7 +3200,7 @@
       "id": "n_06_monetization_monetization_principles_ads_after_retention",
       "type": "file",
       "file": "08 Knowledge Graph/Hold paid ads until a soft launch shows good retention.md",
-      "x": 6600,
+      "x": 6400,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3254,17 +3209,8 @@
       "id": "n_02_research_roblox_policies_maturity_rating",
       "type": "file",
       "file": "08 Knowledge Graph/Maturity rating of combat open check.md",
-      "x": 6800,
+      "x": 6600,
       "y": 1180,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_01_vision_target_audience_mobile_first",
-      "type": "file",
-      "file": "08 Knowledge Graph/Mobile-first UI.md",
-      "x": 6200,
-      "y": 1260,
       "width": 180,
       "height": 60
     },
@@ -3272,8 +3218,8 @@
       "id": "n_06_monetization_monetization_principles_monetization",
       "type": "file",
       "file": "06 Monetization/Monetization Principles.md",
-      "x": 6400,
-      "y": 1260,
+      "x": 6800,
+      "y": 1180,
       "width": 180,
       "height": 60
     },
@@ -3281,7 +3227,7 @@
       "id": "n_06_monetization_monetization_principles_no_pressure",
       "type": "file",
       "file": "08 Knowledge Graph/Never fake countdowns, hidden pricing, paid gambling aimed at minors.md",
-      "x": 6600,
+      "x": 6200,
       "y": 1260,
       "width": 180,
       "height": 60
@@ -3290,7 +3236,7 @@
       "id": "n_02_research_roblox_policies_paid_random_items",
       "type": "file",
       "file": "08 Knowledge Graph/Paid random items need PolicyService ArePaidRandomItemsRestricted.md",
-      "x": 6800,
+      "x": 6400,
       "y": 1260,
       "width": 180,
       "height": 60
@@ -3299,8 +3245,8 @@
       "id": "n_02_research_roblox_policies_kids_select",
       "type": "file",
       "file": "08 Knowledge Graph/Roblox Kids & Select age bands and content ratings.md",
-      "x": 6200,
-      "y": 1340,
+      "x": 6600,
+      "y": 1260,
       "width": 180,
       "height": 60
     },
@@ -3308,8 +3254,8 @@
       "id": "n_02_research_roblox_policies_policies",
       "type": "file",
       "file": "02 Research/Roblox Policies.md",
-      "x": 6400,
-      "y": 1340,
+      "x": 6800,
+      "y": 1260,
       "width": 180,
       "height": 60
     },
@@ -3317,26 +3263,8 @@
       "id": "n_02_research_roblox_policies_steal_an_egg_precedent",
       "type": "file",
       "file": "08 Knowledge Graph/Steal An Egg precedent (feature pulled, rule added).md",
-      "x": 6600,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_01_vision_target_audience_target_audience",
-      "type": "file",
-      "file": "01 Vision/Target Audience.md",
-      "x": 6800,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_tutorial_quests_tutorial",
-      "type": "file",
-      "file": "03 Design/Tutorial & Quests.md",
       "x": 6200,
-      "y": 1420,
+      "y": 1340,
       "width": 180,
       "height": 60
     },
@@ -3345,7 +3273,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/Younger Roblox players (Kids 5-8, Select 9-15).md",
       "x": 6400,
-      "y": 1420,
+      "y": 1340,
       "width": 180,
       "height": 60
     },
@@ -3353,17 +3281,26 @@
       "id": "g10",
       "type": "group",
       "label": "Community 10",
-      "x": 7800,
+      "x": 8020,
       "y": 1100,
-      "width": 1100,
-      "height": 620,
+      "width": 880,
+      "height": 520,
       "color": "5"
+    },
+    {
+      "id": "n_game_src_server_services_dataservice_dataservice_getdata",
+      "type": "file",
+      "file": "08 Knowledge Graph/DataService.GetData().md",
+      "x": 8040,
+      "y": 1180,
+      "width": 180,
+      "height": 60
     },
     {
       "id": "n_game_src_server_services_dataservice_dataservice_markchanged",
       "type": "file",
       "file": "08 Knowledge Graph/DataService.MarkChanged().md",
-      "x": 7820,
+      "x": 8240,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3372,7 +3309,7 @@
       "id": "n_game_src_server_services_inventoryservice_inventoryservice_add",
       "type": "file",
       "file": "08 Knowledge Graph/InventoryService.Add().md",
-      "x": 8020,
+      "x": 8440,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3381,16 +3318,7 @@
       "id": "n_game_src_server_services_inventoryservice_inventoryservice_addcoins",
       "type": "file",
       "file": "08 Knowledge Graph/InventoryService.AddCoins().md",
-      "x": 8220,
-      "y": 1180,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_inventoryservice_inventoryservice_count",
-      "type": "file",
-      "file": "08 Knowledge Graph/InventoryService.Count().md",
-      "x": 8420,
+      "x": 8640,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3399,8 +3327,8 @@
       "id": "n_game_src_server_services_inventoryservice_inventoryservice_remove",
       "type": "file",
       "file": "08 Knowledge Graph/InventoryService.Remove().md",
-      "x": 8620,
-      "y": 1180,
+      "x": 8040,
+      "y": 1260,
       "width": 180,
       "height": 60
     },
@@ -3408,7 +3336,7 @@
       "id": "n_game_src_server_services_inventoryservice_inventoryservice_removemany",
       "type": "file",
       "file": "08 Knowledge Graph/InventoryService.RemoveMany().md",
-      "x": 7820,
+      "x": 8240,
       "y": 1260,
       "width": 180,
       "height": 60
@@ -3417,7 +3345,7 @@
       "id": "n_game_src_server_services_inventoryservice_inventoryservice_spendcoins",
       "type": "file",
       "file": "08 Knowledge Graph/InventoryService.SpendCoins().md",
-      "x": 8020,
+      "x": 8440,
       "y": 1260,
       "width": 180,
       "height": 60
@@ -3426,7 +3354,7 @@
       "id": "n_game_src_server_services_inventoryservice_inventoryservice_usetool",
       "type": "file",
       "file": "08 Knowledge Graph/InventoryService.UseTool().md",
-      "x": 8220,
+      "x": 8640,
       "y": 1260,
       "width": 180,
       "height": 60
@@ -3435,17 +3363,8 @@
       "id": "n_game_src_server_services_inventoryservice",
       "type": "file",
       "file": "08 Knowledge Graph/InventoryService.luau.md",
-      "x": 8420,
-      "y": 1260,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_marketservice",
-      "type": "file",
-      "file": "08 Knowledge Graph/MarketService.luau.md",
-      "x": 8620,
-      "y": 1260,
+      "x": 8040,
+      "y": 1340,
       "width": 180,
       "height": 60
     },
@@ -3453,25 +3372,7 @@
       "id": "n_game_src_server_services_progressionservice_progressionservice_addplayerxp",
       "type": "file",
       "file": "08 Knowledge Graph/ProgressionService.AddPlayerXP().md",
-      "x": 7820,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_questservice_questservice_record",
-      "type": "file",
-      "file": "08 Knowledge Graph/QuestService.Record().md",
-      "x": 8020,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_questservice",
-      "type": "file",
-      "file": "08 Knowledge Graph/QuestService.luau.md",
-      "x": 8220,
+      "x": 8240,
       "y": 1340,
       "width": 180,
       "height": 60
@@ -3480,16 +3381,7 @@
       "id": "n_game_src_server_services_inventoryservice_autohotbar",
       "type": "file",
       "file": "08 Knowledge Graph/autoHotbar().md",
-      "x": 8420,
-      "y": 1340,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_questservice_checkreach",
-      "type": "file",
-      "file": "08 Knowledge Graph/checkReach().md",
-      "x": 8620,
+      "x": 8440,
       "y": 1340,
       "width": 180,
       "height": 60
@@ -3498,25 +3390,25 @@
       "id": "n_game_src_server_services_inventoryservice_clearifempty",
       "type": "file",
       "file": "08 Knowledge Graph/clearIfEmpty().md",
-      "x": 7820,
+      "x": 8640,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_warzoneservice_endraid",
+      "type": "file",
+      "file": "08 Knowledge Graph/endRaid().md",
+      "x": 8040,
       "y": 1420,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_questservice_complete",
+      "id": "n_game_src_server_services_warzoneservice_extract",
       "type": "file",
-      "file": "08 Knowledge Graph/complete().md",
-      "x": 8020,
-      "y": 1420,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_questservice_currentquest",
-      "type": "file",
-      "file": "08 Knowledge Graph/currentQuest().md",
-      "x": 8220,
+      "file": "08 Knowledge Graph/extract().md",
+      "x": 8240,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -3525,53 +3417,8 @@
       "id": "n_game_src_server_services_questservice_givereward",
       "type": "file",
       "file": "08 Knowledge Graph/giveReward().md",
-      "x": 8420,
+      "x": 8440,
       "y": 1420,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_marketservice_nearstall",
-      "type": "file",
-      "file": "08 Knowledge Graph/nearStall().md",
-      "x": 8620,
-      "y": 1420,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_marketservice_onbuyseed",
-      "type": "file",
-      "file": "08 Knowledge Graph/onBuySeed().md",
-      "x": 7820,
-      "y": 1500,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_marketservice_onsell",
-      "type": "file",
-      "file": "08 Knowledge Graph/onSell().md",
-      "x": 8020,
-      "y": 1500,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_script_parent_townservice",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_townservice.md",
-      "x": 8220,
-      "y": 1500,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_marketservice_sellitem",
-      "type": "file",
-      "file": "08 Knowledge Graph/sellItem().md",
-      "x": 8420,
-      "y": 1500,
       "width": 180,
       "height": 60
     },
@@ -3581,7 +3428,7 @@
       "label": "Community 11",
       "x": 8980,
       "y": 1100,
-      "width": 880,
+      "width": 1100,
       "height": 520,
       "color": "6"
     },
@@ -3613,10 +3460,19 @@
       "height": 60
     },
     {
+      "id": "n_game_src_server_services_islandservice_islandservice_onislandcreated",
+      "type": "file",
+      "file": "08 Knowledge Graph/IslandService.OnIslandCreated().md",
+      "x": 9600,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
       "id": "n_game_src_shared_leveling_leveling_farmingbonuschance",
       "type": "file",
       "file": "08 Knowledge Graph/Leveling.FarmingBonusChance().md",
-      "x": 9600,
+      "x": 9800,
       "y": 1180,
       "width": 180,
       "height": 60
@@ -3640,18 +3496,18 @@
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_farmservice_bestseed",
+      "id": "n_game_src_server_services_travelservice_travelservice_go",
       "type": "file",
-      "file": "08 Knowledge Graph/bestSeed().md",
+      "file": "08 Knowledge Graph/TravelService.Go().md",
       "x": 9400,
       "y": 1260,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_farmservice_formattime",
+      "id": "n_game_src_server_services_farmservice_bestseed",
       "type": "file",
-      "file": "08 Knowledge Graph/formatTime().md",
+      "file": "08 Knowledge Graph/bestSeed().md",
       "x": 9600,
       "y": 1260,
       "width": 180,
@@ -3661,16 +3517,16 @@
       "id": "n_game_src_server_services_farmservice_heldseed",
       "type": "file",
       "file": "08 Knowledge Graph/heldSeed().md",
-      "x": 9000,
-      "y": 1340,
+      "x": 9800,
+      "y": 1260,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_farmservice_makelabel",
+      "id": "n_game_src_server_services_farmservice_holdingshovel",
       "type": "file",
-      "file": "08 Knowledge Graph/makeLabel().md",
-      "x": 9200,
+      "file": "08 Knowledge Graph/holdingShovel().md",
+      "x": 9000,
       "y": 1340,
       "width": 180,
       "height": 60
@@ -3679,7 +3535,7 @@
       "id": "n_game_src_server_services_farmservice_onfarmclick",
       "type": "file",
       "file": "08 Knowledge Graph/onFarmClick().md",
-      "x": 9400,
+      "x": 9200,
       "y": 1340,
       "width": 180,
       "height": 60
@@ -3688,7 +3544,7 @@
       "id": "n_game_src_server_services_farmservice_onislandcreated",
       "type": "file",
       "file": "08 Knowledge Graph/onIslandCreated().md",
-      "x": 9600,
+      "x": 9400,
       "y": 1340,
       "width": 180,
       "height": 60
@@ -3697,8 +3553,8 @@
       "id": "n_game_src_server_services_farmservice_onplotclicked",
       "type": "file",
       "file": "08 Knowledge Graph/onPlotClicked().md",
-      "x": 9000,
-      "y": 1420,
+      "x": 9600,
+      "y": 1340,
       "width": 180,
       "height": 60
     },
@@ -3706,8 +3562,8 @@
       "id": "n_game_src_server_services_farmservice_plotstate",
       "type": "file",
       "file": "08 Knowledge Graph/plotState().md",
-      "x": 9200,
-      "y": 1420,
+      "x": 9800,
+      "y": 1340,
       "width": 180,
       "height": 60
     },
@@ -3715,7 +3571,7 @@
       "id": "n_game_src_server_services_farmservice_refreshplot",
       "type": "file",
       "file": "08 Knowledge Graph/refreshPlot().md",
-      "x": 9400,
+      "x": 9000,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -3724,7 +3580,7 @@
       "id": "n_game_src_server_services_farmservice_setvisual",
       "type": "file",
       "file": "08 Knowledge Graph/setVisual().md",
-      "x": 9600,
+      "x": 9200,
       "y": 1420,
       "width": 180,
       "height": 60
@@ -3732,54 +3588,45 @@
     {
       "id": "g12",
       "type": "group",
-      "label": "Skills, Levels and Content",
+      "label": "Community 12",
       "x": 0,
       "y": 2000,
-      "width": 1100,
+      "width": 880,
       "height": 520,
       "color": "1"
     },
     {
-      "id": "n_03_design_skills_levels_combat_skill",
+      "id": "n_02_research_skybounds_minecraft_challenge_ladder",
       "type": "file",
-      "file": "08 Knowledge Graph/Combat (PvE) skill.md",
+      "file": "08 Knowledge Graph/100+ challenges and an island challenge ladder.md",
       "x": 20,
       "y": 2080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_04_content_content_index_content_index",
+      "id": "n_03_design_tutorial_quests_quest_chain",
       "type": "file",
-      "file": "04 Content/Content Index.md",
+      "file": "08 Knowledge Graph/Beginner quest chain (13 quests, ends at level 10).md",
       "x": 220,
       "y": 2080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_shared_crops",
+      "id": "n_02_research_skybounds_minecraft_fly_tokens",
       "type": "file",
-      "file": "08 Knowledge Graph/Crops.luau.md",
+      "file": "08 Knowledge Graph/Fly tokens tradeable timed power.md",
       "x": 420,
       "y": 2080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_04_content_content_index_crops_list",
+      "id": "n_03_design_mechanics_to_borrow_item_leveling",
       "type": "file",
-      "file": "08 Knowledge Graph/Crops Wheat (1), Carrot (5), Potato (10), Glowberry (Warzone seeds).md",
+      "file": "08 Knowledge Graph/Item leveling gear grows the more you use it.md",
       "x": 620,
-      "y": 2080,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_skills_levels_farming_skill",
-      "type": "file",
-      "file": "08 Knowledge Graph/Farming skill.md",
-      "x": 820,
       "y": 2080,
       "width": 180,
       "height": 60
@@ -3794,19 +3641,10 @@
       "height": 60
     },
     {
-      "id": "n_03_design_skills_levels_level_gates",
+      "id": "n_01_vision_target_audience_mobile_first",
       "type": "file",
-      "file": "08 Knowledge Graph/Level gates crops need Farming level, mobs need Combat level.md",
+      "file": "08 Knowledge Graph/Mobile-first UI.md",
       "x": 220,
-      "y": 2160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_04_content_content_index_mobs_list",
-      "type": "file",
-      "file": "08 Knowledge Graph/Mobs Slime (Combat 1), Brute (Combat 5).md",
-      "x": 420,
       "y": 2160,
       "width": 180,
       "height": 60
@@ -3815,7 +3653,7 @@
       "id": "n_01_vision_design_pillars_your_island_your_story",
       "type": "file",
       "file": "08 Knowledge Graph/Pillar 1 Your island, your story.md",
-      "x": 620,
+      "x": 420,
       "y": 2160,
       "width": 180,
       "height": 60
@@ -3824,17 +3662,8 @@
       "id": "n_03_design_skills_levels_player_level",
       "type": "file",
       "file": "08 Knowledge Graph/Player level 1-50 (XP from PvE, grinding, quests).md",
-      "x": 820,
+      "x": 620,
       "y": 2160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_02_research_trends_oct_2026_rp_sim_hybrids",
-      "type": "file",
-      "file": "08 Knowledge Graph/Roleplay + simulator hybrids growing Unverified.md",
-      "x": 20,
-      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -3842,15 +3671,24 @@
       "id": "n_03_design_skills_levels_season_reset",
       "type": "file",
       "file": "08 Knowledge Graph/Seasons of 2-4 months; player level resets.md",
+      "x": 20,
+      "y": 2240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_02_research_skybounds_minecraft_skybounds_server",
+      "type": "file",
+      "file": "08 Knowledge Graph/Skybounds (Minecraft Skyblock server, now shut down).md",
       "x": 220,
       "y": 2240,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_03_design_skills_levels_skills_levels",
+      "id": "n_02_research_skybounds_minecraft_skybounds_research",
       "type": "file",
-      "file": "03 Design/Skills & Levels.md",
+      "file": "02 Research/Skybounds (Minecraft).md",
       "x": 420,
       "y": 2240,
       "width": 180,
@@ -3869,24 +3707,15 @@
       "id": "n_02_research_skybounds_minecraft_skybounds_seasons",
       "type": "file",
       "file": "08 Knowledge Graph/Skybounds seasons 2-4 months, level resets.md",
-      "x": 820,
-      "y": 2240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_02_research_trends_oct_2026_steal_and_defend",
-      "type": "file",
-      "file": "08 Knowledge Graph/Steal-and-defend trend (Steal An Egg, Steal a Brainrot).md",
       "x": 20,
       "y": 2320,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_02_research_trends_oct_2026_trends",
+      "id": "n_02_research_skybounds_minecraft_skybounds_head_drop",
       "type": "file",
-      "file": "02 Research/Trends - Oct 2026.md",
+      "file": "08 Knowledge Graph/Skybounds your head drops on death with your loot.md",
       "x": 220,
       "y": 2320,
       "width": 180,
@@ -3902,46 +3731,37 @@
       "height": 60
     },
     {
-      "id": "n_02_research_trends_oct_2026_why_hits_declined",
-      "type": "file",
-      "file": "08 Knowledge Graph/Why big hits declined event spikes, exploits, economy trust, confusing resets.md",
-      "x": 620,
-      "y": 2320,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "g13",
       "type": "group",
       "label": "Community 13",
       "x": 2280,
       "y": 2000,
-      "width": 880,
-      "height": 520,
+      "width": 660,
+      "height": 420,
       "color": "2"
     },
     {
-      "id": "n_game_src_shared_blocks",
+      "id": "n_game_src_shared_economy_economy_total",
       "type": "file",
-      "file": "08 Knowledge Graph/Blocks.luau.md",
+      "file": "08 Knowledge Graph/Economy.Total().md",
       "x": 2300,
       "y": 2080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_07_roadmap_decision_log_dec_minecraft_blocks",
+      "id": "n_game_src_shared_economy_economy_value",
       "type": "file",
-      "file": "08 Knowledge Graph/Decision Minecraft-style block islands (break and place, saved).md",
+      "file": "08 Knowledge Graph/Economy.Value().md",
       "x": 2500,
       "y": 2080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_07_roadmap_decision_log_dec_toughness",
+      "id": "n_game_src_shared_economy",
       "type": "file",
-      "file": "08 Knowledge Graph/Decision block toughness + tool power (Minecraft rules).md",
+      "file": "08 Knowledge Graph/Economy.luau.md",
       "x": 2700,
       "y": 2080,
       "width": 180,
@@ -3951,43 +3771,7 @@
       "id": "n_game_src_shared_items",
       "type": "file",
       "file": "08 Knowledge Graph/Items.luau.md",
-      "x": 2900,
-      "y": 2080,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_shared_mining_mining_breaktime",
-      "type": "file",
-      "file": "08 Knowledge Graph/Mining.BreakTime().md",
       "x": 2300,
-      "y": 2160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_shared_mining_mining_usestool",
-      "type": "file",
-      "file": "08 Knowledge Graph/Mining.UsesTool().md",
-      "x": 2500,
-      "y": 2160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_shared_mining",
-      "type": "file",
-      "file": "08 Knowledge Graph/Mining.luau.md",
-      "x": 2700,
-      "y": 2160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_shared_quests",
-      "type": "file",
-      "file": "08 Knowledge Graph/Quests.luau.md",
-      "x": 2900,
       "y": 2160,
       "width": 180,
       "height": 60
@@ -3996,44 +3780,26 @@
       "id": "n_game_src_shared_recipes",
       "type": "file",
       "file": "08 Knowledge Graph/Recipes.luau.md",
-      "x": 2300,
-      "y": 2240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_03_design_tutorial_quests_tool_path_quests",
-      "type": "file",
-      "file": "08 Knowledge Graph/Tool path quests wood - planks - sticks - pickaxe - stone.md",
       "x": 2500,
-      "y": 2240,
+      "y": 2160,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_shared_tools",
+      "id": "n_script_parent_items",
       "type": "file",
-      "file": "08 Knowledge Graph/Tools.luau.md",
+      "file": "08 Knowledge Graph/script_parent_items.md",
       "x": 2700,
-      "y": 2240,
+      "y": 2160,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_04_content_content_index_tool_tiers",
+      "id": "n_script_parent_recipes",
       "type": "file",
-      "file": "08 Knowledge Graph/Tools pickaxe, axe, shovel, sword in Wooden  Stone  Crystal.md",
-      "x": 2900,
-      "y": 2240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_script_parent_blocks",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_blocks.md",
+      "file": "08 Knowledge Graph/script_parent_recipes.md",
       "x": 2300,
-      "y": 2320,
+      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -4042,7 +3808,16 @@
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_tools.md",
       "x": 2500,
-      "y": 2320,
+      "y": 2240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_shared_economy_work",
+      "type": "file",
+      "file": "08 Knowledge Graph/work().md",
+      "x": 2700,
+      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -4050,17 +3825,17 @@
       "id": "g14",
       "type": "group",
       "label": "Community 14",
-      "x": 4340,
+      "x": 4120,
       "y": 2000,
       "width": 880,
-      "height": 520,
+      "height": 420,
       "color": "3"
     },
     {
       "id": "n_game_src_server_services_combatservice_combatservice_equip",
       "type": "file",
       "file": "08 Knowledge Graph/CombatService.Equip().md",
-      "x": 4360,
+      "x": 4140,
       "y": 2080,
       "width": 180,
       "height": 60
@@ -4069,7 +3844,7 @@
       "id": "n_game_src_server_services_combatservice_combatservice_start",
       "type": "file",
       "file": "08 Knowledge Graph/CombatService.Start().md",
-      "x": 4560,
+      "x": 4340,
       "y": 2080,
       "width": 180,
       "height": 60
@@ -4078,16 +3853,7 @@
       "id": "n_game_src_server_services_combatservice",
       "type": "file",
       "file": "08 Knowledge Graph/CombatService.luau.md",
-      "x": 4760,
-      "y": 2080,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_mobservice",
-      "type": "file",
-      "file": "08 Knowledge Graph/MobService.luau.md",
-      "x": 4960,
+      "x": 4540,
       "y": 2080,
       "width": 180,
       "height": 60
@@ -4096,17 +3862,8 @@
       "id": "n_03_design_warzone_pvp_in_warzone",
       "type": "file",
       "file": "08 Knowledge Graph/PvP only when both players are in the Warzone.md",
-      "x": 4360,
-      "y": 2160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_warzoneservice_warzoneservice_isinraid",
-      "type": "file",
-      "file": "08 Knowledge Graph/WarzoneService.IsInRaid().md",
-      "x": 4560,
-      "y": 2160,
+      "x": 4740,
+      "y": 2080,
       "width": 180,
       "height": 60
     },
@@ -4114,7 +3871,7 @@
       "id": "n_game_src_server_services_combatservice_currenttool",
       "type": "file",
       "file": "08 Knowledge Graph/currentTool().md",
-      "x": 4760,
+      "x": 4140,
       "y": 2160,
       "width": 180,
       "height": 60
@@ -4123,7 +3880,7 @@
       "id": "n_game_src_server_services_combatservice_makehandle",
       "type": "file",
       "file": "08 Knowledge Graph/makeHandle().md",
-      "x": 4960,
+      "x": 4340,
       "y": 2160,
       "width": 180,
       "height": 60
@@ -4132,8 +3889,8 @@
       "id": "n_game_src_server_services_combatservice_maketool",
       "type": "file",
       "file": "08 Knowledge Graph/makeTool().md",
-      "x": 4360,
-      "y": 2240,
+      "x": 4540,
+      "y": 2160,
       "width": 180,
       "height": 60
     },
@@ -4141,8 +3898,8 @@
       "id": "n_replicatedstorage_shared_tools",
       "type": "file",
       "file": "08 Knowledge Graph/replicatedstorage_shared_tools.md",
-      "x": 4560,
-      "y": 2240,
+      "x": 4740,
+      "y": 2160,
       "width": 180,
       "height": 60
     },
@@ -4150,26 +3907,8 @@
       "id": "n_script_parent_mobservice",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_mobservice.md",
-      "x": 4760,
+      "x": 4140,
       "y": 2240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_script_parent_progressionservice",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_progressionservice.md",
-      "x": 4960,
-      "y": 2240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_script_parent_warzoneservice",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_warzoneservice.md",
-      "x": 4360,
-      "y": 2320,
       "width": 180,
       "height": 60
     },
@@ -4177,8 +3916,8 @@
       "id": "n_game_src_server_services_combatservice_swing",
       "type": "file",
       "file": "08 Knowledge Graph/swing().md",
-      "x": 4560,
-      "y": 2320,
+      "x": 4340,
+      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -4304,26 +4043,17 @@
       "id": "g16",
       "type": "group",
       "label": "Community 16",
-      "x": 7800,
+      "x": 8020,
       "y": 2000,
       "width": 880,
-      "height": 520,
+      "height": 420,
       "color": "5"
-    },
-    {
-      "id": "n_game_src_server_services_dataservice_dataservice_getdata",
-      "type": "file",
-      "file": "08 Knowledge Graph/DataService.GetData().md",
-      "x": 7820,
-      "y": 2080,
-      "width": 180,
-      "height": 60
     },
     {
       "id": "n_game_src_server_services_warzoneservice_warzoneservice_addtobag",
       "type": "file",
       "file": "08 Knowledge Graph/WarzoneService.AddToBag().md",
-      "x": 8020,
+      "x": 8040,
       "y": 2080,
       "width": 180,
       "height": 60
@@ -4332,7 +4062,16 @@
       "id": "n_game_src_server_services_warzoneservice_warzoneservice_getmobspawns",
       "type": "file",
       "file": "08 Knowledge Graph/WarzoneService.GetMobSpawns().md",
-      "x": 8220,
+      "x": 8240,
+      "y": 2080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_warzoneservice_warzoneservice_isinraid",
+      "type": "file",
+      "file": "08 Knowledge Graph/WarzoneService.IsInRaid().md",
+      "x": 8440,
       "y": 2080,
       "width": 180,
       "height": 60
@@ -4341,7 +4080,7 @@
       "id": "n_game_src_server_services_warzoneservice",
       "type": "file",
       "file": "08 Knowledge Graph/WarzoneService.luau.md",
-      "x": 8420,
+      "x": 8640,
       "y": 2080,
       "width": 180,
       "height": 60
@@ -4350,7 +4089,7 @@
       "id": "n_game_src_server_services_warzoneservice_describe",
       "type": "file",
       "file": "08 Knowledge Graph/describe().md",
-      "x": 7820,
+      "x": 8040,
       "y": 2160,
       "width": 180,
       "height": 60
@@ -4359,7 +4098,7 @@
       "id": "n_game_src_server_services_warzoneservice_dropbag",
       "type": "file",
       "file": "08 Knowledge Graph/dropBag().md",
-      "x": 8020,
+      "x": 8240,
       "y": 2160,
       "width": 180,
       "height": 60
@@ -4368,16 +4107,7 @@
       "id": "n_game_src_server_services_warzoneservice_droploothead",
       "type": "file",
       "file": "08 Knowledge Graph/dropLootHead().md",
-      "x": 8220,
-      "y": 2160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_warzoneservice_endraid",
-      "type": "file",
-      "file": "08 Knowledge Graph/endRaid().md",
-      "x": 8420,
+      "x": 8440,
       "y": 2160,
       "width": 180,
       "height": 60
@@ -4386,17 +4116,8 @@
       "id": "n_game_src_server_services_warzoneservice_enter",
       "type": "file",
       "file": "08 Knowledge Graph/enter().md",
-      "x": 7820,
-      "y": 2240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_warzoneservice_extract",
-      "type": "file",
-      "file": "08 Knowledge Graph/extract().md",
-      "x": 8020,
-      "y": 2240,
+      "x": 8640,
+      "y": 2160,
       "width": 180,
       "height": 60
     },
@@ -4404,7 +4125,7 @@
       "id": "n_game_src_server_services_warzoneservice_isinraid",
       "type": "file",
       "file": "08 Knowledge Graph/isInRaid().md",
-      "x": 8220,
+      "x": 8040,
       "y": 2240,
       "width": 180,
       "height": 60
@@ -4413,7 +4134,7 @@
       "id": "n_game_src_server_services_warzoneservice_oncharacteradded",
       "type": "file",
       "file": "08 Knowledge Graph/onCharacterAdded().md",
-      "x": 8420,
+      "x": 8240,
       "y": 2240,
       "width": 180,
       "height": 60
@@ -4422,8 +4143,8 @@
       "id": "n_game_src_server_services_warzoneservice_part",
       "type": "file",
       "file": "08 Knowledge Graph/part().md",
-      "x": 7820,
-      "y": 2320,
+      "x": 8440,
+      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -4431,8 +4152,8 @@
       "id": "n_game_src_server_services_warzoneservice_rollloot",
       "type": "file",
       "file": "08 Knowledge Graph/rollLoot().md",
-      "x": 8020,
-      "y": 2320,
+      "x": 8640,
+      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -4442,25 +4163,115 @@
       "label": "Community 17",
       "x": 8980,
       "y": 2000,
-      "width": 660,
-      "height": 420,
+      "width": 1100,
+      "height": 520,
       "color": "6"
     },
     {
-      "id": "n_07_roadmap_decision_log_dec_market_town",
+      "id": "n_03_design_skills_levels_combat_skill",
       "type": "file",
-      "file": "08 Knowledge Graph/Decision Market moved off the island into Town.md",
+      "file": "08 Knowledge Graph/Combat (PvE) skill.md",
       "x": 9000,
       "y": 2080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_readme_game_readme",
+      "id": "n_04_content_content_index_content_index",
       "type": "file",
-      "file": "08 Knowledge Graph/Game code README.md",
+      "file": "04 Content/Content Index.md",
       "x": 9200,
       "y": 2080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_shared_crops",
+      "type": "file",
+      "file": "08 Knowledge Graph/Crops.luau.md",
+      "x": 9400,
+      "y": 2080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_content_index_crops_list",
+      "type": "file",
+      "file": "08 Knowledge Graph/Crops Wheat (1), Carrot (5), Potato (10), Glowberry (Warzone seeds).md",
+      "x": 9600,
+      "y": 2080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_07_roadmap_decision_log_decision_log",
+      "type": "file",
+      "file": "07 Roadmap/Decision Log.md",
+      "x": 9800,
+      "y": 2080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_07_roadmap_decision_log_dec_market_town",
+      "type": "file",
+      "file": "08 Knowledge Graph/Decision Market moved off the island into Town.md",
+      "x": 9000,
+      "y": 2160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_07_roadmap_decision_log_dec_merchant",
+      "type": "file",
+      "file": "08 Knowledge Graph/Decision villager-style Merchant runs the Market.md",
+      "x": 9200,
+      "y": 2160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_economy_values",
+      "type": "file",
+      "file": "04 Content/Economy & Values.md",
+      "x": 9400,
+      "y": 2160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_skills_levels_level_gates",
+      "type": "file",
+      "file": "08 Knowledge Graph/Level gates crops need Farming level, mobs need Combat level.md",
+      "x": 9600,
+      "y": 2160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_content_index_merchant_npc",
+      "type": "file",
+      "file": "08 Knowledge Graph/Merchant NPC at the Town market.md",
+      "x": 9800,
+      "y": 2160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_content_index_mobs_list",
+      "type": "file",
+      "file": "08 Knowledge Graph/Mobs Slime (Combat 1), Brute (Combat 5).md",
+      "x": 9000,
+      "y": 2240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_02_research_islands_roblox_npc_milestone_tutorials",
+      "type": "file",
+      "file": "08 Knowledge Graph/NPC visits at milestones with a starter pack.md",
+      "x": 9200,
+      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -4469,7 +4280,16 @@
       "type": "file",
       "file": "08 Knowledge Graph/Next add the Warzone to Town.md",
       "x": 9400,
-      "y": 2080,
+      "y": 2240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_obsidian_setup_obsidian_setup",
+      "type": "file",
+      "file": "Obsidian Setup.md",
+      "x": 9600,
+      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -4477,17 +4297,8 @@
       "id": "n_07_roadmap_roadmap_prototype_phase",
       "type": "file",
       "file": "08 Knowledge Graph/Prototype phase (current).md",
-      "x": 9000,
-      "y": 2160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_07_roadmap_roadmap_published_private",
-      "type": "file",
-      "file": "08 Knowledge Graph/Published privately as Sky Farm Prototype.md",
-      "x": 9200,
-      "y": 2160,
+      "x": 9800,
+      "y": 2240,
       "width": 180,
       "height": 60
     },
@@ -4495,17 +4306,26 @@
       "id": "n_07_roadmap_roadmap_roadmap",
       "type": "file",
       "file": "07 Roadmap/Roadmap.md",
-      "x": 9400,
-      "y": 2160,
+      "x": 9000,
+      "y": 2320,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_readme_studio_api_saving",
+      "id": "n_obsidian_setup_github_desktop_sync",
       "type": "file",
-      "file": "08 Knowledge Graph/Saving in Studio needs a published place + Studio API access.md",
-      "x": 9000,
-      "y": 2240,
+      "file": "08 Knowledge Graph/Sync the vault with GitHub Desktop (pull before, push after).md",
+      "x": 9200,
+      "y": 2320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_obsidian_setup_vault_rules",
+      "type": "file",
+      "file": "08 Knowledge Graph/Vault rules Inbox, Decision Log, Open Questions.md",
+      "x": 9400,
+      "y": 2320,
       "width": 180,
       "height": 60
     },
@@ -4513,8 +4333,8 @@
       "id": "n_07_roadmap_roadmap_vertical_slice",
       "type": "file",
       "file": "08 Knowledge Graph/Vertical slice, then soft launch, launch and live ops.md",
-      "x": 9200,
-      "y": 2240,
+      "x": 9600,
+      "y": 2320,
       "width": 180,
       "height": 60
     },
@@ -4522,8 +4342,8 @@
       "id": "n_03_design_warzone_warzone_parked",
       "type": "file",
       "file": "08 Knowledge Graph/Warzone parked until it moves into Town.md",
-      "x": 9400,
-      "y": 2240,
+      "x": 9800,
+      "y": 2320,
       "width": 180,
       "height": 60
     },
@@ -4533,70 +4353,142 @@
       "label": "Community 18",
       "x": 0,
       "y": 2600,
-      "width": 660,
-      "height": 420,
+      "width": 880,
+      "height": 520,
       "color": "1"
     },
     {
-      "id": "n_07_roadmap_decision_log_decision_log",
+      "id": "n_game_src_server_services_inventoryservice_inventoryservice_count",
       "type": "file",
-      "file": "07 Roadmap/Decision Log.md",
+      "file": "08 Knowledge Graph/InventoryService.Count().md",
       "x": 20,
       "y": 2680,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_07_roadmap_decision_log_dec_hotbar",
+      "id": "n_game_src_server_services_marketservice",
       "type": "file",
-      "file": "08 Knowledge Graph/Decision 5-slot Minecraft-style hotbar.md",
+      "file": "08 Knowledge Graph/MarketService.luau.md",
       "x": 220,
       "y": 2680,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_07_roadmap_decision_log_dec_click_farming",
+      "id": "n_game_src_server_services_mobservice",
       "type": "file",
-      "file": "08 Knowledge Graph/Decision click-only farming.md",
+      "file": "08 Knowledge Graph/MobService.luau.md",
       "x": 420,
       "y": 2680,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_07_roadmap_decision_log_dec_fall_returns_home",
+      "id": "n_game_src_server_services_questservice_questservice_record",
       "type": "file",
-      "file": "08 Knowledge Graph/Decision falling off returns you to your island.md",
+      "file": "08 Knowledge Graph/QuestService.Record().md",
+      "x": 620,
+      "y": 2680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_questservice",
+      "type": "file",
+      "file": "08 Knowledge Graph/QuestService.luau.md",
       "x": 20,
       "y": 2760,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_obsidian_setup_obsidian_setup",
+      "id": "n_game_src_server_services_questservice_checkreach",
       "type": "file",
-      "file": "Obsidian Setup.md",
+      "file": "08 Knowledge Graph/checkReach().md",
       "x": 220,
       "y": 2760,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_obsidian_setup_github_desktop_sync",
+      "id": "n_game_src_server_services_questservice_complete",
       "type": "file",
-      "file": "08 Knowledge Graph/Sync the vault with GitHub Desktop (pull before, push after).md",
+      "file": "08 Knowledge Graph/complete().md",
       "x": 420,
       "y": 2760,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_obsidian_setup_vault_rules",
+      "id": "n_game_src_server_services_questservice_currentquest",
       "type": "file",
-      "file": "08 Knowledge Graph/Vault rules Inbox, Decision Log, Open Questions.md",
+      "file": "08 Knowledge Graph/currentQuest().md",
+      "x": 620,
+      "y": 2760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_marketservice_nearstall",
+      "type": "file",
+      "file": "08 Knowledge Graph/nearStall().md",
       "x": 20,
       "y": 2840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_marketservice_onbuyseed",
+      "type": "file",
+      "file": "08 Knowledge Graph/onBuySeed().md",
+      "x": 220,
+      "y": 2840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_marketservice_onsell",
+      "type": "file",
+      "file": "08 Knowledge Graph/onSell().md",
+      "x": 420,
+      "y": 2840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_progressionservice",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_progressionservice.md",
+      "x": 620,
+      "y": 2840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_townservice",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_townservice.md",
+      "x": 20,
+      "y": 2920,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_warzoneservice",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_warzoneservice.md",
+      "x": 220,
+      "y": 2920,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_marketservice_sellitem",
+      "type": "file",
+      "file": "08 Knowledge Graph/sellItem().md",
+      "x": 420,
+      "y": 2920,
       "width": 180,
       "height": 60
     },
@@ -4611,19 +4503,10 @@
       "color": "2"
     },
     {
-      "id": "n_02_research_skybounds_minecraft_challenge_ladder",
+      "id": "n_02_research_trends_oct_2026_idle_grow",
       "type": "file",
-      "file": "08 Knowledge Graph/100+ challenges and an island challenge ladder.md",
+      "file": "08 Knowledge Graph/Idle-grow  cozy trend (Grow a Garden spike and decay).md",
       "x": 2300,
-      "y": 2680,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_02_research_skybounds_minecraft_fly_tokens",
-      "type": "file",
-      "file": "08 Knowledge Graph/Fly tokens tradeable timed power.md",
-      "x": 2500,
       "y": 2680,
       "width": 180,
       "height": 60
@@ -4632,7 +4515,7 @@
       "id": "n_07_roadmap_open_questions_loot_head_rules",
       "type": "file",
       "file": "08 Knowledge Graph/Loot head rules how much, who opens first, despawn.md",
-      "x": 2700,
+      "x": 2500,
       "y": 2680,
       "width": 180,
       "height": 60
@@ -4641,16 +4524,34 @@
       "id": "n_03_design_warzone_loot_head",
       "type": "file",
       "file": "08 Knowledge Graph/Loot head your loot drops in your avatar's head on death.md",
+      "x": 2700,
+      "y": 2680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_anti_burnout_ideas_offline_progress",
+      "type": "file",
+      "file": "08 Knowledge Graph/Offline progress and timers.md",
       "x": 2900,
       "y": 2680,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_03_design_warzone_pvp_fairness",
+      "id": "n_03_design_mechanics_to_borrow_passive_generators",
       "type": "file",
-      "file": "08 Knowledge Graph/PvP fairness options zones by level, new-player protection, insurance slot.md",
+      "file": "08 Knowledge Graph/Passive generators with a range limit.md",
       "x": 2300,
+      "y": 2760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_01_vision_design_pillars_always_growing",
+      "type": "file",
+      "file": "08 Knowledge Graph/Pillar 2 Always growing (offline production).md",
+      "x": 2500,
       "y": 2760,
       "width": 180,
       "height": 60
@@ -4659,52 +4560,52 @@
       "id": "n_03_design_warzone_raid_bag",
       "type": "file",
       "file": "08 Knowledge Graph/Raid bag + extraction pads.md",
-      "x": 2500,
-      "y": 2760,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_02_research_skybounds_minecraft_skybounds_server",
-      "type": "file",
-      "file": "08 Knowledge Graph/Skybounds (Minecraft Skyblock server, now shut down).md",
       "x": 2700,
       "y": 2760,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_02_research_skybounds_minecraft_skybounds_research",
+      "id": "n_02_research_trends_oct_2026_rp_sim_hybrids",
       "type": "file",
-      "file": "02 Research/Skybounds (Minecraft).md",
+      "file": "08 Knowledge Graph/Roleplay + simulator hybrids growing Unverified.md",
       "x": 2900,
       "y": 2760,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_02_research_skybounds_minecraft_skybounds_head_drop",
+      "id": "n_02_research_trends_oct_2026_steal_and_defend",
       "type": "file",
-      "file": "08 Knowledge Graph/Skybounds your head drops on death with your loot.md",
+      "file": "08 Knowledge Graph/Steal-and-defend trend (Steal An Egg, Steal a Brainrot).md",
       "x": 2300,
       "y": 2840,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_03_design_warzone_warzone",
+      "id": "n_02_research_islands_roblox_totems",
       "type": "file",
-      "file": "03 Design/Warzone.md",
+      "file": "08 Knowledge Graph/Totems passive resource generators with a range.md",
       "x": 2500,
       "y": 2840,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_03_design_warzone_warzone_zones",
+      "id": "n_02_research_trends_oct_2026_trends",
       "type": "file",
-      "file": "08 Knowledge Graph/Warzone zones outer ring Slimes, center Brutes.md",
+      "file": "02 Research/Trends - Oct 2026.md",
       "x": 2700,
+      "y": 2840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_02_research_trends_oct_2026_why_hits_declined",
+      "type": "file",
+      "file": "08 Knowledge Graph/Why big hits declined event spikes, exploits, economy trust, confusing resets.md",
+      "x": 2900,
       "y": 2840,
       "width": 180,
       "height": 60
@@ -4713,9 +4614,9 @@
       "id": "g20",
       "type": "group",
       "label": "Community 20",
-      "x": 4340,
+      "x": 4120,
       "y": 2600,
-      "width": 660,
+      "width": 880,
       "height": 420,
       "color": "3"
     },
@@ -4723,7 +4624,7 @@
       "id": "n_03_design_anti_burnout_ideas_anti_burnout",
       "type": "file",
       "file": "03 Design/Anti-Burnout Ideas.md",
-      "x": 4360,
+      "x": 4140,
       "y": 2680,
       "width": 180,
       "height": 60
@@ -4732,7 +4633,7 @@
       "id": "n_07_roadmap_decision_log_dec_island_expansion",
       "type": "file",
       "file": "08 Knowledge Graph/Decision buy bigger islands with coins (4 tiers).md",
-      "x": 4560,
+      "x": 4340,
       "y": 2680,
       "width": 180,
       "height": 60
@@ -4741,7 +4642,7 @@
       "id": "n_03_design_anti_burnout_ideas_economy_sinks",
       "type": "file",
       "file": "08 Knowledge Graph/Economy sinks to slow inflation.md",
-      "x": 4760,
+      "x": 4540,
       "y": 2680,
       "width": 180,
       "height": 60
@@ -4750,8 +4651,8 @@
       "id": "n_game_src_shared_islandtiers",
       "type": "file",
       "file": "08 Knowledge Graph/IslandTiers.luau.md",
-      "x": 4360,
-      "y": 2760,
+      "x": 4740,
+      "y": 2680,
       "width": 180,
       "height": 60
     },
@@ -4759,7 +4660,16 @@
       "id": "n_03_design_anti_burnout_ideas_prestige_unlocks",
       "type": "file",
       "file": "08 Knowledge Graph/Prestige with real unlocks.md",
-      "x": 4560,
+      "x": 4140,
+      "y": 2760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_warzone_pvp_fairness",
+      "type": "file",
+      "file": "08 Knowledge Graph/PvP fairness options zones by level, new-player protection, insurance slot.md",
+      "x": 4340,
       "y": 2760,
       "width": 180,
       "height": 60
@@ -4768,7 +4678,7 @@
       "id": "n_03_design_anti_burnout_ideas_seasonal_maps",
       "type": "file",
       "file": "08 Knowledge Graph/Seasonal Warzone maps and loot tables.md",
-      "x": 4760,
+      "x": 4540,
       "y": 2760,
       "width": 180,
       "height": 60
@@ -4777,8 +4687,8 @@
       "id": "n_02_research_islands_roblox_vending_trading",
       "type": "file",
       "file": "08 Knowledge Graph/Skill-gated vending machines and handshake trading.md",
-      "x": 4360,
-      "y": 2840,
+      "x": 4740,
+      "y": 2760,
       "width": 180,
       "height": 60
     },
@@ -4786,7 +4696,16 @@
       "id": "n_03_design_anti_burnout_ideas_anti_scam_trading",
       "type": "file",
       "file": "08 Knowledge Graph/Trading with anti-scam UI (two-step confirm, trade log).md",
-      "x": 4560,
+      "x": 4140,
+      "y": 2840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_warzone_warzone_zones",
+      "type": "file",
+      "file": "08 Knowledge Graph/Warzone zones outer ring Slimes, center Brutes.md",
+      "x": 4340,
       "y": 2840,
       "width": 180,
       "height": 60
@@ -4797,8 +4716,8 @@
       "label": "Community 21",
       "x": 6180,
       "y": 2600,
-      "width": 1100,
-      "height": 520,
+      "width": 880,
+      "height": 420,
       "color": "4"
     },
     {
@@ -4838,65 +4757,11 @@
       "height": 60
     },
     {
-      "id": "n_game_src_server_util_props_props_facetoward",
-      "type": "file",
-      "file": "08 Knowledge Graph/Props.FaceToward().md",
-      "x": 7000,
-      "y": 2680,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_util_props_props_get",
-      "type": "file",
-      "file": "08 Knowledge Graph/Props.Get().md",
-      "x": 6200,
-      "y": 2760,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_util_props_props_part",
-      "type": "file",
-      "file": "08 Knowledge Graph/Props.Part().md",
-      "x": 6400,
-      "y": 2760,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_util_props_props_place",
-      "type": "file",
-      "file": "08 Knowledge Graph/Props.Place().md",
-      "x": 6600,
-      "y": 2760,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_util_props_props_worldextents",
-      "type": "file",
-      "file": "08 Knowledge Graph/Props.WorldExtents().md",
-      "x": 6800,
-      "y": 2760,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_util_props",
-      "type": "file",
-      "file": "08 Knowledge Graph/Props.luau.md",
-      "x": 7000,
-      "y": 2760,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "n_game_src_server_services_townservice_townservice_getmerchant",
       "type": "file",
       "file": "08 Knowledge Graph/TownService.GetMerchant().md",
       "x": 6200,
-      "y": 2840,
+      "y": 2760,
       "width": 180,
       "height": 60
     },
@@ -4905,7 +4770,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/TownService.luau.md",
       "x": 6400,
-      "y": 2840,
+      "y": 2760,
       "width": 180,
       "height": 60
     },
@@ -4914,25 +4779,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/addNameTag().md",
       "x": 6600,
-      "y": 2840,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_townservice_addsign",
-      "type": "file",
-      "file": "08 Knowledge Graph/addSign().md",
-      "x": 6800,
-      "y": 2840,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_util_props_baseof",
-      "type": "file",
-      "file": "08 Knowledge Graph/baseOf().md",
-      "x": 7000,
-      "y": 2840,
+      "y": 2760,
       "width": 180,
       "height": 60
     },
@@ -4940,8 +4787,8 @@
       "id": "n_game_src_server_services_townservice_box",
       "type": "file",
       "file": "08 Knowledge Graph/box().md",
-      "x": 6200,
-      "y": 2920,
+      "x": 6800,
+      "y": 2760,
       "width": 180,
       "height": 60
     },
@@ -4949,8 +4796,8 @@
       "id": "n_game_src_server_services_townservice_makemerchant",
       "type": "file",
       "file": "08 Knowledge Graph/makeMerchant().md",
-      "x": 6400,
-      "y": 2920,
+      "x": 6200,
+      "y": 2840,
       "width": 180,
       "height": 60
     },
@@ -4958,8 +4805,8 @@
       "id": "n_script_parent_parent_util_portal",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_parent_util_portal.md",
-      "x": 6600,
-      "y": 2920,
+      "x": 6400,
+      "y": 2840,
       "width": 180,
       "height": 60
     },
@@ -4967,8 +4814,8 @@
       "id": "n_script_parent_parent_util_props",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_parent_util_props.md",
-      "x": 6800,
-      "y": 2920,
+      "x": 6600,
+      "y": 2840,
       "width": 180,
       "height": 60
     },
@@ -4976,8 +4823,8 @@
       "id": "n_script_parent_travelservice",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_travelservice.md",
-      "x": 7000,
-      "y": 2920,
+      "x": 6800,
+      "y": 2840,
       "width": 180,
       "height": 60
     },
@@ -4985,35 +4832,17 @@
       "id": "g22",
       "type": "group",
       "label": "Merchant Behaviour",
-      "x": 7800,
+      "x": 8020,
       "y": 2600,
       "width": 660,
-      "height": 420,
+      "height": 400,
       "color": "5"
-    },
-    {
-      "id": "n_07_roadmap_decision_log_dec_merchant",
-      "type": "file",
-      "file": "08 Knowledge Graph/Decision villager-style Merchant runs the Market.md",
-      "x": 7820,
-      "y": 2680,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_04_content_content_index_merchant_npc",
-      "type": "file",
-      "file": "08 Knowledge Graph/Merchant NPC at the Town market.md",
-      "x": 8020,
-      "y": 2680,
-      "width": 180,
-      "height": 60
     },
     {
       "id": "n_game_src_client_merchantcontroller_merchantcontroller_start",
       "type": "file",
       "file": "08 Knowledge Graph/MerchantController.Start().md",
-      "x": 8220,
+      "x": 8040,
       "y": 2680,
       "width": 180,
       "height": 60
@@ -5022,17 +4851,8 @@
       "id": "n_game_src_client_merchantcontroller",
       "type": "file",
       "file": "08 Knowledge Graph/MerchantController.luau.md",
-      "x": 7820,
-      "y": 2760,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_02_research_islands_roblox_npc_milestone_tutorials",
-      "type": "file",
-      "file": "08 Knowledge Graph/NPC visits at milestones with a starter pack.md",
-      "x": 8020,
-      "y": 2760,
+      "x": 8240,
+      "y": 2680,
       "width": 180,
       "height": 60
     },
@@ -5040,8 +4860,8 @@
       "id": "n_game_src_client_merchantcontroller_findhead",
       "type": "file",
       "file": "08 Knowledge Graph/findHead().md",
-      "x": 8220,
-      "y": 2760,
+      "x": 8440,
+      "y": 2680,
       "width": 180,
       "height": 60
     },
@@ -5049,8 +4869,8 @@
       "id": "n_game_src_client_merchantcontroller_greet",
       "type": "file",
       "file": "08 Knowledge Graph/greet().md",
-      "x": 7820,
-      "y": 2840,
+      "x": 8040,
+      "y": 2760,
       "width": 180,
       "height": 60
     },
@@ -5058,8 +4878,8 @@
       "id": "n_game_src_client_merchantcontroller_update",
       "type": "file",
       "file": "08 Knowledge Graph/update().md",
-      "x": 8020,
-      "y": 2840,
+      "x": 8240,
+      "y": 2760,
       "width": 180,
       "height": 60
     },
@@ -5074,28 +4894,10 @@
       "color": "6"
     },
     {
-      "id": "n_game_src_server_services_blockservice_blockservice_start",
-      "type": "file",
-      "file": "08 Knowledge Graph/BlockService.Start().md",
-      "x": 9000,
-      "y": 2680,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_blockservice",
-      "type": "file",
-      "file": "08 Knowledge Graph/BlockService.luau.md",
-      "x": 9200,
-      "y": 2680,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "n_game_src_server_services_craftingservice",
       "type": "file",
       "file": "08 Knowledge Graph/CraftingService.luau.md",
-      "x": 9400,
+      "x": 9000,
       "y": 2680,
       "width": 180,
       "height": 60
@@ -5104,6 +4906,24 @@
       "id": "n_game_src_server_services_devservice",
       "type": "file",
       "file": "08 Knowledge Graph/DevService.luau.md",
+      "x": 9200,
+      "y": 2680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_skills_levels_farming_skill",
+      "type": "file",
+      "file": "08 Knowledge Graph/Farming skill.md",
+      "x": 9400,
+      "y": 2680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_leaderstats",
+      "type": "file",
+      "file": "08 Knowledge Graph/Leaderstats.luau.md",
       "x": 9600,
       "y": 2680,
       "width": 180,
@@ -5119,18 +4939,18 @@
       "height": 60
     },
     {
-      "id": "n_game_src_client_windows_marketwindow",
+      "id": "n_game_src_server_services_progressionservice",
       "type": "file",
-      "file": "08 Knowledge Graph/MarketWindow.luau.md",
+      "file": "08 Knowledge Graph/ProgressionService.luau.md",
       "x": 9000,
       "y": 2760,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_readme_dev_shortcuts",
+      "id": "n_game_src_server_services_stateservice",
       "type": "file",
-      "file": "08 Knowledge Graph/Studio dev shortcuts (DevInvoke LevelSkillGive).md",
+      "file": "08 Knowledge Graph/StateService.luau.md",
       "x": 9200,
       "y": 2760,
       "width": 180,
@@ -5146,46 +4966,37 @@
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_blockservice_blockedbycharacter",
+      "id": "n_game_src_server_services_travelservice_failed",
       "type": "file",
-      "file": "08 Knowledge Graph/blockedByCharacter().md",
+      "file": "08 Knowledge Graph/failed().md",
       "x": 9600,
       "y": 2760,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_travelservice_failed",
+      "id": "n_game_src_server_services_leaderstats_onchanged",
       "type": "file",
-      "file": "08 Knowledge Graph/failed().md",
+      "file": "08 Knowledge Graph/onChanged().md",
       "x": 9800,
       "y": 2760,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_replicatedstorage_shared_crops",
+      "id": "n_game_src_server_services_leaderstats_ondataloaded",
       "type": "file",
-      "file": "08 Knowledge Graph/replicatedstorage_shared_crops.md",
+      "file": "08 Knowledge Graph/onDataLoaded()_1.md",
       "x": 9000,
       "y": 2840,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_replicatedstorage_shared_items",
+      "id": "n_replicatedstorage_shared_leveling",
       "type": "file",
-      "file": "08 Knowledge Graph/replicatedstorage_shared_items.md",
+      "file": "08 Knowledge Graph/replicatedstorage_shared_leveling.md",
       "x": 9200,
-      "y": 2840,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_replicatedstorage_shared_mining",
-      "type": "file",
-      "file": "08 Knowledge Graph/replicatedstorage_shared_mining.md",
-      "x": 9400,
       "y": 2840,
       "width": 180,
       "height": 60
@@ -5194,6 +5005,15 @@
       "id": "n_replicatedstorage_shared_places",
       "type": "file",
       "file": "08 Knowledge Graph/replicatedstorage_shared_places.md",
+      "x": 9400,
+      "y": 2840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_replicatedstorage_shared_quests",
+      "type": "file",
+      "file": "08 Knowledge Graph/replicatedstorage_shared_quests.md",
       "x": 9600,
       "y": 2840,
       "width": 180,
@@ -5218,9 +5038,9 @@
       "height": 60
     },
     {
-      "id": "n_script_parent_hotbarservice",
+      "id": "n_script_parent_dataservice",
       "type": "file",
-      "file": "08 Knowledge Graph/script_parent_hotbarservice.md",
+      "file": "08 Knowledge Graph/script_parent_dataservice.md",
       "x": 9200,
       "y": 2920,
       "width": 180,
@@ -5245,20 +5065,11 @@
       "height": 60
     },
     {
-      "id": "n_script_parent_parent_ui_itemicon",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_parent_ui_itemicon.md",
-      "x": 9800,
-      "y": 2920,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "n_script_parent_parent_util_blockworld",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_parent_util_blockworld.md",
-      "x": 9000,
-      "y": 3000,
+      "x": 9800,
+      "y": 2920,
       "width": 180,
       "height": 60
     },
@@ -5266,7 +5077,7 @@
       "id": "n_script_parent_parent_util_prompts",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_parent_util_prompts.md",
-      "x": 9200,
+      "x": 9000,
       "y": 3000,
       "width": 180,
       "height": 60
@@ -5275,6 +5086,15 @@
       "id": "n_script_parent_questservice",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_questservice.md",
+      "x": 9200,
+      "y": 3000,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_script_parent_stateservice",
+      "type": "file",
+      "file": "08 Knowledge Graph/script_parent_stateservice.md",
       "x": 9400,
       "y": 3000,
       "width": 180,
@@ -5286,16 +5106,133 @@
       "label": "Community 24",
       "x": 0,
       "y": 3300,
-      "width": 880,
-      "height": 420,
+      "width": 1320,
+      "height": 620,
       "color": "1"
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_blockcontroller_start",
+      "type": "file",
+      "file": "08 Knowledge Graph/BlockController.Start().md",
+      "x": 20,
+      "y": 3380,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller",
+      "type": "file",
+      "file": "08 Knowledge Graph/BlockController.luau.md",
+      "x": 220,
+      "y": 3380,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_07_roadmap_decision_log_dec_click_farming",
+      "type": "file",
+      "file": "08 Knowledge Graph/Decision click-only farming.md",
+      "x": 420,
+      "y": 3380,
+      "width": 180,
+      "height": 60
     },
     {
       "id": "n_game_src_client_main_client",
       "type": "file",
       "file": "08 Knowledge Graph/Main.client.luau.md",
-      "x": 20,
+      "x": 620,
       "y": 3380,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_aim",
+      "type": "file",
+      "file": "08 Knowledge Graph/aim().md",
+      "x": 820,
+      "y": 3380,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_aimingatmerchant",
+      "type": "file",
+      "file": "08 Knowledge Graph/aimingAtMerchant().md",
+      "x": 1020,
+      "y": 3380,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_burst",
+      "type": "file",
+      "file": "08 Knowledge Graph/burst().md",
+      "x": 20,
+      "y": 3460,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_interact",
+      "type": "file",
+      "file": "08 Knowledge Graph/interact().md",
+      "x": 220,
+      "y": 3460,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_merchant",
+      "type": "file",
+      "file": "08 Knowledge Graph/merchant().md",
+      "x": 420,
+      "y": 3460,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_myisland",
+      "type": "file",
+      "file": "08 Knowledge Graph/myIsland().md",
+      "x": 620,
+      "y": 3460,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_place",
+      "type": "file",
+      "file": "08 Knowledge Graph/place().md",
+      "x": 820,
+      "y": 3460,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_replicatedstorage_shared_mining",
+      "type": "file",
+      "file": "08 Knowledge Graph/replicatedstorage_shared_mining.md",
+      "x": 1020,
+      "y": 3460,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_rootposition",
+      "type": "file",
+      "file": "08 Knowledge Graph/rootPosition().md",
+      "x": 20,
+      "y": 3540,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_screenray",
+      "type": "file",
+      "file": "08 Knowledge Graph/screenRay().md",
+      "x": 220,
+      "y": 3540,
       "width": 180,
       "height": 60
     },
@@ -5303,8 +5240,8 @@
       "id": "n_script_parent_blockcontroller",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_blockcontroller.md",
-      "x": 220,
-      "y": 3380,
+      "x": 420,
+      "y": 3540,
       "width": 180,
       "height": 60
     },
@@ -5312,8 +5249,8 @@
       "id": "n_script_parent_hotbar",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_hotbar.md",
-      "x": 420,
-      "y": 3380,
+      "x": 620,
+      "y": 3540,
       "width": 180,
       "height": 60
     },
@@ -5321,8 +5258,8 @@
       "id": "n_script_parent_hud",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_hud.md",
-      "x": 620,
-      "y": 3380,
+      "x": 820,
+      "y": 3540,
       "width": 180,
       "height": 60
     },
@@ -5330,8 +5267,8 @@
       "id": "n_script_parent_merchantcontroller",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_merchantcontroller.md",
-      "x": 20,
-      "y": 3460,
+      "x": 1020,
+      "y": 3540,
       "width": 180,
       "height": 60
     },
@@ -5339,8 +5276,8 @@
       "id": "n_script_parent_promptui",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_promptui.md",
-      "x": 220,
-      "y": 3460,
+      "x": 20,
+      "y": 3620,
       "width": 180,
       "height": 60
     },
@@ -5348,8 +5285,8 @@
       "id": "n_script_parent_questtracker",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_questtracker.md",
-      "x": 420,
-      "y": 3460,
+      "x": 220,
+      "y": 3620,
       "width": 180,
       "height": 60
     },
@@ -5357,8 +5294,8 @@
       "id": "n_script_parent_windows_bagwindow",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_windows_bagwindow.md",
-      "x": 620,
-      "y": 3460,
+      "x": 420,
+      "y": 3620,
       "width": 180,
       "height": 60
     },
@@ -5366,8 +5303,8 @@
       "id": "n_script_parent_windows_craftingwindow",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_windows_craftingwindow.md",
-      "x": 20,
-      "y": 3540,
+      "x": 620,
+      "y": 3620,
       "width": 180,
       "height": 60
     },
@@ -5375,8 +5312,8 @@
       "id": "n_script_parent_windows_islandwindow",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_windows_islandwindow.md",
-      "x": 220,
-      "y": 3540,
+      "x": 820,
+      "y": 3620,
       "width": 180,
       "height": 60
     },
@@ -5384,8 +5321,26 @@
       "id": "n_script_parent_windows_marketwindow",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_windows_marketwindow.md",
-      "x": 420,
-      "y": 3540,
+      "x": 1020,
+      "y": 3620,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_swing",
+      "type": "file",
+      "file": "08 Knowledge Graph/swing()_1.md",
+      "x": 20,
+      "y": 3700,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_client_blockcontroller_update",
+      "type": "file",
+      "file": "08 Knowledge Graph/update()_1.md",
+      "x": 220,
+      "y": 3700,
       "width": 180,
       "height": 60
     },
@@ -5412,7 +5367,7 @@
       "id": "g26",
       "type": "group",
       "label": "Studio Restructure Script",
-      "x": 4340,
+      "x": 4120,
       "y": 3300,
       "width": 600,
       "height": 400,
@@ -5422,7 +5377,7 @@
       "id": "n_art_scripts_studio_restructure",
       "type": "file",
       "file": "08 Knowledge Graph/studio_restructure.luau.md",
-      "x": 4360,
+      "x": 4140,
       "y": 3380,
       "width": 180,
       "height": 60
@@ -5450,7 +5405,7 @@
       "id": "g28",
       "type": "group",
       "label": "Remotes",
-      "x": 7800,
+      "x": 8020,
       "y": 3300,
       "width": 600,
       "height": 400,
@@ -5460,7 +5415,7 @@
       "id": "n_game_src_shared_remotes",
       "type": "file",
       "file": "08 Knowledge Graph/Remotes.luau.md",
-      "x": 7820,
+      "x": 8040,
       "y": 3380,
       "width": 180,
       "height": 60
@@ -5471,96 +5426,87 @@
       "label": "Community 29",
       "x": 8980,
       "y": 3300,
-      "width": 880,
+      "width": 660,
       "height": 420,
       "color": "6"
     },
     {
-      "id": "n_game_src_server_services_leaderstats",
+      "id": "n_07_roadmap_decision_log_dec_blend_direction",
       "type": "file",
-      "file": "08 Knowledge Graph/Leaderstats.luau.md",
+      "file": "08 Knowledge Graph/Decision blend Islands + Skybounds Warzone.md",
       "x": 9000,
       "y": 3380,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_progressionservice",
+      "id": "n_03_design_core_loop_island_warzone_loop",
       "type": "file",
-      "file": "08 Knowledge Graph/ProgressionService.luau.md",
+      "file": "08 Knowledge Graph/Island (safe) - Warzone (risky) loop.md",
       "x": 9200,
       "y": 3380,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_stateservice",
+      "id": "n_03_design_core_loop_island_loop",
       "type": "file",
-      "file": "08 Knowledge Graph/StateService.luau.md",
+      "file": "08 Knowledge Graph/Island loop gather, craft, expand, automate, earn offline.md",
       "x": 9400,
       "y": 3380,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_game_src_server_services_leaderstats_onchanged",
+      "id": "n_02_research_islands_roblox_islands_game",
       "type": "file",
-      "file": "08 Knowledge Graph/onChanged().md",
-      "x": 9600,
-      "y": 3380,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_game_src_server_services_leaderstats_ondataloaded",
-      "type": "file",
-      "file": "08 Knowledge Graph/onDataLoaded()_1.md",
+      "file": "08 Knowledge Graph/Islands (Roblox game by Easy.gg).md",
       "x": 9000,
       "y": 3460,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_replicatedstorage_shared_islandtiers",
+      "id": "n_01_vision_design_pillars_risk_and_reward",
       "type": "file",
-      "file": "08 Knowledge Graph/replicatedstorage_shared_islandtiers.md",
+      "file": "08 Knowledge Graph/Pillar 3 Risk and reward (the Warzone).md",
       "x": 9200,
       "y": 3460,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_replicatedstorage_shared_leveling",
+      "id": "n_01_vision_design_pillars_never_abandoned",
       "type": "file",
-      "file": "08 Knowledge Graph/replicatedstorage_shared_leveling.md",
+      "file": "08 Knowledge Graph/Pillar 5 Never abandoned (steady updates).md",
       "x": 9400,
       "y": 3460,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_replicatedstorage_shared_quests",
+      "id": "n_01_vision_pitch_draft_one_line",
       "type": "file",
-      "file": "08 Knowledge Graph/replicatedstorage_shared_quests.md",
-      "x": 9600,
-      "y": 3460,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_script_parent_dataservice",
-      "type": "file",
-      "file": "08 Knowledge Graph/script_parent_dataservice.md",
+      "file": "08 Knowledge Graph/Pitch own a floating island, drop into a shared Warzone, bring loot home.md",
       "x": 9000,
       "y": 3540,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_script_parent_stateservice",
+      "id": "n_03_design_anti_burnout_ideas_update_cadence",
       "type": "file",
-      "file": "08 Knowledge Graph/script_parent_stateservice.md",
+      "file": "08 Knowledge Graph/Update cadence weekly event + monthly content drop.md",
       "x": 9200,
+      "y": 3540,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_03_design_core_loop_warzone_loop",
+      "type": "file",
+      "file": "08 Knowledge Graph/Warzone loop gear up, drop in, loot, survive, extract.md",
+      "x": 9400,
       "y": 3540,
       "width": 180,
       "height": 60
@@ -5570,17 +5516,26 @@
       "type": "group",
       "label": "Community 30",
       "x": 0,
-      "y": 3800,
+      "y": 4000,
       "width": 660,
       "height": 420,
       "color": "1"
     },
     {
+      "id": "n_07_roadmap_decision_log_dec_hotbar",
+      "type": "file",
+      "file": "08 Knowledge Graph/Decision 5-slot Minecraft-style hotbar.md",
+      "x": 20,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
       "id": "n_game_src_server_services_hotbarservice_hotbarservice_gethelditem",
       "type": "file",
       "file": "08 Knowledge Graph/HotbarService.GetHeldItem().md",
-      "x": 20,
-      "y": 3880,
+      "x": 220,
+      "y": 4080,
       "width": 180,
       "height": 60
     },
@@ -5588,8 +5543,8 @@
       "id": "n_game_src_server_services_hotbarservice_hotbarservice_start",
       "type": "file",
       "file": "08 Knowledge Graph/HotbarService.Start().md",
-      "x": 220,
-      "y": 3880,
+      "x": 420,
+      "y": 4080,
       "width": 180,
       "height": 60
     },
@@ -5597,8 +5552,8 @@
       "id": "n_game_src_server_services_hotbarservice",
       "type": "file",
       "file": "08 Knowledge Graph/HotbarService.luau.md",
-      "x": 420,
-      "y": 3880,
+      "x": 20,
+      "y": 4160,
       "width": 180,
       "height": 60
     },
@@ -5606,8 +5561,8 @@
       "id": "n_game_src_server_services_hotbarservice_isslot",
       "type": "file",
       "file": "08 Knowledge Graph/isSlot().md",
-      "x": 20,
-      "y": 3960,
+      "x": 220,
+      "y": 4160,
       "width": 180,
       "height": 60
     },
@@ -5615,8 +5570,8 @@
       "id": "n_game_src_server_services_hotbarservice_onselectslot",
       "type": "file",
       "file": "08 Knowledge Graph/onSelectSlot().md",
-      "x": 220,
-      "y": 3960,
+      "x": 420,
+      "y": 4160,
       "width": 180,
       "height": 60
     },
@@ -5624,8 +5579,8 @@
       "id": "n_game_src_server_services_hotbarservice_onsethotbar",
       "type": "file",
       "file": "08 Knowledge Graph/onSetHotbar().md",
-      "x": 420,
-      "y": 3960,
+      "x": 20,
+      "y": 4240,
       "width": 180,
       "height": 60
     },
@@ -5633,8 +5588,8 @@
       "id": "n_game_src_server_services_hotbarservice_refreshheld",
       "type": "file",
       "file": "08 Knowledge Graph/refreshHeld().md",
-      "x": 20,
-      "y": 4040,
+      "x": 220,
+      "y": 4240,
       "width": 180,
       "height": 60
     },
@@ -5642,8 +5597,8 @@
       "id": "n_script_parent_combatservice",
       "type": "file",
       "file": "08 Knowledge Graph/script_parent_combatservice.md",
-      "x": 220,
-      "y": 4040,
+      "x": 420,
+      "y": 4240,
       "width": 180,
       "height": 60
     },
@@ -5652,7 +5607,7 @@
       "type": "group",
       "label": "Community 31",
       "x": 2280,
-      "y": 3800,
+      "y": 4000,
       "width": 600,
       "height": 400,
       "color": "2"
@@ -5662,7 +5617,7 @@
       "type": "file",
       "file": "08 Knowledge Graph/ItemArt.luau.md",
       "x": 2300,
-      "y": 3880,
+      "y": 4080,
       "width": 180,
       "height": 60
     },
@@ -5670,8 +5625,8 @@
       "id": "g32",
       "type": "group",
       "label": "Community 32",
-      "x": 4340,
-      "y": 3800,
+      "x": 4120,
+      "y": 4000,
       "width": 600,
       "height": 400,
       "color": "3"
@@ -5680,8 +5635,209 @@
       "id": "n_game_src_shared_places",
       "type": "file",
       "file": "08 Knowledge Graph/Places.luau.md",
-      "x": 4360,
-      "y": 3880,
+      "x": 4140,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g33",
+      "type": "group",
+      "label": "Community 33",
+      "x": 6180,
+      "y": 4000,
+      "width": 660,
+      "height": 420,
+      "color": "4"
+    },
+    {
+      "id": "n_game_src_server_util_props_props_facetoward",
+      "type": "file",
+      "file": "08 Knowledge Graph/Props.FaceToward().md",
+      "x": 6200,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_util_props_props_get",
+      "type": "file",
+      "file": "08 Knowledge Graph/Props.Get().md",
+      "x": 6400,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_util_props_props_part",
+      "type": "file",
+      "file": "08 Knowledge Graph/Props.Part().md",
+      "x": 6600,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_util_props_props_place",
+      "type": "file",
+      "file": "08 Knowledge Graph/Props.Place().md",
+      "x": 6200,
+      "y": 4160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_util_props_props_worldextents",
+      "type": "file",
+      "file": "08 Knowledge Graph/Props.WorldExtents().md",
+      "x": 6400,
+      "y": 4160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_util_props",
+      "type": "file",
+      "file": "08 Knowledge Graph/Props.luau.md",
+      "x": 6600,
+      "y": 4160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_services_townservice_addsign",
+      "type": "file",
+      "file": "08 Knowledge Graph/addSign().md",
+      "x": 6200,
+      "y": 4240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_src_server_util_props_baseof",
+      "type": "file",
+      "file": "08 Knowledge Graph/baseOf().md",
+      "x": 6400,
+      "y": 4240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g34",
+      "type": "group",
+      "label": "Community 34",
+      "x": 8020,
+      "y": 4000,
+      "width": 660,
+      "height": 420,
+      "color": "5"
+    },
+    {
+      "id": "n_04_content_economy_values_crops_are_perennial",
+      "type": "file",
+      "file": "08 Knowledge Graph/Crops are perennial.md",
+      "x": 8040,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_economy_values_economy_values",
+      "type": "file",
+      "file": "08 Knowledge Graph/Economy & Values_1.md",
+      "x": 8240,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_economy_values_resource_nodes_nothing_to_replant",
+      "type": "file",
+      "file": "08 Knowledge Graph/Resource nodes (nothing to replant).md",
+      "x": 8440,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_economy_values_the_rules",
+      "type": "file",
+      "file": "08 Knowledge Graph/The rules.md",
+      "x": 8040,
+      "y": 4160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_economy_values_tools_new_full_durability",
+      "type": "file",
+      "file": "08 Knowledge Graph/Tools (new, full durability).md",
+      "x": 8240,
+      "y": 4160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_economy_values_trading_planned_design_notes",
+      "type": "file",
+      "file": "08 Knowledge Graph/Trading (planned) design notes.md",
+      "x": 8440,
+      "y": 4160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_04_content_economy_values_value_table",
+      "type": "file",
+      "file": "08 Knowledge Graph/Value table.md",
+      "x": 8040,
+      "y": 4240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g35",
+      "type": "group",
+      "label": "Community 35",
+      "x": 8980,
+      "y": 4000,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_game_readme_game_readme",
+      "type": "file",
+      "file": "08 Knowledge Graph/Game code README.md",
+      "x": 9000,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_07_roadmap_roadmap_published_private",
+      "type": "file",
+      "file": "08 Knowledge Graph/Published privately as Sky Farm Prototype.md",
+      "x": 9200,
+      "y": 4080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_readme_studio_api_saving",
+      "type": "file",
+      "file": "08 Knowledge Graph/Saving in Studio needs a published place + Studio API access.md",
+      "x": 9000,
+      "y": 4160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_game_readme_dev_shortcuts",
+      "type": "file",
+      "file": "08 Knowledge Graph/Studio dev shortcuts (DevInvoke LevelSkillGive).md",
+      "x": 9200,
+      "y": 4160,
       "width": 180,
       "height": 60
     }
@@ -6408,52 +6564,40 @@
       "label": "contains [EXTRACTED]"
     },
     {
-      "id": "e_art_scripts_items3d_build_items_art_scripts_items3d_to_roblox",
-      "fromNode": "n_art_scripts_items3d_build_items",
-      "toNode": "n_art_scripts_items3d_to_roblox",
+      "id": "e_art_scripts_items3d_carrot_math",
+      "fromNode": "n_art_scripts_items3d_carrot",
+      "toNode": "n_math",
       "label": "calls [EXTRACTED]"
     },
     {
-      "id": "e_art_scripts_items3d_main_art_scripts_items3d_build_items",
-      "fromNode": "n_art_scripts_items3d_main",
-      "toNode": "n_art_scripts_items3d_build_items",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_art_scripts_items3d_art_scripts_items3d_build_items",
+      "id": "e_art_scripts_items3d_art_scripts_items3d_carrot",
       "fromNode": "n_art_scripts_items3d",
-      "toNode": "n_art_scripts_items3d_build_items",
-      "label": "contains [EXTRACTED]"
+      "toNode": "n_art_scripts_items3d_carrot",
+      "label": "indirect_call [INFERRED]"
     },
     {
-      "id": "e_art_scripts_items3d_build_items_art_scripts_lowpoly_builder_finish",
-      "fromNode": "n_art_scripts_items3d_build_items",
-      "toNode": "n_art_scripts_lowpoly_builder_finish",
-      "label": "calls [INFERRED]"
-    },
-    {
-      "id": "e_art_scripts_items3d_main_art_scripts_lowpoly_export_fbx",
-      "fromNode": "n_art_scripts_items3d_main",
-      "toNode": "n_art_scripts_lowpoly_export_fbx",
+      "id": "e_art_scripts_items3d_scrap_math",
+      "fromNode": "n_art_scripts_items3d_scrap",
+      "toNode": "n_math",
       "label": "calls [EXTRACTED]"
     },
     {
-      "id": "e_art_scripts_items3d_main_art_scripts_items3d_render_icons",
-      "fromNode": "n_art_scripts_items3d_main",
-      "toNode": "n_art_scripts_items3d_render_icons",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_art_scripts_items3d_main_art_scripts_items3d_write_luau",
-      "fromNode": "n_art_scripts_items3d_main",
-      "toNode": "n_art_scripts_items3d_write_luau",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_art_scripts_items3d_art_scripts_items3d_main",
+      "id": "e_art_scripts_items3d_art_scripts_items3d_scrap",
       "fromNode": "n_art_scripts_items3d",
-      "toNode": "n_art_scripts_items3d_main",
-      "label": "contains [EXTRACTED]"
+      "toNode": "n_art_scripts_items3d_scrap",
+      "label": "indirect_call [INFERRED]"
+    },
+    {
+      "id": "e_art_scripts_items3d_wheat_math",
+      "fromNode": "n_art_scripts_items3d_wheat",
+      "toNode": "n_math",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_art_scripts_items3d_art_scripts_items3d_wheat",
+      "fromNode": "n_art_scripts_items3d",
+      "toNode": "n_art_scripts_items3d_wheat",
+      "label": "indirect_call [INFERRED]"
     },
     {
       "id": "e_art_scripts_lowpoly_builder_box_art_scripts_lowpoly_builder_bevel",
@@ -6624,6 +6768,12 @@
       "label": "calls [EXTRACTED]"
     },
     {
+      "id": "e_art_scripts_items3d_build_items_art_scripts_lowpoly_builder_finish",
+      "fromNode": "n_art_scripts_items3d_build_items",
+      "toNode": "n_art_scripts_lowpoly_builder_finish",
+      "label": "calls [INFERRED]"
+    },
+    {
       "id": "e_art_scripts_lowpoly_marker_art_scripts_lowpoly_builder_finish",
       "fromNode": "n_art_scripts_lowpoly_marker",
       "toNode": "n_art_scripts_lowpoly_builder_finish",
@@ -6681,6 +6831,12 @@
       "id": "e_art_scripts_lowpoly_builder_paint_faces_art_scripts_lowpoly_swatch_uv",
       "fromNode": "n_art_scripts_lowpoly_builder_paint_faces",
       "toNode": "n_art_scripts_lowpoly_swatch_uv",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_art_scripts_items3d_main_art_scripts_lowpoly_export_fbx",
+      "fromNode": "n_art_scripts_items3d_main",
+      "toNode": "n_art_scripts_lowpoly_export_fbx",
       "label": "calls [EXTRACTED]"
     },
     {

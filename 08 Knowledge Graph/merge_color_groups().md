@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[graph_to_vault.py]] - `contains` [EXTRACTED]
 - [[json]] - `calls` [EXTRACTED]
-- [[main()_5]] - `calls` [EXTRACTED]
+- [[main()_4]] - `calls` [EXTRACTED]
 - [[shutil]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Knowledge_Graph_Tools

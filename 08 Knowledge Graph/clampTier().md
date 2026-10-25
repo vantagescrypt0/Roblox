@@ -2,7 +2,7 @@
 source_file: "game/src/server/Services/IslandService.luau"
 type: "code"
 community: "Breaking, Placing and Crafting"
-location: "L350"
+location: "L351"
 tags:
   - graphify/code
   - graphify/EXTRACTED

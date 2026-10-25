@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Community 29"
+community: "Community 3"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_29
+  - community/Community_3
 ---
 
 # replicatedstorage_shared_islandtiers
@@ -16,4 +16,4 @@ tags:
 - [[Main.client.luau]] - `imports` [EXTRACTED]
 - [[StateService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_29
+#graphify/concept #graphify/EXTRACTED #community/Community_3

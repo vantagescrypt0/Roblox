@@ -1,8 +1,8 @@
 ---
-source_file: "art/scripts/items3d.py"
+source_file: "art/scripts/props.py"
 type: "code"
 community: "Block Art Pipeline (Blender)"
-location: "L476"
+location: "L291"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -12,12 +12,16 @@ tags:
 # main()
 
 ## Connections
-- [[build_items()]] - `calls` [EXTRACTED]
+- [[crops()]] - `calls` [EXTRACTED]
 - [[export_fbx()_1]] - `calls` [EXTRACTED]
-- [[items3d.py]] - `contains` [EXTRACTED]
-- [[render_icons()]] - `calls` [EXTRACTED]
+- [[market()]] - `calls` [EXTRACTED]
+- [[palette_material()]] - `calls` [EXTRACTED]
+- [[planter()]] - `calls` [EXTRACTED]
+- [[portal()]] - `calls` [EXTRACTED]
+- [[props.py]] - `contains` [EXTRACTED]
+- [[render_preview()]] - `calls` [EXTRACTED]
 - [[reset_scene()]] - `calls` [EXTRACTED]
 - [[save_blend()]] - `calls` [EXTRACTED]
-- [[write_luau()]] - `calls` [EXTRACTED]
+- [[workbench()]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

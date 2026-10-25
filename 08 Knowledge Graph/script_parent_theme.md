@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "HUD and Hotbar"
+community: "Community 3"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_3
 ---
 
 # script_parent_theme
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Window.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/concept #graphify/EXTRACTED #community/Community_3

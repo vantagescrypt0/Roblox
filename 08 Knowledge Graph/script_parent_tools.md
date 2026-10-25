@@ -11,6 +11,7 @@ tags:
 # script_parent_tools
 
 ## Connections
+- [[Economy.luau]] - `imports` [EXTRACTED]
 - [[Items.luau]] - `imports` [EXTRACTED]
 - [[Mining.luau]] - `imports` [EXTRACTED]
 - [[Recipes.luau]] - `imports` [EXTRACTED]

@@ -15,7 +15,7 @@ tags:
 - [[dot-finish()]] - `calls` [EXTRACTED]
 - [[lowpoly.py]] - `contains` [EXTRACTED]
 - [[main()_1]] - `calls` [EXTRACTED]
-- [[main()_3]] - `calls` [EXTRACTED]
+- [[main()_2]] - `calls` [EXTRACTED]
 - [[palette_image()]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

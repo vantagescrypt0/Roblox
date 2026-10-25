@@ -37,8 +37,8 @@ members: 83
 - [[bpy]] - concept
 - [[bridge()]] - code - art/scripts/starter_island.py
 - [[build_atlas()]] - code - art/scripts/blocks.py
-- [[build_items()]] - code - art/scripts/items3d.py
 - [[build_tier()]] - code - art/scripts/islands.py
+- [[carrot()]] - code - art/scripts/items3d.py
 - [[clamp()]] - code - art/scripts/blocks.py
 - [[common.py]] - code - art/scripts/common.py
 - [[crops()]] - code - art/scripts/props.py
@@ -55,15 +55,13 @@ members: 83
 - [[lowpoly.py]] - code - art/scripts/lowpoly.py
 - [[main()]] - code - art/scripts/blocks.py
 - [[main()_1]] - code - art/scripts/islands.py
-- [[main()_2]] - code - art/scripts/items3d.py
-- [[main()_3]] - code - art/scripts/props.py
-- [[main()_4]] - code - art/scripts/starter_island.py
+- [[main()_2]] - code - art/scripts/props.py
+- [[main()_3]] - code - art/scripts/starter_island.py
 - [[make_block()]] - code - art/scripts/blocks.py
 - [[marker()]] - code - art/scripts/lowpoly.py
 - [[market()]] - code - art/scripts/props.py
 - [[material()]] - code - art/scripts/common.py
 - [[math]] - concept
-- [[mathutils]] - concept
 - [[matrix()]] - code - art/scripts/lowpoly.py
 - [[mesh_object()]] - code - art/scripts/common.py
 - [[noisy()]] - code - art/scripts/blocks.py
@@ -86,12 +84,14 @@ members: 83
 - [[rock()]] - code - art/scripts/islands.py
 - [[rock()_1]] - code - art/scripts/starter_island.py
 - [[save_blend()]] - code - art/scripts/common.py
+- [[scrap()]] - code - art/scripts/items3d.py
 - [[speckle()]] - code - art/scripts/blocks.py
 - [[starter_island.py]] - code - art/scripts/starter_island.py
 - [[swatch_uv()]] - code - art/scripts/lowpoly.py
 - [[tile_rect()]] - code - art/scripts/blocks.py
 - [[tree()]] - code - art/scripts/islands.py
 - [[tree()_1]] - code - art/scripts/starter_island.py
+- [[wheat()]] - code - art/scripts/items3d.py
 - [[workbench()]] - code - art/scripts/props.py
 
 ## Live Query (requires Dataview plugin)

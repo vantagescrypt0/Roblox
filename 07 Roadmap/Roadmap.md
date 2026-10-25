@@ -19,8 +19,10 @@ No dates — quality over speed.
    - [x] Tools + toughness (2026-10-15): pickaxe/axe/shovel/sword in Wooden/Stone/Crystal, block hardness, mining speed, durability, pixel-art tool models, crafting table with item photos, click-to-farm, Merchant NPC — playtested
    - [x] Ores + smelting (2026-10-24): coal/iron ore (regrowing boulders + underside veins), Furnace, Iron tool tier, 4 new quests — playtested
    - [x] Art pass (2026-10-24): low-poly 3D tools/crops/ores with pre-rendered icon sheet, original Merchant, runestone portals
-   - [x] Town as a separate place with teleports (code done 2026-10-24) — [ ] publish the Town place and test the teleports live
-   - [ ] UI style refresh (less generic / "AI-looking")
+   - [x] Town as a separate place with teleports (published 2026-10-24) — [ ] test the teleports live
+   - [x] Resource nodes + perennial crops, no timers/hints, trade values for every item (2026-10-24) — playtested
+   - [ ] UI style refresh (less generic / "AI-looking"): chosen style "Workshop" (wood frames, parchment panels, storybook serif titles)
+   - [ ] Player trading in Town (design notes in [[Economy & Values]])
    - [ ] Saplings, a hoe to make farmland
    - [ ] Add the Warzone to Town (when you're ready)
    - [ ] Warzone arena art (still greybox)

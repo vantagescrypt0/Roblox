@@ -1,26 +1,27 @@
 ---
 type: community
-cohesion: 0.24
-members: 11
+cohesion: 0.17
+members: 12
 ---
 
 # Community 19
 
-**Cohesion:** 0.24 - loosely connected
-**Members:** 11 nodes
+**Cohesion:** 0.17 - loosely connected
+**Members:** 12 nodes
 
 ## Members
-- [[100+ challenges and an island challenge ladder]] - concept - 02 Research/Skybounds (Minecraft).md
-- [[Fly tokens tradeable timed power]] - concept - 02 Research/Skybounds (Minecraft).md
+- [[Idle-grow  cozy trend (Grow a Garden spike and decay)]] - concept - 02 Research/Trends - Oct 2026.md
 - [[Loot head rules how much, who opens first, despawn]] - concept - 07 Roadmap/Open Questions.md
 - [[Loot head your loot drops in your avatar's head on death]] - concept - 03 Design/Warzone.md
-- [[PvP fairness options zones by level, new-player protection, insurance slot]] - concept - 03 Design/Warzone.md
+- [[Offline progress and timers]] - concept - 03 Design/Anti-Burnout Ideas.md
+- [[Passive generators with a range limit]] - concept - 03 Design/Mechanics to Borrow.md
+- [[Pillar 2 Always growing (offline production)]] - rationale - 01 Vision/Design Pillars.md
 - [[Raid bag + extraction pads]] - concept - 03 Design/Warzone.md
-- [[Skybounds (Minecraft Skyblock server, now shut down)]] - concept - 02 Research/Skybounds (Minecraft).md
-- [[Skybounds (Minecraft)]] - document - 02 Research/Skybounds (Minecraft).md
-- [[Skybounds your head drops on death with your loot]] - concept - 02 Research/Skybounds (Minecraft).md
-- [[Warzone]] - document - 03 Design/Warzone.md
-- [[Warzone zones outer ring Slimes, center Brutes]] - concept - 03 Design/Warzone.md
+- [[Roleplay + simulator hybrids growing Unverified]] - concept - 02 Research/Trends - Oct 2026.md
+- [[Steal-and-defend trend (Steal An Egg, Steal a Brainrot)]] - concept - 02 Research/Trends - Oct 2026.md
+- [[Totems passive resource generators with a range]] - concept - 02 Research/Islands (Roblox).md
+- [[Trends - Oct 2026]] - document - 02 Research/Trends - Oct 2026.md
+- [[Why big hits declined event spikes, exploits, economy trust, confusing resets]] - concept - 02 Research/Trends - Oct 2026.md
 
 ## Live Query (requires Dataview plugin)
 
@@ -30,19 +31,17 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 6 edges to [[_COMMUNITY_Audience, Policy and Death Drops]]
-- 6 edges to [[_COMMUNITY_Core Loop and Pillars]]
-- 5 edges to [[_COMMUNITY_Islands Research]]
-- 4 edges to [[_COMMUNITY_Skills, Levels and Content]]
-- 3 edges to [[_COMMUNITY_Community 16]]
-- 1 edge to [[_COMMUNITY_Community 14]]
-- 1 edge to [[_COMMUNITY_Community 17]]
-- 1 edge to [[_COMMUNITY_Community 18]]
+- 8 edges to [[_COMMUNITY_Core Loop and Pillars]]
+- 2 edges to [[_COMMUNITY_Community 16]]
+- 2 edges to [[_COMMUNITY_Community 12]]
+- 2 edges to [[_COMMUNITY_Community 6]]
+- 1 edge to [[_COMMUNITY_Community 11]]
 - 1 edge to [[_COMMUNITY_Community 20]]
+- 1 edge to [[_COMMUNITY_Audience, Policy and Death Drops]]
 
 ## Top bridge nodes
-- [[Warzone]] - degree 17, connects to 7 communities
-- [[Loot head your loot drops in your avatar's head on death]] - degree 8, connects to 4 communities
-- [[Skybounds (Minecraft)]] - degree 10, connects to 3 communities
-- [[Warzone zones outer ring Slimes, center Brutes]] - degree 4, connects to 2 communities
-- [[PvP fairness options zones by level, new-player protection, insurance slot]] - degree 3, connects to 1 community
+- [[Loot head your loot drops in your avatar's head on death]] - degree 8, connects to 5 communities
+- [[Offline progress and timers]] - degree 4, connects to 2 communities
+- [[Raid bag + extraction pads]] - degree 3, connects to 2 communities
+- [[Trends - Oct 2026]] - degree 7, connects to 1 community
+- [[Passive generators with a range limit]] - degree 3, connects to 1 community

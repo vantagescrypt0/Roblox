@@ -1,6 +1,6 @@
 --!strict
 -- Minecraft-style controls on your island (and in Town):
---   aim at a block -> black outline, plus a hint under it
+--   aim at a block -> black outline
 --   hold left click (or hold a finger on it) -> you swing and it cracks, then breaks.
 --     How long depends on the block's toughness and the tool you hold (Mining.luau).
 --   right click (or tap) -> place the selected hotbar block against the face you aim at
@@ -22,7 +22,6 @@ local Mining = require(ReplicatedStorage.Shared.Mining)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Hotbar = require(script.Parent.Hotbar)
-local Theme = require(script.Parent.UI.Theme)
 
 local player = Players.LocalPlayer :: Player
 
@@ -71,7 +70,6 @@ local BlockController = {}
 
 local callbacks: Callbacks
 local selection: SelectionBox
-local hint: TextLabel
 local target: Target? = nil
 local pointer: Vector2? = nil -- screen position used for aiming
 local breaking = false
@@ -230,40 +228,10 @@ local function interact(secondary: boolean): boolean
 	return false
 end
 
--- Small hint under the outline: what clicking will do, or why mining won't drop anything
-local function hintFor(current: Target?): string
-	if not current then
-		return if aimingAtMerchant() then "Click to trade" else ""
-	end
-	local name = current.Part.Name
-	if name == "Farmland" then
-		local farmState = current.Part:GetAttribute("FarmState")
-		if farmState == "Ready" then
-			return "Click to harvest"
-		elseif farmState == "Growing" then
-			return "Growing..."
-		end
-		return "Click to plant seeds"
-	elseif name == "CraftingTable" then
-		return "Click to craft"
-	elseif name == "Furnace" then
-		return "Right-click to smelt"
-	end
-	local def = Blocks.Types[name]
-	if def and def.Breakable and def.RequiresTool then
-		local _, canHarvest = Mining.BreakTime(name, Hotbar.SelectedItem())
-		if not canHarvest then
-			return `Needs a {def.Tool} to collect`
-		end
-	end
-	return ""
-end
-
 local function update(dt: number)
 	target = aim()
 	local current = target
 	selection.Adornee = if current then current.Part else nil
-	hint.Text = hintFor(current)
 
 	cooldown = math.max(0, cooldown - dt)
 	local def = current and Blocks.Types[current.Part.Name]
@@ -309,20 +277,6 @@ function BlockController.Start(handlers: Callbacks)
 	selection.SurfaceColor3 = Color3.new(0, 0, 0)
 	selection.SurfaceTransparency = 1
 	selection.Parent = player:WaitForChild("PlayerGui")
-
-	local gui = Theme.screen("BlockHint", 2)
-	hint = Theme.make("TextLabel", {
-		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 1, -128),
-		Size = UDim2.fromOffset(400, 22),
-		BackgroundTransparency = 1,
-		FontFace = Font.fromEnum(Enum.Font.Arcade),
-		TextSize = 18,
-		TextColor3 = Color3.fromRGB(255, 255, 255),
-		TextStrokeTransparency = 0.4,
-		Text = "",
-		Parent = gui,
-	})
 
 	RunService.RenderStepped:Connect(update)
 

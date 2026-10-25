@@ -2,17 +2,17 @@
 source_file: "game/src/server/Services/IslandService.luau"
 type: "code"
 community: "Breaking, Placing and Crafting"
-location: "L409"
+location: "L119"
 tags:
   - graphify/code
   - graphify/EXTRACTED
   - community/Breaking_Placing_and_Crafting
 ---
 
-# regrowTrees()
+# addNode()
 
 ## Connections
-- [[BlockWorld.get()]] - `calls` [INFERRED]
 - [[IslandService.luau]] - `contains` [EXTRACTED]
+- [[addTree()]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

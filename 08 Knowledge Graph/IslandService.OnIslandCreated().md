@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/IslandService.luau"
 type: "code"
-community: "Breaking, Placing and Crafting"
-location: "L67"
+community: "Community 11"
+location: "L61"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Breaking_Placing_and_Crafting
+  - community/Community_11
 ---
 
 # IslandService.OnIslandCreated()
@@ -16,4 +16,4 @@ tags:
 - [[IslandService.luau]] - `contains` [EXTRACTED]
 - [[TravelService.Go()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting
+#graphify/code #graphify/INFERRED #community/Community_11

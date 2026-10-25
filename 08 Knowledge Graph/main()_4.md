@@ -1,27 +1,22 @@
 ---
-source_file: "art/scripts/starter_island.py"
+source_file: "tools/graph_to_vault.py"
 type: "code"
-community: "Block Art Pipeline (Blender)"
-location: "L106"
+community: "Knowledge Graph Tools"
+location: "L53"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Block_Art_Pipeline_Blender
+  - community/Knowledge_Graph_Tools
 ---
 
 # main()
 
 ## Connections
-- [[dirt_body()]] - `calls` [EXTRACTED]
-- [[export_fbx()]] - `calls` [EXTRACTED]
-- [[grass_top()]] - `calls` [EXTRACTED]
-- [[random]] - `calls` [EXTRACTED]
-- [[render_preview()]] - `calls` [EXTRACTED]
-- [[reset_scene()]] - `calls` [EXTRACTED]
-- [[ring_radii()]] - `calls` [EXTRACTED]
-- [[rock()_1]] - `calls` [EXTRACTED]
-- [[save_blend()]] - `calls` [EXTRACTED]
-- [[starter_island.py]] - `contains` [EXTRACTED]
-- [[tree()_1]] - `calls` [EXTRACTED]
+- [[graph_to_vault.py]] - `contains` [EXTRACTED]
+- [[json]] - `calls` [EXTRACTED]
+- [[merge_color_groups()]] - `calls` [EXTRACTED]
+- [[real_notes()]] - `calls` [EXTRACTED]
+- [[shutil]] - `calls` [EXTRACTED]
+- [[subprocess]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender
+#graphify/code #graphify/EXTRACTED #community/Knowledge_Graph_Tools

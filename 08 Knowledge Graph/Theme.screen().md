@@ -13,7 +13,6 @@ tags:
 
 ## Connections
 - [[BagWindow.Start()]] - `calls` [INFERRED]
-- [[BlockController.Start()]] - `calls` [INFERRED]
 - [[Hotbar.Start()]] - `calls` [INFERRED]
 - [[Hud.Start()]] - `calls` [INFERRED]
 - [[Theme.luau]] - `contains` [EXTRACTED]

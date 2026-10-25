@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/BlockController.luau"
 type: "code"
-community: "Community 3"
-location: "L202"
+community: "Community 24"
+location: "L200"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_3
+  - community/Community_24
 ---
 
 # place()
@@ -16,4 +16,4 @@ tags:
 - [[BlockController.luau]] - `contains` [EXTRACTED]
 - [[Hotbar.SelectedItem()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_3
+#graphify/code #graphify/EXTRACTED #community/Community_24

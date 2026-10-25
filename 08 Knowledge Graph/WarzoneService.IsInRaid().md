@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/WarzoneService.luau"
 type: "code"
-community: "Community 14"
+community: "Community 16"
 location: "L55"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_14
+  - community/Community_16
 ---
 
 # WarzoneService.IsInRaid()
@@ -16,4 +16,4 @@ tags:
 - [[isInRaid()]] - `calls` [EXTRACTED]
 - [[swing()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_14
+#graphify/code #graphify/EXTRACTED #community/Community_16

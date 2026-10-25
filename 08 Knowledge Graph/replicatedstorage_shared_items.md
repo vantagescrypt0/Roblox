@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "concept"
-community: "Community 23"
+community: "Community 3"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_23
+  - community/Community_3
 ---
 
 # replicatedstorage_shared_items
@@ -28,4 +28,4 @@ tags:
 - [[QuestService.luau]] - `imports` [EXTRACTED]
 - [[WarzoneService.luau]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_23
+#graphify/concept #graphify/EXTRACTED #community/Community_3

@@ -13,6 +13,6 @@ tags:
 
 ## Connections
 - [[BagWindow.luau]] - `contains` [EXTRACTED]
-- [[render()_3]] - `calls` [EXTRACTED]
+- [[render()_2]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_3

@@ -12,7 +12,7 @@ tags:
 
 ## Connections
 - [[graph_to_vault.py]] - `imports` [EXTRACTED]
-- [[main()_5]] - `calls` [EXTRACTED]
+- [[main()_4]] - `calls` [EXTRACTED]
 - [[merge_color_groups()]] - `calls` [EXTRACTED]
 
 #graphify/concept #graphify/EXTRACTED #community/Knowledge_Graph_Tools

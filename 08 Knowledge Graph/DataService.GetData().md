@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/DataService.luau"
 type: "code"
-community: "Community 16"
+community: "Community 10"
 location: "L78"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_16
+  - community/Community_10
 ---
 
 # DataService.GetData()
@@ -36,4 +36,4 @@ tags:
 - [[onSetHotbar()]] - `calls` [INFERRED]
 - [[refreshPlot()]] - `calls` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Community_16
+#graphify/code #graphify/INFERRED #community/Community_10

@@ -1,8 +1,8 @@
 ---
-source_file: "game/src/client/Windows/BagWindow.luau"
+source_file: "game/src/client/Windows/CraftingWindow.luau"
 type: "code"
 community: "Community 3"
-location: "L101"
+location: "L170"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -12,14 +12,10 @@ tags:
 # render()
 
 ## Connections
-- [[BagWindow.SetState()]] - `calls` [EXTRACTED]
-- [[BagWindow.luau]] - `contains` [EXTRACTED]
-- [[Hotbar.Select()]] - `calls` [INFERRED]
-- [[Hotbar.Selected()]] - `calls` [INFERRED]
-- [[ItemIcon.create()]] - `calls` [INFERRED]
-- [[countLabel()]] - `calls` [EXTRACTED]
-- [[render()_3]] - `calls` [EXTRACTED]
-- [[setOpen()]] - `calls` [EXTRACTED]
-- [[slotFrame()]] - `calls` [EXTRACTED]
+- [[CraftingWindow.SetState()]] - `calls` [EXTRACTED]
+- [[CraftingWindow.luau]] - `contains` [EXTRACTED]
+- [[check()]] - `calls` [EXTRACTED]
+- [[choose()]] - `calls` [EXTRACTED]
+- [[renderDetail()]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_3

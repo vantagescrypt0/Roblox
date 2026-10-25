@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/server/Services/BlockService.luau"
 type: "code"
-community: "Community 23"
-location: "L99"
+community: "Breaking, Placing and Crafting"
+location: "L105"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_23
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # blockedByCharacter()
@@ -15,4 +15,4 @@ tags:
 - [[BlockService.luau]] - `contains` [EXTRACTED]
 - [[onPlace()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_23
+#graphify/code #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

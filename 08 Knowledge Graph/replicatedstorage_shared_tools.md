@@ -14,6 +14,7 @@ tags:
 - [[BagWindow.luau]] - `imports` [EXTRACTED]
 - [[CombatService.luau]] - `imports` [EXTRACTED]
 - [[CraftingWindow.luau]] - `imports` [EXTRACTED]
+- [[FarmService.luau]] - `imports` [EXTRACTED]
 - [[Hotbar.luau]] - `imports` [EXTRACTED]
 - [[InventoryService.luau]] - `imports` [EXTRACTED]
 

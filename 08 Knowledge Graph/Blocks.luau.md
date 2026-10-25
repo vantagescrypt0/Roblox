@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/shared/Blocks.luau"
 type: "code"
-community: "Community 13"
+community: "Breaking, Placing and Crafting"
 location: "L1"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Community_13
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # Blocks.luau
@@ -15,4 +15,4 @@ tags:
 - [[Decision Minecraft-style block islands (break and place, saved)]] - `implements` [INFERRED]
 - [[Decision block toughness + tool power (Minecraft rules)]] - `implements` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Community_13
+#graphify/code #graphify/INFERRED #community/Breaking_Placing_and_Crafting

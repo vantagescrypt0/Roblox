@@ -1,11 +1,11 @@
 ---
 source_file: "03 Design/Mechanics to Borrow.md"
 type: "rationale"
-community: "Islands Research"
+community: "Community 6"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Islands_Research
+  - community/Community_6
 ---
 
 # Rule: all trades, pickups and inventory changes are server-side and all-or-nothing
@@ -17,4 +17,4 @@ tags:
 - [[ProfileStore (player data with session locking)]] - `rationale_for` [INFERRED]
 - [[Trading shut down after a duplication exploit Unverified]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Islands_Research
+#graphify/rationale #graphify/EXTRACTED #community/Community_6

@@ -1,9 +1,11 @@
 --!strict
 -- Gives each player their own floating island made of blocks, generated for their
 -- expansion tier, with their own block changes (data.Island.Blocks) on top. Spawns them
--- on it, rebuilds it bigger when they expand, regrows chopped trees and mined boulders
--- (boulders can grow back as coal or iron ore), and puts players back on it if they
--- fall off. The stone underside of the island has ore veins to dig for.
+-- on it, rebuilds it bigger when they expand, and puts players back on it if they fall
+-- off. Trees, boulders and their ores are resource nodes: a mined node block grows back
+-- in the same spot after a while (Blocks.NodeRespawn), so nothing has to be replanted
+-- and mined nodes are never saved as holes. The stone underside has ore veins to dig for
+-- (those are ordinary blocks).
 --
 -- Grid: y = 0 is the top grass layer; things stand on it at y = 1.
 
@@ -23,20 +25,13 @@ local StateService = require(script.Parent.StateService)
 
 local ISLAND = Config.Island
 local SIZE = Blocks.Size
-local TREE_REGROW_TIME = 90
-local ROCK_REGROW_TIME = 60
--- What each block of a regrown boulder becomes (chances add up to 1)
-local ROCK_ROLLS = {
-	{ Block = "IronOre", Below = 0.12 },
-	{ Block = "CoalOre", Below = 0.34 },
-	{ Block = "Stone", Below = 1 },
-}
+
 -- Ore veins in the island's stone underside: chance per stone block
 local COAL_CHANCE, IRON_CHANCE, IRON_MIN_DEPTH = 0.07, 0.04, 4
 
 type Cell = { X: number, Y: number, Z: number }
-type Tree = { Trunk: { Cell }, Leaves: { Cell }, GoneSince: number? }
-type Rock = { Cells: { Cell }, GoneSince: number? }
+-- A resource node block: what grows there, and when it grows back if it's been mined
+export type Node = { X: number, Y: number, Z: number, Block: string, RespawnAt: number? }
 
 export type Island = {
 	World: BlockWorld.World,
@@ -51,8 +46,7 @@ export type Island = {
 	CraftingTable: Cell,
 	FarmCells: { Cell },
 	PortalSurface: BasePart,
-	Trees: { Tree },
-	Rocks: { Rock },
+	Nodes: { [string]: Node }, -- by cell key
 }
 type IslandCallback = (player: Player, island: Island) -> ()
 
@@ -122,17 +116,26 @@ local function edgeRadius(radius: number, x: number, z: number): number
 	return radius + edgeNoise[i0] * (1 - f) + edgeNoise[(i0 + 1) % 16] * f
 end
 
-local function addTree(cells: { [string]: string }, x: number, z: number, height: number): Tree
-	local tree: Tree = { Trunk = {}, Leaves = {} }
+local function addNode(
+	cells: { [string]: string },
+	nodes: { [string]: Node },
+	x: number,
+	y: number,
+	z: number,
+	block: string
+)
+	local k = key(x, y, z)
+	cells[k] = block
+	nodes[k] = { X = x, Y = y, Z = z, Block = block }
+end
+
+local function addTree(cells: { [string]: string }, nodes: { [string]: Node }, x: number, z: number, height: number)
 	for y = 1, height do
-		cells[key(x, y, z)] = "Wood"
-		table.insert(tree.Trunk, { X = x, Y = y, Z = z })
+		addNode(cells, nodes, x, y, z, "Wood")
 	end
 	local function leaf(lx: number, ly: number, lz: number)
-		local k = key(lx, ly, lz)
-		if not cells[k] then
-			cells[k] = "Leaves"
-			table.insert(tree.Leaves, { X = lx, Y = ly, Z = lz })
+		if not cells[key(lx, ly, lz)] then
+			addNode(cells, nodes, lx, ly, lz, "Leaves")
 		end
 	end
 	-- Oak shape: two wide layers, then a small cap
@@ -157,7 +160,6 @@ local function addTree(cells: { [string]: string }, x: number, z: number, height
 	for _, d in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
 		leaf(x + d[1], height + 2, z + d[2])
 	end
-	return tree
 end
 
 type Generated = {
@@ -165,8 +167,7 @@ type Generated = {
 	Protected: { [string]: boolean },
 	FarmCells: { Cell },
 	PortalZ: number,
-	Trees: { Tree },
-	Rocks: { Rock },
+	Nodes: { [string]: Node },
 }
 
 -- The block at a spot in the island's stone underside. Seeded by position, so an island
@@ -227,33 +228,32 @@ local function generate(tier: number): Generated
 	local portalZ = -(radius - 2)
 	Portal.addCells(cells, protected, 0, portalZ)
 
-	-- Trees and rocks on free spots that fit this island
-	local trees: { Tree } = {}
+	-- Tree and boulder nodes on free spots that fit this island
+	local nodes: { [string]: Node } = {}
+	local trees = 0
 	for i, spot in TREE_SPOTS do
-		if #trees >= spec.Trees then
+		if trees >= spec.Trees then
 			break
 		end
 		local x, z = spot[1], spot[2]
 		if math.sqrt(x * x + z * z) <= radius - 1.5 then
-			table.insert(trees, addTree(cells, x, z, 4 + (i % 2)))
+			trees += 1
+			addTree(cells, nodes, x, z, 4 + (i % 2))
 		end
 	end
 	-- Boulders: stone with a lump of coal on top and some iron showing (a reason to
 	-- upgrade to a Stone Pickaxe)
-	local rocks: { Rock } = {}
+	local rocks = 0
 	for _, spot in ROCK_SPOTS do
-		if #rocks >= spec.Rocks then
+		if rocks >= spec.Rocks then
 			break
 		end
 		local x, z = spot[1], spot[2]
 		if math.sqrt(x * x + z * z) <= radius - 1.5 then
-			local rock: Rock = { Cells = {} }
+			rocks += 1
 			for _, part in ROCK_SHAPE do
-				local cell = { X = x + part.DX, Y = part.Y, Z = z + part.DZ }
-				cells[key(cell.X, cell.Y, cell.Z)] = part.Block
-				table.insert(rock.Cells, cell)
+				addNode(cells, nodes, x + part.DX, part.Y, z + part.DZ, part.Block)
 			end
-			table.insert(rocks, rock)
 		end
 	end
 
@@ -262,8 +262,7 @@ local function generate(tier: number): Generated
 		Protected = protected,
 		FarmCells = farmCells,
 		PortalZ = portalZ,
-		Trees = trees,
-		Rocks = rocks,
+		Nodes = nodes,
 	}
 end
 
@@ -293,9 +292,12 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 
 	local base = table.clone(generated.Cells)
 	world.Cells = generated.Cells
-	-- The player's own changes on top of the generated island
+	-- The player's own changes on top of the generated island. Nodes always come back,
+	-- so any old change saved on a node's cell is dropped.
 	for cellKey, blockType in data.Island.Blocks do
-		if not generated.Protected[cellKey] then
+		if generated.Nodes[cellKey] then
+			data.Island.Blocks[cellKey] = nil
+		elseif not generated.Protected[cellKey] then
 			(world.Cells :: any)[cellKey] = if blockType == "Air" then nil else blockType
 		end
 	end
@@ -313,8 +315,7 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 		CraftingTable = CRAFTING_TABLE,
 		FarmCells = generated.FarmCells,
 		PortalSurface = Portal.makeField(world, 0, generated.PortalZ),
-		Trees = generated.Trees,
-		Rocks = generated.Rocks,
+		Nodes = generated.Nodes,
 	}
 end
 
@@ -405,83 +406,51 @@ local function onPlayerRemoving(player: Player)
 	end
 end
 
--- Chopped-down trees grow back after a while
-local function regrowTrees()
+-- The resource node at a cell of the player's island, if there is one
+function IslandService.GetNode(player: Player, x: number, y: number, z: number): Node?
+	local island = islands[player]
+	return if island then island.Nodes[key(x, y, z)] else nil
+end
+
+-- Marks a node as mined: it grows back after its block's NodeRespawn time
+function IslandService.DepleteNode(player: Player, x: number, y: number, z: number)
+	local node = IslandService.GetNode(player, x, y, z)
+	if node then
+		local respawn = Blocks.Types[node.Block].NodeRespawn or 30
+		node.RespawnAt = os.clock() + respawn
+	end
+end
+
+-- Is someone standing in this cell? (nodes wait until they move)
+local function cellOccupied(world: BlockWorld.World, x: number, y: number, z: number): boolean
+	local size = Vector3.one * (SIZE - 0.3)
+	for _, part in workspace:GetPartBoundsInBox(CFrame.new(BlockWorld.position(world, x, y, z)), size) do
+		local model = part:FindFirstAncestorOfClass("Model")
+		if model and model:FindFirstChildOfClass("Humanoid") then
+			return true
+		end
+	end
+	return false
+end
+
+-- Mined nodes grow back once their time is up
+local function respawnNodes()
 	local now = os.clock()
-	for player, island in islands do
-		for _, tree in island.Trees do
-			local standing = false
-			for _, cell in tree.Trunk do
-				if BlockWorld.get(island.World, cell.X, cell.Y, cell.Z) == "Wood" then
-					standing = true
-					break
-				end
-			end
-			if standing then
-				tree.GoneSince = nil
-			elseif not tree.GoneSince then
-				tree.GoneSince = now
-			elseif now - tree.GoneSince >= TREE_REGROW_TIME then
-				tree.GoneSince = nil
-				local function regrow(cells: { Cell }, blockType: string)
-					for _, cell in cells do
-						if not BlockWorld.get(island.World, cell.X, cell.Y, cell.Z) then
-							BlockWorld.set(island.World, cell.X, cell.Y, cell.Z, blockType)
-							IslandService.RecordChange(player, cell.X, cell.Y, cell.Z, blockType)
-						end
-					end
-				end
-				regrow(tree.Trunk, "Wood")
-				regrow(tree.Leaves, "Leaves")
-			end
-		end
-	end
-end
-
-local rockRng = Random.new()
-local ROCK_TYPES = { Stone = true, CoalOre = true, IronOre = true }
-
-local function rollRockBlock(): string
-	local roll = rockRng:NextNumber()
-	for _, entry in ROCK_ROLLS do
-		if roll < entry.Below then
-			return entry.Block
-		end
-	end
-	return "Stone"
-end
-
--- Fully mined boulders grow back after a while, sometimes with fresh ore
-local function regrowRocks()
-	local now = os.clock()
-	for player, island in islands do
-		for _, rock in island.Rocks do
-			local standing = false
-			for _, cell in rock.Cells do
-				local blockType = BlockWorld.get(island.World, cell.X, cell.Y, cell.Z)
-				if blockType and ROCK_TYPES[blockType] then
-					standing = true
-					break
-				end
-			end
-			if standing then
-				rock.GoneSince = nil
-			elseif not rock.GoneSince then
-				rock.GoneSince = now
-			elseif now - rock.GoneSince >= ROCK_REGROW_TIME then
-				rock.GoneSince = nil
-				for _, cell in rock.Cells do
-					if not BlockWorld.get(island.World, cell.X, cell.Y, cell.Z) then
-						local blockType = rollRockBlock()
-						BlockWorld.set(island.World, cell.X, cell.Y, cell.Z, blockType)
-						IslandService.RecordChange(player, cell.X, cell.Y, cell.Z, blockType)
-					end
+	for _, island in islands do
+		for _, node in island.Nodes do
+			local due = node.RespawnAt
+			if due and now >= due then
+				local world = island.World
+				if BlockWorld.get(world, node.X, node.Y, node.Z) then
+					node.RespawnAt = nil -- something's already there
+				elseif not cellOccupied(world, node.X, node.Y, node.Z) then
+					node.RespawnAt = nil
+					BlockWorld.set(world, node.X, node.Y, node.Z, node.Block)
 				end
 			end
 		end
 	end
 end
-
 -- Buying the next island size (from the Island window)
 local function onExpand(player: Player)
 	local data = DataService.GetData(player)
@@ -529,18 +498,17 @@ function IslandService.Start()
 	Remotes.Expand.OnServerEvent:Connect(onExpand)
 	Players.PlayerRemoving:Connect(onPlayerRemoving)
 
-	local elapsed, treeTimer = 0, 0
+	local elapsed, nodeTimer = 0, 0
 	RunService.Heartbeat:Connect(function(dt)
 		elapsed += dt
-		treeTimer += dt
+		nodeTimer += dt
 		if elapsed >= 0.5 then
 			elapsed = 0
 			catchFallers()
 		end
-		if treeTimer >= 10 then
-			treeTimer = 0
-			regrowTrees()
-			regrowRocks()
+		if nodeTimer >= 1 then
+			nodeTimer = 0
+			respawnNodes()
 		end
 	end)
 end

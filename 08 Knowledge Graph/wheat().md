@@ -1,12 +1,12 @@
 ---
 source_file: "art/scripts/items3d.py"
 type: "code"
-community: "Community 7"
+community: "Block Art Pipeline (Blender)"
 location: "L169"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_7
+  - community/Block_Art_Pipeline_Blender
 ---
 
 # wheat()
@@ -15,4 +15,4 @@ tags:
 - [[items3d.py]] - `indirect_call` [INFERRED]
 - [[math]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_7
+#graphify/code #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

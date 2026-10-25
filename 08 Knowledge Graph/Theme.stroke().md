@@ -28,7 +28,7 @@ tags:
 - [[buildRaidBanner()]] - `calls` [INFERRED]
 - [[card()]] - `calls` [INFERRED]
 - [[ingredientChip()]] - `calls` [INFERRED]
-- [[render()_1]] - `calls` [INFERRED]
+- [[render()]] - `calls` [INFERRED]
 - [[show()]] - `calls` [INFERRED]
 - [[slotFrame()]] - `calls` [INFERRED]
 

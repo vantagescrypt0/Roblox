@@ -6,6 +6,10 @@
 --   Hardness     how tough it is (Minecraft values). Break time = Hardness x 1.5 / tool speed.
 --   Tool         the tool kind that breaks it fast (Pickaxe, Axe, Shovel) - see Tools.luau
 --   RequiresTool if true you need that tool (and MinTier) or it breaks very slowly and drops nothing
+--
+-- Resource nodes: the island's trees, boulders and ores are nodes. Mining one gives its
+-- drop and it grows back in the same spot after NodeRespawn seconds (no replanting).
+-- The same block placed by a player is just a normal block.
 
 export type Block = {
 	Name: string,
@@ -16,6 +20,7 @@ export type Block = {
 	MinTier: number?,
 	Breakable: boolean,
 	SeeThrough: boolean?, -- blocks behind it still get drawn (leaves)
+	NodeRespawn: number?, -- seconds a mined node takes to grow back
 }
 
 local Blocks: { [string]: Block } = {
@@ -29,6 +34,7 @@ local Blocks: { [string]: Block } = {
 		RequiresTool = true,
 		MinTier = 1,
 		Breakable = true,
+		NodeRespawn = 15,
 	},
 	Cobblestone = {
 		Name = "Cobblestone",
@@ -48,6 +54,7 @@ local Blocks: { [string]: Block } = {
 		RequiresTool = true,
 		MinTier = 1,
 		Breakable = true,
+		NodeRespawn = 30,
 	},
 	IronOre = {
 		Name = "Iron Ore",
@@ -57,6 +64,7 @@ local Blocks: { [string]: Block } = {
 		RequiresTool = true,
 		MinTier = 2,
 		Breakable = true,
+		NodeRespawn = 45,
 	},
 	Furnace = {
 		Name = "Furnace",
@@ -67,9 +75,9 @@ local Blocks: { [string]: Block } = {
 		MinTier = 1,
 		Breakable = true,
 	},
-	Wood = { Name = "Wood", Drop = "Wood", Hardness = 2, Tool = "Axe", Breakable = true },
+	Wood = { Name = "Wood", Drop = "Wood", Hardness = 2, Tool = "Axe", Breakable = true, NodeRespawn = 20 },
 	Planks = { Name = "Planks", Drop = "Planks", Hardness = 2, Tool = "Axe", Breakable = true },
-	Leaves = { Name = "Leaves", Drop = nil, Hardness = 0.2, Breakable = true, SeeThrough = true },
+	Leaves = { Name = "Leaves", Drop = nil, Hardness = 0.2, Breakable = true, SeeThrough = true, NodeRespawn = 30 },
 	RedWool = { Name = "Red Wool", Drop = nil, Hardness = 0.8, Breakable = true },
 	WhiteWool = { Name = "White Wool", Drop = nil, Hardness = 0.8, Breakable = true },
 	-- Special blocks the game places; players can't break them

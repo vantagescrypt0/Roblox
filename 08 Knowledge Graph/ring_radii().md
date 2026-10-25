@@ -12,7 +12,7 @@ tags:
 # ring_radii()
 
 ## Connections
-- [[main()_4]] - `calls` [EXTRACTED]
+- [[main()_3]] - `calls` [EXTRACTED]
 - [[starter_island.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Block_Art_Pipeline_Blender

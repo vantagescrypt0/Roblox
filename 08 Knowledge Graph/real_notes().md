@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[Note name - vault-relative path, for every hand-written note in the vault.]] - `rationale_for` [EXTRACTED]
 - [[graph_to_vault.py]] - `contains` [EXTRACTED]
-- [[main()_5]] - `calls` [EXTRACTED]
+- [[main()_4]] - `calls` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Knowledge_Graph_Tools

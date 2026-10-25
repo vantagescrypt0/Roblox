@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/CraftingWindow.luau"
 type: "code"
-community: "HUD and Hotbar"
+community: "Community 3"
 location: "L369"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/HUD_and_Hotbar
+  - community/Community_3
 ---
 
 # CraftingWindow.Start()
@@ -17,4 +17,4 @@ tags:
 - [[buildDetail()]] - `calls` [EXTRACTED]
 - [[buildGrid()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/HUD_and_Hotbar
+#graphify/code #graphify/EXTRACTED #community/Community_3

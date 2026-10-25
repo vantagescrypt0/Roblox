@@ -1,22 +1,23 @@
 ---
-source_file: "tools/graph_to_vault.py"
+source_file: "art/scripts/items3d.py"
 type: "code"
-community: "Knowledge Graph Tools"
-location: "L53"
+community: "Community 7"
+location: "L476"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Knowledge_Graph_Tools
+  - community/Community_7
 ---
 
 # main()
 
 ## Connections
-- [[graph_to_vault.py]] - `contains` [EXTRACTED]
-- [[json]] - `calls` [EXTRACTED]
-- [[merge_color_groups()]] - `calls` [EXTRACTED]
-- [[real_notes()]] - `calls` [EXTRACTED]
-- [[shutil]] - `calls` [EXTRACTED]
-- [[subprocess]] - `calls` [EXTRACTED]
+- [[build_items()]] - `calls` [EXTRACTED]
+- [[export_fbx()_1]] - `calls` [EXTRACTED]
+- [[items3d.py]] - `contains` [EXTRACTED]
+- [[render_icons()]] - `calls` [EXTRACTED]
+- [[reset_scene()]] - `calls` [EXTRACTED]
+- [[save_blend()]] - `calls` [EXTRACTED]
+- [[write_luau()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Knowledge_Graph_Tools
+#graphify/code #graphify/EXTRACTED #community/Community_7

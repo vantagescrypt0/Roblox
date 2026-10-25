@@ -1,11 +1,11 @@
 ---
 source_file: "04 Content/Content Index.md"
 type: "concept"
-community: "Community 13"
+community: "Breaking, Placing and Crafting"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Community_13
+  - community/Breaking_Placing_and_Crafting
 ---
 
 # Tools: pickaxe, axe, shovel, sword in Wooden / Stone / Crystal
@@ -16,4 +16,4 @@ tags:
 - [[Decision block toughness + tool power (Minecraft rules)]] - `conceptually_related_to` [EXTRACTED]
 - [[Tools.luau]] - `implements` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Community_13
+#graphify/concept #graphify/EXTRACTED #community/Breaking_Placing_and_Crafting

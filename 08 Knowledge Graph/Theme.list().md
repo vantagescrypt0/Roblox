@@ -24,7 +24,7 @@ tags:
 - [[buildRaidBanner()]] - `calls` [INFERRED]
 - [[buildToasts()]] - `calls` [INFERRED]
 - [[ingredientChip()]] - `calls` [INFERRED]
-- [[render()_1]] - `calls` [INFERRED]
+- [[render()]] - `calls` [INFERRED]
 - [[statRow()_1]] - `calls` [INFERRED]
 
 #graphify/code #graphify/INFERRED #community/HUD_and_Hotbar

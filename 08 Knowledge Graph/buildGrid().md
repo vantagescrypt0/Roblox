@@ -1,12 +1,12 @@
 ---
 source_file: "game/src/client/Windows/CraftingWindow.luau"
 type: "code"
-community: "HUD and Hotbar"
+community: "Community 3"
 location: "L191"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/HUD_and_Hotbar
+  - community/Community_3
 ---
 
 # buildGrid()
@@ -22,4 +22,4 @@ tags:
 - [[Theme.title()]] - `calls` [INFERRED]
 - [[choose()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/HUD_and_Hotbar
+#graphify/code #graphify/INFERRED #community/Community_3
