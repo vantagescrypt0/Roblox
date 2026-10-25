@@ -24,9 +24,9 @@ It writes:
 
 Importing:
 1. Import 3D `export/Items.fbx` (Anchored on), wait for `MeshContent.SourceType = Uri`, move the MeshParts into a folder `ItemModels` (CanCollide/CanTouch/CanQuery off, Massless, SmoothPlastic), Save to File → `game/assets-replicated/ItemModels.rbxm` (synced to `ReplicatedStorage.ItemModels`), then rebuild the place as above. Used for the item in your hand (`CombatService`).
-2. Upload `textures/item_icons.png` as an image (Studio → Asset Manager → Images → Import) and put its `rbxassetid://` in `Config.ItemIconSheet`. Used for every item icon (`client/UI/ItemIcon.luau`).
+2. Upload `textures/item_icons.png` as an image (Studio → Asset Manager → Import) and put its `rbxassetid://` in `Config.ItemIconSheet`. Used for every item icon (`client/UI/ItemIcon.luau`). If the Asset Manager's Import menu won't open, run `scripts/icon_sheet_fbx.py` (see its header) and Import 3D the resulting `export/IconSheet.fbx`: the importer uploads the sheet as the plane's texture, and the MeshPart's `TextureID` is the image id (then delete the plane).
 
-To add an item: write a build function, add it to `ITEMS` (and a `Model` in `game/src/shared/Items.luau`), re-run, re-import, re-upload the sheet.
+To add an item: write a build function, add it to `ITEMS` (and a `Model` in `game/src/shared/Items.luau`), and re-run with the new item's name after `--` (e.g. `... --python art/scripts/items3d.py -- Hoe`). That also writes `export/Items_new.fbx` with just those items: Import 3D only that, move its MeshParts into `ReplicatedStorage.ItemModels` (same settings as the others) and Save to File over `ItemModels.rbxm`, so existing meshes keep their uploads. Then re-upload the sheet: adding items shifts the icon cells, so the sheet, `ItemArt.luau` and `Config.ItemIconSheet` must change together.
 
 ---
 The low-poly props and islands below were the previous art direction; only the crop models (`Props.rbxm`) are still used.

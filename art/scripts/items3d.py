@@ -1,4 +1,4 @@
-"""Low-poly 3D item models (tools, crops, seed pouches, ores, loot) and their UI icons.
+"""Low-poly 3D item models (tools incl. hoes, crops, seed pouches, ores, loot) and their UI icons.
 
 Tools are modelled standing up along +Z (handle at the bottom), then tilted 45 degrees
 so that, seen from the front, the handle is bottom-left and the head top-right. Every
@@ -15,6 +15,8 @@ Outputs:
 
 Run:
   blender --background --factory-startup --python art/scripts/items3d.py
+  blender --background --factory-startup --python art/scripts/items3d.py -- Hoe
+    (also writes art/export/Items_new.fbx with only the items named like "Hoe")
 """
 
 import math
@@ -45,7 +47,7 @@ TIERS = {
     "Iron": {"head": "iron", "dark": "iron_dark", "accent": "metal_dark", "binding": "metal_dark", "rough": 0.0},
     "Crystal": {"head": "crystal", "dark": "crystal_dark", "accent": "gold", "binding": "gold", "rough": 0.0},
 }
-KINDS = ["Pickaxe", "Axe", "Shovel", "Sword"]
+KINDS = ["Pickaxe", "Axe", "Shovel", "Hoe", "Sword"]
 
 
 # Shape helpers --------------------------------------------------------------------
@@ -147,6 +149,34 @@ def shovel(b, tier):
     b.cylinder(0.2, 0.5, location=(0, 0, base - 0.12), color=tier["dark"], segments=8, radius2=0.25)
 
 
+def hoe(b, tier):
+    """A flat arm off the top of the handle with a blade hanging from its far end."""
+    length = 2.7
+    handle(b, length)
+    top = length - 0.08
+    outline = [
+        (0.2, 0.16),
+        (-0.5, 0.18),
+        (-0.92, 0.1),
+        (-1.12, -0.12),
+        (-1.06, -0.66),
+        (-0.82, -0.7),
+        (-0.74, -0.2),
+        (-0.5, -0.12),
+        (0.2, -0.14),
+    ]
+    outline = [(x, top + z) for x, z in outline]
+
+    def thickness(x, _z):
+        # Sturdy by the handle, thin at the cutting blade
+        return 0.07 + 0.12 * max(0.0, min(1.0, (x + 0.7) / 0.9))
+
+    head = new_verts(b, lambda: slab(b, outline, thickness, tier["head"]))
+    b._jitter(head, tier["rough"])
+    b.box((0.3, 0.26, 0.42), location=(0.2, 0, top), color=tier["dark"], bevel=0.03)
+    b.cylinder(0.19, 0.3, location=(0, 0, top - 0.42), color=tier["binding"], segments=8)
+
+
 def sword(b, tier):
     b.cylinder(0.12, 0.8, location=(0, 0, 0.5), color="leather", segments=8)
     b.blob(0.2, location=(0, 0, 0.06), color=tier["accent"], jitter=0.0, subdivisions=1)
@@ -231,7 +261,7 @@ def glowberry(b):
 # name -> (build function, tilted like a tool?)
 ITEMS = {}
 for tier_name, tier in TIERS.items():
-    for kind, build in zip(KINDS, (pickaxe, axe, shovel, sword)):
+    for kind, build in zip(KINDS, (pickaxe, axe, shovel, hoe, sword)):
         ITEMS[f"{tier_name}{kind}"] = (lambda b, build=build, tier=tier: build(b, tier), True)
 ITEMS.update(
     {
@@ -478,6 +508,12 @@ def main():
     objects, grips = build_items()
     common.save_blend("Items")
     export_fbx(os.path.join(common.EXPORT_DIR, "Items.fbx"), objects)
+    # Words after "--" also export just the items whose names contain one of them, so new
+    # items can be imported without re-uploading every mesh: ... items3d.py -- Hoe
+    words = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
+    if words:
+        subset = [obj for obj in objects if any(word in obj.name for word in words)]
+        print("subset:", export_fbx(os.path.join(common.EXPORT_DIR, "Items_new.fbx"), subset), [o.name for o in subset])
     cells = render_icons({obj.name: obj for obj in objects})
     print("luau:", write_luau(grips, cells))
     print(f"items: {len(objects)} models, {len(cells)} icons")
