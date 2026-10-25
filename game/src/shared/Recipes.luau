@@ -68,31 +68,33 @@ local COST = {
 	Pickaxe = { Head = 3, Sticks = 2 },
 	Axe = { Head = 3, Sticks = 2 },
 	Shovel = { Head = 1, Sticks = 2 },
+	Hoe = { Head = 2, Sticks = 2 },
 	Sword = { Head = 2, Sticks = 1 },
 }
--- The skill each tool kind trains, and the levels each tier needs: Crafting, plus that
--- skill. Wooden and Stone tools are free so the beginner quests always work.
-local KIND_SKILL = { Pickaxe = "Mining", Shovel = "Mining", Axe = "Woodcutting", Sword = "Combat" }
-local TIER_NEEDS = {
-	{ Crafting = 0, Skill = 0, XP = 10 }, -- Wooden
-	{ Crafting = 0, Skill = 0, XP = 20 }, -- Stone
-	{ Crafting = 3, Skill = 4, XP = 50 }, -- Iron
-	{ Crafting = 8, Skill = 8, XP = 120 }, -- Crystal
+-- The skill each tool kind trains. Each tier needs a Crafting level plus a level in that
+-- skill (per tier: Wooden, Stone, Iron, Crystal). Wooden and Stone pickaxes, axes, shovels
+-- and swords are free so the beginner quests always work; hoes follow Farming's pace.
+local KIND_SKILL = { Pickaxe = "Mining", Shovel = "Mining", Axe = "Woodcutting", Hoe = "Farming", Sword = "Combat" }
+local CRAFTING_LEVELS = { 0, 0, 3, 8 }
+local SKILL_LEVELS: { [string]: { number } } = {
+	Default = { 0, 0, 4, 8 },
+	Hoe = { 0, 3, 6, 12 },
 }
+local TIER_XP = { 10, 20, 50, 120 }
 -- Combat XP only comes from the Warzone, so swords need it only at the Crystal tier
 -- (Crystal comes from the Warzone too)
 local COMBAT_FROM_TIER = 4
 
 for _, tool in Tools.List do
 	local cost = COST[tool.Kind]
-	local tier = TIER_NEEDS[tool.Tier]
 	local skill = KIND_SKILL[tool.Kind]
+	local skillLevel = (SKILL_LEVELS[tool.Kind] or SKILL_LEVELS.Default)[tool.Tier]
 	local requires = {}
-	if tier.Crafting > 0 then
-		requires.Crafting = tier.Crafting
+	if CRAFTING_LEVELS[tool.Tier] > 0 then
+		requires.Crafting = CRAFTING_LEVELS[tool.Tier]
 	end
-	if tier.Skill > 0 and (skill ~= "Combat" or tool.Tier >= COMBAT_FROM_TIER) then
-		requires[skill] = tier.Skill
+	if skillLevel > 0 and (skill ~= "Combat" or tool.Tier >= COMBAT_FROM_TIER) then
+		requires[skill] = skillLevel
 	end
 	table.insert(Recipes, {
 		Id = tool.Item,
@@ -100,7 +102,7 @@ for _, tool in Tools.List do
 		Amount = 1,
 		Inputs = { [MATERIALS[tool.Tier]] = cost.Head, Sticks = cost.Sticks },
 		Requires = requires,
-		CraftingXP = tier.XP,
+		CraftingXP = TIER_XP[tool.Tier],
 		Station = "CraftingTable",
 	})
 end

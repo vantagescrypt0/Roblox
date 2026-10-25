@@ -24,7 +24,8 @@ No dates — quality over speed.
    - [x] UI style refresh (2026-10-24): "Workshop" style (wood frames, parchment panels, storybook serif titles) on every screen. Playtested in Studio; not published yet
    - [x] Player trading in Town (2026-10-24): invite, two-step accept with countdown, value warning, trade log — see [[Economy & Values]]. Playtested in Studio with two players; not published yet
    - [x] Skills (2026-10-24): Mining, Woodcutting and Crafting join Farming and Combat; Skills window; Iron/Crystal tools need Crafting + their skill level; double drops for gathering skills. Playtested in Studio; not published yet — see [[Skills & Levels]]
-   - [ ] Saplings, a hoe to make farmland (hoe requirements already planned in [[Skills & Levels]])
+   - [x] Hoes (2026-10-25): 4 tiers gated by Farming (+ Crafting), till grass/dirt into saved farm plots (more as Farming levels up), shovel undoes, hoe adds a double-crop bonus — playtested in Studio; not published yet. See [[Skills & Levels]]
+   - [ ] Saplings
    - [ ] Add the Warzone to Town (when you're ready)
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?

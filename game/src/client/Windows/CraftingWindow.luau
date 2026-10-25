@@ -127,7 +127,9 @@ local function renderDetail()
 	nameLabel.Text = if recipe.Amount > 1 then `{output.Name} x{recipe.Amount}` else output.Name
 	if tool then
 		kindLabel.Text = `Tier {tool.Tier} {tool.Kind}`
-		goodFor.Text = GOOD_FOR[tool.Kind] or ""
+		goodFor.Text = if tool.Kind == "Hoe"
+			then `Right-click grass or dirt to make farmland. Hold it while harvesting: +{math.round(tool.Harvest * 100)}% chance of a double crop`
+			else GOOD_FOR[tool.Kind] or ""
 	elseif recipe.Output == "Furnace" then
 		kindLabel.Text = "Station"
 		goodFor.Text = "Place it, then right-click it to smelt ores"

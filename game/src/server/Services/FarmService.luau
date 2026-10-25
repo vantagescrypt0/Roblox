@@ -6,6 +6,9 @@
 -- Hold a shovel and click a crop to dig it up (you get the seed back) to plant something
 -- else. Better crops need a higher Farming level, and a higher level gives a bigger chance
 -- of a bonus crop. Bigger islands have more plots (see IslandTiers).
+-- Hoes make more: right-click grass or dirt with one to till it into farmland (up to
+-- Leveling.TilledPlots for your Farming level; saved as a block change). A shovel turns an
+-- empty tilled plot back into dirt. Holding a hoe while harvesting adds its tier's bonus.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -33,21 +36,36 @@ local SPARE_SEED_CHANCE = 0.1
 local CROP_SCALE = 0.68
 -- Growth stage thresholds
 local SPROUT_UNTIL = 0.35
+local TILLABLE: { [string]: boolean } = { Grass = true, Dirt = true }
 
 type Plot = {
-	Key: string,
+	Key: string, -- island plot number, or the cell key for a tilled plot
 	Cell: Vector3, -- grid position of the farmland block
 	Model: Model,
 	Part: BasePart, -- the farmland block
 	Base: CFrame, -- top of the farmland block
 	Stage: string?, -- which crop model is showing
 	Visual: Model?,
+	Tilled: boolean, -- made by the player with a hoe
 }
 
 local FarmService = {}
 
 local farms: { [Player]: { Plot } } = {}
 local rng = Random.new()
+
+-- The tool of this kind in the player's hand, if any
+local function heldTool(player: Player, kind: Tools.Kind): Tools.Tool?
+	local held = HotbarService.GetHeldItem(player)
+	local tool = held and Tools.ByItem[held]
+	return if tool and tool.Kind == kind then tool else nil
+end
+
+local function useTool(player: Player, tool: Tools.Tool)
+	if InventoryService.UseTool(player, tool.Item, 1) then
+		StateService.Notify(player, `Your {Items[tool.Item].Name} broke!`, "bad")
+	end
+end
 
 -- The best crop the player can plant right now (level unlocked and has seeds)
 local function bestSeed(player: Player): Crops.Crop?
@@ -124,12 +142,6 @@ local function refreshPlot(player: Player, plot: Plot)
 	end
 end
 
-local function holdingShovel(player: Player): boolean
-	local held = HotbarService.GetHeldItem(player)
-	local tool = held and Tools.ByItem[held]
-	return tool ~= nil and tool.Kind == "Shovel"
-end
-
 -- The crop whose seeds the player is holding, if they can plant it
 local function heldSeed(player: Player): Crops.Crop?
 	local held = HotbarService.GetHeldItem(player)
@@ -142,6 +154,53 @@ local function heldSeed(player: Player): Crops.Crop?
 	return nil
 end
 
+local function makePlot(
+	island: IslandService.Island,
+	key: string,
+	x: number,
+	y: number,
+	z: number,
+	tilled: boolean
+): Plot?
+	local farmland = BlockWorld.part(island.World, x, y, z)
+	if not farmland then
+		return nil
+	end
+	return {
+		Key = key,
+		Cell = Vector3.new(x, y, z),
+		Model = island.Model,
+		Part = farmland,
+		-- Top of the farmland block
+		Base = CFrame.new(farmland.Position + Vector3.new(0, Blocks.Size / 2, 0)),
+		Stage = nil,
+		Visual = nil,
+		Tilled = tilled,
+	}
+end
+
+-- Turns an empty tilled plot back into dirt
+local function untill(player: Player, plot: Plot)
+	local island = IslandService.GetIsland(player)
+	local data = DataService.GetData(player)
+	if not island or not data then
+		return
+	end
+	local x, y, z = plot.Cell.X, plot.Cell.Y, plot.Cell.Z
+	setVisual(plot, nil, 1)
+	data.Farm.Plots[plot.Key] = nil
+	BlockWorld.set(island.World, x, y, z, "Dirt")
+	IslandService.RecordChange(player, x, y, z, "Dirt")
+	island.World.Protected[BlockWorld.key(x, y + 1, z)] = nil
+	local plots = farms[player]
+	local index = plots and table.find(plots, plot)
+	if plots and index then
+		table.remove(plots, index)
+	end
+	DataService.MarkChanged(player)
+	StateService.Notify(player, "Turned the farmland back into dirt", "info")
+end
+
 local function onPlotClicked(player: Player, plot: Plot)
 	local data = DataService.GetData(player)
 	if not data then
@@ -149,12 +208,16 @@ local function onPlotClicked(player: Player, plot: Plot)
 	end
 
 	local crop, progress = plotState(data, plot.Key)
-	if crop and holdingShovel(player) then
+	local shovel = heldTool(player, "Shovel")
+	if crop and shovel then
 		-- Dig the plant up to plant something else; the seed comes back
 		data.Farm.Plots[plot.Key] = nil
 		DataService.MarkChanged(player)
 		InventoryService.Add(player, crop.Seed, 1)
 		StateService.Notify(player, `Dug up the {crop.Id}`, "info")
+	elseif not crop and shovel and plot.Tilled then
+		untill(player, plot)
+		return
 	elseif not crop then
 		-- Plant the seeds in your hand, otherwise your best seeds
 		local seed = heldSeed(player) or bestSeed(player)
@@ -170,7 +233,12 @@ local function onPlotClicked(player: Player, plot: Plot)
 		data.Farm.Plots[plot.Key] = { Crop = crop.Id, PlantedAt = os.time() }
 
 		local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
-		local amount = if rng:NextNumber() < Leveling.BonusChance(farmingLevel) then 2 else 1
+		local hoe = heldTool(player, "Hoe")
+		local chance = Leveling.BonusChance(farmingLevel) + (if hoe then hoe.Harvest else 0)
+		local amount = if rng:NextNumber() < chance then 2 else 1
+		if hoe then
+			useTool(player, hoe)
+		end
 
 		InventoryService.Add(player, crop.Product, amount)
 		if rng:NextNumber() < SPARE_SEED_CHANCE then
@@ -186,26 +254,101 @@ end
 
 local function onIslandCreated(player: Player, island: IslandService.Island)
 	local plots: { Plot } = {}
+	local islandPlots: { [string]: boolean } = {}
 	for i, cell in island.FarmCells do
-		local farmland = BlockWorld.part(island.World, cell.X, cell.Y, cell.Z)
-		if not farmland then
-			continue
+		islandPlots[BlockWorld.key(cell.X, cell.Y, cell.Z)] = true
+		local plot = makePlot(island, tostring(i), cell.X, cell.Y, cell.Z, false)
+		if plot then
+			refreshPlot(player, plot)
+			table.insert(plots, plot)
 		end
-		local plot: Plot = {
-			Key = tostring(i),
-			Cell = Vector3.new(cell.X, cell.Y, cell.Z),
-			Model = island.Model,
-			Part = farmland,
-			-- Top of the farmland block
-			Base = CFrame.new(farmland.Position + Vector3.new(0, Blocks.Size / 2, 0)),
-			Stage = nil,
-			Visual = nil,
-		}
-
-		refreshPlot(player, plot)
-		table.insert(plots, plot)
+	end
+	-- Farmland the player tilled (saved as a block change); nothing can be built on top
+	for cellKey, blockType in island.World.Cells do
+		if blockType == "Farmland" and not islandPlots[cellKey] then
+			local x, y, z = BlockWorld.unkey(cellKey)
+			island.World.Protected[BlockWorld.key(x, y + 1, z)] = true
+			local plot = makePlot(island, cellKey, x, y, z, true)
+			if plot then
+				refreshPlot(player, plot)
+				table.insert(plots, plot)
+			end
+		end
 	end
 	farms[player] = plots
+end
+
+-- Right-clicking grass or dirt with a hoe: it becomes a new farm plot
+local lastTill: { [Player]: number } = {}
+local function onTill(player: Player, x: unknown, y: unknown, z: unknown)
+	if type(x) ~= "number" or type(y) ~= "number" or type(z) ~= "number" then
+		return
+	end
+	if x ~= math.floor(x) or y ~= math.floor(y) or z ~= math.floor(z) then
+		return
+	end
+	local now = os.clock()
+	if now - (lastTill[player] or 0) < 0.25 then
+		return
+	end
+	lastTill[player] = now
+	local island = IslandService.GetIsland(player)
+	local data = DataService.GetData(player)
+	local hoe = heldTool(player, "Hoe")
+	if not island or not data or not hoe then
+		return
+	end
+
+	local world = island.World
+	local cellKey = BlockWorld.key(x, y, z)
+	local above = BlockWorld.key(x, y + 1, z)
+	if
+		not TILLABLE[world.Cells[cellKey] or ""]
+		or world.Protected[cellKey]
+		or IslandService.GetNode(player, x, y, z)
+	then
+		return
+	end
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if not root or not root:IsA("BasePart") then
+		return
+	end
+	if (root.Position - BlockWorld.position(world, x, y, z)).Magnitude > Blocks.Reach + 3 then
+		return
+	end
+	-- Crops need open sky (a mined tree or boulder counts as taken: it grows back)
+	if world.Cells[above] or IslandService.GetNode(player, x, y + 1, z) then
+		StateService.Notify(player, "Clear the space on top first", "bad")
+		return
+	end
+
+	local plots: { Plot } = farms[player] or {}
+	local tilled = 0
+	for _, plot in plots do
+		if plot.Tilled then
+			tilled += 1
+		end
+	end
+	local level = ProgressionService.GetSkillLevel(player, "Farming")
+	local limit = Leveling.TilledPlots(level)
+	if tilled >= limit then
+		StateService.Notify(player, `Farming level {level} lets you make {limit} farm plots. Level up for more!`, "bad")
+		return
+	end
+
+	BlockWorld.set(world, x, y, z, "Farmland")
+	IslandService.RecordChange(player, x, y, z, "Farmland")
+	world.Protected[above] = true
+	data.Farm.Plots[cellKey] = nil
+	local plot = makePlot(island, cellKey, x, y, z, true)
+	if plot then
+		refreshPlot(player, plot)
+		table.insert(plots, plot)
+		farms[player] = plots
+	end
+	useTool(player, hoe)
+	DataService.MarkChanged(player)
 end
 
 -- Clicking farmland (no key press): plant if empty, harvest if ripe, dig up with a shovel
@@ -236,9 +379,11 @@ end
 function FarmService.Start()
 	IslandService.OnIslandCreated(onIslandCreated)
 	Remotes.FarmClick.OnServerEvent:Connect(onFarmClick)
+	Remotes.Till.OnServerEvent:Connect(onTill)
 	Players.PlayerRemoving:Connect(function(player)
 		farms[player] = nil
 		lastClick[player] = nil
+		lastTill[player] = nil
 	end)
 
 	-- Update growth timers and crop models once a second

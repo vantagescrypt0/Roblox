@@ -5,7 +5,7 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
 
 | Skill | How you train it | XP | What it unlocks |
 |---|---|---|---|
-| **Farming** | Harvest ripe crops | Wheat 10, Carrot 25, Potato 55, Glowberry 90 | Carrot seeds (5), Glowberry (8), Potato (10); hoes later |
+| **Farming** | Harvest ripe crops | Wheat 10, Carrot 25, Potato 55, Glowberry 90 | Stone Hoe (3), Carrot seeds (5), Iron Hoe (6, + Crafting 3), Glowberry (8), Potato (10), Crystal Hoe (12, + Crafting 8); more tilled plots as you level |
 | **Mining** | Mine the island's boulders and ore with a pickaxe | Stone 5, Coal Ore 12, Iron Ore 20 | Iron Pickaxe and Shovel (4), Crystal ones (8) |
 | **Woodcutting** | Chop the island's trees | Wood 6 | Iron Axe (4), Crystal Axe (8) |
 | **Crafting** | Craft or smelt anything | Planks/Sticks 4, Iron Ingot 10, Furnace 25; tools 10 / 20 / 50 / 120 by tier | Every Iron tool (3) and Crystal tool (8) |
@@ -17,7 +17,11 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
 - **Level-up messages:** "Mining level 4!", and when a level-up makes recipes craftable: "You can now craft: Iron Pickaxe, Iron Shovel".
 - **Skills window:** the **Skills** button (or clicking your profile card) shows your player level and every skill's level and XP. Pick a skill to see how to train it, its double-drop chance and all its unlocks (green = ready, gold = this skill is high enough but another isn't yet). Screenshot: `art/renders/ui-skills-window.jpg`.
 - **Crafting window:** locked recipes have a "Locked" tag; the details show a Skills row (red until you have the level) and "Needs Woodcutting 4". Screenshot: `art/renders/ui-crafting-skills.jpg`.
-- **Planned hoe requirements** (when hoes and tilling are built): Wooden Hoe nothing, Stone Hoe Farming 3, Iron Hoe Crafting 3 + Farming 6, Crystal Hoe (our top tier, like a diamond hoe) Crafting 8 + Farming 12.
+- **Hoes (built 2026-10-25):** Wooden Hoe needs nothing, Stone Hoe Farming 3, Iron Hoe Crafting 3 + Farming 6, Crystal Hoe (our top tier, like a diamond hoe) Crafting 8 + Farming 12. Cost: 2 head material + 2 sticks.
+  - **Tilling:** hold a hoe and right-click (or tap) grass or dirt on your island with open space above it; it becomes a real farm plot, saved with your island. Each till uses 1 durability.
+  - **How many:** 2 tilled plots, plus 1 more every 3 Farming levels (Farming 3 = 3, Farming 12 = 6, max 30), on top of your island's own plots.
+  - **Undo:** a shovel on an empty tilled plot turns it back into dirt (a shovel on a crop still digs the crop up first).
+  - **Bonus:** holding a hoe while harvesting adds +2% / 4% / 7% / 12% (Wooden → Crystal) double-crop chance on top of your Farming bonus, and uses 1 durability.
 
 ## Decided
 - Separate skill levels: **Farming**, **Mining**, **Woodcutting**, **Crafting** and **Combat (PvE)** (see above).

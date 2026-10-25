@@ -33,12 +33,12 @@ What everything is worth, so trading between players has a fair reference. The n
 | Crystal (Warzone) | 60 | – | – |
 
 ### Tools (new, full durability)
-| Tier | Pickaxe | Axe | Shovel | Sword |
-|---|---|---|---|---|
-| Wooden | 6 | 6 | 3 | 3 |
-| Stone | 9 | 9 | 4 | 6 |
-| Iron | 58 | 58 | 21 | 39 |
-| Crystal | 200 | 200 | 68 | 133 |
+| Tier | Pickaxe | Axe | Shovel | Hoe | Sword |
+|---|---|---|---|---|---|
+| Wooden | 6 | 6 | 3 | 4 | 3 |
+| Stone | 9 | 9 | 4 | 7 | 6 |
+| Iron | 58 | 58 | 21 | 40 | 39 |
+| Crystal | 200 | 200 | 68 | 134 | 133 |
 
 ## Resource nodes (nothing to replant)
 Every tree, leaf, boulder and ore block that comes with the island is a **node**. Mine it and it grows back in the same spot after a set time. You can't build in a node's spot, and mined nodes are never saved as holes.

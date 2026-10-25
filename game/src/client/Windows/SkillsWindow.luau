@@ -110,7 +110,10 @@ local function renderDetail()
 	detailName.Text = skill.Name
 	detailLevel.Text = `Level {current.Level}`
 	detailTrains.Text = `Train it: {skill.Trains}`
-	if skill.Bonus then
+	if skill.Id == "Farming" then
+		local chance = math.floor(Leveling.BonusChance(current.Level) * 100 + 0.5)
+		detailBonus.Text = `Double crops: {chance}% · hoe up to {Leveling.TilledPlots(current.Level)} new plots`
+	elseif skill.Bonus then
 		local chance = math.floor(Leveling.BonusChance(current.Level) * 100 + 0.5)
 		detailBonus.Text = `Double drops: {chance}% chance (+1% each level)`
 	elseif skill.Id == "Crafting" then

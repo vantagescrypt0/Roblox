@@ -5,6 +5,7 @@
 --     How long depends on the block's toughness and the tool you hold (Mining.luau).
 --   right click (or tap) -> place the selected hotbar block against the face you aim at
 --   click / tap farmland -> plant the seeds you hold (or harvest when it's ripe)
+--   right click / tap grass or dirt while holding a hoe -> till it into farmland
 --   click / tap the crafting table or the Merchant -> open crafting / the market
 --   right click / tap a furnace -> smelting (left click breaks it, so you can move it)
 -- The server double-checks everything.
@@ -21,6 +22,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Mining = require(ReplicatedStorage.Shared.Mining)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Hotbar)
 
 local player = Players.LocalPlayer :: Player
@@ -221,6 +223,13 @@ local function interact(secondary: boolean): boolean
 	elseif current and secondary and current.Part.Name == "Furnace" then
 		callbacks.OpenCrafting("Furnace")
 		return true
+	elseif current and secondary and (current.Part.Name == "Grass" or current.Part.Name == "Dirt") then
+		local itemId = Hotbar.SelectedItem()
+		local tool = itemId and Tools.ByItem[itemId]
+		if tool and tool.Kind == "Hoe" then
+			Remotes.Till:FireServer(current.X, current.Y, current.Z)
+			return true
+		end
 	elseif aimingAtMerchant() then
 		callbacks.OpenMarket()
 		return true

@@ -19,4 +19,10 @@ function Leveling.BonusChance(skillLevel: number): number
 	return math.clamp((skillLevel - 1) * 0.01, 0, 0.75)
 end
 
+-- How many farm plots you can make yourself with a hoe (on top of your island's own):
+-- 2, plus one more every 3 Farming levels
+function Leveling.TilledPlots(farmingLevel: number): number
+	return math.min(2 + farmingLevel // 3, 30)
+end
+
 return table.freeze(Leveling)

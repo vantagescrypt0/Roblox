@@ -21,6 +21,7 @@ local NAMES = {
 	"SelectSlot", -- client -> server: hotbar slot 1-5 is now selected
 	"Travel", -- server -> client: you're being moved to "Town" or "Island" (for the fade)
 	"FarmClick", -- client -> server: clicked the farmland at grid x, y, z (plant or harvest)
+	"Till", -- client -> server: hoe the grass or dirt block at grid x, y, z into farmland
 	"TradeRequest", -- client -> server: ask another player in Town to trade (player)
 	"TradeInvite", -- server -> client: a player wants to trade with you (player), or nil to withdraw
 	"TradeRespond", -- client -> server: answer an invite (player, accepted)
@@ -61,6 +62,7 @@ return {
 	SelectSlot = folder:WaitForChild("SelectSlot") :: RemoteEvent,
 	Travel = folder:WaitForChild("Travel") :: RemoteEvent,
 	FarmClick = folder:WaitForChild("FarmClick") :: RemoteEvent,
+	Till = folder:WaitForChild("Till") :: RemoteEvent,
 	TradeRequest = folder:WaitForChild("TradeRequest") :: RemoteEvent,
 	TradeInvite = folder:WaitForChild("TradeInvite") :: RemoteEvent,
 	TradeRespond = folder:WaitForChild("TradeRespond") :: RemoteEvent,

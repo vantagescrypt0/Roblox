@@ -69,7 +69,7 @@ local Items: { [string]: Item } = {
 	Crystal = { Name = "Crystal", Icon = "💎", Value = 60, SellPrice = 0, Model = "Crystal" },
 }
 -- Every tool from Tools.luau is an item too, e.g. "StonePickaxe" -> "Stone Pickaxe"
-local KIND_ICONS = { Sword = "🗡️", Pickaxe = "⛏️", Axe = "🔨", Shovel = "🥄" }
+local KIND_ICONS = { Sword = "🗡️", Pickaxe = "⛏️", Axe = "🔨", Shovel = "🥄", Hoe = "🌱" }
 for _, tool in Tools.List do
 	Items[tool.Item] = {
 		Name = `{Tools.TierNames[tool.Tier]} {tool.Kind}`,
