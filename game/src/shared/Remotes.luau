@@ -21,6 +21,13 @@ local NAMES = {
 	"SelectSlot", -- client -> server: hotbar slot 1-5 is now selected
 	"Travel", -- server -> client: you're being moved to "Town" or "Island" (for the fade)
 	"FarmClick", -- client -> server: clicked the farmland at grid x, y, z (plant or harvest)
+	"TradeRequest", -- client -> server: ask another player in Town to trade (player)
+	"TradeInvite", -- server -> client: a player wants to trade with you (player), or nil to withdraw
+	"TradeRespond", -- client -> server: answer an invite (player, accepted)
+	"TradeOffer", -- client -> server: put this many of an item in your side of the trade (item id, count)
+	"TradeAccept", -- client -> server: accept or un-accept the trade as you see it (accepted, version)
+	"TradeCancel", -- client -> server: close the trade
+	"TradeUpdate", -- server -> client: what the trade window shows, or nil when the trade closes
 }
 
 local folder: Instance
@@ -54,4 +61,11 @@ return {
 	SelectSlot = folder:WaitForChild("SelectSlot") :: RemoteEvent,
 	Travel = folder:WaitForChild("Travel") :: RemoteEvent,
 	FarmClick = folder:WaitForChild("FarmClick") :: RemoteEvent,
+	TradeRequest = folder:WaitForChild("TradeRequest") :: RemoteEvent,
+	TradeInvite = folder:WaitForChild("TradeInvite") :: RemoteEvent,
+	TradeRespond = folder:WaitForChild("TradeRespond") :: RemoteEvent,
+	TradeOffer = folder:WaitForChild("TradeOffer") :: RemoteEvent,
+	TradeAccept = folder:WaitForChild("TradeAccept") :: RemoteEvent,
+	TradeCancel = folder:WaitForChild("TradeCancel") :: RemoteEvent,
+	TradeUpdate = folder:WaitForChild("TradeUpdate") :: RemoteEvent,
 }

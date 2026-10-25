@@ -2,7 +2,7 @@
 -- Server entry point. Starts each service once, depending on which place this server is
 -- running (Places.luau):
 --   Island  everyone's islands: blocks, farming, crafting, island expansion
---   Town    the shared plaza with the Market and the Merchant
+--   Town    the shared plaza with the Market, the Merchant and player trading
 -- The Warzone (WarzoneService, MobService) is built but switched off until it's added
 -- to the Town.
 
@@ -24,12 +24,14 @@ local MarketService = require(Services.MarketService)
 local QuestService = require(Services.QuestService)
 local StateService = require(Services.StateService)
 local TownService = require(Services.TownService)
+local TradeService = require(Services.TradeService)
 local TravelService = require(Services.TravelService)
 
 StateService.Start()
 if Places.Current() == "Town" then
 	TownService.Start()
 	MarketService.Start()
+	TradeService.Start()
 else
 	IslandService.Start()
 	BlockService.Start()

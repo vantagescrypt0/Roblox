@@ -1,5 +1,5 @@
 --!strict
--- Pop-up windows (Bag, Island, Market, Crafting): a parchment sheet in a wooden frame with
+-- Pop-up windows (Bag, Island, Market, Crafting, Trade): a parchment sheet in a wooden frame with
 -- a wooden title bar and a close button. Only one is open at a time.
 
 local TweenService = game:GetService("TweenService")
@@ -15,6 +15,7 @@ export type Window = {
 	Title: TextLabel,
 	IsOpen: boolean,
 	OnOpen: (() -> ())?,
+	OnClose: (() -> ())?,
 }
 
 local Window = {}
@@ -30,6 +31,9 @@ function Window.close(window: Window)
 		current = nil
 	end
 	window.Gui.Enabled = false
+	if window.OnClose then
+		window.OnClose()
+	end
 end
 
 function Window.open(window: Window)
@@ -114,6 +118,7 @@ function Window.new(name: string, title: string, size: Vector2): Window
 		Title = titleLabel,
 		IsOpen = false,
 		OnOpen = nil,
+		OnClose = nil,
 	}
 	return window
 end

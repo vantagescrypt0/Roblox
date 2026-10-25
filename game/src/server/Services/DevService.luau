@@ -3,7 +3,12 @@
 --   game.ServerStorage.Dev:Invoke("Level", 10)              set player level
 --   game.ServerStorage.Dev:Invoke("Skill", "Combat", 5)     set a skill level
 --   game.ServerStorage.Dev:Invoke("Give", "Wood", 20)       give items
--- Acts on the first player in the server. Does nothing in live servers.
+--   game.ServerStorage.Dev:Invoke("Coins", 500)             give coins
+--   game.ServerStorage.Dev:Invoke("Use", "IronPickaxe", 100) wear a tool down
+--   game.ServerStorage.Dev:Invoke("Trades")                 print your last trades
+--   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
+-- Acts on the first player in the server unless "As" picked another (for local tests with
+-- several players). Does nothing in live servers.
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -34,6 +39,16 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	Coins = function(player, _data, amount)
 		InventoryService.AddCoins(player, amount)
 	end,
+	-- Wear a tool down, e.g. ("Use", "IronPickaxe", 100)
+	Use = function(player, _data, item, uses)
+		InventoryService.UseTool(player, item, uses)
+	end,
+	-- Print your last trades to the Output
+	Trades = function(_player, data)
+		for _, trade in data.Trades do
+			print(trade.At, trade.WithName, "gave", trade.Gave, "got", trade.Got)
+		end
+	end,
 }
 
 function DevService.Start()
@@ -42,8 +57,13 @@ function DevService.Start()
 	end
 	local bindable = Instance.new("BindableFunction")
 	bindable.Name = "Dev"
+	local target: string? = nil
 	bindable.OnInvoke = function(command: string, ...: any)
-		local player = Players:GetPlayers()[1]
+		if command == "As" then
+			target = ...
+			return "ok"
+		end
+		local player = if target then Players:FindFirstChild(target) :: Player? else Players:GetPlayers()[1]
 		local data = player and DataService.GetData(player)
 		local run = commands[command]
 		if not player or not data or not run then

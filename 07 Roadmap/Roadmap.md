@@ -22,7 +22,7 @@ No dates — quality over speed.
    - [x] Town as a separate place with teleports (published 2026-10-24) — [ ] test the teleports live
    - [x] Resource nodes + perennial crops, no timers/hints, trade values for every item (2026-10-24) — playtested
    - [x] UI style refresh (2026-10-24): "Workshop" style (wood frames, parchment panels, storybook serif titles) on every screen. Playtested in Studio; not published yet
-   - [ ] Player trading in Town (design notes in [[Economy & Values]])
+   - [x] Player trading in Town (2026-10-24): invite, two-step accept with countdown, value warning, trade log — see [[Economy & Values]]. Playtested in Studio with two players; not published yet
    - [ ] Saplings, a hoe to make farmland
    - [ ] Add the Warzone to Town (when you're ready)
    - [ ] Warzone arena art (still greybox)

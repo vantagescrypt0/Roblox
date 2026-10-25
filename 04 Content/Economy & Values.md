@@ -1,5 +1,5 @@
 # Economy & Values
-What everything is worth, so trading between players (coming later) has a fair reference. The numbers live in code: hand-set values in `game/src/shared/Items.luau`, crafted values worked out by `game/src/shared/Economy.luau`.
+What everything is worth, so trading between players has a fair reference. The numbers live in code: hand-set values in `game/src/shared/Items.luau`, crafted values worked out by `game/src/shared/Economy.luau`.
 
 ## The rules
 - **Value** is what an item is fairly worth between players, in coins.
@@ -65,13 +65,26 @@ Plant once. After each harvest the plant stays and starts growing again, with no
 
 Better crops earn about the same coins per minute as wheat but need far fewer clicks, and they give more Farming XP. The Farming level bonus (a chance of a double crop) comes on top. *Tuning idea: if Carrot feels pointless, raise its value to 12 to 14.*
 
-## Trading (planned): design notes
-- **Where:** in Town, where players from different islands meet. Both players are on the same server, so the swap can happen in one step.
-- **Two-step confirm:** both players put items in and press Accept. Then a 3-second countdown starts, and any change resets both Accepts. This stops last-second swaps.
-- **Server does the swap atomically:** check that both sides still own everything, then remove and add in one go. Never trust what the client says is in the trade. ProfileStore's session lock already stops the same save being open on two servers (the usual source of duplicated items).
-- **Lopsided trade warning:** show each side's total value (`Economy.Total`). If one side is worth less than half the other, show a warning before Accept. Younger players are the audience, so this matters.
-- **Worn tools** show their worn value in the trade window.
-- **Log every trade** (who, what, when) so scams and duplication bugs can be looked into.
-- Open question: should coins be tradable, or only items? Allowing coins is simpler for players but makes coin-selling scams easier.
+## Trading between players
+Built 2026-10-24 (code: `TradeService.luau` on the server, `TradeWindow.luau` on the client). Screenshot: `art/renders/ui-trade-window.png`.
+
+**How it plays**
+1. In Town, walk up to another player. A **Trade** prompt shows over them (press **T**, or tap it). They get a "wants to trade" card with Trade / No thanks for 20 seconds. If you both ask each other, the trade just opens.
+2. The trade window shows **You give** and **They give**, each with its total value, and your bag. Click an item in your bag to put one in (click it under You give to take one back), or pick it and use -1 / +1 / +10 / All / None.
+3. Both press **Accept**. A 3-second countdown runs ("Trading in 3... press to stop"), then everything swaps at once.
+4. Closing the window (X, Cancel trade, clicking outside, or opening another window) ends the trade for both.
+
+**Safety rules**
+- **The server owns the trade.** The client only asks to change an offer; the server checks every count against what you actually have.
+- **Any change un-accepts both sides** and stops the countdown. An Accept also only counts for the version of the trade that player was looking at, so nothing can be swapped in at the last second.
+- **The swap is atomic:** check both sides still own everything, remove from both, add to both, with no waiting in between. ProfileStore's session lock stops the same save being open on two servers (the usual source of duplicated items).
+- If your items change mid-trade (e.g. you sell some), your offer shrinks to what you still have and both sides must accept again.
+- **Lopsided warning:** if you'd get back less than half of what you give, you see "Careful! You give items worth X coins and get Y back" and the button becomes "Accept anyway". Gifts are allowed, just warned.
+- **Every trade is logged** in both players' saved data (`Trades`, the last 30: who, when, what each side gave) and printed to the server log.
+- Limits: up to 12 different items per side; you can ask again 3s later, or 20s after a "no thanks".
+
+**Worn tools:** only one tool of each kind can be part-used (the one you're using up). When you trade some of a tool, you give fresh ones first and keep the worn one; it only goes along if you trade them all, and it's shown at its worn value with a wear bar. If the other player already has a worn one of that kind, the two are combined: the wear adds up and, when it passes a whole tool, they get one fewer tool. The total uses are always exactly kept (tested: 50 + 150 + 250 uses in → 2 tools with 450 uses).
+
+**Coins:** not tradable for now (items only). Coins would be simpler for players but make coin-selling scams easier. Still an open question.
 
 Related: [[Content Index]], [[Monetization Principles]], [[Core Loop]]

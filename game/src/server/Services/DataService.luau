@@ -49,6 +49,9 @@ local TEMPLATE = {
 		Active = false,
 		Bag = {} :: { [string]: number },
 	},
+	-- Your last trades with other players, newest last, so scams and duplication bugs can
+	-- be looked into
+	Trades = {} :: { { At: number, With: number, WithName: string, Gave: { [string]: number }, Got: { [string]: number } } },
 }
 
 export type Data = typeof(TEMPLATE)

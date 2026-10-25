@@ -31,6 +31,12 @@ While playtesting, switch Studio to the **Server** view and run in the command b
 - `game.ServerStorage.Dev:Invoke("Level", 10)` (unlock the Warzone)
 - `game.ServerStorage.Dev:Invoke("Skill", "Combat", 5)`
 - `game.ServerStorage.Dev:Invoke("Give", "Wood", 20)`
+- `game.ServerStorage.Dev:Invoke("Use", "IronPickaxe", 100)` (wear a tool down)
+- `game.ServerStorage.Dev:Invoke("Trades")` (print your saved trades)
+- `game.ServerStorage.Dev:Invoke("As", "Player2")` (later commands act on Player2)
+
+## Testing trading (two players)
+Trading only runs in the Town place. Build it with `rojo build town.project.json -o town.rbxlx` and open that file in Studio (or `rojo serve town.project.json --port 34873` and connect the Rojo plugin to that port, if another `rojo serve` already uses 34872). Start **Test → Start Test Session → Server and Clients**, then **Test → Add Clients** in the Server window once per player. Use `Dev:Invoke("As", "Player1")` / `("As", "Player2")` from the Server command bar to give each player items.
 
 ## Island model
 The server looks for a Model at `ServerStorage.Assets.StarterIsland` (with a part named `GrassTop`). It comes from `assets/StarterIsland.rbxm`, which Rojo maps into `ServerStorage.Assets`. If it's missing, the server builds a simple greybox island instead.

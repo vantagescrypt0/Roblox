@@ -23,6 +23,10 @@
 - [ ] Catch-up help so veterans reach level 10 again quickly?
 - [ ] Season rewards that are kept forever (titles, cosmetics)?
 
+## Trading
+- [ ] Should coins be tradable, or only items? *(Prototype: items only. See [[Economy & Values]])*
+- [ ] Any minimum level before you can trade (to slow down alt-account scams)? *(Prototype: none)*
+
 ## Tutorial
 - [ ] Review the draft quest chain in [[Tutorial & Quests]]
 - [ ] Can players skip the tutorial?

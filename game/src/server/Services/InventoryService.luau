@@ -31,11 +31,12 @@ local function autoHotbar(data: DataService.Data, itemId: string)
 	end
 end
 
--- Used-up items leave the hotbar
+-- Used-up items leave the hotbar (and a tool you no longer have can't stay worn)
 local function clearIfEmpty(data: DataService.Data, itemId: string)
 	if (data.Items[itemId] or 0) > 0 then
 		return
 	end
+	data.Wear[itemId] = nil
 	for slot = 1, HOTBAR_SIZE do
 		if data.Hotbar[slot] == itemId then
 			data.Hotbar[slot] = ""
@@ -106,6 +107,30 @@ function InventoryService.UseTool(player: Player, itemId: string, uses: number):
 	data.Wear[itemId] = wear
 	DataService.MarkChanged(player)
 	return false
+end
+
+-- Adds one tool that's already been used `wear` times (from a trade). Only one tool per
+-- kind can be part-used, so its wear joins the one you're using up; if together they're
+-- past a whole tool's worth, one is used up. Either way, no uses are lost or gained.
+function InventoryService.AddWorn(player: Player, itemId: string, wear: number)
+	local data = DataService.GetData(player)
+	local tool = Tools.ByItem[itemId]
+	if not data or not tool then
+		return
+	end
+	local had = data.Items[itemId] or 0
+	local total = (if had > 0 then data.Wear[itemId] or 0 else 0) + wear
+	InventoryService.Add(player, itemId, 1)
+	if total >= tool.Durability then
+		total -= tool.Durability
+		data.Items[itemId] -= 1
+	end
+	if total > 0 then
+		data.Wear[itemId] = total
+	else
+		data.Wear[itemId] = nil
+	end
+	DataService.MarkChanged(player)
 end
 
 function InventoryService.AddCoins(player: Player, amount: number)

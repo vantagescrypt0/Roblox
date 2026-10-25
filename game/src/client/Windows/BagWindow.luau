@@ -5,6 +5,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local ItemOrder = require(ReplicatedStorage.Shared.ItemOrder)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
@@ -19,33 +20,6 @@ local SLOT = 54
 local GAP = 6
 local COLUMNS = 7
 local ROWS = 3
-
--- Display order: blocks, materials, seeds, crops, Warzone materials, then every tool
-local ORDER = {
-	"Grass",
-	"Dirt",
-	"Wood",
-	"Planks",
-	"Stone",
-	"Sticks",
-	"Furnace",
-	"Coal",
-	"RawIron",
-	"IronIngot",
-	"WheatSeeds",
-	"CarrotSeeds",
-	"PotatoSeeds",
-	"GlowberrySeeds",
-	"Wheat",
-	"Carrot",
-	"Potato",
-	"Glowberry",
-	"Scrap",
-	"Crystal",
-}
-for _, tool in Tools.List do
-	table.insert(ORDER, tool.Item)
-end
 
 local BagWindow = {}
 
@@ -94,7 +68,7 @@ local function render()
 		return
 	end
 
-	for order, itemId in ORDER do
+	for order, itemId in ItemOrder do
 		local count = state.Items[itemId] or 0
 		if count > 0 then
 			local slot = slotFrame(grid, order)
