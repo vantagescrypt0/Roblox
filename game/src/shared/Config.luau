@@ -17,8 +17,17 @@ Config.Island = table.freeze({
 })
 
 -- Uploaded copy of art/textures/item_icons.png (all item icons on one sheet, see ItemArt.luau).
--- Empty = icons fall back to live 3D previews. Uploaded 2026-10-25 with the hoes and the
--- sapling, as the texture of a plane imported with Import 3D (see art/README.md).
+-- Empty = icons fall back to live 3D previews. Uploaded 2026-10-26 with the zone items
+-- (gold, pumpkins, melons, the new woods), as the texture of a plane imported with Import 3D
+-- (see art/README.md).
 Config.ItemIconSheet = "rbxassetid://127251953087926"
+
+-- Who can fly (double-tap Space, see client/FlightController): user ids. Only the game's
+-- owner for now (koiopio).
+Config.Flyers = table.freeze({
+	[545120355] = true,
+})
+Config.FlySpeed = 70 -- studs per second, across
+Config.FlyClimb = 45 -- studs per second, up and down
 
 return table.freeze(Config)

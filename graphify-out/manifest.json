@@ -66,9 +66,9 @@
     "semantic_hash": ""
   },
   "game/src/client/Main.client.luau": {
-    "mtime": 1792984238.082784,
-    "seen": 1792985979.3321419,
-    "ast_hash": "cea810f03722ece177ccdb57c00432a1",
+    "mtime": 1793049113.5514705,
+    "seen": 1793049216.4015627,
+    "ast_hash": "b1c6fdb3025f9c06942117b6c53134d1",
     "semantic_hash": ""
   },
   "game/src/client/PromptUI.luau": {
@@ -210,9 +210,9 @@
     "semantic_hash": "222dd8afa9da9e23f5becea42f89e90c"
   },
   "game/src/server/Services/TownService.luau": {
-    "mtime": 1793047839.5057716,
-    "seen": 1793047978.1495876,
-    "ast_hash": "364e937d661b4c435ab2340937072d02",
+    "mtime": 1793049120.3061023,
+    "seen": 1793049216.401671,
+    "ast_hash": "c6318f8b4952d73799bc2c6ba78b8493",
     "semantic_hash": ""
   },
   "game/src/server/Services/WarzoneService.luau": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/Config.luau": {
-    "mtime": 1793046989.241337,
-    "seen": 1793047978.1496494,
-    "ast_hash": "fcc7f6f971df6bd9fd1893c8edaf83fe",
+    "mtime": 1793049093.2876408,
+    "seen": 1793049216.4017587,
+    "ast_hash": "be6144e2e3337596a64310b39169b644",
     "semantic_hash": ""
   },
   "game/src/shared/Crops.luau": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1793048003.971758,
-    "seen": 1793048233.6307974,
-    "ast_hash": "4ec8bc0f0ff5324a3b8b63d6845d96ec",
+    "mtime": 1793048901.594742,
+    "seen": 1793049216.4018304,
+    "ast_hash": "bd2dd5d9194aa66bb25cfed586c2ee13",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -693,6 +693,12 @@
     "mtime": 1793046231.8082228,
     "seen": 1793047978.1496305,
     "ast_hash": "75961d096748bfba1a8f3b3774bbfc24",
+    "semantic_hash": ""
+  },
+  "game/src/client/FlightController.luau": {
+    "mtime": 1793049113.3298886,
+    "seen": 1793049216.4015474,
+    "ast_hash": "20cf50720d6bf9b42afdb95e6bb451c5",
     "semantic_hash": ""
   }
 }

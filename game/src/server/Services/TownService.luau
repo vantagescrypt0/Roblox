@@ -672,13 +672,7 @@ local function portalDecor(info: { Kind: Places.Kind, X: number, Color: Color3 }
 	for y = 1, 10 do
 		set(cx, y, PORTAL_Z + 1, "DarkPlanks")
 	end
-	Decor.Banner(
-		decor,
-		top(cx, 10, PORTAL_Z + 1) - Vector3.new(0, 0.6, SIZE / 2 + 0.3),
-		-Vector3.zAxis,
-		info.Color,
-		6
-	)
+	Decor.Banner(decor, top(cx, 10, PORTAL_Z + 1) - Vector3.new(0, 0.6, SIZE / 2 + 0.3), -Vector3.zAxis, info.Color, 6)
 end
 
 local function portals()
