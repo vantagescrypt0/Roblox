@@ -5,9 +5,9 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
 
 | Skill | How you train it | XP | What it unlocks |
 |---|---|---|---|
-| **Farming** | Harvest ripe crops | Wheat 10, Carrot 25, Potato 55, Glowberry 90 | Stone Hoe (3), Carrot seeds (5), Iron Hoe (6, + Crafting 3), Glowberry (8), Potato (10), Crystal Hoe (12, + Crafting 8); more tilled plots as you level |
-| **Mining** | Mine the island's boulders and ore with a pickaxe, or anything in the Mining World | Stone 5, Coal Ore 12, Iron Ore 20 | Iron Pickaxe and Shovel (4), Crystal ones (8) |
-| **Woodcutting** | Chop the island's trees, trees you planted, or the Woodcutting World's forest | Wood 6 | Iron Axe (4), Crystal Axe (8); more planted trees as you level |
+| **Farming** | Harvest ripe crops | Wheat 10, Carrot 25, Potato 55, Pumpkin 90, Melon 150, Glowberry 90 | Stone Hoe (3), Carrot seeds (5), Iron Hoe (6, + Crafting 3), Glowberry (8), Potato (10), Crystal Hoe (12, + Crafting 8), Pumpkin (15), Melon (25); more tilled plots as you level |
+| **Mining** | Mine the island's boulders and ore with a pickaxe, or anything in the Mining World | Stone 5, Coal Ore 12, Iron Ore 20, Gold Ore 35 | Iron Pickaxe and Shovel (4), Crystal ones (8), Gold Ore in the Mining World (10, Iron pickaxe) |
+| **Woodcutting** | Chop the island's trees, trees you planted, or the Woodcutting World's forest | Wood 6, Birch 12, Spruce 20, Cherry 32 | Iron Axe (4), Crystal Axe (8), the Woodcutting World's Birch Grove (10), Snowy Pines (20) and Cherry Hills (30); more planted trees as you level |
 | **Crafting** | Craft or smelt anything | Planks/Sticks 4, Iron Ingot 10, Furnace 25; tools 10 / 20 / 50 / 120 by tier | Every Iron tool (3) and Crystal tool (8) |
 | **Combat** (the PvE level) | Defeat monsters in the Warzone | per monster | Crystal Sword (8); tougher monsters (Brute needs 5) |
 

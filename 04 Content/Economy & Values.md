@@ -22,12 +22,17 @@ What everything is worth, so trading between players has a fair reference. The n
 | Dark Planks | 2 | – | Builder 4 |
 | Red / Slate Roof Tiles | 3 | – | Builder 5 |
 | Wood | 2 | Lumberjack 1 | – |
+| Birch Wood (Birch Grove, Woodcutting 10) | 4 | Lumberjack 2 | – |
+| Spruce Wood (Snowy Pines, Woodcutting 20) | 7 | Lumberjack 3 | – |
+| Cherry Wood (Cherry Hills, Woodcutting 30) | 12 | Lumberjack 6 | – |
 | Stone | 2 | Miner 1 | – |
 | Planks (1 Wood → 4) | 1 | – | – |
 | Sticks (2 Planks → 4) | 1 | – | – |
 | Coal | 5 | Miner 2 | Miner 10 |
 | Raw Iron | 10 | Miner 5 | – |
 | Iron Ingot (Raw Iron + Coal) | 17 | Miner 8 | – |
+| Raw Gold (deep in the Mining World; Iron pickaxe, Mining 10) | 25 | Miner 12 | – |
+| Gold Ingot (Raw Gold + Coal) | 33 | Miner 16 | – |
 | Furnace (8 Stone) | 18 | – | – |
 | Wheat Seeds | 12 | – | Merchant 12 |
 | Wheat | 4 | Merchant 2 | – |
@@ -35,6 +40,10 @@ What everything is worth, so trading between players has a fair reference. The n
 | Carrot | 10 | Merchant 5 | – |
 | Potato Seeds | 120 | – | Merchant 120 |
 | Potato | 24 | Merchant 12 | – |
+| Pumpkin Seeds (Farming 15) | 200 | – | Merchant 200 |
+| Pumpkin (grows in 4 min) | 40 | Merchant 20 | – |
+| Melon Seeds (Farming 25) | 320 | – | Merchant 320 |
+| Melon (grows in 6 min) | 64 | Merchant 32 | – |
 | Glowberry Seeds (Warzone only) | 250 | – | – |
 | Sapling (from leaves and felled trees) | 8 | – | Lumberjack 20 |
 | Glowberry | 70 | Merchant 35 | – |
@@ -62,6 +71,8 @@ A **node** is a higher-value block because it grows back in the same spot after 
 | Leaves (worlds only) | 30s |
 | Coal Ore | 30s |
 | Iron Ore | 45s |
+| Birch / Spruce / Cherry Wood (worlds) | 25s / 30s / 35s |
+| Gold Ore (Mining World) | 60s |
 
 Blocks you dig out of the island underside (ore veins) and blocks you placed yourself are not nodes: once mined, they're gone.
 
@@ -73,6 +84,8 @@ Plant once. After each harvest the plant stays and starts growing again, with no
 | Wheat | 30s | 4 | 6 harvests (3 min) |
 | Carrot | 75s | 4 | 9 harvests (~11 min) |
 | Potato | 150s | 4.8 | 10 harvests (25 min) |
+| Pumpkin | 240s | 5 | 10 harvests (40 min) |
+| Melon | 360s | 5.3 | 10 harvests (60 min) |
 | Glowberry | 240s | 8.75 | 8 harvests (32 min) |
 
 Better crops earn about the same coins per minute as wheat but need far fewer clicks, and they give more Farming XP. The Farming level bonus (a chance of a double crop) comes on top. *Tuning idea: if Carrot feels pointless, raise its value to 12 to 14.*

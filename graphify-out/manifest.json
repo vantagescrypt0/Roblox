@@ -378,9 +378,9 @@
     "semantic_hash": "aef50b84e872728501c7de6a3401b2f0"
   },
   "03 Design/Skills & Levels.md": {
-    "mtime": 1792981609.5224304,
-    "seen": 1792982025.1852806,
-    "ast_hash": "a21001db6ec698d8a101b1bf79c0d4a8",
+    "mtime": 1793048222.388761,
+    "seen": 1793048233.6308215,
+    "ast_hash": "a16823997c81ec1b31cb4b7c63a37fdb",
     "semantic_hash": ""
   },
   "03 Design/Tutorial & Quests.md": {
@@ -396,9 +396,9 @@
     "semantic_hash": "95a4afb99cfc6895ddd9b8794fcee136"
   },
   "04 Content/Content Index.md": {
-    "mtime": 1792981646.7352138,
-    "seen": 1792982025.1852863,
-    "ast_hash": "2b4c2186391c9eb9fc7beb20debc548f",
+    "mtime": 1793048208.2031004,
+    "seen": 1793048233.6308277,
+    "ast_hash": "f89b3e4c0c51aaf90674f41d914bb9a9",
     "semantic_hash": ""
   },
   "05 Tech/Tools & Stack.md": {
@@ -420,9 +420,9 @@
     "semantic_hash": "a2bae3de7a2250cf4ff14767c54293da"
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1792985942.326718,
-    "seen": 1792985979.3323128,
-    "ast_hash": "6df3138cfaf87ebca8333399abeba831",
+    "mtime": 1793048109.201594,
+    "seen": 1793048233.6308365,
+    "ast_hash": "04307a3e6e02b3b06d06153beab1d2a9",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
@@ -432,9 +432,9 @@
     "semantic_hash": ""
   },
   "07 Roadmap/Roadmap.md": {
-    "mtime": 1792986545.6723418,
-    "seen": 1793047978.1497614,
-    "ast_hash": "20ec5f7c05edc73fd9d4f46a90819514",
+    "mtime": 1793048117.5588298,
+    "seen": 1793048233.6308396,
+    "ast_hash": "003b4308782b983d50be97388b2eb099",
     "semantic_hash": ""
   },
   "Home.md": {
@@ -450,9 +450,9 @@
     "semantic_hash": "09c1d5452af821fff91f6127e8e8cca1"
   },
   "art/README.md": {
-    "mtime": 1792985942.5704727,
-    "seen": 1792985979.332321,
-    "ast_hash": "7c2a2378b5bad97b15bf0c84a8e3914d",
+    "mtime": 1793048208.6116223,
+    "seen": 1793048233.630844,
+    "ast_hash": "c2e86d6b74b7915623cc319767eecdc9",
     "semantic_hash": ""
   },
   "game/README.md": {
@@ -510,9 +510,9 @@
     "semantic_hash": ""
   },
   "04 Content/Economy & Values.md": {
-    "mtime": 1792985942.4898305,
-    "seen": 1792985979.332306,
-    "ast_hash": "b21820e3feaa92607e7fcf93f9a8bc31",
+    "mtime": 1793048191.788302,
+    "seen": 1793048233.6308293,
+    "ast_hash": "5b68de82dda32b0816eff080e7f40de1",
     "semantic_hash": ""
   },
   "game/src/client/Windows/TradeWindow.luau": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1793047623.4056861,
-    "seen": 1793047978.1497014,
-    "ast_hash": "8a51ae2c1ec8843cc9ae2a96e4c84490",
+    "mtime": 1793048003.971758,
+    "seen": 1793048233.6307974,
+    "ast_hash": "4ec8bc0f0ff5324a3b8b63d6845d96ec",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -636,9 +636,9 @@
     "semantic_hash": ""
   },
   "03 Design/Town & Worlds.md": {
-    "mtime": 1792986545.8003955,
-    "seen": 1793047978.149738,
-    "ast_hash": "2b0d30dc0e0f790e67740a5de91fa699",
+    "mtime": 1793048173.8359387,
+    "seen": 1793048233.6308231,
+    "ast_hash": "e5d3f3b6208c7dc578ba2ab214f476a1",
     "semantic_hash": ""
   },
   "game/src/client/AmbientController.luau": {

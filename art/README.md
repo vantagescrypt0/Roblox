@@ -1,16 +1,16 @@
 # Art (Blender)
 
 ## Blocks (Minecraft-style) — what the game uses now
-`scripts/blocks.py` draws 16x16 pixel-art tiles into `textures/blocks.png` (scaled up 8x so they stay crisp) and builds one 3-stud cube per block type with each face mapped to the right tile → `export/Blocks.fbx`.
+`scripts/blocks.py` draws 16x16 pixel-art tiles into `textures/blocks.png` (scaled up 7x so they stay crisp) and builds one 3-stud cube per block type with each face mapped to the right tile → `export/Blocks.fbx`. The same file also holds **merged pieces** (`MERGED` in the script): boxes several blocks big, e.g. `Merged_Stone_8x4x8`, with one quad per block on every face mapped to that block's tile, so a piece looks exactly like the blocks it replaces. The shared worlds draw unbreakable scenery with them (`BlockWorld.drawAll(world, true)`), which keeps the big worlds at a fraction of the parts.
 
 Importing:
 1. Import 3D `export/Blocks.fbx` (Anchored on). **Wait until every block's `MeshContent.SourceType` is `Uri`** (uploaded) before saving.
-2. Move the MeshParts into a folder named `Blocks` (names without the `Block_` prefix, CollisionFidelity Box, Material SmoothPlastic), Save to File → `game/assets-replicated/Blocks.rbxm` (synced to `ReplicatedStorage.Blocks`).
+2. Move the MeshParts into a folder named `Blocks` (names without the `Block_` prefix, Material SmoothPlastic) and the `Merged_` ones into a subfolder `Blocks/Merged` (names without the prefix, e.g. `Stone_8x4x8`), add the plain parts (below), Save to File → `game/assets-replicated/Blocks.rbxm` (synced to `ReplicatedStorage.Blocks`). The 2026-10-26 import did all of this with one command bar script (the CollisionFidelity setting can't be changed from the command bar; Default is fine for boxes).
 3. **Rojo can't live-sync meshes.** Close the place (Don't Save), run `rojo build -o game.rbxlx`, reopen it, reconnect Rojo. Otherwise blocks show as grey checkered placeholders.
 
-To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_tiles()`, after the old ones, so the old tiles keep their random pattern) + an entry in `BLOCKS`, re-run, re-import, and add it to `game/src/shared/Blocks.luau`. The atlas is 7×7 tiles (896 px); 45 are used.
+To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_tiles()`, after the old ones, so the old tiles keep their random pattern) + an entry in `BLOCKS`, re-run, re-import, and add it to `game/src/shared/Blocks.luau`. The atlas is 9×9 tiles (1008 px, just under Roblox's 1024 limit); 64 are used. To merge a new block type into pieces, add it to `MERGED` with the shape lists that fit how it's used (`SLABS` for one-deep ground, `THICK` for soil, `CUBES` for rock).
 
-**Glass and Water aren't meshes:** they're plain 3-stud Parts in the same `Blocks` folder (Glass: Glass material, light blue, 0.6 transparency; Water: SmoothPlastic, blue, 0.3 transparency, 0.15 reflectance, CanCollide off). When re-importing, recreate them in the folder before Save to File (the 2026-10-25 import did this from the command bar).
+**Glass, Water and Ice aren't meshes:** they're plain 3-stud Parts in the same `Blocks` folder (Glass: Glass material, light blue, 0.6 transparency; Water: SmoothPlastic, blue, 0.3 transparency, 0.15 reflectance, CanCollide off; Ice: a Glass copy with Ice material, pale blue, 0.2 transparency). When re-importing, copy them from the old folder before Save to File (the 2026-10-26 import did this from the command bar).
 
 ## Items (tools, crops, seeds, ores, loot) and their icons
 `scripts/items3d.py` builds every item as a low-poly 3D model with the shared palette (`lowpoly.py`): tapered wooden handles with leather grips, curved pickaxe heads, wedge axe blades, diamond-section sword blades, seed pouches tagged by crop, crops, ore lumps, an ingot, a crystal and a scrap gear. Tiers are materials: Wooden (light wood, leather lashing), Stone (rough chipped stone), Iron (steel, metal collar), Crystal (cyan, gold fittings). Tools are modelled upright and tilted 45° so the handle is bottom-left and the head top-right.

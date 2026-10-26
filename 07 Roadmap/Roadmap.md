@@ -32,6 +32,9 @@ No dates — quality over speed.
    - [x] Mining, Woodcutting and Farming worlds as their own places (2026-10-25) — each playtested in Studio
    - [x] Published everything (2026-10-25): Island + Town updated, 3 new places (Mining 97612918094932, Woodcutting 75392192647539, Farming 134413726720555) — portals tested live by you
    - [x] Look pass (2026-10-25): 20 new blocks + glass/water; Town rebuilt with walk-in shops, fountain square, cottages, garden, park; Mining mountain with a walk-in mine; Woodcutting hills, river, lumber camp; Farming barn, windmill, farmhouse, fenced fields — playtested in Studio; published 2026-10-25 (all 5 places). See [[Town & Worlds]]
+   - [x] Grand worlds (2026-10-26): each world is ~3x wider, an arrival island + 3 zone islands joined by bridges, each zone with its own resource and level gate (Birch/Spruce/Cherry wood, gold, pumpkins, melons); natural island edges, waterfalls, floating islets; merged scenery keeps worlds at ~20-30k parts; pixel-font signs up high; Town's "THE WORLDS" gate fixed - playtested in Studio; not published yet. See [[Town & Worlds]]
+   - [ ] Flying to get around (your note; where, key and speed not decided)
+   - [ ] Phone performance check of the bigger worlds (part counts printed as "[World] ..." on server start)
    - [ ] Slaying World (PvE spawners) — its Town portal is boarded up until then
    - [ ] Rare ores, trees and crops found outside the worlds (e.g. the Warzone); node items you can own and place
    - [ ] Add the Warzone to Town (when you're ready)
