@@ -47,7 +47,7 @@ Each world is **its own place** with its own servers (like Town). You arrive in 
 - Sizes: about 15,000 parts in Town and 10,000–15,000 per world (fine on PC; worth watching on phones).
 
 ## Not done yet
-- The first versions were published 2026-10-25 as places in "Sky Farm Prototype" (ids in `Places.luau`); you've been through the portals live. The rebuilt Town and worlds aren't published yet. Their names in Creator Hub are still Roblox's defaults ("koiopio's Place: 10262026_1/2/3" = Mining/Woodcutting/Farming; "…10242026_1" = Town). See [[Roadmap]].
+- The first versions were published 2026-10-25 as places in "Sky Farm Prototype" (ids in `Places.luau`); you've been through the portals live. The rebuilt Town and worlds were published the same evening (all 5 places together). Their names in Creator Hub are still Roblox's defaults ("koiopio's Place: 10262026_1/2/3" = Mining/Woodcutting/Farming; "…10242026_1" = Town). See [[Roadmap]].
 - Node items (an Iron Node you buy, place and mine forever): later, with rare ores. See [[Decision Log]].
 
 Related: [[Islands (Roblox)]] · [[Skybounds (Minecraft)]] · [[Economy & Values]] · [[Skills & Levels]] · [[Warzone]]
