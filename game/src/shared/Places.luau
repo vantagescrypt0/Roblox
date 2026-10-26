@@ -20,9 +20,9 @@ local Places = {}
 Places.Ids = table.freeze({
 	Island = 70908743282881,
 	Town = 133194089069740,
-	Mining = 0,
-	Woodcutting = 0,
-	Farming = 0,
+	Mining = 97612918094932,
+	Woodcutting = 75392192647539,
+	Farming = 134413726720555,
 	Slaying = 0,
 })
 
