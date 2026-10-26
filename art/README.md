@@ -8,7 +8,9 @@ Importing:
 2. Move the MeshParts into a folder named `Blocks` (names without the `Block_` prefix, CollisionFidelity Box, Material SmoothPlastic), Save to File → `game/assets-replicated/Blocks.rbxm` (synced to `ReplicatedStorage.Blocks`).
 3. **Rojo can't live-sync meshes.** Close the place (Don't Save), run `rojo build -o game.rbxlx`, reopen it, reconnect Rojo. Otherwise blocks show as grey checkered placeholders.
 
-To add a block: add a tile in `draw_tiles()` + an entry in `BLOCKS`, re-run, re-import, and add it to `game/src/shared/Blocks.luau`.
+To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_tiles()`, after the old ones, so the old tiles keep their random pattern) + an entry in `BLOCKS`, re-run, re-import, and add it to `game/src/shared/Blocks.luau`. The atlas is 7×7 tiles (896 px); 45 are used.
+
+**Glass and Water aren't meshes:** they're plain 3-stud Parts in the same `Blocks` folder (Glass: Glass material, light blue, 0.6 transparency; Water: SmoothPlastic, blue, 0.3 transparency, 0.15 reflectance, CanCollide off). When re-importing, recreate them in the folder before Save to File (the 2026-10-25 import did this from the command bar).
 
 ## Items (tools, crops, seeds, ores, loot) and their icons
 `scripts/items3d.py` builds every item as a low-poly 3D model with the shared palette (`lowpoly.py`): tapered wooden handles with leather grips, curved pickaxe heads, wedge axe blades, diamond-section sword blades, seed pouches tagged by crop, crops, ore lumps, an ingot, a crystal and a scrap gear. Tiers are materials: Wooden (light wood, leather lashing), Stone (rough chipped stone), Iron (steel, metal collar), Crystal (cyan, gold fittings). Tools are modelled upright and tilted 45° so the handle is bottom-left and the head top-right.

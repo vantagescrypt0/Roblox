@@ -23,8 +23,8 @@ import common  # noqa: E402
 BLOCK = 3.0  # studs
 TILE = 16
 SCALE = 8
-GRID = 5  # 5x5 tiles
-ATLAS = TILE * SCALE * GRID  # 640 px
+GRID = 7  # 7x7 tiles
+ATLAS = TILE * SCALE * GRID  # 896 px
 
 TILES = [
     "grass_top", "grass_side", "dirt", "stone",
@@ -33,6 +33,13 @@ TILES = [
     "wool_red", "wool_white", "cobblestone", "craft_front",
     "coal_ore", "iron_ore", "furnace_front", "furnace_side",
     "furnace_top", "slate", "runestone",
+    # Building and scenery blocks for the Town and the worlds
+    "stone_bricks", "mossy_stone_bricks", "mossy_cobble", "bricks",
+    "dark_planks", "barn_planks", "plaster", "smooth_stone",
+    "roof_red", "roof_slate", "thatch", "gravel",
+    "sand", "path_top", "dark_stone", "hay_top",
+    "hay_side", "crate", "barrel_top", "barrel_side",
+    "bookshelf", "flower_grass",
 ]  # fmt: skip
 
 # Which tile each face uses: (top, bottom, sides) or (top, bottom, front, other sides)
@@ -53,6 +60,26 @@ BLOCKS = {
     "IronOre": ("iron_ore", "iron_ore", "iron_ore"),
     "Furnace": ("furnace_top", "furnace_top", "furnace_front", "furnace_side"),
     "Runestone": ("slate", "slate", "runestone"),
+    "StoneBricks": ("stone_bricks", "stone_bricks", "stone_bricks"),
+    "MossyStoneBricks": ("mossy_stone_bricks", "stone_bricks", "mossy_stone_bricks"),
+    "MossyCobblestone": ("mossy_cobble", "cobblestone", "mossy_cobble"),
+    "Bricks": ("bricks", "bricks", "bricks"),
+    "DarkPlanks": ("dark_planks", "dark_planks", "dark_planks"),
+    "BarnPlanks": ("barn_planks", "barn_planks", "barn_planks"),
+    "Plaster": ("plaster", "plaster", "plaster"),
+    "SmoothStone": ("smooth_stone", "smooth_stone", "smooth_stone"),
+    "RoofRed": ("roof_red", "roof_red", "roof_red"),
+    "RoofSlate": ("roof_slate", "roof_slate", "roof_slate"),
+    "Thatch": ("thatch", "thatch", "thatch"),
+    "Gravel": ("gravel", "gravel", "gravel"),
+    "Sand": ("sand", "sand", "sand"),
+    "Path": ("path_top", "dirt", "dirt"),
+    "DarkStone": ("dark_stone", "dark_stone", "dark_stone"),
+    "HayBale": ("hay_top", "hay_top", "hay_side"),
+    "Crate": ("crate", "crate", "crate"),
+    "Barrel": ("barrel_top", "barrel_top", "barrel_side"),
+    "Bookshelf": ("planks", "planks", "bookshelf"),
+    "FlowerGrass": ("flower_grass", "dirt", "grass_side"),
 }
 
 
@@ -258,7 +285,229 @@ def draw_tiles():
     for x, y in glyph:
         rune[y][x] = noisy(rng, (92, 232, 210), 10)
     tiles["runestone"] = rune
+
+    draw_building_tiles(tiles)
     return tiles
+
+
+def shade(color, factor):
+    return tuple(clamp(c * factor) for c in color)
+
+
+def bricks_tile(rng, base, mortar, light, width=8, height=4, tint=0.0):
+    """Offset rows of bricks (width x height px, both dividing 16 so the tile repeats),
+    with a mortar line on the bottom/right of each brick and a highlight on the top/left.
+    `tint` varies each brick's colour a little."""
+    tile = [[None] * TILE for _ in range(TILE)]
+    tints = {}
+    for y in range(TILE):
+        row = y // height
+        offset = width // 2 if row % 2 else 0
+        for x in range(TILE):
+            lx, ly = (x + offset) % width, y % height
+            brick = (row, (x + offset) // width % (TILE // width))
+            if brick not in tints:
+                tints[brick] = 1 + rng.uniform(-tint, tint)
+            if ly == height - 1 or lx == width - 1:
+                tile[y][x] = noisy(rng, mortar, 5)
+            elif ly == 0 or lx == 0:
+                tile[y][x] = noisy(rng, shade(light, tints[brick]), 5)
+            else:
+                tile[y][x] = noisy(rng, shade(base, tints[brick]), 7)
+    return tile
+
+
+def mossy(rng, tile, clumps):
+    """A copy of `tile` with patches of moss, thicker near the top"""
+    out = [row[:] for row in tile]
+    for _ in range(clumps):
+        cx, cy, r = rng.randint(0, 15), rng.randint(0, 9), rng.uniform(1.2, 3.2)
+        for y in range(TILE):
+            for x in range(TILE):
+                d = math.hypot(x - cx, y - cy)
+                if d < r and rng.random() < 1.1 - d / r:
+                    out[y][x] = noisy(rng, (74, 112, 48) if rng.random() < 0.6 else (96, 136, 60), 8)
+    return out
+
+
+def shingles(rng, base, dark, light):
+    """Roof tiles: overlapping rows of shingles, each darker at its lower edge"""
+    tile = [[None] * TILE for _ in range(TILE)]
+    tints = {}
+    for y in range(TILE):
+        row = y // 4
+        offset = 2 if row % 2 else 0
+        for x in range(TILE):
+            lx, ly = (x + offset) % 4, y % 4
+            key = (row, (x + offset) // 4 % 4)
+            if key not in tints:
+                tints[key] = 1 + rng.uniform(-0.07, 0.07)
+            if ly == 3:
+                tile[y][x] = noisy(rng, dark, 5)
+            elif lx == 3:
+                tile[y][x] = noisy(rng, shade(dark, 1.12), 5)
+            elif ly == 0:
+                tile[y][x] = noisy(rng, shade(light, tints[key]), 5)
+            else:
+                tile[y][x] = noisy(rng, shade(base, tints[key]), 6)
+    return tile
+
+
+def draw_building_tiles(tiles):
+    rng = random.Random(23)
+
+    tiles["stone_bricks"] = bricks_tile(rng, (122, 122, 124), (80, 80, 84), (146, 146, 148), tint=0.05)
+    tiles["mossy_stone_bricks"] = mossy(rng, tiles["stone_bricks"], 6)
+    tiles["mossy_cobble"] = mossy(rng, tiles["cobblestone"], 7)
+    tiles["bricks"] = bricks_tile(rng, (152, 74, 56), (178, 170, 160), (176, 94, 72), tint=0.1)
+
+    def planks_tile(base, seam):
+        tile = [[None] * TILE for _ in range(TILE)]
+        for y in range(TILE):
+            for x in range(TILE):
+                edge = y % 4 == 3 or (x == (2 if (y // 4) % 2 == 0 else 10) and y % 4 != 3)
+                tile[y][x] = noisy(rng, seam if edge else base, 6)
+        return tile
+
+    tiles["dark_planks"] = planks_tile((96, 66, 40), (64, 44, 28))
+
+    barn = [[None] * TILE for _ in range(TILE)]  # vertical red boards
+    for y in range(TILE):
+        for x in range(TILE):
+            seam = x % 4 == 3 or (y == (5 if (x // 4) % 2 else 11) and x % 4 != 3)
+            barn[y][x] = noisy(rng, (104, 30, 26) if seam else (152, 46, 40), 7)
+    tiles["barn_planks"] = barn
+
+    plaster = fill(rng, (230, 222, 202), 5)
+    speckle(rng, plaster, (212, 202, 182), 0.14, 4)
+    speckle(rng, plaster, (240, 234, 218), 0.08, 3)
+    for x, y in ((3, 4), (4, 5), (4, 6), (11, 10), (12, 10), (12, 11)):  # hairline cracks
+        plaster[y][x] = noisy(rng, (190, 180, 160), 4)
+    tiles["plaster"] = plaster
+
+    smooth = fill(rng, (162, 162, 164), 4)
+    for i in range(TILE):
+        for y, x in ((0, i), (15, i), (i, 0), (i, 15)):
+            smooth[y][x] = noisy(rng, (132, 132, 136), 3)
+    tiles["smooth_stone"] = smooth
+
+    tiles["roof_red"] = shingles(rng, (176, 80, 50), (122, 50, 32), (204, 108, 72))
+    tiles["roof_slate"] = shingles(rng, (84, 96, 118), (56, 64, 82), (110, 124, 146))
+
+    thatch = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            thatch[y][x] = noisy(rng, (150, 116, 54) if y % 3 == 2 else (196, 160, 82), 10)
+        x = rng.randint(0, 15)  # a few loose strands
+        for dx in range(rng.randint(2, 5)):
+            thatch[y][(x + dx) % TILE] = noisy(rng, (222, 190, 110), 6)
+    tiles["thatch"] = thatch
+
+    gravel = fill(rng, (128, 122, 116), 10)
+    for color, chance in (((96, 92, 88), 0.2), ((156, 150, 142), 0.14), ((124, 106, 90), 0.1), ((176, 170, 162), 0.05)):
+        speckle(rng, gravel, color, chance, 6)
+    tiles["gravel"] = gravel
+
+    sand = fill(rng, (220, 208, 164), 6)
+    speckle(rng, sand, (200, 186, 140), 0.2, 5)
+    speckle(rng, sand, (234, 224, 188), 0.1, 4)
+    tiles["sand"] = sand
+
+    path = fill(rng, (150, 120, 76), 8)
+    speckle(rng, path, (124, 96, 60), 0.2, 6)
+    speckle(rng, path, (174, 144, 96), 0.12, 6)
+    speckle(rng, path, (130, 128, 122), 0.03, 6)  # pebbles
+    tiles["path_top"] = path
+
+    dark = fill(rng, (60, 60, 68), 5)
+    for y in range(TILE):  # layered streaks
+        if rng.random() < 0.45:
+            x0 = rng.randint(0, 15)
+            for dx in range(rng.randint(3, 8)):
+                dark[y][(x0 + dx) % TILE] = noisy(rng, (46, 46, 54), 4)
+    speckle(rng, dark, (80, 80, 90), 0.07, 5)
+    tiles["dark_stone"] = dark
+
+    hay_top = fill(rng, (206, 170, 70), 10)
+    speckle(rng, hay_top, (168, 132, 46), 0.25, 8)
+    speckle(rng, hay_top, (234, 202, 104), 0.12, 6)
+    for i in range(TILE):
+        for y, x in ((0, i), (15, i), (i, 0), (i, 15)):
+            hay_top[y][x] = noisy(rng, (172, 136, 50), 6)
+    tiles["hay_top"] = hay_top
+    hay_side = [[None] * TILE for _ in range(TILE)]
+    for x in range(TILE):
+        column = (212, 176, 76) if x % 2 == 0 else (190, 152, 58)
+        for y in range(TILE):
+            band = y in (3, 4, 11, 12)
+            hay_side[y][x] = noisy(rng, (118, 80, 42) if band else column, 8)
+    tiles["hay_side"] = hay_side
+
+    crate = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            if x < 2 or x > 13 or y < 2 or y > 13:
+                c = (112, 80, 46)
+            elif abs((15 - x) - y) <= 1:  # diagonal brace
+                c = (124, 90, 54)
+            elif y % 4 == 1:
+                c = (148, 114, 68)
+            else:
+                c = (178, 142, 88)
+            crate[y][x] = noisy(rng, c, 6)
+    tiles["crate"] = crate
+
+    barrel_top = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            d = math.hypot(x - 7.5, y - 7.5)
+            if d > 7.6:
+                c = (80, 58, 36)
+            elif d > 6.4:
+                c = (88, 88, 94)
+            else:
+                c = (128, 92, 54) if x % 4 == 1 else (156, 114, 66)
+            barrel_top[y][x] = noisy(rng, c, 6)
+    tiles["barrel_top"] = barrel_top
+    barrel_side = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            if y in (2, 13):
+                c = (112, 112, 120)
+            elif y in (3, 12):
+                c = (78, 78, 86)
+            elif x % 4 == 3:
+                c = (108, 74, 42)
+            else:
+                c = (150, 106, 62)
+            barrel_side[y][x] = noisy(rng, c, 6)
+    tiles["barrel_side"] = barrel_side
+
+    shelf = [[None] * TILE for _ in range(TILE)]
+    book_colors = [(150, 42, 38), (46, 86, 150), (48, 120, 62), (152, 120, 52), (112, 72, 140), (196, 186, 166)]
+    for y in range(TILE):
+        for x in range(TILE):
+            board = y in (0, 7, 8, 15)
+            shelf[y][x] = noisy(rng, (118, 92, 55) if board else (44, 32, 22), 5)
+    for top in (1, 9):
+        x = 1
+        while x < 15:
+            width = 1 if rng.random() < 0.6 else 2
+            height = rng.randint(4, 6)
+            color = rng.choice(book_colors)
+            for bx in range(x, min(x + width, 15)):
+                for by in range(top + 6 - height, top + 6):
+                    shelf[by][bx] = noisy(rng, color, 8)
+            x += width + (1 if rng.random() < 0.15 else 0)
+    tiles["bookshelf"] = shelf
+
+    flowers = [row[:] for row in tiles["grass_top"]]
+    for color in ((222, 62, 52), (242, 212, 64), (242, 242, 242), (96, 124, 224), (222, 62, 52), (242, 212, 64)):
+        cx, cy = rng.randint(1, 14), rng.randint(1, 14)
+        for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+            flowers[cy + dy][cx + dx] = noisy(rng, color, 8)
+        flowers[cy][cx] = noisy(rng, (250, 232, 120), 6)
+    tiles["flower_grass"] = flowers
 
 
 def build_atlas():

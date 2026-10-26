@@ -7,6 +7,7 @@ local StarterGui = game:GetService("StarterGui")
 local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
+local AmbientController = require(script.Parent.AmbientController)
 local BlockController = require(script.Parent.BlockController)
 local Hotbar = require(script.Parent.Hotbar)
 local Hud = require(script.Parent.Hud)
@@ -50,6 +51,7 @@ BlockController.Start({
 	OpenShop = ShopWindow.Open,
 })
 NpcController.Start()
+AmbientController.Start()
 
 Remotes.State.OnClientEvent:Connect(function(state)
 	Hud.Render(state)

@@ -1,14 +1,19 @@
 --!strict
--- The Town place: the shared hub, a floating block island on its own servers. Players
--- teleport here from their island's portal (TravelService) and arrive by the runestone
--- portal home at the south end. Laid out like a village hub:
---   the plaza   a cobblestone square around a well, with four market stalls, two on each
---               side, each run by a shopkeeper (Shops.luau, Util/Npc.luau):
---               Merchant and Lumberjack on the west, Builder and Miner on the east
---   the portals a row of runestone arches at the north end, one per world: Farming,
---               Woodcutting and Mining (WorldService), and Slaying, boarded up until PvE
--- Lamp posts line the paths and a few oaks stand around the edge. Nothing here can be
--- broken, and anyone who falls off is put back at the spawn point.
+-- The Town place: the shared hub, a big floating island on its own servers. Players
+-- teleport here from their island's portal (TravelService) and arrive at the south end.
+--   Arrival      a paved plaza by the runestone portal home, a welcome gate and a main
+--                street lined with lamps running north
+--   Market Square  a fountain in the middle of the town, ringed by four shops you walk
+--                into, each with its shopkeeper behind the counter (Shops.luau, Util/Npc):
+--                Market (Merchant) and Lumber Yard (Lumberjack) on the west side, Builder
+--                and Miner on the east, each built in its own materials with its own
+--                goods outside
+--   Lanes        a lane west to a garden with a well, a lane east to a park with a pond;
+--                four cottages with gardens around them
+--   Portal Plaza at the north end, past a second gate: the runestone portals to the
+--                Farming, Woodcutting and Mining worlds, and Slaying (boarded up until
+--                PvE), each with banners in its colour
+-- Nothing here can be broken, and anyone who falls off is put back at the spawn point.
 --
 -- Grid: x runs west to east, z south to north; y = 0 is the ground, things stand on y = 1.
 
@@ -16,7 +21,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Places = require(ReplicatedStorage.Shared.Places)
+local Ambience = require(script.Parent.Parent.Util.Ambience)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local Build = require(script.Parent.Parent.Util.Build)
+local Decor = require(script.Parent.Parent.Util.Decor)
 local Npc = require(script.Parent.Parent.Util.Npc)
 local Portal = require(script.Parent.Parent.Util.Portal)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
@@ -28,37 +36,21 @@ local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 local TravelService = require(script.Parent.TravelService)
 
-local TOWN_CENTER = Vector3.new(0, 200, 0) -- top of the ground at the well
-local RADIUS = 26
+local CENTER = Vector3.new(0, 200, 0) -- top of the ground at the fountain
+local RADIUS = 40
 local SIZE = Blocks.Size
-local FALL_LIMIT = 120
-local HOME_PORTAL_Z = -21
-local SPAWN_Z = -17
-local PORTAL_Z = 18 -- the row of world portals
+local FALL_LIMIT = 140
+local HOME_PORTAL_Z = -34
+local SPAWN_Z = -30
+local PORTAL_Z = 32 -- the row of world portals
+local SQUARE = 12 -- half-width of the Market Square
 
--- The plaza (with its corners cut off), the main path south to north, and the walk in
--- front of the world portals
-local function isPaved(x: number, z: number): boolean
-	local plaza = math.abs(x) <= 8 and math.abs(z) <= 8 and math.abs(x) + math.abs(z) <= 13
-	local path = math.abs(x) <= 1 and z >= HOME_PORTAL_Z - 1 and z <= 16
-	local walk = math.abs(x) <= 18 and z >= 14 and z <= 16
-	return plaza or path or walk
-end
-
--- The stalls: the counter's middle cell and the way the shopkeeper faces (into the plaza)
-local STALLS = {
-	{ Shop = "Merchant", X = -9, Z = -4, Facing = Vector3.xAxis },
-	{ Shop = "Lumberjack", X = -9, Z = 5, Facing = Vector3.xAxis },
-	{ Shop = "Builder", X = 9, Z = -4, Facing = -Vector3.xAxis },
-	{ Shop = "Miner", X = 9, Z = 5, Facing = -Vector3.xAxis },
-}
-
--- What each stall shows on its counter: little blocks (block types) or crop models
-local COUNTER_GOODS: { [string]: { string } } = {
-	Merchant = { "Crop_Wheat", "Crop_Carrot" },
-	Lumberjack = { "Wood", "Planks" },
-	Builder = { "Cobblestone", "RedWool" },
-	Miner = { "CoalOre", "IronOre" },
+local FLOWER_COLORS = {
+	Color3.fromRGB(222, 62, 52),
+	Color3.fromRGB(242, 212, 64),
+	Color3.fromRGB(240, 240, 240),
+	Color3.fromRGB(110, 132, 230),
+	Color3.fromRGB(230, 120, 190),
 }
 
 -- The world portals, west to east, with their field colour and the blocks beside them
@@ -69,22 +61,12 @@ local WORLD_PORTALS: { { Kind: Places.Kind, Name: string, X: number, Color: Colo
 	{ Kind = "Slaying", Name = "Slaying World", X = 15, Color = Color3.fromRGB(120, 36, 40), Open = false },
 }
 
-local LAMPS = {
-	{ -2, -14 },
-	{ 2, -14 },
-	{ -2, -10 },
-	{ 2, -10 },
-	{ -10, 17 },
-	{ 0, 17 },
-	{ 10, 17 },
-	{ -7, 11 },
-	{ 7, 11 },
-}
-local TREES = { { -19, -6, 5 }, { 19, -6, 4 }, { -21, 6, 4 }, { 21, 6, 5 }, { -12, -16, 4 }, { 12, -16, 5 } }
-
 local TownService = {}
 
 local world: BlockWorld.World
+local decor: Folder
+local npcs: Folder
+local rng = Random.new(2026)
 local shopkeepers: { [string]: Model } = {}
 
 -- The shopkeeper models by shop id (see Shops.luau). Their "Head" model turns to look at
@@ -93,249 +75,644 @@ function TownService.GetShopkeepers(): { [string]: Model }
 	return shopkeepers
 end
 
-local function set(x: number, y: number, z: number, blockType: string)
-	BlockWorld.setRaw(world, x, y, z, blockType)
-	world.Protected[BlockWorld.key(x, y, z)] = true
+local function set(x: number, y: number, z: number, block: Build.Pattern?)
+	Build.Set(world, x, y, z, block)
 end
 
--- Sets a cell only if it's still empty (decorations never overwrite the town)
-local function setFree(x: number, y: number, z: number, blockType: string)
-	if not BlockWorld.get(world, x, y, z) then
-		set(x, y, z, blockType)
+local function setFree(x: number, y: number, z: number, block: string)
+	Build.SetFree(world, x, y, z, block)
+end
+
+-- The top face of a block, where things stand
+local function top(x: number, y: number, z: number): Vector3
+	return Build.Top(world, x, y, z)
+end
+
+-- Ground ---------------------------------------------------------------------------
+
+local edgeNoise: { number } = {}
+for i = 0, 23 do
+	edgeNoise[i] = rng:NextNumber(-1.6, 1.6)
+end
+
+local function edgeRadius(x: number, z: number): number
+	local t = (math.atan2(z, x) / (2 * math.pi) + 0.5) * 24
+	local i0 = math.floor(t) % 24
+	local f = t - math.floor(t)
+	return RADIUS + edgeNoise[i0] * (1 - f) + edgeNoise[(i0 + 1) % 24] * f
+end
+
+-- Same answer every time for a cell (for scattering flowers in the grass)
+local function hash(x: number, z: number): number
+	return Random.new(x * 7919 + z * 104729 + 17):NextNumber()
+end
+
+-- What the ground is made of at (x, z): streets, plazas and lanes are paved, the rest is
+-- grass with a few flowers in it
+local function groundBlock(x: number, z: number): string
+	local ax, az = math.abs(x), math.abs(z)
+	if ax <= 8 and z >= HOME_PORTAL_Z - 3 and z <= -27 then -- arrival plaza
+		return if ax == 8 or z == -27 then "StoneBricks" else "SmoothStone"
 	end
-end
-
-local function signBoard(name: string, text: string, position: Vector3, front: Vector3, width: number)
-	Signs.Board(world.Model, name, text, position, front, width)
-end
-
-local function part(name: string, size: Vector3, cframe: CFrame, color: Color3, material: Enum.Material): Part
-	local p = Instance.new("Part")
-	p.Name = name
-	p.Size = size
-	p.CFrame = cframe
-	p.Color = color
-	p.Material = material
-	p.Anchored = true
-	p.TopSurface = Enum.SurfaceType.Smooth
-	p.BottomSurface = Enum.SurfaceType.Smooth
-	p.Parent = world.Model
-	return p
-end
-
--- A small copy of a block (block art from ReplicatedStorage.Blocks), sitting on `top`
-local function miniBlock(blockType: string, top: Vector3, size: number)
-	local folder = ReplicatedStorage:FindFirstChild("Blocks")
-	local template = folder and folder:FindFirstChild(blockType)
-	if not template or not template:IsA("BasePart") then
-		return
-	end
-	local block = template:Clone()
-	block.Size *= size / math.max(block.Size.X, block.Size.Y, block.Size.Z)
-	block.CFrame = CFrame.new(top + Vector3.new(0, size / 2, 0)) * template.CFrame.Rotation
-	block.Anchored = true
-	block.CanCollide = false
-	block.Parent = world.Model
-end
-
--- A lamp post: two logs with a lantern on top
-local function lamp(x: number, z: number)
-	set(x, 1, z, "Wood")
-	set(x, 2, z, "Wood")
-	local top = BlockWorld.position(world, x, 2, z) + Vector3.new(0, SIZE / 2, 0)
-	local iron = Color3.fromRGB(46, 40, 38)
-	part("LampBase", Vector3.new(1.6, 0.3, 1.6), CFrame.new(top + Vector3.new(0, 0.15, 0)), iron, Enum.Material.Metal)
-	local glass = part(
-		"Lantern",
-		Vector3.new(1.1, 1.3, 1.1),
-		CFrame.new(top + Vector3.new(0, 0.95, 0)),
-		Color3.fromRGB(255, 214, 128),
-		Enum.Material.Neon
-	)
-	part("LampCap", Vector3.new(1.7, 0.35, 1.7), CFrame.new(top + Vector3.new(0, 1.75, 0)), iron, Enum.Material.Metal)
-	local light = Instance.new("PointLight")
-	light.Color = Color3.fromRGB(255, 210, 150)
-	light.Brightness = 1.1
-	light.Range = 18
-	light.Shadows = false
-	light.Parent = glass
-end
-
--- A market stall around its counter cell (ox, oz), open toward `facing`, with its
--- shopkeeper behind the counter
-local function stall(shopId: string, ox: number, oz: number, facing: Vector3)
-	local fx, fz = math.round(facing.X), math.round(facing.Z)
-	-- u runs along the counter, v from the counter (0) to the back wall (2)
-	local function cell(u: number, v: number): (number, number)
-		return ox - fz * u - fx * v, oz + fx * u - fz * v
-	end
-	for u = -2, 2 do
-		local cx, cz = cell(u, 0)
-		set(cx, 1, cz, "Planks") -- counter
-		local bx, bz = cell(u, 2)
-		set(bx, 1, bz, "Planks") -- back wall
-		set(bx, 2, bz, "Planks")
-	end
-	for _, u in { -3, 3 } do
-		for _, v in { 0, 2 } do
-			local px, pz = cell(u, v)
-			for y = 1, 3 do
-				set(px, y, pz, "Wood")
-			end
+	if ax <= SQUARE and az <= SQUARE and ax + az <= 21 then -- Market Square
+		local ring = math.max(ax, az)
+		if ring == SQUARE or ring == 7 then
+			return "StoneBricks"
 		end
+		return if ring <= 4 then "SmoothStone" else "Cobblestone"
 	end
-	for u = -3, 3 do
-		for v = 0, 2 do
-			local rx, rz = cell(u, v)
-			set(rx, 4, rz, if u % 2 == 0 then "RedWool" else "WhiteWool")
-		end
+	if ax <= 2 and z > -27 and z < 24 then -- main street
+		return "Cobblestone"
 	end
-
-	-- The shop's name on a board over the front of the roof
-	local sx, sz = cell(0, 0)
-	local front = Vector3.new(fx, 0, fz)
-	local signAt = BlockWorld.position(world, sx, 5, sz) + front * (SIZE / 2 + 0.25)
-	signBoard(`{shopId}Sign`, string.upper(shopId), signAt, front, 3)
-
-	-- A few goods on the counter, either side of the shopkeeper
-	local goods: { string } = COUNTER_GOODS[shopId] or {}
-	for i, good in ipairs(goods) do
-		local gx, gz = cell(if i == 1 then -1 else 1, 0)
-		local top = BlockWorld.position(world, gx, 1, gz) + Vector3.new(0, SIZE / 2, 0)
-		if string.sub(good, 1, 5) == "Crop_" then
-			local crop = Props.Place(good, top, top + front, world.Model)
-			if crop then
-				crop:ScaleTo(0.45)
-				crop:PivotTo(CFrame.lookAt(top, top + front))
-			end
-		else
-			miniBlock(good, top, 1.3)
-		end
+	if ax == 3 and z > -27 and z < 24 then -- its kerbs
+		return "StoneBricks"
 	end
-
-	local nx, nz = cell(0, 1)
-	local feet = BlockWorld.position(world, nx, 1, nz) - Vector3.new(0, SIZE / 2, 0)
-	local npcs = world.Model:FindFirstChild("Npcs") :: Folder
-	shopkeepers[shopId] = Npc.Build(shopId, feet, front, npcs)
+	if z >= 24 and ax <= 21 then -- Portal Plaza
+		return if z == 24 or ax == 21 then "StoneBricks" else "Cobblestone"
+	end
+	if az <= 1 and ax > SQUARE and ax <= 30 then -- lanes to the garden and the park
+		return "Path"
+	end
+	return if hash(x, z) < 0.07 then "FlowerGrass" else "Grass"
 end
 
--- The town well in the middle of the plaza: a cobblestone ring around water, under a
--- little plank roof on four posts
-local function well()
-	for dx = -1, 1 do
-		for dz = -1, 1 do
-			if dx ~= 0 or dz ~= 0 then
-				set(dx, 1, dz, "Cobblestone")
-			end
-			set(dx, 4, dz, "Planks")
-		end
-	end
-	for _, dx in { -1, 1 } do
-		for _, dz in { -1, 1 } do
-			set(dx, 2, dz, "Wood")
-			set(dx, 3, dz, "Wood")
-		end
-	end
-	local water = part(
-		"Water",
-		Vector3.new(SIZE, SIZE * 0.8, SIZE),
-		CFrame.new(BlockWorld.position(world, 0, 1, 0) - Vector3.new(0, SIZE * 0.1, 0)),
-		Color3.fromRGB(64, 142, 206),
-		Enum.Material.Glass
-	)
-	water.Transparency = 0.2
-	water.CanCollide = false
-end
-
--- Blocks beside a world portal that show what's through it
-local function portalDecor(kind: Places.Kind, cx: number)
-	for _, side in { -1, 1 } do
-		local x = cx + side * 3
-		if kind == "Farming" then
-			set(x, 0, PORTAL_Z, "Farmland")
-			local top = BlockWorld.position(world, x, 0, PORTAL_Z) + Vector3.new(0, SIZE / 2, 0)
-			local crop = Props.Place(if side < 0 then "Crop_Wheat" else "Crop_Carrot", top, nil, world.Model)
-			if crop then
-				crop:ScaleTo(0.68)
-				crop:PivotTo(CFrame.new(top))
-			end
-		elseif kind == "Woodcutting" then
-			set(x, 1, PORTAL_Z, "Wood")
-			set(x, 2, PORTAL_Z, "Wood")
-			set(x, 3, PORTAL_Z, "Leaves")
-		elseif kind == "Mining" then
-			set(x, 1, PORTAL_Z, "Stone")
-			set(x, 2, PORTAL_Z, if side < 0 then "CoalOre" else "IronOre")
-		else
-			set(x, 1, PORTAL_Z, "Obsidian")
-			set(x, 2, PORTAL_Z, "Obsidian")
-		end
-	end
-end
-
-local function build()
-	world = BlockWorld.new(TOWN_CENTER - Vector3.new(0, SIZE / 2, 0), "Town", workspace)
-	local npcs = Instance.new("Folder")
-	npcs.Name = "Npcs"
-	npcs.Parent = world.Model
-
-	-- Ground: a round floating island, paved where people walk
-	for x = -RADIUS, RADIUS do
-		for z = -RADIUS, RADIUS do
+local function buildGround()
+	for x = -RADIUS - 2, RADIUS + 2 do
+		for z = -RADIUS - 2, RADIUS + 2 do
 			local distance = math.sqrt(x * x + z * z)
-			if distance <= RADIUS + 0.4 then
-				set(x, 0, z, if isPaved(x, z) then "Cobblestone" else "Grass")
-				local depth = 2 + math.floor((1 - distance / RADIUS) ^ 0.8 * 10)
+			local edge = edgeRadius(x, z)
+			if distance <= edge then
+				set(x, 0, z, groundBlock(x, z))
+				local t = distance / edge
+				local depth = 2 + math.floor((1 - t) ^ 0.8 * 12) + (if (x * 7 + z * 13) % 4 == 0 then 1 else 0)
 				for y = -1, -depth, -1 do
 					set(x, y, z, if y >= -2 then "Dirt" else "Stone")
 				end
 			end
 		end
 	end
+end
 
-	-- Portals first, so nothing else is built in their way
-	Portal.addCells(world.Cells, world.Protected, 0, HOME_PORTAL_Z)
-	for _, info in WORLD_PORTALS do
-		Portal.addCells(world.Cells, world.Protected, info.X, PORTAL_Z)
-		portalDecor(info.Kind, info.X)
-	end
+-- Street furniture ---------------------------------------------------------------------
 
-	well()
-	for _, info in STALLS do
-		stall(info.Shop, info.X, info.Z, info.Facing)
+-- A lamp post: a three-log post with a lantern on top
+local function lampPost(x: number, z: number)
+	for y = 1, 3 do
+		set(x, y, z, "Wood")
 	end
-	for _, spot in LAMPS do
-		lamp(spot[1], spot[2])
+	Decor.Lantern(decor, top(x, 3, z), false, 22)
+end
+
+-- A gate over a street: two stone pillars with lanterns and a beam carrying a sign
+local function gate(z: number, halfWidth: number, text: string, front: Vector3)
+	for _, x in { -halfWidth, halfWidth } do
+		for y = 1, 5 do
+			set(x, y, z, "StoneBricks")
+		end
+		set(x, 6, z, "SmoothStone")
+		Decor.Lantern(decor, top(x, 6, z), false, 18)
 	end
-	-- Hedges along the path from the arrival portal
-	for z = HOME_PORTAL_Z + 3, -11 do
-		if z ~= -14 and z ~= -10 then
-			setFree(-3, 1, z, "Leaves")
-			setFree(3, 1, z, "Leaves")
+	for x = -halfWidth + 1, halfWidth - 1 do
+		set(x, 5, z, "DarkPlanks")
+	end
+	Signs.Board(
+		decor,
+		"GateSign",
+		text,
+		BlockWorld.position(world, 0, 4.15, z) + front * (SIZE / 2 + 0.25),
+		front,
+		halfWidth * 2 - 2
+	)
+end
+
+local function tree(x: number, z: number, height: number)
+	Trees.Oak(x, 0, z, height, setFree)
+end
+
+-- A planter box with a small tree in it
+local function plantedTree(x: number, z: number)
+	for dx = -1, 1 do
+		for dz = -1, 1 do
+			if dx ~= 0 or dz ~= 0 then
+				set(x + dx, 1, z + dz, "StoneBricks")
+			end
 		end
 	end
-	for _, spot in TREES do
-		Trees.Oak(spot[1], 0, spot[2], spot[3], setFree)
+	set(x, 1, z, "Grass")
+	Trees.Oak(x, 1, z, 3, setFree)
+end
+
+-- The fountain in the middle of the square: a stone basin of water with a pillar
+-- spraying from the top and four spouts at the corners
+local function fountain()
+	for x = -3, 3 do
+		for z = -3, 3 do
+			local rim = math.abs(x) == 3 or math.abs(z) == 3
+			if rim and not (math.abs(x) == 3 and math.abs(z) == 3) then
+				set(x, 1, z, "StoneBricks")
+			elseif rim then
+				set(x, 1, z, "SmoothStone")
+				set(x, 2, z, "StoneBricks")
+				Decor.Jet(decor, top(x, 2, z), 4)
+			else
+				set(x, 0, z, "SmoothStone")
+			end
+		end
+	end
+	for y = 1, 3 do
+		set(0, y, 0, "StoneBricks")
+	end
+	set(0, 4, 0, "SmoothStone")
+	Decor.Water(decor, top(0, 0, 0) + Vector3.new(0, SIZE * 0.8, 0), Vector2.new(5 * SIZE, 5 * SIZE), SIZE * 0.8)
+	Decor.Jet(decor, top(0, 4, 0), 10)
+	for _, corner in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
+		Decor.Bench(decor, top(corner[1] * 6, 0, corner[2] * 6), Vector3.new(-corner[1], 0, -corner[2]).Unit)
+	end
+end
+
+-- Shops ----------------------------------------------------------------------------
+
+export type Style = {
+	Wall: Build.Pattern,
+	Corner: string,
+	Beam: string,
+	Roof: string,
+	Gable: Build.Pattern,
+	Floor: string,
+}
+
+local SHOP_HALF_WIDTH, SHOP_DEPTH, SHOP_HEIGHT = 5, 8, 4
+
+-- Height of a roof (built by Site:Roof over [-hw, hw]) above the wall top at u
+local function roofRise(hw: number, u: number): number
+	return math.min(u + hw + 1, hw + 1 - u)
+end
+
+-- The shell of a building on `site`: a stone foundation, walls with corner posts and a
+-- beam along the top, a floor, a front door (2u + 1 wide, up to doorTop) and a gable roof
+-- facing the front. Returns the ridge's height.
+local function building(
+	site: Build.Site,
+	hw: number,
+	depth: number,
+	height: number,
+	style: Style,
+	doorHalf: number,
+	doorTop: number
+): number
+	site:Fill(-hw, 0, 0, hw, 0, depth, "StoneBricks")
+	site:Fill(-hw + 1, 0, 1, hw - 1, 0, depth - 1, style.Floor)
+	site:Walls(-hw, 1, 0, hw, height - 1, depth, style.Wall)
+	site:Walls(-hw, height, 0, hw, height, depth, style.Beam)
+	for _, u in { -hw, hw } do
+		for _, v in { 0, depth } do
+			site:Fill(u, 1, v, u, height, v, style.Corner)
+		end
+	end
+	site:Clear(-doorHalf, 1, 0, doorHalf, doorTop, 0)
+	return site:Roof(-hw, 0, hw, depth, height + 1, style.Roof, style.Gable, false)
+end
+
+-- Two-pane windows in the walls of a building
+local function windows(site: Build.Site, hw: number, depth: number, frontU: { number })
+	for _, u in frontU do
+		site:Fill(u, 2, 0, u + 1, 3, 0, "Glass")
+		-- A window box of flowers under it
+		local sill = site:Pos(u + 0.5, 1.5, 0) + site.Front * (SIZE / 2)
+		Decor.FlowerBox(decor, sill, site.Front, 2 * SIZE - 0.4, FLOWER_COLORS)
+	end
+	for _, u in { -hw, hw } do
+		site:Fill(u, 2, 3, u, 3, depth - 3, "Glass")
+	end
+end
+
+-- A brick chimney rising through the roof at (u, v), with smoke
+local function chimney(site: Build.Site, hw: number, height: number, u: number, v: number)
+	local topY = height + roofRise(hw, u) + 2
+	site:Fill(u, height + 1, v, u, topY, v, "Bricks")
+	Decor.Smoke(decor, site:Pos(u, topY + 0.6, v))
+end
+
+type ShopInfo = {
+	Shop: string,
+	Sign: string,
+	X: number,
+	Z: number,
+	Front: Vector3,
+	Style: Style,
+	Shelf: Build.Pattern,
+	Counter: string,
+	Goods: { string },
+	Extras: (site: Build.Site) -> (),
+}
+
+local function shop(info: ShopInfo)
+	local hw, depth, height = SHOP_HALF_WIDTH, SHOP_DEPTH, SHOP_HEIGHT
+	local site = Build.Site(world, info.X, info.Z, info.Front)
+	building(site, hw, depth, height, info.Style, 1, 3)
+	windows(site, hw, depth, { -4, 3 })
+	-- A round window in the gable, and the shop's name above the door
+	site:Set(0, height + 3, 0, "Glass")
+	Signs.Board(
+		decor,
+		`{info.Shop}Sign`,
+		info.Sign,
+		site:Pos(0, height + 1.4, 0) + site.Front * (SIZE / 2 + 0.25),
+		site.Front,
+		5
+	)
+	for _, u in { -2.6, 2.6 } do
+		Decor.WallLantern(decor, site:Pos(u, 3.4, 0) + site.Front * (SIZE / 2), site.Front)
 	end
 
-	BlockWorld.drawAll(world)
+	-- Inside: a counter across the room, the shopkeeper behind it, shelves at the back
+	site:Fill(-3, 1, 4, 3, 1, 4, info.Counter)
+	site:Fill(-hw + 1, 1, depth - 1, hw - 1, 2, depth - 1, info.Shelf)
+	site:Fill(-hw + 1, 1, depth - 2, -hw + 1, 1, depth - 2, "Barrel")
+	site:Fill(hw - 1, 1, depth - 2, hw - 1, 1, depth - 2, "Crate")
+	for i, good in info.Goods do
+		local at = site:Pos(if i == 1 then -2 else 2, 1.5, 4)
+		if string.sub(good, 1, 5) == "Crop_" then
+			local crop = Props.Place(good, at, at + site.Front, decor)
+			if crop then
+				crop:ScaleTo(0.45)
+				crop:PivotTo(CFrame.lookAt(at, at + site.Front))
+			end
+		else
+			Decor.Piece(
+				decor,
+				good,
+				Vector3.one * 1.3,
+				CFrame.new(at + Vector3.new(0, 0.65, 0)) * CFrame.Angles(0, 0.4 * i, 0)
+			)
+		end
+	end
+	Decor.Lantern(decor, site:Pos(-3, 1.5, 4), false, 16)
+	Decor.Lantern(decor, site:Pos(3, 1.5, 4), false, 16)
+	Decor.Lantern(decor, site:Pos(0, height - 0.8, 2), true, 26)
+	local feet = site:Pos(0, 1, 6) - Vector3.new(0, SIZE / 2, 0)
+	shopkeepers[info.Shop] = Npc.Build(info.Shop, feet, site.Front, npcs)
 
-	-- Portal fields: home, and one to each world (the Slaying one is boarded up)
+	info.Extras(site)
+end
+
+local SHOPS: { ShopInfo } = {
+	{
+		Shop = "Merchant",
+		Sign = "MARKET",
+		X = -13,
+		Z = -7,
+		Front = Vector3.xAxis,
+		Style = {
+			Wall = "Plaster",
+			Corner = "Wood",
+			Beam = "DarkPlanks",
+			Roof = "RoofRed",
+			Gable = "Plaster",
+			Floor = "Planks",
+		},
+		Shelf = "HayBale",
+		Counter = "Planks",
+		Goods = { "Crop_Wheat", "Crop_Carrot" },
+		Extras = function(site)
+			Decor.Awning(decor, site:Pos(0, 3.6, 0) + site.Front * (SIZE / 2), site.Front, 3 * SIZE)
+			-- Crates of produce out front, and a hay bale
+			for i, crop in { "Crop_Potato", "Crop_Carrot", "Crop_Wheat" } do
+				local u = -5 + i
+				site:Set(u - 1, 1, -1, "Crate")
+				local at = site:Pos(u - 1, 1.5, -1)
+				local model = Props.Place(crop, at, at + site.Front, decor)
+				if model then
+					model:ScaleTo(0.5)
+					model:PivotTo(CFrame.new(at))
+				end
+			end
+			site:Set(4, 1, -1, "HayBale")
+			site:Set(4, 2, -1, "HayBale")
+			site:Set(3, 1, -1, "HayBale")
+		end,
+	},
+	{
+		Shop = "Lumberjack",
+		Sign = "LUMBER YARD",
+		X = -13,
+		Z = 7,
+		Front = Vector3.xAxis,
+		Style = {
+			Wall = "Wood",
+			Corner = "DarkPlanks",
+			Beam = "DarkPlanks",
+			Roof = "RoofSlate",
+			Gable = "DarkPlanks",
+			Floor = "DarkPlanks",
+		},
+		Shelf = "Wood",
+		Counter = "DarkPlanks",
+		Goods = { "Wood", "Planks" },
+		Extras = function(site)
+			-- A log pile along the side wall and a chopping stump with an axe in it
+			site:Fill(-6, 1, 2, -6, 2, 6, "Wood")
+			site:Fill(-7, 1, 3, -7, 1, 5, "Wood")
+			site:Set(3, 1, -2, "Wood")
+			local stump = site:Pos(3, 1.5, -2)
+			Decor.Piece(
+				decor,
+				"Planks",
+				Vector3.new(0.3, 2.2, 0.3),
+				CFrame.new(stump + Vector3.new(0.2, 1.4, 0)) * CFrame.Angles(0, 0, math.rad(25))
+			)
+			Decor.Piece(
+				decor,
+				"StoneBricks",
+				Vector3.new(1, 0.9, 0.2),
+				CFrame.new(stump + Vector3.new(0.2, 0.3, 0)) * CFrame.Angles(0, 0, math.rad(25))
+			)
+			site:Set(-3, 1, -1, "Barrel")
+		end,
+	},
+	{
+		Shop = "Builder",
+		Sign = "BUILDER",
+		X = 13,
+		Z = -7,
+		Front = -Vector3.xAxis,
+		Style = {
+			Wall = "Bricks",
+			Corner = "StoneBricks",
+			Beam = "StoneBricks",
+			Roof = "RoofSlate",
+			Gable = "Bricks",
+			Floor = "SmoothStone",
+		},
+		Shelf = function(x, y, z)
+			local choices = { "StoneBricks", "Bricks", "Glass", "Plaster", "Cobblestone" }
+			return choices[(x + y * 3 + z * 5) % #choices + 1]
+		end,
+		Counter = "StoneBricks",
+		Goods = { "Bricks", "Glass" },
+		Extras = function(site)
+			Decor.Awning(decor, site:Pos(0, 3.6, 0) + site.Front * (SIZE / 2), site.Front, 3 * SIZE, {
+				Color3.fromRGB(70, 104, 170),
+				Color3.fromRGB(240, 234, 222),
+			})
+			-- Scaffolding up the side wall
+			for _, v in { 1, 4, 7 } do
+				site:Fill(-7, 1, v, -7, 5, v, "Wood")
+			end
+			site:Fill(-7, 3, 1, -7, 3, 7, "Planks")
+			-- Pallets of blocks out front
+			site:Fill(-4, 1, -1, -3, 1, -1, "StoneBricks")
+			site:Set(-4, 2, -1, "StoneBricks")
+			site:Fill(3, 1, -1, 4, 1, -1, "Bricks")
+			site:Set(4, 2, -1, "Bricks")
+		end,
+	},
+	{
+		Shop = "Miner",
+		Sign = "MINER",
+		X = 13,
+		Z = 7,
+		Front = -Vector3.xAxis,
+		Style = {
+			Wall = function(_x, y, _z)
+				return if y <= 1 then "MossyStoneBricks" else "StoneBricks"
+			end,
+			Corner = "Cobblestone",
+			Beam = "DarkPlanks",
+			Roof = "RoofSlate",
+			Gable = "DarkPlanks",
+			Floor = "StoneBricks",
+		},
+		Shelf = function(x, y, z)
+			local choices = { "CoalOre", "IronOre", "Stone", "Barrel" }
+			return choices[(x * 3 + y + z * 7) % #choices + 1]
+		end,
+		Counter = "DarkPlanks",
+		Goods = { "CoalOre", "IronOre" },
+		Extras = function(site)
+			-- The forge: a furnace inside under a chimney, and a cart of ore on rails out front
+			site:Set(4, 1, 6, "Furnace")
+			chimney(site, SHOP_HALF_WIDTH, SHOP_HEIGHT, 4, 6)
+			Decor.Rails(decor, site:Pos(-4, 0.5, -1.5), site:Pos(4, 0.5, -1.5))
+			Decor.Minecart(decor, site:Pos(-2, 0.5, -1.5), site:Dir(1, 0), "IronOre")
+			site:Set(4, 1, -1, "Barrel")
+			site:Set(4, 2, -1, "Barrel")
+		end,
+	},
+}
+
+-- Cottages -------------------------------------------------------------------------
+
+-- A small house: plaster and timber walls, a thatch or tiled roof, a chimney, a bed and
+-- a table inside, and a fenced garden out front with a path to the nearest street
+local function cottage(x: number, z: number, front: Vector3, roof: string, pathTo: { number })
+	local site = Build.Site(world, x, z, front)
+	local style: Style = {
+		Wall = "Plaster",
+		Corner = "Wood",
+		Beam = "DarkPlanks",
+		Roof = roof,
+		Gable = "DarkPlanks",
+		Floor = "Planks",
+	}
+	building(site, 3, 6, 3, style, 0, 2)
+	site:Fill(-2, 2, 0, -2, 2, 0, "Glass")
+	site:Fill(2, 2, 0, 2, 2, 0, "Glass")
+	for _, u in { -2, 2 } do
+		Decor.FlowerBox(decor, site:Pos(u, 1.5, 0) + site.Front * (SIZE / 2), site.Front, SIZE - 0.4, FLOWER_COLORS)
+	end
+	site:Fill(-3, 2, 2, -3, 2, 4, "Glass")
+	site:Fill(3, 2, 2, 3, 2, 4, "Glass")
+	chimney(site, 3, 3, 2, 5)
+	-- Inside: a bed, a table and a bookshelf
+	site:Fill(-2, 1, 4, -2, 1, 5, "RedWool")
+	site:Set(-2, 1, 5, "WhiteWool")
+	site:Set(2, 1, 3, "Planks")
+	site:Fill(-2, 1, 1, -1, 2, 1, "Bookshelf")
+	Decor.Lantern(decor, site:Pos(2, 1.5, 3), false, 14)
+	Decor.WallLantern(decor, site:Pos(1.3, 2.6, 0) + site.Front * (SIZE / 2), site.Front)
+	-- Garden: a fence round the front yard with a gap at the path, flowers inside
+	local function yard(u: number, v: number): Vector3
+		return site:Pos(u, 0, v) + Vector3.new(0, SIZE / 2, 0)
+	end
+	Decor.Fence(decor, yard(-3.5, -0.5), yard(-3.5, -3.5))
+	Decor.Fence(decor, yard(3.5, -0.5), yard(3.5, -3.5))
+	Decor.Fence(decor, yard(-3.5, -3.5), yard(-0.5, -3.5))
+	Decor.Fence(decor, yard(0.5, -3.5), yard(3.5, -3.5))
+	for _, u in { -2, -1, 1, 2 } do
+		for v = -3, -1 do
+			if rng:NextNumber() < 0.6 then
+				local cx, cz = site:Cell(u, v)
+				Decor.Flower(decor, top(cx, 0, cz), FLOWER_COLORS[rng:NextInteger(1, #FLOWER_COLORS)])
+			end
+		end
+	end
+	-- Path from the door out of the yard and on to the street
+	local px, pz = site:Cell(0, -1)
+	for v = -1, -3, -1 do
+		local cx, cz = site:Cell(0, v)
+		set(cx, 0, cz, "Path")
+		px, pz = cx, cz
+	end
+	local tx, tz = pathTo[1], pathTo[2]
+	while px ~= tx or pz ~= tz do
+		if px ~= tx then
+			px += if tx > px then 1 else -1
+		else
+			pz += if tz > pz then 1 else -1
+		end
+		if BlockWorld.get(world, px, 0, pz) == "Grass" or BlockWorld.get(world, px, 0, pz) == "FlowerGrass" then
+			set(px, 0, pz, "Path")
+		end
+	end
+end
+
+-- The garden and the park ------------------------------------------------------------------
+
+-- West garden: a stone well under a little roof, flower beds and benches
+local function garden()
+	local wx = -31
+	for dx = -1, 1 do
+		for dz = -1, 1 do
+			if dx ~= 0 or dz ~= 0 then
+				set(wx + dx, 1, dz, "Cobblestone")
+			end
+			set(wx + dx, 4, dz, "DarkPlanks")
+		end
+	end
+	for _, dx in { -1, 1 } do
+		for _, dz in { -1, 1 } do
+			set(wx + dx, 2, dz, "Wood")
+			set(wx + dx, 3, dz, "Wood")
+		end
+	end
+	set(wx, 0, 0, "Stone")
+	Decor.Water(decor, top(wx, 0, 0) + Vector3.new(0, SIZE * 0.6, 0), Vector2.new(SIZE, SIZE), SIZE * 0.6)
+	set(wx, 5, 0, "DarkPlanks")
+	-- Flower beds either side of the lane
+	for _, z0 in { -5, 4 } do
+		for x = -28, -24 do
+			for z = z0, z0 + 1 do
+				set(x, 0, z, "Grass")
+				Decor.Flower(decor, top(x, 0, z), FLOWER_COLORS[rng:NextInteger(1, #FLOWER_COLORS)])
+			end
+		end
+	end
+	Decor.Bench(decor, top(-27, 0, -2), Vector3.zAxis)
+	Decor.Bench(decor, top(-27, 0, 2), -Vector3.zAxis)
+end
+
+-- East park: a pond with a sandy shore and lily pads, benches and trees
+local function park()
+	local cx, cz, r = 30, 0, 4.6
+	for x = cx - 6, cx + 6 do
+		for z = cz - 6, cz + 6 do
+			local d = math.sqrt((x - cx) ^ 2 + (z - cz) ^ 2)
+			if d <= r then
+				set(x, 0, z, "Sand")
+				set(x, -1, z, "Sand")
+				if d <= r - 1 then
+					set(x, 0, z, nil)
+				end
+			elseif d <= r + 1 and math.abs(z) > 1 then
+				set(x, 0, z, "Sand")
+			end
+		end
+	end
+	Decor.Water(
+		decor,
+		top(cx, -1, cz) + Vector3.new(0, SIZE * 0.75, 0),
+		Vector2.new(7.2 * SIZE, 7.2 * SIZE),
+		SIZE * 0.8
+	)
+	for _, spot in { { 28.5, -1.5 }, { 31.2, 1.3 }, { 29.4, 2 }, { 32, -1.8 } } do
+		local at = top(0, -1, 0)
+		local pad = Decor.Part(
+			decor,
+			"LilyPad",
+			Vector3.new(1.4, 0.1, 1.4),
+			CFrame.new(Vector3.new(spot[1] * SIZE, at.Y + SIZE * 0.78, spot[2] * SIZE)),
+			Color3.fromRGB(70, 140, 60)
+		)
+		pad.CastShadow = false
+	end
+	Decor.Bench(decor, top(cx - 6, 0, cz - 4), Vector3.new(1, 0, 0.5).Unit)
+	Decor.Bench(decor, top(cx - 6, 0, cz + 4), Vector3.new(1, 0, -0.5).Unit)
+end
+
+-- The portals ----------------------------------------------------------------------
+
+-- Blocks and banners beside a world portal that show what's through it
+local function portalDecor(info: { Kind: Places.Kind, X: number, Color: Color3 })
+	local cx = info.X
+	for _, side in { -1, 1 } do
+		local x = cx + side * 3
+		if info.Kind == "Farming" then
+			set(x, 0, PORTAL_Z, "Farmland")
+			set(x, 1, PORTAL_Z - 1, "HayBale")
+			local crop = Props.Place(if side < 0 then "Crop_Wheat" else "Crop_Carrot", top(x, 0, PORTAL_Z), nil, decor)
+			if crop then
+				crop:ScaleTo(0.68)
+				crop:PivotTo(CFrame.new(top(x, 0, PORTAL_Z)))
+			end
+		elseif info.Kind == "Woodcutting" then
+			set(x, 1, PORTAL_Z, "Wood")
+			set(x, 2, PORTAL_Z, "Wood")
+			set(x, 3, PORTAL_Z, "Leaves")
+		elseif info.Kind == "Mining" then
+			set(x, 1, PORTAL_Z, "Stone")
+			set(x, 2, PORTAL_Z, if side < 0 then "CoalOre" else "IronOre")
+		else
+			set(x, 1, PORTAL_Z, "Obsidian")
+			set(x, 2, PORTAL_Z, "Obsidian")
+		end
+		-- A banner pole behind
+		for y = 1, 7 do
+			set(x, y, PORTAL_Z + 1, "DarkPlanks")
+		end
+		Decor.Banner(
+			decor,
+			top(x, 7, PORTAL_Z + 1) - Vector3.new(0, 0.6, SIZE / 2 + 0.3),
+			-Vector3.zAxis,
+			info.Color,
+			6
+		)
+	end
+end
+
+local function portals()
+	Portal.addCells(world.Cells, world.Protected, 0, HOME_PORTAL_Z)
 	local home = Portal.makeField(world, 0, HOME_PORTAL_Z)
 	TravelService.AddPortal(home, "Island", "Go home", function()
 		return true
 	end)
-	local south = -Vector3.zAxis
-	signBoard(
+	Signs.Board(
+		decor,
 		"HomeSign",
 		"HOME",
 		BlockWorld.position(world, 0, 6, HOME_PORTAL_Z) + Vector3.zAxis * (SIZE / 2 + 0.25),
 		Vector3.zAxis,
 		2
 	)
+
+	local south = -Vector3.zAxis
 	for _, info in WORLD_PORTALS do
-		local signAt = BlockWorld.position(world, info.X, 6, PORTAL_Z) + south * (SIZE / 2 + 0.25)
-		signBoard(`{info.Kind}Sign`, string.upper(info.Kind), signAt, south, 3)
+		Portal.addCells(world.Cells, world.Protected, info.X, PORTAL_Z)
+		portalDecor(info)
+		Signs.Board(
+			decor,
+			`{info.Kind}Sign`,
+			string.upper(info.Kind),
+			BlockWorld.position(world, info.X, 6, PORTAL_Z) + south * (SIZE / 2 + 0.25),
+			south,
+			3
+		)
+	end
+end
+
+-- Portal fields are parts: made after the blocks are drawn
+local function portalFields()
+	for _, info in WORLD_PORTALS do
 		if info.Open then
 			local field = Portal.makeField(world, info.X, PORTAL_Z, info.Color)
 			TravelService.AddPortal(field, info.Kind, "Travel", function()
@@ -351,11 +728,101 @@ local function build()
 	end
 end
 
+-- Grass, flowers and hedges in the open lawns (after everything else is built)
+local function scatter()
+	for x = -RADIUS, RADIUS do
+		for z = -RADIUS, RADIUS do
+			local ground = BlockWorld.get(world, x, 0, z)
+			if (ground == "Grass" or ground == "FlowerGrass") and not BlockWorld.get(world, x, 1, z) then
+				local roll = rng:NextNumber()
+				if roll < 0.05 then
+					Decor.Grass(decor, top(x, 0, z), rng)
+				elseif roll < 0.075 then
+					Decor.Flower(decor, top(x, 0, z), FLOWER_COLORS[rng:NextInteger(1, #FLOWER_COLORS)])
+				end
+			end
+		end
+	end
+end
+
+local function build()
+	world = BlockWorld.new(CENTER - Vector3.new(0, SIZE / 2, 0), "Town", workspace)
+	npcs = Instance.new("Folder")
+	npcs.Name = "Npcs"
+	npcs.Parent = world.Model
+	decor = Instance.new("Folder")
+	decor.Name = "Decor"
+	decor.Parent = world.Model
+
+	buildGround()
+	portals()
+	fountain()
+	for _, info in SHOPS do
+		shop(info)
+	end
+	cottage(-20, -21, Vector3.xAxis, "Thatch", { -4, -21 })
+	cottage(20, -21, -Vector3.xAxis, "RoofRed", { 4, -21 })
+	cottage(-25, 16, Vector3.xAxis, "RoofRed", { -22, 1 })
+	cottage(25, 16, -Vector3.xAxis, "Thatch", { 22, 1 })
+	garden()
+	park()
+
+	gate(-26, 4, "WELCOME TO TOWN", -Vector3.zAxis)
+	gate(23, 4, "THE WORLDS", -Vector3.zAxis)
+	for _, z in { -22, -16, 16, 20 } do
+		lampPost(-4, z)
+		lampPost(4, z)
+	end
+	for _, corner in { { -10, -10 }, { 10, -10 }, { -10, 10 }, { 10, 10 } } do
+		lampPost(corner[1], corner[2])
+	end
+	for _, spot in { { -6, -30 }, { 6, -30 }, { -10, 28 }, { 0, 29 }, { 10, 28 }, { -20, 28 }, { 20, 28 } } do
+		lampPost(spot[1], spot[2])
+	end
+	for _, spot in { { -6, -16 }, { 6, -16 } } do
+		plantedTree(spot[1], spot[2])
+	end
+	-- Hedges along the arrival street
+	for z = -25, -18 do
+		for _, x in { -5, 5 } do
+			setFree(x, 1, z, "Leaves")
+		end
+	end
+	-- Trees around the edge of town
+	for _, spot in
+		{
+			{ -12, -24, 5 },
+			{ 12, -24, 4 },
+			{ -14, 20, 4 },
+			{ 14, 20, 5 },
+			{ -35, -14, 5 },
+			{ 35, -14, 4 },
+			{ -35, 9, 4 },
+			{ 35, 9, 5 },
+			{ -12, -32, 4 },
+			{ 12, -32, 5 },
+			{ -27, 27, 4 },
+			{ 27, 27, 5 },
+			{ -35, -7, 4 },
+			{ 35, -6, 4 },
+			{ -24, -30, 5 },
+			{ 24, -30, 4 },
+		}
+	do
+		tree(spot[1], spot[2], spot[3])
+	end
+
+	BlockWorld.drawAll(world)
+	portalFields()
+	scatter()
+end
+
 function TownService.Start()
+	Ambience.Apply(0)
 	build()
-	-- Players arrive in front of the home portal, facing the plaza
-	local spawnPoint = Spawning.MakeSpawn(TOWN_CENTER + Vector3.new(0, 0, SPAWN_Z * SIZE), Vector3.zAxis, world.Model)
-	Spawning.Start(spawnPoint, TOWN_CENTER.Y - FALL_LIMIT, function(player)
+	-- Players arrive in front of the home portal, facing up the main street
+	local spawnPoint = Spawning.MakeSpawn(CENTER + Vector3.new(0, 0, SPAWN_Z * SIZE), Vector3.zAxis, world.Model)
+	Spawning.Start(spawnPoint, CENTER.Y - FALL_LIMIT, function(player)
 		QuestService.Record(player, "VisitTown")
 	end)
 end

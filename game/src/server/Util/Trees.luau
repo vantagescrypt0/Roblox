@@ -40,4 +40,30 @@ function Trees.Oak(
 	end
 end
 
+-- A big old oak: a taller trunk under a round crown of leaves about seven blocks across
+function Trees.BigOak(
+	x: number,
+	baseY: number,
+	z: number,
+	height: number,
+	put: (x: number, y: number, z: number, block: string) -> ()
+)
+	for y = 1, height do
+		put(x, baseY + y, z, "Wood")
+	end
+	local crown = baseY + height
+	for dy = -2, 3 do
+		for dx = -3, 3 do
+			for dz = -3, 3 do
+				local d = dx * dx + dz * dz + (dy * 1.3) ^ 2
+				-- Ragged edge: the outermost ring is patchy
+				local edge = d > 7.5 and (dx * 3 + dz * 5 + dy * 7) % 3 == 0
+				if d <= 11 and not edge and not (dx == 0 and dz == 0 and dy <= 0) then
+					put(x + dx, crown + dy, z + dz, "Leaves")
+				end
+			end
+		end
+	end
+end
+
 return Trees

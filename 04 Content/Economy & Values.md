@@ -17,6 +17,10 @@ What everything is worth, so trading between players has a fair reference. The n
 | Dirt | 1 | – | Builder 2 |
 | Cobblestone | 2 | – | Builder 4 |
 | Red Wool, White Wool | 4 | – | Builder 6 |
+| Stone Bricks, Smooth Stone, Plaster | 3 | – | Builder 5 |
+| Bricks, Glass | 4 | – | Builder 6 |
+| Dark Planks | 2 | – | Builder 4 |
+| Red / Slate Roof Tiles | 3 | – | Builder 5 |
 | Wood | 2 | Lumberjack 1 | – |
 | Stone | 2 | Miner 1 | – |
 | Planks (1 Wood → 4) | 1 | – | – |

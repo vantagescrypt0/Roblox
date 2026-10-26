@@ -272,9 +272,9 @@ local function addNameTag(head: BasePart, name: string, tagline: string)
 	gui.Name = "NameTag"
 	gui.Size = UDim2.fromOffset(220, 56)
 	gui.StudsOffsetWorldSpace = Vector3.new(0, 5.4, 0) -- above the chat bubble
-	gui.MaxDistance = 70
-	-- Stays readable under the stall roof
-	gui.AlwaysOnTop = true
+	-- Seen through the shop door, not through the walls from across town
+	gui.MaxDistance = 45
+	gui.AlwaysOnTop = false
 	gui.Adornee = head
 	gui.Parent = head
 	local function line(text: string, size: number, y: number, color: Color3, font: Font)

@@ -25,6 +25,19 @@ export type Block = {
 	NodeRespawn: number?, -- seconds a mined node takes to grow back
 }
 
+-- A stone-like building block: needs a pickaxe, like stone
+local function stone(name: string, drop: string?): Block
+	return {
+		Name = name,
+		Drop = drop,
+		Hardness = 1.5,
+		Tool = "Pickaxe",
+		RequiresTool = true,
+		MinTier = 1,
+		Breakable = true,
+	}
+end
+
 local Blocks: { [string]: Block } = {
 	Grass = { Name = "Grass Block", Drop = "Grass", Hardness = 0.6, Tool = "Shovel", Breakable = true },
 	Dirt = { Name = "Dirt", Drop = "Dirt", Hardness = 0.5, Tool = "Shovel", Breakable = true },
@@ -88,6 +101,32 @@ local Blocks: { [string]: Block } = {
 	Obsidian = { Name = "Obsidian", Drop = nil, Hardness = 50, Breakable = false },
 	-- Carved stone the portals are built from
 	Runestone = { Name = "Runestone", Drop = nil, Hardness = 50, Breakable = false },
+
+	-- Building blocks (the Builder sells the ones with a Drop)
+	StoneBricks = stone("Stone Bricks", "StoneBricks"),
+	MossyStoneBricks = stone("Mossy Stone Bricks", nil),
+	MossyCobblestone = stone("Mossy Cobblestone", nil),
+	SmoothStone = stone("Smooth Stone", "SmoothStone"),
+	Bricks = stone("Bricks", "Bricks"),
+	Plaster = { Name = "Plaster", Drop = "Plaster", Hardness = 1, Tool = "Pickaxe", Breakable = true },
+	DarkPlanks = { Name = "Dark Planks", Drop = "DarkPlanks", Hardness = 2, Tool = "Axe", Breakable = true },
+	BarnPlanks = { Name = "Barn Planks", Drop = nil, Hardness = 2, Tool = "Axe", Breakable = true },
+	RoofRed = { Name = "Red Roof Tiles", Drop = "RoofRed", Hardness = 1.5, Tool = "Pickaxe", Breakable = true },
+	RoofSlate = { Name = "Slate Roof Tiles", Drop = "RoofSlate", Hardness = 1.5, Tool = "Pickaxe", Breakable = true },
+	Thatch = { Name = "Thatch", Drop = nil, Hardness = 0.5, Breakable = true },
+	Glass = { Name = "Glass", Drop = "Glass", Hardness = 0.3, Breakable = true, SeeThrough = true },
+	-- Scenery for the Town and the worlds
+	Gravel = { Name = "Gravel", Drop = nil, Hardness = 0.6, Tool = "Shovel", Breakable = true },
+	Sand = { Name = "Sand", Drop = nil, Hardness = 0.5, Tool = "Shovel", Breakable = true },
+	Path = { Name = "Dirt Path", Drop = nil, Hardness = 0.6, Tool = "Shovel", Breakable = true },
+	FlowerGrass = { Name = "Flowery Grass", Drop = nil, Hardness = 0.6, Tool = "Shovel", Breakable = true },
+	HayBale = { Name = "Hay Bale", Drop = nil, Hardness = 0.5, Breakable = true },
+	Crate = { Name = "Crate", Drop = nil, Hardness = 2, Tool = "Axe", Breakable = true },
+	Barrel = { Name = "Barrel", Drop = nil, Hardness = 2, Tool = "Axe", Breakable = true },
+	Bookshelf = { Name = "Bookshelf", Drop = nil, Hardness = 1.5, Tool = "Axe", Breakable = true },
+	-- The deep rock behind a cave's walls: as far as anyone can dig
+	DarkStone = { Name = "Dark Stone", Drop = nil, Hardness = 50, Breakable = false },
+	Water = { Name = "Water", Drop = nil, Hardness = 100, Breakable = false, SeeThrough = true },
 }
 
 local Size = 3

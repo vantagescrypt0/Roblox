@@ -56,6 +56,14 @@ local DEBRIS_COLORS: { [string]: Color3 } = {
 	Leaves = Color3.fromRGB(58, 120, 38),
 	RedWool = Color3.fromRGB(168, 42, 36),
 	WhiteWool = Color3.fromRGB(232, 234, 234),
+	StoneBricks = Color3.fromRGB(122, 122, 124),
+	SmoothStone = Color3.fromRGB(162, 162, 164),
+	Bricks = Color3.fromRGB(152, 74, 56),
+	Plaster = Color3.fromRGB(230, 222, 202),
+	DarkPlanks = Color3.fromRGB(96, 66, 40),
+	Glass = Color3.fromRGB(200, 230, 242),
+	RoofRed = Color3.fromRGB(176, 80, 50),
+	RoofSlate = Color3.fromRGB(84, 96, 118),
 }
 
 type Target = {

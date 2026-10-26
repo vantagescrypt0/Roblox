@@ -45,6 +45,28 @@ local Items: { [string]: Item } = {
 	},
 	RedWool = { Name = "Red Wool", Icon = "🟥", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "RedWool" },
 	WhiteWool = { Name = "White Wool", Icon = "⬜", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "WhiteWool" },
+	StoneBricks = {
+		Name = "Stone Bricks",
+		Icon = "🧱",
+		Value = 3,
+		SellPrice = 0,
+		BuyPrice = 5,
+		Block = "StoneBricks",
+	},
+	Bricks = { Name = "Bricks", Icon = "🧱", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "Bricks" },
+	SmoothStone = { Name = "Smooth Stone", Icon = "⬜", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "SmoothStone" },
+	Plaster = { Name = "Plaster", Icon = "⬜", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "Plaster" },
+	DarkPlanks = { Name = "Dark Planks", Icon = "🟫", Value = 2, SellPrice = 0, BuyPrice = 4, Block = "DarkPlanks" },
+	Glass = { Name = "Glass", Icon = "🪟", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "Glass" },
+	RoofRed = { Name = "Red Roof Tiles", Icon = "🟥", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "RoofRed" },
+	RoofSlate = {
+		Name = "Slate Roof Tiles",
+		Icon = "🟦",
+		Value = 3,
+		SellPrice = 0,
+		BuyPrice = 5,
+		Block = "RoofSlate",
+	},
 
 	-- Crafting materials
 	Sticks = { Name = "Sticks", Icon = "🥢", SellPrice = 0, Model = "Sticks" },
