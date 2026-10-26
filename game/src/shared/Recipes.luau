@@ -2,6 +2,7 @@
 -- Crafting recipes, Minecraft-style:
 --   Wood -> Planks -> Sticks -> wooden tools -> mine Stone -> stone tools
 --   Stone -> Furnace; mine Coal + Raw Iron -> smelt Iron Ingots -> iron tools
+--   Raw Gold (deep in the Mining World) + Coal -> Gold Ingots, worth a lot in Town
 -- Crystal (from the Warzone) makes the best tools.
 -- Station says where a recipe is made: at the Crafting Table or in a Furnace.
 --
@@ -58,6 +59,15 @@ local Recipes: { Recipe } = {
 		Inputs = { RawIron = 1, Coal = 1 },
 		Requires = {},
 		CraftingXP = 10,
+		Station = "Furnace",
+	},
+	{
+		Id = "GoldIngot",
+		Output = "GoldIngot",
+		Amount = 1,
+		Inputs = { RawGold = 1, Coal = 1 },
+		Requires = {},
+		CraftingXP = 20,
 		Station = "Furnace",
 	},
 }

@@ -45,6 +45,27 @@ local Crops: { Crop } = {
 		PlayerXP = 25,
 		Color = Color3.fromRGB(196, 158, 104),
 	},
+	-- Pumpkin Hollow and the Melon Oasis in the Farming World
+	{
+		Id = "Pumpkin",
+		Seed = "PumpkinSeeds",
+		Product = "Pumpkin",
+		FarmingLevel = 15,
+		GrowTime = 240,
+		FarmingXP = 90,
+		PlayerXP = 40,
+		Color = Color3.fromRGB(230, 128, 30),
+	},
+	{
+		Id = "Melon",
+		Seed = "MelonSeeds",
+		Product = "Melon",
+		FarmingLevel = 25,
+		GrowTime = 360,
+		FarmingXP = 150,
+		PlayerXP = 70,
+		Color = Color3.fromRGB(96, 160, 52),
+	},
 	-- Seeds only come from Warzone chests
 	{
 		Id = "Glowberry",

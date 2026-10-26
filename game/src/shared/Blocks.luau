@@ -21,7 +21,7 @@ export type Block = {
 	RequiresTool: boolean?,
 	MinTier: number?,
 	Breakable: boolean,
-	SeeThrough: boolean?, -- blocks behind it still get drawn (leaves)
+	SeeThrough: boolean?, -- blocks behind it still get drawn (glass, water, ice)
 	NodeRespawn: number?, -- seconds a mined node takes to grow back
 }
 
@@ -36,6 +36,12 @@ local function stone(name: string, drop: string?): Block
 		MinTier = 1,
 		Breakable = true,
 	}
+end
+
+-- Leaves: break in a moment, drop nothing (oak leaves sometimes give a sapling, see
+-- BlockService). Their texture is solid, so leaves hidden inside a canopy aren't drawn.
+local function leaves(name: string): Block
+	return { Name = name, Drop = nil, Hardness = 0.2, Breakable = true, NodeRespawn = 30 }
 end
 
 local Blocks: { [string]: Block } = {
@@ -92,7 +98,46 @@ local Blocks: { [string]: Block } = {
 	},
 	Wood = { Name = "Wood", Drop = "Wood", Hardness = 2, Tool = "Axe", Breakable = true, NodeRespawn = 20 },
 	Planks = { Name = "Planks", Drop = "Planks", Hardness = 2, Tool = "Axe", Breakable = true },
-	Leaves = { Name = "Leaves", Drop = nil, Hardness = 0.2, Breakable = true, SeeThrough = true, NodeRespawn = 30 },
+	Leaves = leaves("Leaves"),
+	-- The Woodcutting World's zone trees; each needs a Woodcutting level to chop (BlockService)
+	BirchWood = {
+		Name = "Birch Wood",
+		Drop = "BirchWood",
+		Hardness = 2,
+		Tool = "Axe",
+		Breakable = true,
+		NodeRespawn = 25,
+	},
+	SpruceWood = {
+		Name = "Spruce Wood",
+		Drop = "SpruceWood",
+		Hardness = 2.5,
+		Tool = "Axe",
+		Breakable = true,
+		NodeRespawn = 30,
+	},
+	CherryWood = {
+		Name = "Cherry Wood",
+		Drop = "CherryWood",
+		Hardness = 3,
+		Tool = "Axe",
+		Breakable = true,
+		NodeRespawn = 35,
+	},
+	BirchLeaves = leaves("Birch Leaves"),
+	SpruceLeaves = leaves("Spruce Leaves"),
+	CherryLeaves = leaves("Cherry Blossom"),
+	-- Gold: deep in the Mining World's cave, needs an Iron pickaxe (and Mining 10)
+	GoldOre = {
+		Name = "Gold Ore",
+		Drop = "RawGold",
+		Hardness = 3,
+		Tool = "Pickaxe",
+		RequiresTool = true,
+		MinTier = 3,
+		Breakable = true,
+		NodeRespawn = 60,
+	},
 	RedWool = { Name = "Red Wool", Drop = "RedWool", Hardness = 0.8, Breakable = true },
 	WhiteWool = { Name = "White Wool", Drop = "WhiteWool", Hardness = 0.8, Breakable = true },
 	-- Special blocks the game places; players can't break them
@@ -127,6 +172,15 @@ local Blocks: { [string]: Block } = {
 	-- The deep rock behind a cave's walls: as far as anyone can dig
 	DarkStone = { Name = "Dark Stone", Drop = nil, Hardness = 50, Breakable = false },
 	Water = { Name = "Water", Drop = nil, Hardness = 100, Breakable = false, SeeThrough = true },
+	-- Zone scenery: snowy pines, autumn trees, pumpkin and melon patches, mesa cliffs
+	Snow = { Name = "Snow", Drop = nil, Hardness = 0.5, Tool = "Shovel", Breakable = true },
+	SnowyGrass = { Name = "Snowy Grass", Drop = nil, Hardness = 0.6, Tool = "Shovel", Breakable = true },
+	Ice = { Name = "Ice", Drop = nil, Hardness = 0.5, Breakable = true, SeeThrough = true },
+	AutumnLeaves = leaves("Autumn Leaves"),
+	Pumpkin = { Name = "Pumpkin", Drop = nil, Hardness = 1, Tool = "Axe", Breakable = true },
+	Melon = { Name = "Melon", Drop = nil, Hardness = 1, Tool = "Axe", Breakable = true },
+	Terracotta = stone("Terracotta", nil),
+	RedTerracotta = stone("Red Terracotta", nil),
 }
 
 local Size = 3

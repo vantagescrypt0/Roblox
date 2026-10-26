@@ -163,25 +163,26 @@ local function lampPost(x: number, z: number)
 	Decor.Lantern(decor, top(x, 3, z), false, 22)
 end
 
--- A gate over a street: two stone pillars with lanterns and a beam carrying a sign
+-- A gate over a street: two tall stone pillars with lanterns and a beam carrying a sign,
+-- well above everyone's heads
 local function gate(z: number, halfWidth: number, text: string, front: Vector3)
 	for _, x in { -halfWidth, halfWidth } do
-		for y = 1, 5 do
+		for y = 1, 6 do
 			set(x, y, z, "StoneBricks")
 		end
-		set(x, 6, z, "SmoothStone")
-		Decor.Lantern(decor, top(x, 6, z), false, 18)
+		set(x, 7, z, "SmoothStone")
+		Decor.Lantern(decor, top(x, 7, z), false, 18)
 	end
 	for x = -halfWidth + 1, halfWidth - 1 do
-		set(x, 5, z, "DarkPlanks")
+		set(x, 6, z, "DarkPlanks")
 	end
 	Signs.Board(
 		decor,
 		"GateSign",
 		text,
-		BlockWorld.position(world, 0, 4.15, z) + front * (SIZE / 2 + 0.25),
+		BlockWorld.position(world, 0, 5.1, z) + front * (SIZE / 2 + 0.25),
 		front,
-		halfWidth * 2 - 2
+		math.min(halfWidth * 2 - 2, 8)
 	)
 end
 
@@ -666,18 +667,18 @@ local function portalDecor(info: { Kind: Places.Kind, X: number, Color: Color3 }
 			set(x, 1, PORTAL_Z, "Obsidian")
 			set(x, 2, PORTAL_Z, "Obsidian")
 		end
-		-- A banner pole behind
-		for y = 1, 7 do
-			set(x, y, PORTAL_Z + 1, "DarkPlanks")
-		end
-		Decor.Banner(
-			decor,
-			top(x, 7, PORTAL_Z + 1) - Vector3.new(0, 0.6, SIZE / 2 + 0.3),
-			-Vector3.zAxis,
-			info.Color,
-			6
-		)
 	end
+	-- One tall banner pole behind the arch, its banner flying above it
+	for y = 1, 10 do
+		set(cx, y, PORTAL_Z + 1, "DarkPlanks")
+	end
+	Decor.Banner(
+		decor,
+		top(cx, 10, PORTAL_Z + 1) - Vector3.new(0, 0.6, SIZE / 2 + 0.3),
+		-Vector3.zAxis,
+		info.Color,
+		6
+	)
 end
 
 local function portals()
@@ -768,8 +769,9 @@ local function build()
 	park()
 
 	gate(-26, 4, "WELCOME TO TOWN", -Vector3.zAxis)
-	gate(23, 4, "THE WORLDS", -Vector3.zAxis)
-	for _, z in { -22, -16, 16, 20 } do
+	-- Back from the portal row, so the plaza opens out beyond it
+	gate(17, 6, "THE WORLDS", -Vector3.zAxis)
+	for _, z in { -22, -16, 13 } do
 		lampPost(-4, z)
 		lampPost(4, z)
 	end

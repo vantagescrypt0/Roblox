@@ -242,8 +242,8 @@ def lump(b, main, second):
     b.blob(0.3, location=(0.32, -0.12, 0.62), color=second, jitter=0.25, subdivisions=1)
 
 
-def ingot(b):
-    verts = b.box((1.25, 0.55, 0.36), location=(0, 0, 0.18), color="iron")
+def ingot(b, color="iron"):
+    verts = b.box((1.25, 0.55, 0.36), location=(0, 0, 0.18), color=color)
     for v in verts:
         if v.co.z > 0.18:  # narrower top: an ingot shape
             v.co.x *= 0.8
@@ -263,6 +263,24 @@ def scrap(b):
         a = math.radians(i * 45)
         b.box((0.16, 0.14, 0.16), location=(math.cos(a) * 0.48, 0, 0.55 + math.sin(a) * 0.48), rotation=(0, -i * 45, 0), color="metal")
     b.cylinder(0.12, 0.2, location=(0, 0, 0.55), rotation=(90, 0, 0), color="metal_dark", segments=6)
+
+
+def pumpkin(b):
+    """Four round lobes round a squat middle, a curly stem and a leaf on top."""
+    b.blob(0.5, location=(0, 0, 0.42), color="pumpkin", squash=(1.15, 1.15, 0.8), jitter=0.04, subdivisions=2)
+    for i in range(4):
+        a = math.radians(i * 90 + 45)
+        b.blob(0.3, location=(math.cos(a) * 0.32, math.sin(a) * 0.32, 0.4), color="pumpkin_dark" if i % 2 else "pumpkin", squash=(1.0, 1.0, 1.25), jitter=0.04)
+    b.cylinder(0.07, 0.3, location=(0.02, 0, 0.86), rotation=(0, 12, 0), color="wood_dark", segments=6)
+    b.box((0.3, 0.05, 0.14), location=(0.16, 0, 0.84), rotation=(0, -25, 0), color="leaf")
+
+
+def melon(b):
+    """A striped melon lying on its side."""
+    b.blob(0.52, location=(0, 0, 0.44), color="melon", squash=(1.3, 1.0, 0.9), jitter=0.03, subdivisions=2)
+    for y in (-0.3, 0.0, 0.3):
+        b.blob(0.1, location=(0, y, 0.86), color="melon_light", squash=(5.5, 0.6, 0.5), jitter=0.02)
+    b.cylinder(0.04, 0.16, location=(0.66, 0, 0.5), rotation=(0, 90, 0), color="stalk", segments=5)
 
 
 def glowberry(b):
@@ -294,10 +312,26 @@ ITEMS.update(
         "IronIngot": (ingot, False),
         "Crystal": (crystal, False),
         "Scrap": (scrap, False),
+        "RawGold": (lambda b: lump(b, "gold", "gold_dark"), False),
+        "GoldIngot": (lambda b: ingot(b, "gold"), False),
+        "PumpkinSeeds": (lambda b: seed_pouch(b, "pumpkin"), False),
+        "MelonSeeds": (lambda b: seed_pouch(b, "melon"), False),
+        "Pumpkin": (pumpkin, False),
+        "Melon": (melon, False),
     }
 )
 # Block items show their block, rendered from art/blend/Blocks.blend
-BLOCK_ICONS = {"Grass": "Grass", "Dirt": "Dirt", "Wood": "Wood", "Planks": "Planks", "Stone": "Stone", "Furnace": "Furnace"}
+BLOCK_ICONS = {
+    "Grass": "Grass",
+    "Dirt": "Dirt",
+    "Wood": "Wood",
+    "Planks": "Planks",
+    "Stone": "Stone",
+    "Furnace": "Furnace",
+    "BirchWood": "BirchWood",
+    "SpruceWood": "SpruceWood",
+    "CherryWood": "CherryWood",
+}
 
 # Where the hand holds an item, in the item's own modelling space (before tilting)
 TOOL_GRIP = Vector((0, 0, 0.5))

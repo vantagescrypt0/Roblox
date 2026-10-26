@@ -2,7 +2,12 @@
 block type with each face mapped to the right tile (grass: green top, grass side, dirt
 bottom; logs: bark sides, rings on top/bottom; ...).
 
-Tiles are drawn procedurally (seeded noise) and scaled up 8x with nearest-neighbour so
+Also merged pieces for the shared worlds' scenery (see game/src/server/Util/BlockWorld.luau):
+boxes several blocks big ("Merged_Stone_8x4x8": 8 blocks along x, 4 up, 8 along z) whose
+every face is cut into one quad per block, each mapped to that block's tile, so a piece
+looks exactly like the blocks it stands in for. They share the atlas, so they batch.
+
+Tiles are drawn procedurally (seeded noise) and scaled up 7x with nearest-neighbour so
 they stay crisp in Roblox (which filters textures smoothly).
 
 Output: art/textures/blocks.png, art/export/Blocks.fbx, art/blend/Blocks.blend,
@@ -22,9 +27,9 @@ import common  # noqa: E402
 
 BLOCK = 3.0  # studs
 TILE = 16
-SCALE = 8
-GRID = 7  # 7x7 tiles
-ATLAS = TILE * SCALE * GRID  # 896 px
+SCALE = 7
+GRID = 9  # 9x9 tiles
+ATLAS = TILE * SCALE * GRID  # 1008 px (Roblox's limit is 1024)
 
 TILES = [
     "grass_top", "grass_side", "dirt", "stone",
@@ -40,6 +45,13 @@ TILES = [
     "sand", "path_top", "dark_stone", "hay_top",
     "hay_side", "crate", "barrel_top", "barrel_side",
     "bookshelf", "flower_grass",
+    # The worlds' zones: zone trees, snow, autumn, gold, pumpkins and melons, mesa rock
+    "birch_log_side", "birch_log_top", "birch_leaves",
+    "spruce_log_side", "spruce_log_top", "spruce_leaves",
+    "cherry_log_side", "cherry_log_top", "cherry_leaves",
+    "autumn_leaves", "snow", "snowy_grass_side", "gold_ore",
+    "pumpkin_top", "pumpkin_side", "melon_top", "melon_side",
+    "terracotta", "red_terracotta",
 ]  # fmt: skip
 
 # Which tile each face uses: (top, bottom, sides) or (top, bottom, front, other sides)
@@ -80,6 +92,41 @@ BLOCKS = {
     "Barrel": ("barrel_top", "barrel_top", "barrel_side"),
     "Bookshelf": ("planks", "planks", "bookshelf"),
     "FlowerGrass": ("flower_grass", "dirt", "grass_side"),
+    "BirchWood": ("birch_log_top", "birch_log_top", "birch_log_side"),
+    "SpruceWood": ("spruce_log_top", "spruce_log_top", "spruce_log_side"),
+    "CherryWood": ("cherry_log_top", "cherry_log_top", "cherry_log_side"),
+    "BirchLeaves": ("birch_leaves", "birch_leaves", "birch_leaves"),
+    "SpruceLeaves": ("spruce_leaves", "spruce_leaves", "spruce_leaves"),
+    "CherryLeaves": ("cherry_leaves", "cherry_leaves", "cherry_leaves"),
+    "AutumnLeaves": ("autumn_leaves", "autumn_leaves", "autumn_leaves"),
+    "Snow": ("snow", "snow", "snow"),
+    "SnowyGrass": ("snow", "dirt", "snowy_grass_side"),
+    "GoldOre": ("gold_ore", "gold_ore", "gold_ore"),
+    "Pumpkin": ("pumpkin_top", "pumpkin_top", "pumpkin_side"),
+    "Melon": ("melon_top", "melon_top", "melon_side"),
+    "Terracotta": ("terracotta", "terracotta", "terracotta"),
+    "RedTerracotta": ("red_terracotta", "red_terracotta", "red_terracotta"),
+}
+
+# Merged pieces (x, y, z in blocks; each also fills z, y, x turned a quarter turn).
+# Ground that's one block deep gets slabs, soil also two-deep slabs, rock big cubes too.
+SLABS = [(16, 1, 16), (8, 1, 8), (8, 1, 4), (4, 1, 4), (4, 1, 2), (2, 1, 2), (4, 1, 1), (2, 1, 1)]
+THICK = [(8, 2, 8), (4, 2, 4), (4, 2, 2), (2, 2, 2), (2, 2, 1)]
+CUBES = [(16, 4, 16), (8, 4, 8), (4, 4, 4), (4, 4, 1), (8, 8, 8)]
+MERGED = {
+    "Grass": SLABS,
+    "SnowyGrass": SLABS,
+    "Snow": SLABS,
+    "Path": SLABS,
+    "Gravel": SLABS,
+    "SmoothStone": SLABS,
+    "DarkPlanks": SLABS,
+    "Sand": SLABS + THICK,
+    "Dirt": SLABS + THICK,
+    "Stone": SLABS + THICK + CUBES,
+    "DarkStone": SLABS + THICK + CUBES,
+    "Terracotta": SLABS + THICK + CUBES,
+    "RedTerracotta": SLABS + THICK + CUBES,
 }
 
 
@@ -508,6 +555,107 @@ def draw_building_tiles(tiles):
             flowers[cy + dy][cx + dx] = noisy(rng, color, 8)
         flowers[cy][cx] = noisy(rng, (250, 232, 120), 6)
     tiles["flower_grass"] = flowers
+    draw_zone_tiles(tiles)
+
+
+def draw_zone_tiles(tiles):
+    """Tiles for the worlds' zones (their own random sequence, so older tiles stay put)"""
+    rng = random.Random(41)
+
+    def bark(base, dark, mark=None):
+        tile = [[None] * TILE for _ in range(TILE)]
+        for x in range(TILE):
+            stripe = x % 4 == 1 or x % 7 == 5
+            for y in range(TILE):
+                tile[y][x] = noisy(rng, dark if stripe or rng.random() < 0.1 else base, 7)
+        if mark:  # birch: short dark dashes across the white bark
+            for _ in range(9):
+                x0, y = rng.randint(0, 13), rng.randint(0, 15)
+                for dx in range(rng.randint(2, 4)):
+                    tile[y][(x0 + dx) % TILE] = noisy(rng, mark, 6)
+        return tile
+
+    def rings(heart, ring, edge):
+        tile = [[None] * TILE for _ in range(TILE)]
+        for y in range(TILE):
+            for x in range(TILE):
+                r = min(x, y, TILE - 1 - x, TILE - 1 - y)
+                c = edge if r == 0 else ring if r in (2, 5) else heart
+                tile[y][x] = noisy(rng, c, 6)
+        return tile
+
+    def leafy(base, dark, light, extra=None):
+        tile = fill(rng, base, 14)
+        speckle(rng, tile, dark, 0.25)
+        speckle(rng, tile, light, 0.12)
+        if extra:
+            speckle(rng, tile, extra, 0.05)
+        return tile
+
+    tiles["birch_log_side"] = bark((222, 218, 206), (196, 192, 180), (44, 42, 40))
+    tiles["birch_log_top"] = rings((214, 192, 140), (188, 164, 112), (230, 228, 220))
+    tiles["birch_leaves"] = leafy((112, 160, 70), (84, 128, 50), (146, 190, 92))
+    tiles["spruce_log_side"] = bark((76, 54, 32), (54, 38, 22))
+    tiles["spruce_log_top"] = rings((150, 112, 66), (118, 86, 50), (62, 44, 26))
+    tiles["spruce_leaves"] = leafy((46, 86, 58), (30, 62, 42), (64, 108, 76))
+    tiles["cherry_log_side"] = bark((96, 56, 60), (70, 38, 44))
+    tiles["cherry_log_top"] = rings((214, 156, 146), (186, 124, 118), (80, 44, 50))
+    tiles["cherry_leaves"] = leafy((240, 168, 200), (214, 124, 166), (252, 206, 224), (255, 246, 250))
+    tiles["autumn_leaves"] = leafy((222, 122, 42), (188, 66, 36), (238, 184, 64))
+
+    snow = fill(rng, (242, 246, 250), 5)
+    speckle(rng, snow, (218, 228, 240), 0.18, 4)
+    tiles["snow"] = snow
+    side = [row[:] for row in tiles["dirt"]]
+    for x in range(TILE):
+        depth = rng.choice((3, 4, 4, 5))
+        for y in range(depth):
+            side[y][x] = noisy(rng, (242, 246, 250) if y < depth - 1 else (214, 224, 236), 5)
+    tiles["snowy_grass_side"] = side
+
+    gold = [row[:] for row in tiles["stone"]]
+    for _ in range(6):
+        cx, cy = rng.randint(0, 13), rng.randint(0, 13)
+        for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1), (2, 1), (1, 2), (2, 0), (0, 2), (2, 2)):
+            if rng.random() < 0.75:
+                gold[cy + dy][cx + dx] = noisy(rng, ((252, 220, 76), (222, 170, 40), (255, 242, 150))[(dx + dy) % 3], 6)
+    tiles["gold_ore"] = gold
+
+    # Pumpkins and melons: ribbed sides, a stem on top
+    pumpkin = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            rib = x % 4 == 0
+            pumpkin[y][x] = noisy(rng, (186, 94, 20) if rib else (228, 128, 32) if x % 4 != 2 else (240, 150, 50), 6)
+    tiles["pumpkin_side"] = pumpkin
+    top = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            d = max(abs(x - 7.5), abs(y - 7.5))
+            top[y][x] = noisy(rng, (196, 102, 24) if int(d) % 3 == 0 else (226, 126, 32), 6)
+    for y in range(6, 10):
+        for x in range(6, 10):
+            top[y][x] = noisy(rng, (96, 110, 40) if (x + y) % 3 else (70, 84, 30), 6)
+    tiles["pumpkin_top"] = top
+    melon = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            zig = (x + (y // 2) % 2) % 5 == 0
+            melon[y][x] = noisy(rng, (156, 200, 84) if zig else (92, 156, 48), 8)
+    tiles["melon_side"] = melon
+    melon_top = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            d = math.hypot(x - 7.5, y - 7.5)
+            melon_top[y][x] = noisy(rng, (150, 194, 80) if int(d) % 3 == 0 else (98, 160, 52), 8)
+    tiles["melon_top"] = melon_top
+
+    terracotta = fill(rng, (164, 86, 54), 5)
+    speckle(rng, terracotta, (150, 76, 46), 0.15, 4)
+    tiles["terracotta"] = terracotta
+    red = fill(rng, (140, 58, 44), 5)
+    speckle(rng, red, (124, 50, 38), 0.15, 4)
+    tiles["red_terracotta"] = red
 
 
 def build_atlas():
@@ -596,6 +744,51 @@ def make_block(name, faces, mat):
     return obj
 
 
+def make_merged(name, faces, size, mat):
+    """A box `size` blocks (x along x, y up, z along Blender's y) with one quad per block on
+    every face, each mapped to that face's tile like a single block's face"""
+    sx, sy, sz = size
+    top, bottom, sides = faces[0], faces[1], faces[2]
+    bm = bmesh.new()
+    uv = bm.loops.layers.uv.new("UVMap")
+    hx, hy, hz = sx * BLOCK / 2, sz * BLOCK / 2, sy * BLOCK / 2  # Blender x, y, z
+
+    def quad(corners, tile):
+        verts = [bm.verts.new(c) for c in corners]
+        face = bm.faces.new(verts)
+        u0, v0, u1, v1 = tile_rect(tile)
+        # Corners go bottom-left, bottom-right, top-right, top-left as seen from outside
+        for loop, (s, t) in zip(face.loops, ((0, 0), (1, 0), (1, 1), (0, 1))):
+            loop[uv].uv = (u0 + (u1 - u0) * s, v0 + (v1 - v0) * t)
+
+    b = BLOCK
+    for i in range(sx):
+        for j in range(sz):
+            x0, y0 = -hx + i * b, -hy + j * b
+            quad([(x0, y0, hz), (x0 + b, y0, hz), (x0 + b, y0 + b, hz), (x0, y0 + b, hz)], top)
+            quad([(x0, y0 + b, -hz), (x0 + b, y0 + b, -hz), (x0 + b, y0, -hz), (x0, y0, -hz)], bottom)
+    for k in range(sy):
+        z0 = -hz + k * b
+        for i in range(sx):
+            x0 = -hx + i * b
+            # -Y side (front) and +Y side (back), seen from outside
+            quad([(x0, -hy, z0), (x0 + b, -hy, z0), (x0 + b, -hy, z0 + b), (x0, -hy, z0 + b)], sides)
+            quad([(x0 + b, hy, z0), (x0, hy, z0), (x0, hy, z0 + b), (x0 + b, hy, z0 + b)], sides)
+        for j in range(sz):
+            y0 = -hy + j * b
+            quad([(hx, y0, z0), (hx, y0 + b, z0), (hx, y0 + b, z0 + b), (hx, y0, z0 + b)], sides)
+            quad([(-hx, y0 + b, z0), (-hx, y0, z0), (-hx, y0, z0 + b), (-hx, y0 + b, z0 + b)], sides)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0001)
+    label = f"Merged_{name}_{sx}x{sy}x{sz}"
+    mesh = bpy.data.meshes.new(label)
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = bpy.data.objects.new(label, mesh)
+    bpy.context.scene.collection.objects.link(obj)
+    obj.data.materials.append(mat)
+    return obj
+
+
 def main():
     common.reset_scene()
     mat = build_atlas()
@@ -603,10 +796,15 @@ def main():
 
     # Preview: blocks in a row, then back to the origin for export
     for i, obj in enumerate(objects):
-        obj.location = ((i % 6) * 4.0 - 10, (i // 6) * 4.0, 0)
-    common.render_preview("Blocks", target=(0, 2, 0), distance=26, height=14, angle_deg=-25)
+        obj.location = ((i % 8) * 4.0 - 14, (i // 8) * 4.0, 0)
+    common.render_preview("Blocks", target=(0, 8, 0), distance=40, height=22, angle_deg=-25)
     for obj in objects:
         obj.location = (0, 0, 0)
+    merged = [
+        make_merged(name, BLOCKS[name], size, mat) for name, sizes in MERGED.items() for size in sizes
+    ]
+    objects += merged
+    print(f"blocks: {len(BLOCKS)}, merged pieces: {len(merged)}")
 
     common.save_blend("Blocks")
     os.makedirs(common.EXPORT_DIR, exist_ok=True)

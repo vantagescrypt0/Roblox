@@ -36,13 +36,18 @@ local SAPLING_CHANCE = 0.08
 -- Building area around the island (in blocks)
 local MAX_HEIGHT, MAX_DEPTH, EXTRA_RADIUS = 40, 40, 12
 
--- What gathering each natural block is worth: skill XP and player XP
-local GATHER: { [string]: { Skill: string, XP: number, PlayerXP: number } } = {
+-- What gathering each natural block is worth: skill XP and player XP. Level: the skill
+-- level you need before you can gather it at all (the worlds' zone resources).
+local GATHER: { [string]: { Skill: string, XP: number, PlayerXP: number, Level: number? } } = {
 	Stone = { Skill = "Mining", XP = 5, PlayerXP = 2 },
 	Cobblestone = { Skill = "Mining", XP = 5, PlayerXP = 2 },
 	CoalOre = { Skill = "Mining", XP = 12, PlayerXP = 4 },
 	IronOre = { Skill = "Mining", XP = 20, PlayerXP = 6 },
+	GoldOre = { Skill = "Mining", XP = 35, PlayerXP = 10, Level = 10 },
 	Wood = { Skill = "Woodcutting", XP = 6, PlayerXP = 2 },
+	BirchWood = { Skill = "Woodcutting", XP = 12, PlayerXP = 4, Level = 10 },
+	SpruceWood = { Skill = "Woodcutting", XP = 20, PlayerXP = 6, Level = 20 },
+	CherryWood = { Skill = "Woodcutting", XP = 32, PlayerXP = 9, Level = 30 },
 }
 
 -- Where a player breaks blocks
@@ -144,6 +149,11 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	lastBreak[player] = now
 
 	local natural = area.Natural(cx, cy, cz, blockType)
+	local need = GATHER[blockType]
+	if natural and need and need.Level and ProgressionService.GetSkillLevel(player, need.Skill) < need.Level then
+		StateService.Notify(player, `{def.Name} needs {need.Skill} level {need.Level}`, "bad")
+		return
+	end
 	BlockWorld.set(world, cx, cy, cz, nil)
 	local fellLeaves = area.Broken(cx, cy, cz)
 
@@ -175,11 +185,11 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	if fellLeaves then
 		treeFell(player, fellLeaves)
 	end
-	if canHarvest and blockType == "Wood" then
+	if canHarvest and need and need.Skill == "Woodcutting" then
 		QuestService.Record(player, "Chop")
 	elseif canHarvest and (blockType == "Stone" or blockType == "Cobblestone") then
 		QuestService.Record(player, "Mine")
-	elseif canHarvest and (blockType == "CoalOre" or blockType == "IronOre") then
+	elseif canHarvest and (blockType == "CoalOre" or blockType == "IronOre" or blockType == "GoldOre") then
 		QuestService.Record(player, "Mine")
 		QuestService.Record(player, `Mine:{blockType}`)
 	end

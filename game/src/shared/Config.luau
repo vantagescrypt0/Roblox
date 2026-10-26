@@ -19,6 +19,6 @@ Config.Island = table.freeze({
 -- Uploaded copy of art/textures/item_icons.png (all item icons on one sheet, see ItemArt.luau).
 -- Empty = icons fall back to live 3D previews. Uploaded 2026-10-25 with the hoes and the
 -- sapling, as the texture of a plane imported with Import 3D (see art/README.md).
-Config.ItemIconSheet = "rbxassetid://130828684699663"
+Config.ItemIconSheet = "rbxassetid://127251953087926"
 
 return table.freeze(Config)

@@ -89,6 +89,12 @@ PALETTE = {
     "coal_light": "#4B4B53",
     "raw_iron": "#C99068",
     "raw_iron_dark": "#9C6748",
+    # The worlds' zone crops and gold (the palette is now full: 64 swatches)
+    "pumpkin": "#E07F22",
+    "pumpkin_dark": "#B35E16",
+    "melon": "#5E9F35",
+    "melon_light": "#A2CF60",
+    "gold_dark": "#B98A24",
 }
 
 GRID = 8

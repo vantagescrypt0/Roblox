@@ -356,6 +356,242 @@ function Decor.Awning(parent: Instance, top: Vector3, out: Vector3, width: numbe
 	end
 end
 
+local function emitter(holder: BasePart, props: { [string]: any }): ParticleEmitter
+	local particles = Instance.new("ParticleEmitter")
+	for name, value in props do
+		(particles :: any)[name] = value
+	end
+	particles.Parent = holder
+	return particles
+end
+
+local function holder(parent: Instance, name: string, size: Vector3, cframe: CFrame): Part
+	local p = part(parent, name, size, cframe, Color3.new(1, 1, 1))
+	p.Transparency = 1
+	p.CanCollide = false
+	p.CastShadow = false
+	return p
+end
+
+-- Water pouring over an island's edge: `lip` is the middle of the edge at the water's
+-- surface, `out` points out over the edge. It falls `drop` studs, thinning into mist.
+function Decor.Waterfall(parent: Instance, lip: Vector3, out: Vector3, width: number, drop: number)
+	local frame = CFrame.lookAt(lip, lip + out)
+	local color = Color3.fromRGB(96, 160, 226)
+	local curve = part(
+		parent,
+		"Waterfall",
+		Vector3.new(width, 0.6, 2.6),
+		frame * CFrame.new(0, -0.5, -1) * CFrame.Angles(math.rad(-35), 0, 0),
+		color,
+		Enum.Material.Glass
+	)
+	curve.Transparency = 0.25
+	curve.CanCollide = false
+	local y, length = -1.2, drop / 3
+	for i, fade in { 0.25, 0.45, 0.7 } do
+		local sheet = part(
+			parent,
+			"Waterfall",
+			Vector3.new(width - i * 0.4, length, 0.7),
+			frame * CFrame.new(0, y - length / 2, -2.2 - i * 0.25),
+			color,
+			Enum.Material.Glass
+		)
+		sheet.Transparency = fade
+		sheet.CanCollide = false
+		sheet.CastShadow = false
+		y -= length
+	end
+	-- White foam where it tips over, spray down the fall, mist at the bottom
+	local top = holder(parent, "Foam", Vector3.new(width, 0.4, 0.4), frame * CFrame.new(0, -1, -2.1))
+	emitter(top, {
+		Texture = "rbxasset://textures/particles/sparkles_main.dds",
+		Color = ColorSequence.new(Color3.fromRGB(235, 245, 255)),
+		Transparency = NumberSequence.new(0.3, 1),
+		Size = NumberSequence.new(0.8, 1.6),
+		Lifetime = NumberRange.new(0.8, 1.4),
+		Rate = 30,
+		Speed = NumberRange.new(2, 4),
+		SpreadAngle = Vector2.new(25, 25),
+		EmissionDirection = Enum.NormalId.Bottom,
+		Acceleration = Vector3.new(0, -12, 0),
+	})
+	local bottom = holder(parent, "Mist", Vector3.new(width, 1, 1), frame * CFrame.new(0, -drop * 0.7, -2.6))
+	emitter(bottom, {
+		Texture = "rbxasset://textures/particles/smoke_main.dds",
+		Color = ColorSequence.new(Color3.fromRGB(220, 235, 250)),
+		Transparency = NumberSequence.new(0.6, 1),
+		Size = NumberSequence.new(4, 9),
+		Lifetime = NumberRange.new(3, 5),
+		Rate = 6,
+		Speed = NumberRange.new(1, 3),
+		SpreadAngle = Vector2.new(60, 60),
+		Acceleration = Vector3.new(0, -1, 0),
+	})
+end
+
+-- Things drifting down over an area: snow, cherry petals or autumn leaves. `centre` is
+-- the middle of the area, high up; `size` its width and depth in studs.
+function Decor.Falling(parent: Instance, centre: Vector3, size: Vector2, kind: "Snow" | "Petals" | "Leaves")
+	local area = holder(parent, kind, Vector3.new(size.X, 1, size.Y), CFrame.new(centre))
+	local colors = {
+		Snow = ColorSequence.new(Color3.fromRGB(250, 252, 255)),
+		Petals = ColorSequence.new(Color3.fromRGB(250, 186, 214), Color3.fromRGB(240, 150, 190)),
+		Leaves = ColorSequence.new(Color3.fromRGB(230, 120, 40), Color3.fromRGB(196, 70, 36)),
+	}
+	emitter(area, {
+		Texture = "rbxasset://textures/particles/sparkles_main.dds",
+		Color = colors[kind],
+		LightEmission = if kind == "Snow" then 0.3 else 0,
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.1, 0.1),
+			NumberSequenceKeypoint.new(0.85, 0.2),
+			NumberSequenceKeypoint.new(1, 1),
+		}),
+		Size = NumberSequence.new(if kind == "Snow" then 0.35 else 0.45),
+		Lifetime = NumberRange.new(9, 13),
+		Rate = math.clamp(size.X * size.Y / 400, 10, 60),
+		Speed = NumberRange.new(3, 5),
+		EmissionDirection = Enum.NormalId.Bottom,
+		Shape = Enum.ParticleEmitterShape.Box,
+		ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume,
+		Acceleration = Vector3.new(0.8, -0.4, 0.4),
+		Rotation = NumberRange.new(0, 360),
+		RotSpeed = NumberRange.new(-60, 60),
+	})
+end
+
+-- A stone lantern: a footing, a short pillar, a lit box and a wide cap, on `top`
+function Decor.StoneLantern(parent: Instance, top: Vector3)
+	local base = CFrame.new(top)
+	Decor.Piece(parent, "SmoothStone", Vector3.new(1.8, 0.5, 1.8), base * CFrame.new(0, 0.25, 0))
+	Decor.Piece(parent, "Cobblestone", Vector3.new(0.8, 2, 0.8), base * CFrame.new(0, 1.5, 0))
+	Decor.Piece(parent, "SmoothStone", Vector3.new(1.6, 0.35, 1.6), base * CFrame.new(0, 2.65, 0))
+	local glow = part(parent, "Lantern", Vector3.new(1, 1, 1), base * CFrame.new(0, 3.3, 0), GLOW, Enum.Material.Neon)
+	light(glow, 16, 1)
+	Decor.Piece(parent, "SmoothStone", Vector3.new(2.4, 0.4, 2.4), base * CFrame.new(0, 4, 0))
+	Decor.Piece(parent, "SmoothStone", Vector3.new(0.8, 0.5, 0.8), base * CFrame.new(0, 4.4, 0))
+end
+
+-- A lily pad on a water surface, maybe with a flower
+function Decor.LilyPad(parent: Instance, surface: Vector3, flower: Color3?)
+	local pad = part(
+		parent,
+		"LilyPad",
+		Vector3.new(1.4, 0.1, 1.4),
+		CFrame.new(surface + Vector3.new(0, 0.05, 0)),
+		Color3.fromRGB(70, 140, 60)
+	)
+	pad.CastShadow = false
+	pad.CanCollide = false
+	if flower then
+		part(parent, "Bloom", Vector3.new(0.45, 0.35, 0.45), CFrame.new(surface + Vector3.new(0.2, 0.25, 0.1)), flower).CanCollide =
+			false
+	end
+end
+
+-- A palm tree on `top`: a ringed trunk curving up, a crown of drooping fronds, coconuts
+function Decor.PalmTree(parent: Instance, top: Vector3, height: number, lean: number)
+	local bark, ring = Color3.fromRGB(150, 116, 74), Color3.fromRGB(118, 88, 54)
+	local at = CFrame.new(top) * CFrame.Angles(0, lean, 0)
+	local segments = math.max(3, math.round(height / 2.2))
+	local step = height / segments
+	for i = 0, segments - 1 do
+		-- Each segment tilts a little more, so the trunk curves
+		at = at * CFrame.Angles(math.rad(-4 - i), 0, 0)
+		part(
+			parent,
+			"PalmTrunk",
+			Vector3.new(1.3 - i * 0.06, step, 1.3 - i * 0.06),
+			at * CFrame.new(0, step / 2, 0),
+			if i % 2 == 0 then bark else ring,
+			Enum.Material.Wood
+		)
+		at = at * CFrame.new(0, step, 0)
+	end
+	local crown = at.Position
+	for i = 1, 7 do
+		local frond = CFrame.new(crown) * CFrame.Angles(0, i * math.pi * 2 / 7, 0) * CFrame.Angles(math.rad(-20), 0, 0)
+		local leaf = part(
+			parent,
+			"Frond",
+			Vector3.new(1.4, 0.15, 6),
+			frond * CFrame.new(0, 0, -3) * CFrame.Angles(math.rad(-18), 0, 0),
+			Color3.fromRGB(68, 150, 58),
+			Enum.Material.LeafyGrass
+		)
+		leaf.CanCollide = false
+	end
+	for i = 1, 3 do
+		part(
+			parent,
+			"Coconut",
+			Vector3.new(0.7, 0.7, 0.7),
+			CFrame.new(crown + Vector3.new(math.cos(i * 2.1) * 0.6, -0.5, math.sin(i * 2.1) * 0.6)),
+			Color3.fromRGB(102, 72, 40)
+		).Shape =
+			Enum.PartType.Ball
+	end
+end
+
+-- A cactus on `top`: a ribbed green column, maybe with arms
+function Decor.Cactus(parent: Instance, top: Vector3, height: number, arms: number)
+	local green, dark = Color3.fromRGB(84, 150, 64), Color3.fromRGB(56, 112, 46)
+	local base = CFrame.new(top)
+	part(
+		parent,
+		"Cactus",
+		Vector3.new(1.4, height, 1.4),
+		base * CFrame.new(0, height / 2, 0),
+		green,
+		Enum.Material.Grass
+	)
+	part(
+		parent,
+		"CactusRib",
+		Vector3.new(1.5, height - 0.2, 0.3),
+		base * CFrame.new(0, height / 2, 0),
+		dark,
+		Enum.Material.Grass
+	)
+	for i = 1, arms do
+		local side = if i == 1 then 1 else -1
+		local y = height * (0.35 + 0.15 * i)
+		part(
+			parent,
+			"CactusArm",
+			Vector3.new(1.4, 0.9, 0.9),
+			base * CFrame.new(side * 1.1, y, 0),
+			green,
+			Enum.Material.Grass
+		)
+		part(
+			parent,
+			"CactusArm",
+			Vector3.new(0.9, 1.8, 0.9),
+			base * CFrame.new(side * 1.6, y + 1.2, 0),
+			green,
+			Enum.Material.Grass
+		)
+	end
+end
+
+-- A carved face glowing on a pumpkin block's side: `at` is the middle of that side,
+-- `out` points away from it
+function Decor.JackOLantern(parent: Instance, at: Vector3, out: Vector3)
+	local frame = CFrame.lookAt(at + out * 0.06, at + out * 2)
+	local glow = Color3.fromRGB(255, 196, 70)
+	for _, x in { -0.65, 0.65 } do
+		part(parent, "Eye", Vector3.new(0.6, 0.55, 0.1), frame * CFrame.new(x, 0.45, 0), glow, Enum.Material.Neon)
+	end
+	part(parent, "Nose", Vector3.new(0.3, 0.3, 0.1), frame * CFrame.new(0, 0, 0), glow, Enum.Material.Neon)
+	local mouth =
+		part(parent, "Mouth", Vector3.new(1.7, 0.45, 0.1), frame * CFrame.new(0, -0.6, 0), glow, Enum.Material.Neon)
+	light(mouth, 12, 1)
+end
+
 -- Makes a model turn around its pivot's Z axis on every player's screen
 -- (client/AmbientController), `speed` degrees per second
 function Decor.Spin(model: Model, speed: number)

@@ -100,6 +100,38 @@ local function plotState(data: DataService.Data, key: string): (Crops.Crop?, num
 end
 
 -- Swaps the crop model shown in the planter when the growth stage changes
+-- Ripe pumpkins and melons are their block, with a leaf beside them (no prop model)
+local BLOCK_CROPS: { [string]: string } = { Crop_Pumpkin = "Pumpkin", Crop_Melon = "Melon" }
+
+local function blockCrop(blockType: string, base: Vector3, parent: Instance): Model?
+	local folder = ReplicatedStorage:FindFirstChild("Blocks")
+	local template = folder and folder:FindFirstChild(blockType)
+	if not template or not template:IsA("BasePart") then
+		return nil
+	end
+	local model = Instance.new("Model")
+	model.Name = `Crop_{blockType}`
+	local size = 3.2 -- scaled down with the other crops (CROP_SCALE)
+	local fruit = template:Clone()
+	fruit.Size = Vector3.one * size
+	fruit.CFrame = CFrame.new(base + Vector3.new(0, size / 2, 0)) * template.CFrame.Rotation
+	fruit.Anchored = true
+	fruit.CanCollide = false
+	fruit.Parent = model
+	local leaf = Instance.new("Part")
+	leaf.Name = "Leaf"
+	leaf.Size = Vector3.new(1.6, 0.15, 1.1)
+	leaf.CFrame = CFrame.new(base + Vector3.new(1.5, 0.15, 0.6)) * CFrame.Angles(0, 0.5, 0.2)
+	leaf.Color = Color3.fromRGB(70, 140, 60)
+	leaf.Material = Enum.Material.LeafyGrass
+	leaf.Anchored = true
+	leaf.CanCollide = false
+	leaf.Parent = model
+	model.WorldPivot = CFrame.new(base)
+	model.Parent = parent
+	return model
+end
+
 local function setVisual(plot: CropSpot, stage: string?, scale: number)
 	if plot.Stage ~= stage then
 		if plot.Visual then
@@ -109,6 +141,9 @@ local function setVisual(plot: CropSpot, stage: string?, scale: number)
 		plot.Stage = stage
 		if stage then
 			local visual = Props.Place(stage, plot.Base.Position, nil, plot.Model)
+			if not visual and BLOCK_CROPS[stage] then
+				visual = blockCrop(BLOCK_CROPS[stage], plot.Base.Position, plot.Model)
+			end
 			-- Clicks go through the crop to the farmland underneath
 			if visual then
 				for _, part in visual:GetDescendants() do

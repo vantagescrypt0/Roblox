@@ -31,6 +31,10 @@ local Items: { [string]: Item } = {
 	Grass = { Name = "Grass Block", Icon = "🟩", Value = 1, SellPrice = 0, BuyPrice = 3, Block = "Grass" },
 	Dirt = { Name = "Dirt", Icon = "🟫", Value = 1, SellPrice = 0, BuyPrice = 2, Block = "Dirt" },
 	Wood = { Name = "Wood", Icon = "🌲", Value = 2, SellPrice = 1, Block = "Wood" },
+	-- Zone woods from the Woodcutting World (Woodcutting 10 / 20 / 30); the Lumberjack buys them
+	BirchWood = { Name = "Birch Wood", Icon = "🪵", Value = 4, SellPrice = 2, Block = "BirchWood" },
+	SpruceWood = { Name = "Spruce Wood", Icon = "🪵", Value = 7, SellPrice = 3, Block = "SpruceWood" },
+	CherryWood = { Name = "Cherry Wood", Icon = "🌸", Value = 12, SellPrice = 6, Block = "CherryWood" },
 	Planks = { Name = "Planks", Icon = "🟧", SellPrice = 0, Block = "Planks" },
 	Stone = { Name = "Stone", Icon = "⛰️", Value = 2, SellPrice = 1, Block = "Stone" },
 	Furnace = { Name = "Furnace", Icon = "🔥", SellPrice = 0, Block = "Furnace" },
@@ -74,6 +78,9 @@ local Items: { [string]: Item } = {
 	Coal = { Name = "Coal", Icon = "⚫", Value = 5, SellPrice = 2, BuyPrice = 10, Model = "Coal" },
 	RawIron = { Name = "Raw Iron", Icon = "🔸", Value = 10, SellPrice = 5, Model = "RawIron" },
 	IronIngot = { Name = "Iron Ingot", Icon = "⬜", SellPrice = 8, Model = "IronIngot" },
+	-- Gold, from deep in the Mining World's cave
+	RawGold = { Name = "Raw Gold", Icon = "🟡", Value = 25, SellPrice = 12, Model = "RawGold" },
+	GoldIngot = { Name = "Gold Ingot", Icon = "🟨", SellPrice = 16, Model = "GoldIngot" },
 
 	-- Crops and seeds
 	WheatSeeds = { Name = "Wheat Seeds", Icon = "🌱", Value = 12, SellPrice = 0, BuyPrice = 12, Model = "WheatSeeds" },
@@ -96,6 +103,24 @@ local Items: { [string]: Item } = {
 		Model = "PotatoSeeds",
 	},
 	Potato = { Name = "Potato", Icon = "🥔", Value = 24, SellPrice = 12, Model = "Potato" },
+	PumpkinSeeds = {
+		Name = "Pumpkin Seeds",
+		Icon = "🌱",
+		Value = 200,
+		SellPrice = 0,
+		BuyPrice = 200,
+		Model = "PumpkinSeeds",
+	},
+	Pumpkin = { Name = "Pumpkin", Icon = "🎃", Value = 40, SellPrice = 20, Model = "Pumpkin" },
+	MelonSeeds = {
+		Name = "Melon Seeds",
+		Icon = "🌱",
+		Value = 320,
+		SellPrice = 0,
+		BuyPrice = 320,
+		Model = "MelonSeeds",
+	},
+	Melon = { Name = "Melon", Icon = "🍉", Value = 64, SellPrice = 32, Model = "Melon" },
 	-- Warzone-only seeds (found in chests, never sold by the Merchant)
 	GlowberrySeeds = { Name = "Glowberry Seeds", Icon = "✨", Value = 250, SellPrice = 0, Model = "GlowberrySeeds" },
 	Glowberry = { Name = "Glowberry", Icon = "🍇", Value = 70, SellPrice = 35, Model = "Glowberry" },

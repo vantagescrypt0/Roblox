@@ -1,10 +1,12 @@
 --!strict
 -- The shared resource worlds (Places: Mining, Woodcutting, Farming). Each is its own
 -- place, reached through its portal in Town, with resources everyone on the server shares.
--- Each world's scenery is built by its own module in server/Worlds:
---   Mining       a quarry camp and a mountain with a mine in it (Worlds/Mining)
---   Woodcutting  a forest on rolling hills with a river and a lumber camp (Worlds/Woodcutting)
---   Farming      a farmstead with fields of wild crops, a barn and a windmill (Worlds/Farming)
+-- Each world is a group of floating islands joined by bridges, built by its own module in
+-- server/Worlds:
+--   Mining       a quarry camp and a great mountain with a cavern full of ore (Worlds/Mining)
+--   Woodcutting  oak woods, a birch grove, snowy pines and cherry blossom hills (Worlds/Woodcutting)
+--   Farming      wheat plains, veggie gardens, a pumpkin hollow and a melon oasis (Worlds/Farming)
+-- Each zone island has its own resource, gated by a skill level (BlockService, Crops).
 -- This service gives them the tools (Worlds/Context) and runs what they make:
 --   nodes   resource blocks (rock, ore, logs, leaves): mine one and it grows back in the
 --           same spot after a while (Blocks.NodeRespawn), so a world never runs out
@@ -51,7 +53,8 @@ local TITLES: { [string]: string } = {
 	Farming = "FARMING WORLD",
 }
 
-type Builder = { Radius: number, Haze: number, Caves: boolean?, Build: (ctx: Context.Context) -> () }
+-- SouthZ: where the arrival portals stand (x = 0); the builder puts an island under them
+type Builder = { SouthZ: number, Seed: number, Haze: number, Caves: boolean?, Build: (ctx: Context.Context) -> () }
 local BUILDERS: { [string]: Builder } = {
 	Mining = require(script.Parent.Parent.Worlds.Mining) :: any,
 	Woodcutting = require(script.Parent.Parent.Worlds.Woodcutting) :: any,
@@ -82,98 +85,6 @@ local lastNotice: { [Player]: number } = {}
 local lastClick: { [Player]: number } = {}
 local key = BlockWorld.key
 
--- Building tools ---------------------------------------------------------------------
-
-local function makeContext(radius: number, seed: number): Context.Context
-	local rng = Random.new(seed)
-	local edgeNoise: { number } = {}
-	for i = 0, 23 do
-		edgeNoise[i] = rng:NextNumber(-1.5, 1.5)
-	end
-	local function edgeRadius(x: number, z: number): number
-		local t = (math.atan2(z, x) / (2 * math.pi) + 0.5) * 24
-		local i0 = math.floor(t) % 24
-		local f = t - math.floor(t)
-		return radius + edgeNoise[i0] * (1 - f) + edgeNoise[(i0 + 1) % 24] * f
-	end
-	local heights: { [string]: number } = {}
-
-	local ctx = {} :: Context.Context
-	ctx.World = world
-	ctx.Decor = decor
-	ctx.Rng = rng
-	ctx.Radius = radius
-	ctx.SouthZ = southZ
-
-	function ctx.Set(x, y, z, block)
-		local k = key(x, y, z)
-		BlockWorld.setRaw(world, x, y, z, block)
-		world.Protected[k] = true
-		nodes[k] = nil
-	end
-	function ctx.SetFree(x, y, z, block)
-		if not world.Cells[key(x, y, z)] then
-			ctx.Set(x, y, z, block)
-		end
-	end
-	function ctx.Node(x, y, z, block)
-		local k = key(x, y, z)
-		if world.Cells[k] then
-			return
-		end
-		BlockWorld.setRaw(world, x, y, z, block)
-		world.Protected[k] = nil
-		nodes[k] = { X = x, Y = y, Z = z, Block = block }
-	end
-	function ctx.Field(x, y, z, cropId)
-		ctx.Set(x, y, z, "Farmland")
-		-- Crops need the space above free
-		world.Protected[key(x, y + 1, z)] = true
-		fields[key(x, y, z)] = {
-			Crop = Crops.ById[cropId],
-			ReadyAt = 0,
-			Model = world.Model,
-			Base = CFrame.new(BlockWorld.position(world, x, y, z) + Vector3.new(0, SIZE / 2, 0)),
-			Stage = nil,
-			Visual = nil,
-		}
-	end
-	function ctx.Top(x, y, z)
-		return BlockWorld.position(world, x, y, z) + Vector3.new(0, SIZE / 2, 0)
-	end
-	function ctx.Hash(x, y, z)
-		return Random.new(x * 73856093 + y * 19349663 + z * 83492791 + seed):NextNumber()
-	end
-	function ctx.Inside(x, z, margin)
-		return math.sqrt(x * x + z * z) <= edgeRadius(x, z) - margin
-	end
-	function ctx.NearArrival(x, z, margin)
-		return z < southZ + 9 + margin and math.abs(x) < 9 + margin
-	end
-	function ctx.HeightAt(x, z)
-		return heights[`{x},{z}`] or 0
-	end
-	function ctx.Ground(column)
-		for x = -radius - 2, radius + 2 do
-			for z = -radius - 2, radius + 2 do
-				local distance = math.sqrt(x * x + z * z)
-				local edge = edgeRadius(x, z)
-				if distance <= edge then
-					local block, height = column(x, z)
-					heights[`{x},{z}`] = height
-					ctx.Set(x, height, z, block)
-					local t = distance / edge
-					local depth = 2 + math.floor((1 - t) ^ 0.8 * 11) + (if (x * 7 + z * 13) % 3 == 0 then 1 else 0)
-					for y = height - 1, -depth, -1 do
-						ctx.Set(x, y, z, if y >= height - 2 then "Dirt" else "Stone")
-					end
-				end
-			end
-		end
-	end
-	return ctx
-end
-
 -- Arrival: a paved square at the south end with the portals home and to Town, lamps and
 -- a welcome sign
 local function buildArrival(ctx: Context.Context, kind: string)
@@ -189,19 +100,10 @@ local function buildArrival(ctx: Context.Context, kind: string)
 	end
 	Portal.addCells(world.Cells, world.Protected, -4, southZ)
 	Portal.addCells(world.Cells, world.Protected, 4, southZ)
-	for _, x in { -2, 2 } do
-		ctx.Set(x, 1, southZ + 9, "Wood")
-		ctx.Set(x, 2, southZ + 9, "Wood")
-	end
-	-- Nailed to the front of the two posts, facing new arrivals
-	Signs.Board(
-		decor,
-		"WelcomeSign",
-		TITLES[kind] or string.upper(kind),
-		BlockWorld.position(world, 0, 2.2, southZ + 9) - Vector3.new(0, 0, SIZE / 2 + 0.25),
-		-Vector3.zAxis,
-		6
-	)
+	-- A tall gateway on the square's north side, its sign well above everyone's heads
+	Signs.Gateway(decor, ctx.Set, function(x, y, z)
+		return BlockWorld.position(world, x, y, z)
+	end, 0, southZ + 9, -Vector3.zAxis, TITLES[kind] or string.upper(kind), 7)
 	for _, x in { -7, 7 } do
 		for y = 1, 3 do
 			ctx.Set(x, y, southZ + 6, "Wood")
@@ -242,15 +144,35 @@ local function build(kind: string)
 
 	local builder = BUILDERS[kind]
 	Ambience.Apply(builder.Haze, builder.Caves)
-	southZ = -(builder.Radius - 3)
-	local ctx = makeContext(builder.Radius, if kind == "Mining" then 11 elseif kind == "Woodcutting" then 22 else 33)
+	southZ = builder.SouthZ
+	local started = os.clock()
+	local ctx = Context.new(world, decor, builder.Seed, southZ)
+	-- The arrival square stays flat
+	ctx.Flatten(-10, southZ - 2, 10, southZ + 10, true)
 	builder.Build(ctx)
 	buildArrival(ctx, kind)
-	BlockWorld.drawAll(world)
+	for k, spot in ctx.Nodes do
+		nodes[k] = { X = spot.X, Y = spot.Y, Z = spot.Z, Block = spot.Block }
+	end
+	for k, spot in ctx.Fields do
+		fields[k] = {
+			Crop = Crops.ById[spot.Crop],
+			ReadyAt = 0,
+			Model = world.Model,
+			Base = CFrame.new(ctx.Top(spot.X, spot.Y, spot.Z)),
+			Stage = nil,
+			Visual = nil,
+		}
+	end
+	BlockWorld.drawAll(world, true)
 	portalFields()
 	for _, field in fields do
 		FarmService.ShowCrop(field, field.Crop, 1)
 	end
+	print(
+		`[World] {kind}: built in {string.format("%.1f", os.clock() - started)}s,`,
+		`{BlockWorld.partCount(world)} block parts, {#decor:GetDescendants()} decor instances`
+	)
 end
 
 -- Gathering ----------------------------------------------------------------------

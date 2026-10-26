@@ -22,8 +22,8 @@ local List: { Shop } = {
 		Id = "Merchant",
 		Name = "Merchant",
 		Tagline = "Buys crops, sells seeds",
-		Buys = { "Wheat", "Carrot", "Potato", "Glowberry" },
-		Sells = { "WheatSeeds", "CarrotSeeds", "PotatoSeeds" },
+		Buys = { "Wheat", "Carrot", "Potato", "Pumpkin", "Melon", "Glowberry" },
+		Sells = { "WheatSeeds", "CarrotSeeds", "PotatoSeeds", "PumpkinSeeds", "MelonSeeds" },
 		SellAll = true,
 		Greetings = {
 			"Hrmm! Got crops to sell?",
@@ -37,7 +37,7 @@ local List: { Shop } = {
 		Id = "Lumberjack",
 		Name = "Lumberjack",
 		Tagline = "Buys wood, sells saplings",
-		Buys = { "Wood" },
+		Buys = { "Wood", "BirchWood", "SpruceWood", "CherryWood" },
 		Sells = { "Sapling" },
 		SellAll = false,
 		Greetings = {
@@ -45,13 +45,14 @@ local List: { Shop } = {
 			"Fell a tree, plant a sapling. That's the rule.",
 			"The tallest oaks grow in the Woodcutting World.",
 			"Nothing smells better than fresh-cut oak.",
+			"Cherry wood from the blossom hills? I'll pay well for that.",
 		},
 	},
 	{
 		Id = "Miner",
 		Name = "Miner",
 		Tagline = "Buys stone and ore, sells coal",
-		Buys = { "Stone", "Coal", "RawIron", "IronIngot" },
+		Buys = { "Stone", "Coal", "RawIron", "IronIngot", "RawGold", "GoldIngot" },
 		Sells = { "Coal" },
 		SellAll = false,
 		Greetings = {
@@ -59,6 +60,7 @@ local List: { Shop } = {
 			"The Mining World's full of iron, if you've a stone pickaxe.",
 			"Mind the dust, friend.",
 			"Smelted ingots fetch more than raw iron.",
+			"There's gold deep in that cave. Bring an iron pickaxe.",
 		},
 	},
 	{
