@@ -1,31 +1,39 @@
 --!strict
--- Market window: Sell tab (crops and resources for coins) and Seeds tab (buy seeds).
--- The server checks every sale and purchase.
+-- A shopkeeper's window (Shops.luau): a Sell tab for what they buy and a Buy tab for what
+-- they sell (a shop with only one of those shows just that tab). The Merchant's Sell tab
+-- also has "Sell all crops". The server checks every sale and purchase.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Shops = require(ReplicatedStorage.Shared.Shops)
 local ItemIcon = require(script.Parent.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.Parent.UI.Theme)
 local Window = require(script.Parent.Parent.UI.Window)
 
 local C = Theme.Color
 
-local SELL_ORDER = { "Wheat", "Carrot", "Potato", "Glowberry", "Wood", "Stone", "Coal", "RawIron", "IronIngot" }
-
-local MarketWindow = {}
+local ShopWindow = {}
 
 local window: Window.Window
 local sellPage: Frame
-local seedsPage: Frame
+local buyPage: Frame
 local sellAll: Theme.Button
 local sellList: ScrollingFrame
-local seedList: ScrollingFrame
+local buyList: ScrollingFrame
+local tabs: Frame
 local tabButtons: { [string]: Theme.Button } = {}
+local shop: Shops.Shop = Shops.List[1]
 local currentTab = "Sell"
 local state: any = nil
+
+-- Seeds: which crop each one grows
+local cropOfSeed: { [string]: Crops.Crop } = {}
+for _, crop in Crops.List do
+	cropOfSeed[crop.Seed] = crop
+end
 
 local function row(parent: Instance, order: number): Frame
 	local frame = Theme.card(parent, UDim2.new(1, 0, 0, 68))
@@ -68,17 +76,29 @@ local function buttonPair(
 	second.SetEnabled(enabledB)
 end
 
+local function emptyNote(parent: Instance, text: string)
+	local empty = Theme.title(parent, text, 20, C.InkMuted)
+	empty.Size = UDim2.new(1, 0, 0, 64)
+	empty.TextWrapped = true
+	empty.TextXAlignment = Enum.TextXAlignment.Center
+end
+
 local function renderSell()
 	Window.clear(sellList)
-	local cropTotal = 0
-	for _, crop in Crops.List do
-		cropTotal += (state.Items[crop.Product] or 0) * Items[crop.Product].SellPrice
+	sellAll.Holder.Visible = shop.SellAll
+	sellList.Size = if shop.SellAll then UDim2.new(1, 0, 1, -58) else UDim2.fromScale(1, 1)
+	sellList.Position = if shop.SellAll then UDim2.fromOffset(0, 58) else UDim2.new()
+	if shop.SellAll then
+		local total = 0
+		for _, itemId in shop.Buys do
+			total += (state.Items[itemId] or 0) * Items[itemId].SellPrice
+		end
+		sellAll.SetText(if total > 0 then `Sell all crops for {Theme.coins(total)}` else "No crops to sell yet")
+		sellAll.SetEnabled(total > 0)
 	end
-	sellAll.SetText(if cropTotal > 0 then `Sell all crops for {Theme.coins(cropTotal)}` else "No crops to sell yet")
-	sellAll.SetEnabled(cropTotal > 0)
 
 	local shown = 0
-	for index, itemId in SELL_ORDER do
+	for index, itemId in shop.Buys do
 		local count = state.Items[itemId] or 0
 		local item = Items[itemId]
 		if count > 0 then
@@ -87,18 +107,18 @@ local function renderSell()
 			iconBox(frame, itemId)
 			labels(frame, item.Name, `{count} in your bag · {Theme.coins(item.SellPrice)} each`)
 			buttonPair(frame, "Sell 1", "Sell all", C.Ochre, function()
-				Remotes.Sell:FireServer(itemId, 1)
+				Remotes.Sell:FireServer(shop.Id, itemId, 1)
 			end, function()
-				Remotes.Sell:FireServer(itemId, "all")
+				Remotes.Sell:FireServer(shop.Id, itemId, "all")
 			end, true, true)
 		end
 	end
 	if shown == 0 then
-		local empty =
-			Theme.title(sellList, "Nothing to sell yet. Harvest crops or gather wood and stone!", 20, C.InkMuted)
-		empty.Size = UDim2.new(1, 0, 0, 64)
-		empty.TextWrapped = true
-		empty.TextXAlignment = Enum.TextXAlignment.Center
+		local names = {}
+		for _, itemId in shop.Buys do
+			table.insert(names, Items[itemId].Name)
+		end
+		emptyNote(sellList, `Nothing to sell yet. The {shop.Name} buys {table.concat(names, ", ")}.`)
 	end
 end
 
@@ -111,31 +131,36 @@ local function formatTime(seconds: number): string
 	return if minutes == math.floor(minutes) then `{minutes} min` else `{string.format("%.1f", minutes)} min`
 end
 
-local function renderSeeds()
-	Window.clear(seedList)
+local function renderBuy()
+	Window.clear(buyList)
 	local farmingLevel = state.Skills.Farming and state.Skills.Farming.Level or 1
-	for index, crop in Crops.List do
-		local seed = Items[crop.Seed]
-		local price = seed.BuyPrice
+	for index, itemId in shop.Sells do
+		local item = Items[itemId]
+		local price = item.BuyPrice
 		if not price then
 			continue
 		end
-		local unlocked = farmingLevel >= crop.FarmingLevel
-		local frame = row(seedList, index)
-		iconBox(frame, crop.Product)
-		labels(
-			frame,
-			seed.Name,
-			if unlocked
-				then `{Theme.coins(price)} · regrows in {formatTime(crop.GrowTime)} · sells {Items[crop.Product].SellPrice}`
-				else `Needs Farming level {crop.FarmingLevel}`,
-			if unlocked then nil else C.Red
-		)
-		buttonPair(frame, "Buy 1", "Buy 5", C.Green, function()
-			Remotes.BuySeed:FireServer(crop.Seed, 1)
+		local crop = cropOfSeed[itemId]
+		local unlocked = not crop or farmingLevel >= crop.FarmingLevel
+		local subtitle
+		if crop and not unlocked then
+			subtitle = `Needs Farming level {crop.FarmingLevel}`
+		elseif crop then
+			subtitle =
+				`{Theme.coins(price)} · regrows in {formatTime(crop.GrowTime)} · sells {Items[crop.Product].SellPrice}`
+		else
+			subtitle = `{Theme.coins(price)} each · {state.Items[itemId] or 0} in your bag`
+		end
+		local frame = row(buyList, index)
+		iconBox(frame, if crop then crop.Product else itemId)
+		labels(frame, item.Name, subtitle, if unlocked then nil else C.Red)
+		-- Building blocks go by the stack
+		local many = if item.Block then 10 else 5
+		buttonPair(frame, "Buy 1", `Buy {many}`, C.Green, function()
+			Remotes.Buy:FireServer(shop.Id, itemId, 1)
 		end, function()
-			Remotes.BuySeed:FireServer(crop.Seed, 5)
-		end, unlocked and state.Coins >= price, unlocked and state.Coins >= price * 5)
+			Remotes.Buy:FireServer(shop.Id, itemId, many)
+		end, unlocked and state.Coins >= price, unlocked and state.Coins >= price * many)
 	end
 end
 
@@ -143,41 +168,58 @@ local function render()
 	if not state then
 		return
 	end
+	local canSell, canBuy = #shop.Buys > 0, #shop.Sells > 0
+	if currentTab == "Sell" and not canSell then
+		currentTab = "Buy"
+	elseif currentTab == "Buy" and not canBuy then
+		currentTab = "Sell"
+	end
+	tabButtons.Sell.Holder.Visible = canSell
+	tabButtons.Buy.Holder.Visible = canBuy
 	sellPage.Visible = currentTab == "Sell"
-	seedsPage.Visible = currentTab == "Seeds"
+	buyPage.Visible = currentTab == "Buy"
 	for name, button in tabButtons do
 		button.SetColor(if name == currentTab then C.WoodLight else C.Tan)
 	end
 	if currentTab == "Sell" then
 		renderSell()
 	else
-		renderSeeds()
+		renderBuy()
 	end
 end
 
-function MarketWindow.SetState(newState: any)
+function ShopWindow.SetState(newState: any)
 	state = newState
 	if window.IsOpen then
 		render()
 	end
 end
 
-function MarketWindow.Open()
+-- Opens the shop of a shopkeeper (a shop id from Shops.luau)
+function ShopWindow.Open(shopId: string)
+	local found = Shops.ById[shopId]
+	if not found then
+		return
+	end
+	if found ~= shop then
+		shop = found
+		currentTab = "Sell"
+	end
+	window.Title.Text = shop.Name
 	Window.open(window)
 end
 
-function MarketWindow.Start()
-	window = Window.new("MarketWindow", "Market", Vector2.new(620, 490))
+function ShopWindow.Start()
+	window = Window.new("ShopWindow", "Shop", Vector2.new(620, 490))
 	window.OnOpen = render
 
-	-- Tabs
-	local tabs = Theme.make("Frame", {
+	tabs = Theme.make("Frame", {
 		Size = UDim2.new(1, 0, 0, 44),
 		BackgroundTransparency = 1,
 		Parent = window.Body,
 	})
 	Theme.list(tabs, Enum.FillDirection.Horizontal, 8)
-	for order, tab in { { "Sell", "Sell" }, { "Seeds", "Seeds" } } do
+	for order, tab in { { "Sell", "Sell" }, { "Buy", "Buy" } } do
 		local button = Theme.button(tabs, tab[2], C.Tan, UDim2.fromOffset(130, 40), function()
 			currentTab = tab[1]
 			render()
@@ -195,19 +237,19 @@ function MarketWindow.Start()
 		Parent = window.Body,
 	})
 	sellAll = Theme.button(sellPage, "Sell all crops", C.Ochre, UDim2.new(1, -10, 0, 48), function()
-		Remotes.Sell:FireServer("*")
+		Remotes.Sell:FireServer(shop.Id, "*")
 	end)
 	sellAll.Label.TextSize = 19
 	sellList = Window.scrollList(sellPage, UDim2.new(1, 0, 1, -58), UDim2.fromOffset(0, 58))
 
-	seedsPage = Theme.make("Frame", {
+	buyPage = Theme.make("Frame", {
 		Position = UDim2.fromOffset(0, 52),
 		Size = UDim2.new(1, 0, 1, -52),
 		BackgroundTransparency = 1,
 		Visible = false,
 		Parent = window.Body,
 	})
-	seedList = Window.scrollList(seedsPage, UDim2.fromScale(1, 1))
+	buyList = Window.scrollList(buyPage, UDim2.fromScale(1, 1))
 end
 
-return MarketWindow
+return ShopWindow

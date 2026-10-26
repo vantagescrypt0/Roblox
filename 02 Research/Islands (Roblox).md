@@ -23,6 +23,8 @@ Personal floating island, farming, trees and mining, crafting stations and smelt
 9. **Collection quests:** fossil pieces hidden across islands complete a T-Rex skeleton decoration.
 10. **Seasonal scarcity:** event items (e.g., Witch Trophy ~6M coins on value lists) became status symbols.
 
+11. **The Hub** (read 2026-10-25): reached through your island's portal; a central area with a large portal back home; villagers (merchants) each run one trade in front of their own building: Cletus (farmer), John (blocks), Jade (miner), Thomas (fisherman, by the lake and docks), Taliyah (animals, barn), Arius (totems), Jack (mechanic), Dom (wholesaler), Petur (baker), Fulco (florist) and more. Side portals at path ends (Slime Island next to Ivon, Maple Isles at the end of a path); event portals open in the central area. A mining area behind Arius has respawning stone, coal and iron rocks. Hub and islands were split onto separate servers on 2020-11-01. Our version → [[Town & Worlds]].
+
 Picks for our game → [[Mechanics to Borrow]].
 
 ## Your experience
@@ -36,6 +38,8 @@ Picks for our game → [[Mechanics to Borrow]].
 ## Sources
 - https://roblox.fandom.com/wiki/Easy.gg/Islands
 - https://robloxislands.fandom.com/wiki/Skyblock_Roblox_Wiki
+- https://robloxislands.fandom.com/wiki/Hub
+- https://robloxislands.fandom.com/wiki/Villager
 - https://profitable.app/roblox/games/islands
 - https://rowatcher.com/games/1659645941/islands
 - https://progameguides.com/roblox/roblox-skyblock-how-to-use-totems/

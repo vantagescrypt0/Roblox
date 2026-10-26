@@ -1,6 +1,7 @@
 --!strict
 -- Trading with another player in Town. Walk up to them and use their Trade prompt (T, or
--- tap it); they get an invite card. In the window, click an item in your bag to move one
+-- tap it); they get an invite card. Both of you need player level Leveling.TradeLevel
+-- (until then the prompt says so, and the server explains). In the window, click an item in your bag to move one
 -- into the trade (click it under "You give" to take one back), or pick it and use the
 -- buttons. Both press Accept, a short countdown runs, then the server swaps everything.
 -- The server checks every step: this window only shows what it says and asks for changes.
@@ -12,6 +13,7 @@ local TweenService = game:GetService("TweenService")
 local Economy = require(ReplicatedStorage.Shared.Economy)
 local ItemOrder = require(ReplicatedStorage.Shared.ItemOrder)
 local Items = require(ReplicatedStorage.Shared.Items)
+local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
@@ -309,6 +311,12 @@ local function setPromptsEnabled(enabled: boolean)
 	end
 end
 
+-- "Trade", or the level it unlocks at while you're below it
+local function promptText(): string
+	local level = if state then state.Level else 1
+	return if level >= Leveling.TradeLevel then "Trade" else `Trade at level {Leveling.TradeLevel}`
+end
+
 local function hideInvite()
 	inviteFrom = nil
 	inviteToken += 1
@@ -383,7 +391,7 @@ local function addPrompt(player: Player, character: Model)
 		return
 	end
 	local prompt = Instance.new("ProximityPrompt")
-	prompt.ActionText = "Trade"
+	prompt.ActionText = promptText()
 	prompt.ObjectText = player.DisplayName
 	prompt.KeyboardKeyCode = Enum.KeyCode.T
 	prompt.GamepadKeyCode = Enum.KeyCode.ButtonY
@@ -621,6 +629,10 @@ end
 
 function TradeWindow.SetState(newState: any)
 	state = newState
+	local text = promptText()
+	for _, prompt in prompts do
+		prompt.ActionText = text
+	end
 	if window.IsOpen then
 		TradeWindow.Render()
 	end

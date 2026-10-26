@@ -1,10 +1,10 @@
 --!strict
--- Planting trees on your island. Leaves from the island's trees sometimes drop a Sapling
--- (BlockService); hold one and right-click (or tap) grass or dirt with room above it to
--- plant it. It grows into a tree after a few minutes (IslandService) and from then on
--- works like the island's own trees: chop it and the logs grow back. How many trees you
--- can plant grows with Woodcutting (Leveling.PlantedTrees). Click a sapling, or
--- right-click a tree you planted while holding an axe, to dig it up and get the sapling back.
+-- Planting trees on your island. Leaves sometimes drop a Sapling, felling a tree always
+-- gives at least one (BlockService), and the Lumberjack in Town sells them. Hold one and
+-- right-click (or tap) grass or dirt with room above it to plant it. It grows into a tree
+-- after a few minutes (IslandService); chop it down for its wood and it's gone, so plant
+-- the saplings it gives you. How many planted trees you can have at once grows with
+-- Woodcutting (Leveling.PlantedTrees). Click a growing sapling to dig it up and get it back.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -12,7 +12,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local Tools = require(ReplicatedStorage.Shared.Tools)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -59,7 +58,11 @@ local function onPlant(player: Player, x: unknown, y: unknown, z: unknown)
 	local level = ProgressionService.GetSkillLevel(player, "Woodcutting")
 	local limit = Leveling.PlantedTrees(level)
 	if IslandService.PlantedCount(player) >= limit then
-		StateService.Notify(player, `Woodcutting level {level} lets you plant {limit} trees. Level up for more!`, "bad")
+		StateService.Notify(
+			player,
+			`Woodcutting level {level} lets you have {limit} planted trees at once. Fell one, or level up for more!`,
+			"bad"
+		)
 		return
 	end
 	local planted, reason = IslandService.PlantSapling(player, cx, cy, cz)
@@ -75,22 +78,9 @@ end
 
 local function onUproot(player: Player, x: unknown, y: unknown, z: unknown)
 	local ok, cx, cy, cz = checkCell(player, x, y, z)
-	local island = IslandService.GetIsland(player)
-	if not ok or not island then
-		return
-	end
-	-- A grown tree (a block) needs an axe; a sapling comes up by hand
-	local isBlock = BlockWorld.get(island.World, cx, cy, cz) ~= nil
-	local held = HotbarService.GetHeldItem(player)
-	local tool = held and Tools.ByItem[held]
-	if isBlock and not (tool and tool.Kind == "Axe") then
-		return
-	end
-	if IslandService.Uproot(player, cx, cy, cz) then
+	if ok and IslandService.Uproot(player, cx, cy, cz) then
 		InventoryService.Add(player, "Sapling", 1)
 		StateService.Notify(player, "Dug it up. You got the sapling back", "info")
-	elseif isBlock then
-		StateService.Notify(player, "Only trees you planted can be dug up", "info")
 	end
 end
 

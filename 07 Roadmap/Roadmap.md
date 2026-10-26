@@ -25,7 +25,14 @@ No dates — quality over speed.
    - [x] Player trading in Town (2026-10-24): invite, two-step accept with countdown, value warning, trade log — see [[Economy & Values]]. Playtested in Studio with two players; not published yet
    - [x] Skills (2026-10-24): Mining, Woodcutting and Crafting join Farming and Combat; Skills window; Iron/Crystal tools need Crafting + their skill level; double drops for gathering skills. Playtested in Studio; not published yet — see [[Skills & Levels]]
    - [x] Hoes (2026-10-25): 4 tiers gated by Farming (+ Crafting), till grass/dirt into saved farm plots (more as Farming levels up), shovel undoes, hoe adds a double-crop bonus — playtested in Studio; not published yet. See [[Skills & Levels]]
-   - [x] Saplings (2026-10-25): leaves drop saplings; plant on grass/dirt, grows into a regrowing tree in 3 min; more trees as Woodcutting levels up; dig up your own with an axe — playtested in Studio; not published yet
+   - [x] Saplings (2026-10-25): leaves drop saplings; plant on grass/dirt, grows into a tree in 3 min; more trees as Woodcutting levels up — playtested in Studio; not published yet
+   - [x] Nodes rethink (2026-10-25): trees are chop-once (felled trees drop their leaves and give ≥1 sapling); only ores and crops grow back — playtested in Studio; not published yet
+   - [x] Trading needs level 5; items only (2026-10-25) — not published yet
+   - [x] Town hub (2026-10-25): Merchant, Lumberjack, Miner and Builder stalls around a plaza with a well; portal row to the worlds — playtested in Studio; not published yet. See [[Town & Worlds]]
+   - [x] Mining, Woodcutting and Farming worlds as their own places (2026-10-25) — each playtested in Studio; **not published: needs 3 new places in the experience**
+   - [ ] Publish everything (Island + Town + the 3 worlds, together), then put the world place ids in `Places.luau` and publish again
+   - [ ] Slaying World (PvE spawners) — its Town portal is boarded up until then
+   - [ ] Rare ores, trees and crops found outside the worlds (e.g. the Warzone); node items you can own and place
    - [ ] Add the Warzone to Town (when you're ready)
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?

@@ -1,14 +1,19 @@
 --!strict
--- Breaking and placing blocks on your own island. The client times "hold to break"
--- (Mining.luau: block toughness vs the tool you're holding); the server checks the island
--- is yours, the block is in reach, not protected, that you aren't breaking faster than
--- your tool allows, whether it drops (stone needs a pickaxe), and wears the tool down.
--- Mining a resource node (tree, boulder, ore) doesn't leave a saved hole: the node grows
--- back (IslandService), and nobody can build in its spot meanwhile.
--- Mining the island's own stone and ore trains Mining, chopping its trees trains
--- Woodcutting, and those skills give a growing chance of a double drop. Blocks you placed
--- give no XP and no bonus, so placing and re-mining can't farm XP or copy items.
+-- Breaking and placing blocks. On island servers that's your own island; in a resource
+-- world it's the shared world (WorldService hands BlockService an Area for it, and
+-- nobody can build there). The client times "hold to break" (Mining.luau: block
+-- toughness vs the tool you're holding); the server checks the block is in reach, not
+-- protected, that you aren't breaking faster than your tool allows, whether it drops
+-- (stone needs a pickaxe), and wears the tool down.
+-- Mining a resource node (a boulder or ore on your island, anything in a world) doesn't
+-- leave a saved hole: the node grows back, and nobody can build in its spot meanwhile.
+-- Chopping the last log of one of your island's trees fells it (IslandService): its
+-- leaves fall and you get saplings for them, always at least one.
+-- Mining natural stone and ore trains Mining, chopping natural trees trains Woodcutting,
+-- and those skills give a growing chance of a double drop. Blocks you placed give no XP
+-- and no bonus, so placing and re-mining can't farm XP or copy items.
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
@@ -25,7 +30,8 @@ local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
 local PLACE_COOLDOWN = 0.12
--- Chance that the island's leaves drop a sapling (TreeService plants it)
+-- Chance that a natural leaf block drops a sapling (TreeService plants it); a felled
+-- tree's falling leaves roll it too
 local SAPLING_CHANCE = 0.08
 -- Building area around the island (in blocks)
 local MAX_HEIGHT, MAX_DEPTH, EXTRA_RADIUS = 40, 40, 12
@@ -39,13 +45,16 @@ local GATHER: { [string]: { Skill: string, XP: number, PlayerXP: number } } = {
 	Wood = { Skill = "Woodcutting", XP = 6, PlayerXP = 2 },
 }
 
--- Block types some item can place (so a block of that type might be player-made)
-local placeable: { [string]: boolean } = {}
-for _, item in Items do
-	if item.Block then
-		placeable[item.Block] = true
-	end
-end
+-- Where a player breaks blocks
+export type Area = {
+	World: BlockWorld.World,
+	-- Is this block part of the area as it was made (gives XP and double drops)? Asked
+	-- before the block is broken.
+	Natural: (x: number, y: number, z: number, blockType: string) -> boolean,
+	-- After it's broken: nodes start growing back, other changes are saved. Returns how
+	-- many leaves fell if this felled a tree.
+	Broken: (x: number, y: number, z: number) -> number?,
+}
 
 local BlockService = {}
 
@@ -53,11 +62,24 @@ local lastBreak: { [Player]: number } = {}
 local lastPlace: { [Player]: number } = {}
 local rng = Random.new()
 
--- Is this block part of the island itself: a resource node, or an ore vein (a block type
--- no item can place, still as the island was made)?
-local function isNatural(island: IslandService.Island, isNode: boolean, cellKey: string, blockType: string): boolean
-	return isNode or (not placeable[blockType] and island.Base[cellKey] == blockType)
+-- The player's own island, on island servers
+local function islandArea(player: Player): Area?
+	local island = IslandService.GetIsland(player)
+	if not island then
+		return nil
+	end
+	return {
+		World = island.World,
+		Natural = function(x, y, z, blockType)
+			return IslandService.IsNatural(player, x, y, z, blockType)
+		end,
+		Broken = function(x, y, z)
+			return IslandService.Broken(player, x, y, z)
+		end,
+	}
 end
+
+local areaFor: (Player) -> Area? = islandArea
 
 local function isCell(x: unknown, y: unknown, z: unknown): boolean
 	for _, value in { x, y, z } do
@@ -77,16 +99,33 @@ local function inReach(player: Player, world: BlockWorld.World, x: number, y: nu
 	return (root.Position - BlockWorld.position(world, x, y, z)).Magnitude <= Blocks.Reach + 3
 end
 
+-- Saplings for a felled tree: a roll for each leaf that fell, and always at least one
+local function treeFell(player: Player, leaves: number)
+	local saplings = 0
+	for _ = 1, leaves do
+		if rng:NextNumber() < SAPLING_CHANCE then
+			saplings += 1
+		end
+	end
+	saplings = math.max(saplings, 1)
+	InventoryService.Add(player, "Sapling", saplings)
+	StateService.Notify(
+		player,
+		`Timber! The tree fell. +{saplings} Sapling{if saplings > 1 then "s" else ""} to replant`,
+		"good"
+	)
+end
+
 local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	if not isCell(x, y, z) then
 		return
 	end
 	local cx, cy, cz = x :: number, y :: number, z :: number
-	local island = IslandService.GetIsland(player)
-	if not island then
+	local area = areaFor(player)
+	if not area then
 		return
 	end
-	local world = island.World
+	local world = area.World
 	local blockType = BlockWorld.get(world, cx, cy, cz)
 	local def = blockType and Blocks.Types[blockType]
 	if not blockType or not def or not def.Breakable or world.Protected[BlockWorld.key(cx, cy, cz)] then
@@ -104,14 +143,9 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	end
 	lastBreak[player] = now
 
-	local isNode = IslandService.GetNode(player, cx, cy, cz) ~= nil
-	local natural = isNatural(island, isNode, BlockWorld.key(cx, cy, cz), blockType)
+	local natural = area.Natural(cx, cy, cz, blockType)
 	BlockWorld.set(world, cx, cy, cz, nil)
-	if isNode then
-		IslandService.DepleteNode(player, cx, cy, cz)
-	else
-		IslandService.RecordChange(player, cx, cy, cz, nil)
-	end
+	local fellLeaves = area.Broken(cx, cy, cz)
 
 	local gather = if natural and canHarvest then GATHER[blockType] else nil
 	if def.Drop and canHarvest then
@@ -138,6 +172,9 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		InventoryService.Add(player, "Sapling", 1)
 		StateService.Notify(player, "Found a Sapling! Plant it on grass or dirt", "good")
 	end
+	if fellLeaves then
+		treeFell(player, fellLeaves)
+	end
 	if canHarvest and blockType == "Wood" then
 		QuestService.Record(player, "Chop")
 	elseif canHarvest and (blockType == "Stone" or blockType == "Cobblestone") then
@@ -146,18 +183,6 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		QuestService.Record(player, "Mine")
 		QuestService.Record(player, `Mine:{blockType}`)
 	end
-end
-
--- Is someone standing where the block would go?
-local function blockedByCharacter(position: Vector3): boolean
-	local size = Vector3.one * (Blocks.Size - 0.3)
-	for _, part in workspace:GetPartBoundsInBox(CFrame.new(position), size) do
-		local model = part:FindFirstAncestorOfClass("Model")
-		if model and model:FindFirstChildOfClass("Humanoid") then
-			return true
-		end
-	end
-	return false
 end
 
 local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemId: unknown)
@@ -186,7 +211,7 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	if now - (lastPlace[player] or 0) < PLACE_COOLDOWN then
 		return
 	end
-	if blockedByCharacter(BlockWorld.position(world, cx, cy, cz)) then
+	if BlockWorld.occupied(world, cx, cy, cz) then
 		return
 	end
 	if not InventoryService.Remove(player, itemId, 1) then
@@ -199,10 +224,16 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	QuestService.Record(player, "Place")
 end
 
-function BlockService.Start()
+-- Starts breaking and placing on islands. A resource world passes `worldArea` instead:
+-- breaking happens there, and placing is off.
+function BlockService.Start(worldArea: ((Player) -> Area?)?)
 	Remotes.BreakBlock.OnServerEvent:Connect(onBreak)
-	Remotes.PlaceBlock.OnServerEvent:Connect(onPlace)
-	game:GetService("Players").PlayerRemoving:Connect(function(player)
+	if worldArea then
+		areaFor = worldArea
+	else
+		Remotes.PlaceBlock.OnServerEvent:Connect(onPlace)
+	end
+	Players.PlayerRemoving:Connect(function(player)
 		lastBreak[player] = nil
 		lastPlace[player] = nil
 	end)

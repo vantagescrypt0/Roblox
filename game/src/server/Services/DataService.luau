@@ -20,8 +20,10 @@ local TEMPLATE = {
 		Tier = 1,
 		-- Blocks the player changed: "x,y,z" -> block type, or "Air" where they broke one
 		Blocks = {} :: { [string]: string },
-		-- Trees the player planted, by the cell they stand on (see IslandService)
+		-- Trees the player planted, by the cell they stand on, until they're felled (see IslandService)
 		Trees = {} :: { [string]: { PlantedAt: number, Height: number } },
+		-- The island's own trees the player has felled (they don't grow back), by the cell they stood on
+		Felled = {} :: { [string]: boolean },
 	},
 	-- item id -> count
 	Items = {} :: { [string]: number },
@@ -61,6 +63,7 @@ local TEMPLATE = {
 }
 
 export type Data = typeof(TEMPLATE)
+export type IslandData = typeof(TEMPLATE.Island)
 type PlayerCallback = (player: Player, data: Data) -> ()
 
 local DataService = {}

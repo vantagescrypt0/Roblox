@@ -15,6 +15,17 @@ Luau code for the game. Rojo syncs it into Roblox Studio.
 
 To build a place file from scratch: `rojo build -o game.rbxlx`
 
+## The places (one Rojo project each, same code)
+| Project | Place file | PlaceKind | What runs |
+|---|---|---|---|
+| `default.project.json` | `game.rbxlx` | Island | everyone's islands |
+| `town.project.json` | `town.rbxlx` | Town | the hub: shopkeepers, trading, world portals |
+| `mining.project.json` | `mining.rbxlx` | Mining | the Mining World |
+| `woodcutting.project.json` | `woodcutting.rbxlx` | Woodcutting | the Woodcutting World |
+| `farming.project.json` | `farming.rbxlx` | Farming | the Farming World |
+
+Build one with e.g. `rojo build mining.project.json -o mining.rbxlx` and open it in Studio to playtest that place on its own (teleports between places only work in the published game). Place ids live in `src/shared/Places.luau`; a world with id 0 isn't published yet, and its Town portal says so. When publishing, publish **all** places together (they share the Remotes list).
+
 ## Checks
 - Format: `stylua src`
 - Lint: `selene src`
@@ -34,6 +45,8 @@ While playtesting, switch Studio to the **Server** view and run in the command b
 - `game.ServerStorage.Dev:Invoke("Use", "IronPickaxe", 100)` (wear a tool down)
 - `game.ServerStorage.Dev:Invoke("Trades")` (print your saved trades)
 - `game.ServerStorage.Dev:Invoke("As", "Player2")` (later commands act on Player2)
+
+Trading needs player level 5 on both sides: `Dev:Invoke("Level", 5)` for each player.
 
 ## Testing trading (two players)
 Trading only runs in the Town place. Build it with `rojo build town.project.json -o town.rbxlx` and open that file in Studio (or `rojo serve town.project.json --port 34873` and connect the Rojo plugin to that port, if another `rojo serve` already uses 34872). Start **Test → Start Test Session → Server and Clients**, then **Test → Add Clients** in the Server window once per player. Use `Dev:Invoke("As", "Player1")` / `("As", "Player2")` from the Server command bar to give each player items.

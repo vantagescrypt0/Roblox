@@ -9,6 +9,7 @@
 -- Hoes make more: right-click grass or dirt with one to till it into farmland (up to
 -- Leveling.TilledPlots for your Farming level; saved as a block change). A shovel turns an
 -- empty tilled plot back into dirt. Holding a hoe while harvesting adds its tier's bonus.
+-- The Farming World's wild fields use the same crop models and harvest (ShowCrop, Harvest).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -38,13 +39,22 @@ local CROP_SCALE = 0.68
 local SPROUT_UNTIL = 0.35
 local TILLABLE: { [string]: boolean } = { Grass = true, Dirt = true }
 
+-- Somewhere a crop model shows: on top of a farmland block
+export type CropSpot = {
+	Model: Model, -- where the crop model goes
+	Base: CFrame, -- top of the farmland block
+	Stage: string?, -- which crop model is showing
+	Visual: Model?,
+}
+
+-- A farm plot on an island (a CropSpot, plus where it is and whose it is)
 type Plot = {
 	Key: string, -- island plot number, or the cell key for a tilled plot
 	Cell: Vector3, -- grid position of the farmland block
 	Model: Model,
 	Part: BasePart, -- the farmland block
-	Base: CFrame, -- top of the farmland block
-	Stage: string?, -- which crop model is showing
+	Base: CFrame,
+	Stage: string?,
 	Visual: Model?,
 	Tilled: boolean, -- made by the player with a hoe
 }
@@ -90,7 +100,7 @@ local function plotState(data: DataService.Data, key: string): (Crops.Crop?, num
 end
 
 -- Swaps the crop model shown in the planter when the growth stage changes
-local function setVisual(plot: Plot, stage: string?, scale: number)
+local function setVisual(plot: CropSpot, stage: string?, scale: number)
 	if plot.Stage ~= stage then
 		if plot.Visual then
 			plot.Visual:Destroy()
@@ -118,28 +128,51 @@ local function setVisual(plot: Plot, stage: string?, scale: number)
 	end
 end
 
+-- Shows a crop and how far along it is (0 to 1): sprout, young plant, ripe crop; nothing
+-- if there's no crop. Returns "Empty", "Growing" or "Ready".
+function FarmService.ShowCrop(spot: CropSpot, crop: Crops.Crop?, progress: number): string
+	if not crop then
+		setVisual(spot, nil, 1)
+		return "Empty"
+	elseif progress >= 1 then
+		setVisual(spot, `Crop_{crop.Id}`, 1)
+		return "Ready"
+	elseif progress < SPROUT_UNTIL then
+		setVisual(spot, "Crop_Sprout", 1)
+	else
+		setVisual(spot, "Crop_Young", 0.7 + 0.3 * (progress - SPROUT_UNTIL) / (1 - SPROUT_UNTIL))
+	end
+	return "Growing"
+end
+
 local function refreshPlot(player: Player, plot: Plot)
 	local data = DataService.GetData(player)
 	if not data then
 		return
 	end
-
-	-- The crop model shows how far along it is: sprout, young plant, ripe crop
 	local crop, progress = plotState(data, plot.Key)
-	if not crop then
-		setVisual(plot, nil, 1)
-		plot.Part:SetAttribute("FarmState", "Empty")
-	elseif progress >= 1 then
-		setVisual(plot, `Crop_{crop.Id}`, 1)
-		plot.Part:SetAttribute("FarmState", "Ready")
-	else
-		if progress < SPROUT_UNTIL then
-			setVisual(plot, "Crop_Sprout", 1)
-		else
-			setVisual(plot, "Crop_Young", 0.7 + 0.3 * (progress - SPROUT_UNTIL) / (1 - SPROUT_UNTIL))
-		end
-		plot.Part:SetAttribute("FarmState", "Growing")
+	plot.Part:SetAttribute("FarmState", FarmService.ShowCrop(plot, crop, progress))
+end
+
+-- What harvesting a ripe crop gives: the crop (sometimes two, more often with a higher
+-- Farming level or a hoe in hand), now and then a spare seed, and Farming and player XP
+function FarmService.Harvest(player: Player, crop: Crops.Crop)
+	local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
+	local hoe = heldTool(player, "Hoe")
+	local chance = Leveling.BonusChance(farmingLevel) + (if hoe then hoe.Harvest else 0)
+	local amount = if rng:NextNumber() < chance then 2 else 1
+	if hoe then
+		useTool(player, hoe)
 	end
+
+	InventoryService.Add(player, crop.Product, amount)
+	if rng:NextNumber() < SPARE_SEED_CHANCE then
+		InventoryService.Add(player, crop.Seed, 1)
+	end
+	ProgressionService.AddSkillXP(player, "Farming", crop.FarmingXP)
+	ProgressionService.AddPlayerXP(player, crop.PlayerXP)
+	StateService.Notify(player, `+{amount} {Items[crop.Product].Name}`, "good")
+	QuestService.Record(player, "Harvest")
 end
 
 -- The crop whose seeds the player is holding, if they can plant it
@@ -231,23 +264,7 @@ local function onPlotClicked(player: Player, plot: Plot)
 	elseif progress >= 1 then
 		-- The plant stays and starts growing again
 		data.Farm.Plots[plot.Key] = { Crop = crop.Id, PlantedAt = os.time() }
-
-		local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
-		local hoe = heldTool(player, "Hoe")
-		local chance = Leveling.BonusChance(farmingLevel) + (if hoe then hoe.Harvest else 0)
-		local amount = if rng:NextNumber() < chance then 2 else 1
-		if hoe then
-			useTool(player, hoe)
-		end
-
-		InventoryService.Add(player, crop.Product, amount)
-		if rng:NextNumber() < SPARE_SEED_CHANCE then
-			InventoryService.Add(player, crop.Seed, 1)
-		end
-		ProgressionService.AddSkillXP(player, "Farming", crop.FarmingXP)
-		ProgressionService.AddPlayerXP(player, crop.PlayerXP)
-		StateService.Notify(player, `+{amount} {Items[crop.Product].Name}`, "good")
-		QuestService.Record(player, "Harvest")
+		FarmService.Harvest(player, crop)
 	end
 	refreshPlot(player, plot)
 end

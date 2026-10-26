@@ -1,6 +1,5 @@
-# Project place file
-/game.rbxlx
-/town.rbxlx
+# Place files built by Rojo (one per place)
+/*.rbxlx
 
 # Roblox Studio lock files
 /*.rbxlx.lock

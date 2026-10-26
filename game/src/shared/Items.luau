@@ -9,8 +9,10 @@
 --   Value      what the item is fairly worth between players, in coins. Set here for
 --              gathered things (by how long they take to get); crafted items are worth
 --              their inputs plus 10% and are worked out in Economy.luau.
---   SellPrice  what the Merchant pays: about half of Value, so trading is the better deal
---   BuyPrice   seeds at the Merchant. Crops regrow, so a seed is a one-off cost per plot.
+--   SellPrice  what the shops in Town pay (Shops.luau): about half of Value, so trading
+--              is the better deal
+--   BuyPrice   what the shops in Town charge, if one sells it. Crops regrow, so a seed is
+--              a one-off cost per plot.
 
 local Tools = require(script.Parent.Tools)
 
@@ -26,16 +28,28 @@ export type Item = {
 
 local Items: { [string]: Item } = {
 	-- Blocks
-	Grass = { Name = "Grass Block", Icon = "🟩", Value = 1, SellPrice = 0, Block = "Grass" },
-	Dirt = { Name = "Dirt", Icon = "🟫", Value = 1, SellPrice = 0, Block = "Dirt" },
+	Grass = { Name = "Grass Block", Icon = "🟩", Value = 1, SellPrice = 0, BuyPrice = 3, Block = "Grass" },
+	Dirt = { Name = "Dirt", Icon = "🟫", Value = 1, SellPrice = 0, BuyPrice = 2, Block = "Dirt" },
 	Wood = { Name = "Wood", Icon = "🌲", Value = 2, SellPrice = 1, Block = "Wood" },
 	Planks = { Name = "Planks", Icon = "🟧", SellPrice = 0, Block = "Planks" },
 	Stone = { Name = "Stone", Icon = "⛰️", Value = 2, SellPrice = 1, Block = "Stone" },
 	Furnace = { Name = "Furnace", Icon = "🔥", SellPrice = 0, Block = "Furnace" },
+	-- Building blocks from the Builder in Town
+	Cobblestone = {
+		Name = "Cobblestone",
+		Icon = "🪨",
+		Value = 2,
+		SellPrice = 0,
+		BuyPrice = 4,
+		Block = "Cobblestone",
+	},
+	RedWool = { Name = "Red Wool", Icon = "🟥", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "RedWool" },
+	WhiteWool = { Name = "White Wool", Icon = "⬜", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "WhiteWool" },
 
 	-- Crafting materials
 	Sticks = { Name = "Sticks", Icon = "🥢", SellPrice = 0, Model = "Sticks" },
-	Coal = { Name = "Coal", Icon = "⚫", Value = 5, SellPrice = 2, Model = "Coal" },
+	-- The Miner sells coal too, for smelting when you've run out
+	Coal = { Name = "Coal", Icon = "⚫", Value = 5, SellPrice = 2, BuyPrice = 10, Model = "Coal" },
 	RawIron = { Name = "Raw Iron", Icon = "🔸", Value = 10, SellPrice = 5, Model = "RawIron" },
 	IronIngot = { Name = "Iron Ingot", Icon = "⬜", SellPrice = 8, Model = "IronIngot" },
 
@@ -64,8 +78,9 @@ local Items: { [string]: Item } = {
 	GlowberrySeeds = { Name = "Glowberry Seeds", Icon = "✨", Value = 250, SellPrice = 0, Model = "GlowberrySeeds" },
 	Glowberry = { Name = "Glowberry", Icon = "🍇", Value = 70, SellPrice = 35, Model = "Glowberry" },
 
-	-- Drops from leaves; plant it on grass or dirt and it grows into a tree
-	Sapling = { Name = "Sapling", Icon = "🌳", Value = 8, SellPrice = 0, Model = "Sapling" },
+	-- Drops from leaves (and the Lumberjack sells them); plant it on grass or dirt and it
+	-- grows into a tree. Trees don't grow back once felled, so saplings get used up.
+	Sapling = { Name = "Sapling", Icon = "🌳", Value = 8, SellPrice = 0, BuyPrice = 20, Model = "Sapling" },
 
 	-- Warzone materials
 	Scrap = { Name = "Scrap", Icon = "⚙️", Value = 6, SellPrice = 0, Model = "Scrap" },

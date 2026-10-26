@@ -1,60 +1,96 @@
 --!strict
--- The Town place: a shared block plaza on its own servers. Players teleport here from
--- their island's portal (TravelService) and spawn on the plaza; anyone who falls off is
--- put back. It has the Market stall with the Merchant (a travelling trader with a huge
--- backpack; click or tap him to trade) and a runestone portal home. The Warzone gate will
--- be added here later.
+-- The Town place: the shared hub, a floating block island on its own servers. Players
+-- teleport here from their island's portal (TravelService) and arrive by the runestone
+-- portal home at the south end. Laid out like a village hub:
+--   the plaza   a cobblestone square around a well, with four market stalls, two on each
+--               side, each run by a shopkeeper (Shops.luau, Util/Npc.luau):
+--               Merchant and Lumberjack on the west, Builder and Miner on the east
+--   the portals a row of runestone arches at the north end, one per world: Farming,
+--               Woodcutting and Mining (WorldService), and Slaying, boarded up until PvE
+-- Lamp posts line the paths and a few oaks stand around the edge. Nothing here can be
+-- broken, and anyone who falls off is put back at the spawn point.
+--
+-- Grid: x runs west to east, z south to north; y = 0 is the ground, things stand on y = 1.
 
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Places = require(ReplicatedStorage.Shared.Places)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local Npc = require(script.Parent.Parent.Util.Npc)
 local Portal = require(script.Parent.Parent.Util.Portal)
+local Prompts = require(script.Parent.Parent.Util.Prompts)
 local Props = require(script.Parent.Parent.Util.Props)
-local DataService = require(script.Parent.DataService)
+local Signs = require(script.Parent.Parent.Util.Signs)
+local Spawning = require(script.Parent.Parent.Util.Spawning)
+local Trees = require(script.Parent.Parent.Util.Trees)
 local QuestService = require(script.Parent.QuestService)
+local StateService = require(script.Parent.StateService)
 local TravelService = require(script.Parent.TravelService)
 
-local TOWN_CENTER = Vector3.new(0, 200, 0)
-local RADIUS = 14
+local TOWN_CENTER = Vector3.new(0, 200, 0) -- top of the ground at the well
+local RADIUS = 26
 local SIZE = Blocks.Size
-local HOME_PORTAL_Z = -11
 local FALL_LIMIT = 120
+local HOME_PORTAL_Z = -21
+local SPAWN_Z = -17
+local PORTAL_Z = 18 -- the row of world portals
 
--- Merchant: an original travelling-trader design, built from parts measured in "pixels"
--- (1/16 of a block) so it matches the blocky world
-local PIXEL = SIZE / 16
-local SKIN = Color3.fromRGB(236, 194, 156)
-local SKIN_SHADE = Color3.fromRGB(220, 170, 132)
-local HAIR = Color3.fromRGB(104, 70, 46)
-local SHIRT = Color3.fromRGB(236, 222, 188)
-local VEST = Color3.fromRGB(64, 132, 92)
-local PANTS = Color3.fromRGB(74, 70, 96)
-local BOOTS = Color3.fromRGB(58, 40, 30)
-local LEATHER = Color3.fromRGB(96, 64, 40)
-local GOLD = Color3.fromRGB(232, 183, 64)
-local SCARF = Color3.fromRGB(196, 72, 58)
-local CAP = Color3.fromRGB(52, 92, 108)
-local CAP_DARK = Color3.fromRGB(36, 66, 78)
-local CANVAS = Color3.fromRGB(164, 132, 88)
-local CANVAS_DARK = Color3.fromRGB(128, 98, 62)
+-- The plaza (with its corners cut off), the main path south to north, and the walk in
+-- front of the world portals
+local function isPaved(x: number, z: number): boolean
+	local plaza = math.abs(x) <= 8 and math.abs(z) <= 8 and math.abs(x) + math.abs(z) <= 13
+	local path = math.abs(x) <= 1 and z >= HOME_PORTAL_Z - 1 and z <= 16
+	local walk = math.abs(x) <= 18 and z >= 14 and z <= 16
+	return plaza or path or walk
+end
+
+-- The stalls: the counter's middle cell and the way the shopkeeper faces (into the plaza)
+local STALLS = {
+	{ Shop = "Merchant", X = -9, Z = -4, Facing = Vector3.xAxis },
+	{ Shop = "Lumberjack", X = -9, Z = 5, Facing = Vector3.xAxis },
+	{ Shop = "Builder", X = 9, Z = -4, Facing = -Vector3.xAxis },
+	{ Shop = "Miner", X = 9, Z = 5, Facing = -Vector3.xAxis },
+}
+
+-- What each stall shows on its counter: little blocks (block types) or crop models
+local COUNTER_GOODS: { [string]: { string } } = {
+	Merchant = { "Crop_Wheat", "Crop_Carrot" },
+	Lumberjack = { "Wood", "Planks" },
+	Builder = { "Cobblestone", "RedWool" },
+	Miner = { "CoalOre", "IronOre" },
+}
+
+-- The world portals, west to east, with their field colour and the blocks beside them
+local WORLD_PORTALS: { { Kind: Places.Kind, Name: string, X: number, Color: Color3, Open: boolean } } = {
+	{ Kind = "Farming", Name = "Farming World", X = -15, Color = Color3.fromRGB(250, 206, 84), Open = true },
+	{ Kind = "Woodcutting", Name = "Woodcutting World", X = -5, Color = Color3.fromRGB(112, 208, 92), Open = true },
+	{ Kind = "Mining", Name = "Mining World", X = 5, Color = Color3.fromRGB(255, 92, 36), Open = true },
+	{ Kind = "Slaying", Name = "Slaying World", X = 15, Color = Color3.fromRGB(120, 36, 40), Open = false },
+}
+
+local LAMPS = {
+	{ -2, -14 },
+	{ 2, -14 },
+	{ -2, -10 },
+	{ 2, -10 },
+	{ -10, 17 },
+	{ 0, 17 },
+	{ 10, 17 },
+	{ -7, 11 },
+	{ 7, 11 },
+}
+local TREES = { { -19, -6, 5 }, { 19, -6, 4 }, { -21, 6, 4 }, { 21, 6, 5 }, { -12, -16, 4 }, { 12, -16, 5 } }
 
 local TownService = {}
 
 local world: BlockWorld.World
-local spawnPoint: SpawnLocation
-local marketCounter: BasePart
-local merchant: Model
+local shopkeepers: { [string]: Model } = {}
 
-function TownService.GetMarketCounter(): BasePart
-	return marketCounter
-end
-
--- The Merchant NPC model. Its "Head" model turns to look at players (on the client).
-function TownService.GetMerchant(): Model
-	return merchant
+-- The shopkeeper models by shop id (see Shops.luau). Their "Head" model turns to look at
+-- players (on the client).
+function TownService.GetShopkeepers(): { [string]: Model }
+	return shopkeepers
 end
 
 local function set(x: number, y: number, z: number, blockType: string)
@@ -62,191 +98,194 @@ local function set(x: number, y: number, z: number, blockType: string)
 	world.Protected[BlockWorld.key(x, y, z)] = true
 end
 
-local function addSign(part: BasePart, text: string, front: Vector3)
-	local gui = Instance.new("SurfaceGui")
-	gui.Face = Props.FaceToward(part, front)
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 50
-	gui.Parent = part
-	local label = Instance.new("TextLabel")
-	label.Size = UDim2.fromScale(1, 1)
-	label.BackgroundTransparency = 1
-	label.FontFace = Font.fromEnum(Enum.Font.Fondamento)
-	label.TextScaled = true
-	label.TextColor3 = Color3.fromRGB(251, 238, 211)
-	label.Text = text
-	label.Parent = gui
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.fromRGB(46, 28, 15)
-	stroke.Thickness = 3
-	stroke.Parent = label
-	local padding = Instance.new("UIPadding")
-	padding.PaddingTop = UDim.new(0.12, 0)
-	padding.PaddingBottom = UDim.new(0.12, 0)
-	padding.Parent = label
+-- Sets a cell only if it's still empty (decorations never overwrite the town)
+local function setFree(x: number, y: number, z: number, blockType: string)
+	if not BlockWorld.get(world, x, y, z) then
+		set(x, y, z, blockType)
+	end
 end
 
--- One box of the merchant: size and center in pixels, in the frame `origin`
-local function box(parent: Instance, name: string, origin: CFrame, size: Vector3, center: Vector3, color: Color3): Part
-	local part = Instance.new("Part")
-	part.Name = name
-	part.Size = size * PIXEL
-	part.CFrame = origin * CFrame.new(center * PIXEL)
-	part.Color = color
-	part.Material = Enum.Material.SmoothPlastic
-	part.TopSurface = Enum.SurfaceType.Smooth
-	part.BottomSurface = Enum.SurfaceType.Smooth
-	part.Anchored = true
-	part.CanCollide = false
-	part.Parent = parent
-	return part
+local function signBoard(name: string, text: string, position: Vector3, front: Vector3, width: number)
+	Signs.Board(world.Model, name, text, position, front, width)
 end
 
-local function addNameTag(head: BasePart)
-	local gui = Instance.new("BillboardGui")
-	gui.Name = "NameTag"
-	gui.Size = UDim2.fromOffset(220, 56)
-	gui.StudsOffsetWorldSpace = Vector3.new(0, 5.4, 0) -- above the chat bubble
-	gui.MaxDistance = 70
-	-- Stays readable under the stall roof
-	gui.AlwaysOnTop = true
-	gui.Adornee = head
-	gui.Parent = head
-	local function line(text: string, size: number, y: number, color: Color3, font: Font)
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, 0, 0, size + 4)
-		label.Position = UDim2.fromOffset(0, y)
-		label.BackgroundTransparency = 1
-		label.FontFace = font
-		label.TextSize = size
-		label.TextColor3 = color
-		label.Text = text
-		label.Parent = gui
-		local stroke = Instance.new("UIStroke")
-		stroke.Color = Color3.fromRGB(46, 28, 15)
-		stroke.Thickness = 2
-		stroke.Parent = label
-	end
-	-- Same fonts as the game's UI (client/UI/Theme.luau)
-	line("Merchant", 26, 0, Color3.fromRGB(242, 193, 78), Font.fromEnum(Enum.Font.Fondamento))
-	line(
-		"Buys crops, sells seeds",
-		15,
-		31,
-		Color3.fromRGB(251, 238, 211),
-		Font.new("rbxasset://fonts/families/Nunito.json", Enum.FontWeight.ExtraBold)
-	)
+local function part(name: string, size: Vector3, cframe: CFrame, color: Color3, material: Enum.Material): Part
+	local p = Instance.new("Part")
+	p.Name = name
+	p.Size = size
+	p.CFrame = cframe
+	p.Color = color
+	p.Material = material
+	p.Anchored = true
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+	p.Parent = world.Model
+	return p
 end
 
--- The travelling trader: newsboy cap, bushy mustache, green vest, red scarf, arms at his
--- sides and a big canvas backpack with a bedroll and a lantern. Stands at `feet`, facing `facing`.
-local function makeMerchant(feet: Vector3, facing: Vector3): Model
-	local model = Instance.new("Model")
-	model.Name = "Merchant"
-	model:SetAttribute("Interact", "Market")
-	local origin = CFrame.lookAt(feet, feet + facing) -- front is -Z
-
-	for _, side in { -1, 1 } do
-		box(model, "Boot", origin, Vector3.new(4.4, 2.4, 5.4), Vector3.new(side * 2.2, 1.2, -0.5), BOOTS)
-		box(model, "Leg", origin, Vector3.new(4, 8, 4), Vector3.new(side * 2.2, 6.4, 0), PANTS)
-		box(model, "Sleeve", origin, Vector3.new(3, 8, 3.4), Vector3.new(side * 6.6, 16.2, 0), SHIRT)
-		box(model, "Hand", origin, Vector3.new(3, 2.6, 3), Vector3.new(side * 6.6, 10.9, 0), SKIN)
-		box(model, "Strap", origin, Vector3.new(1.2, 9, 0.4), Vector3.new(side * 2.6, 16.4, -3.4), LEATHER)
+-- A small copy of a block (block art from ReplicatedStorage.Blocks), sitting on `top`
+local function miniBlock(blockType: string, top: Vector3, size: number)
+	local folder = ReplicatedStorage:FindFirstChild("Blocks")
+	local template = folder and folder:FindFirstChild(blockType)
+	if not template or not template:IsA("BasePart") then
+		return
 	end
-	local body = box(model, "Body", origin, Vector3.new(10, 10, 6), Vector3.new(0, 15.4, 0), SHIRT)
-	box(model, "Vest", origin, Vector3.new(10.4, 8.6, 6.4), Vector3.new(0, 15.8, 0), VEST)
-	box(model, "VestOpening", origin, Vector3.new(2.4, 8.6, 0.3), Vector3.new(0, 15.8, -3.3), SHIRT)
-	box(model, "Belt", origin, Vector3.new(10.8, 1.4, 6.8), Vector3.new(0, 11.2, 0), LEATHER)
-	box(model, "Buckle", origin, Vector3.new(2, 1.8, 0.4), Vector3.new(0, 11.2, -3.5), GOLD)
-	box(model, "Scarf", origin, Vector3.new(11, 2.2, 7), Vector3.new(0, 20.6, 0), SCARF)
-	box(model, "ScarfTail", origin, Vector3.new(2.2, 5, 0.6), Vector3.new(-2.6, 17.8, -3.7), SCARF)
+	local block = template:Clone()
+	block.Size *= size / math.max(block.Size.X, block.Size.Y, block.Size.Z)
+	block.CFrame = CFrame.new(top + Vector3.new(0, size / 2, 0)) * template.CFrame.Rotation
+	block.Anchored = true
+	block.CanCollide = false
+	block.Parent = world.Model
+end
 
-	-- Backpack piled with a rolled bedroll, and a lantern hanging off the side
-	box(model, "Pack", origin, Vector3.new(9, 11, 4), Vector3.new(0, 16, 5.2), CANVAS)
-	box(model, "PackFlap", origin, Vector3.new(9.4, 3, 4.4), Vector3.new(0, 20.2, 5.2), CANVAS_DARK)
-	box(model, "Bedroll", origin, Vector3.new(11, 3, 3), Vector3.new(0, 23.2, 5.2), SCARF)
-	for _, x in { -3, 3 } do
-		box(model, "BedrollTie", origin, Vector3.new(0.6, 3.2, 3.2), Vector3.new(x, 23.2, 5.2), LEATHER)
-	end
-	box(model, "LanternFrame", origin, Vector3.new(2, 2.6, 2), Vector3.new(5.6, 14.4, 5.2), LEATHER)
-	local glass = box(
-		model,
+-- A lamp post: two logs with a lantern on top
+local function lamp(x: number, z: number)
+	set(x, 1, z, "Wood")
+	set(x, 2, z, "Wood")
+	local top = BlockWorld.position(world, x, 2, z) + Vector3.new(0, SIZE / 2, 0)
+	local iron = Color3.fromRGB(46, 40, 38)
+	part("LampBase", Vector3.new(1.6, 0.3, 1.6), CFrame.new(top + Vector3.new(0, 0.15, 0)), iron, Enum.Material.Metal)
+	local glass = part(
 		"Lantern",
-		origin,
-		Vector3.new(1.4, 2, 1.4),
-		Vector3.new(5.6, 14.4, 5.2),
-		Color3.fromRGB(255, 214, 128)
+		Vector3.new(1.1, 1.3, 1.1),
+		CFrame.new(top + Vector3.new(0, 0.95, 0)),
+		Color3.fromRGB(255, 214, 128),
+		Enum.Material.Neon
 	)
-	glass.Material = Enum.Material.Neon
+	part("LampCap", Vector3.new(1.7, 0.35, 1.7), CFrame.new(top + Vector3.new(0, 1.75, 0)), iron, Enum.Material.Metal)
 	local light = Instance.new("PointLight")
 	light.Color = Color3.fromRGB(255, 210, 150)
-	light.Brightness = 1.2
-	light.Range = 14
+	light.Brightness = 1.1
+	light.Range = 18
 	light.Shadows = false
 	light.Parent = glass
+end
 
-	-- Head (pivots at the neck so it can turn to watch players)
-	local headModel = Instance.new("Model")
-	headModel.Name = "Head"
-	headModel.Parent = model
-	local neck = origin * CFrame.new(0, 21.6 * PIXEL, 0)
-	local head = box(headModel, "Head", neck, Vector3.new(8, 8, 8), Vector3.new(0, 4, 0), SKIN)
-	box(headModel, "Nose", neck, Vector3.new(1.4, 1.4, 1), Vector3.new(0, 3.4, -4.4), SKIN_SHADE)
-	box(headModel, "Mustache", neck, Vector3.new(5.6, 1.3, 0.6), Vector3.new(0, 2.3, -4.2), HAIR)
-	box(headModel, "HairBack", neck, Vector3.new(8.2, 4, 1), Vector3.new(0, 4.2, 3.9), HAIR)
-	for _, side in { -1, 1 } do
-		box(
-			headModel,
-			"Eye",
-			neck,
-			Vector3.new(1.2, 1.8, 0.3),
-			Vector3.new(side * 1.8, 4.6, -4.05),
-			Color3.fromRGB(40, 34, 40)
-		)
-		box(
-			headModel,
-			"Glint",
-			neck,
-			Vector3.new(0.5, 0.5, 0.3),
-			Vector3.new(side * 1.6, 5.2, -4.15),
-			Color3.new(1, 1, 1)
-		)
-		box(headModel, "Brow", neck, Vector3.new(2.2, 0.6, 0.3), Vector3.new(side * 1.9, 6.1, -4.05), HAIR)
-		box(
-			headModel,
-			"Cheek",
-			neck,
-			Vector3.new(1.2, 0.9, 0.2),
-			Vector3.new(side * 2.9, 2.9, -4.05),
-			Color3.fromRGB(238, 150, 136)
-		)
-		box(headModel, "MustacheEnd", neck, Vector3.new(1.2, 1, 0.6), Vector3.new(side * 3.2, 1.9, -4.2), HAIR)
-		box(headModel, "Sideburn", neck, Vector3.new(0.6, 3, 3), Vector3.new(side * 4.05, 4.4, 1), HAIR)
+-- A market stall around its counter cell (ox, oz), open toward `facing`, with its
+-- shopkeeper behind the counter
+local function stall(shopId: string, ox: number, oz: number, facing: Vector3)
+	local fx, fz = math.round(facing.X), math.round(facing.Z)
+	-- u runs along the counter, v from the counter (0) to the back wall (2)
+	local function cell(u: number, v: number): (number, number)
+		return ox - fz * u - fx * v, oz + fx * u - fz * v
 	end
-	box(headModel, "Cap", neck, Vector3.new(8.8, 2.6, 8.8), Vector3.new(0, 8.8, 0.2), CAP)
-	box(headModel, "CapTop", neck, Vector3.new(7.6, 0.8, 7.6), Vector3.new(0, 10.3, 0.4), CAP)
-	box(headModel, "Visor", neck, Vector3.new(6.4, 0.6, 3), Vector3.new(0, 7.7, -5.2), CAP_DARK)
-	box(headModel, "CapButton", neck, Vector3.new(1, 0.6, 1), Vector3.new(0, 10.9, 0.4), GOLD)
-	headModel.PrimaryPart = head
-	addNameTag(head)
+	for u = -2, 2 do
+		local cx, cz = cell(u, 0)
+		set(cx, 1, cz, "Planks") -- counter
+		local bx, bz = cell(u, 2)
+		set(bx, 1, bz, "Planks") -- back wall
+		set(bx, 2, bz, "Planks")
+	end
+	for _, u in { -3, 3 } do
+		for _, v in { 0, 2 } do
+			local px, pz = cell(u, v)
+			for y = 1, 3 do
+				set(px, y, pz, "Wood")
+			end
+		end
+	end
+	for u = -3, 3 do
+		for v = 0, 2 do
+			local rx, rz = cell(u, v)
+			set(rx, 4, rz, if u % 2 == 0 then "RedWool" else "WhiteWool")
+		end
+	end
 
-	model.PrimaryPart = body
-	model.Parent = world.Model
-	return model
+	-- The shop's name on a board over the front of the roof
+	local sx, sz = cell(0, 0)
+	local front = Vector3.new(fx, 0, fz)
+	local signAt = BlockWorld.position(world, sx, 5, sz) + front * (SIZE / 2 + 0.25)
+	signBoard(`{shopId}Sign`, string.upper(shopId), signAt, front, 3)
+
+	-- A few goods on the counter, either side of the shopkeeper
+	local goods: { string } = COUNTER_GOODS[shopId] or {}
+	for i, good in ipairs(goods) do
+		local gx, gz = cell(if i == 1 then -1 else 1, 0)
+		local top = BlockWorld.position(world, gx, 1, gz) + Vector3.new(0, SIZE / 2, 0)
+		if string.sub(good, 1, 5) == "Crop_" then
+			local crop = Props.Place(good, top, top + front, world.Model)
+			if crop then
+				crop:ScaleTo(0.45)
+				crop:PivotTo(CFrame.lookAt(top, top + front))
+			end
+		else
+			miniBlock(good, top, 1.3)
+		end
+	end
+
+	local nx, nz = cell(0, 1)
+	local feet = BlockWorld.position(world, nx, 1, nz) - Vector3.new(0, SIZE / 2, 0)
+	local npcs = world.Model:FindFirstChild("Npcs") :: Folder
+	shopkeepers[shopId] = Npc.Build(shopId, feet, front, npcs)
+end
+
+-- The town well in the middle of the plaza: a cobblestone ring around water, under a
+-- little plank roof on four posts
+local function well()
+	for dx = -1, 1 do
+		for dz = -1, 1 do
+			if dx ~= 0 or dz ~= 0 then
+				set(dx, 1, dz, "Cobblestone")
+			end
+			set(dx, 4, dz, "Planks")
+		end
+	end
+	for _, dx in { -1, 1 } do
+		for _, dz in { -1, 1 } do
+			set(dx, 2, dz, "Wood")
+			set(dx, 3, dz, "Wood")
+		end
+	end
+	local water = part(
+		"Water",
+		Vector3.new(SIZE, SIZE * 0.8, SIZE),
+		CFrame.new(BlockWorld.position(world, 0, 1, 0) - Vector3.new(0, SIZE * 0.1, 0)),
+		Color3.fromRGB(64, 142, 206),
+		Enum.Material.Glass
+	)
+	water.Transparency = 0.2
+	water.CanCollide = false
+end
+
+-- Blocks beside a world portal that show what's through it
+local function portalDecor(kind: Places.Kind, cx: number)
+	for _, side in { -1, 1 } do
+		local x = cx + side * 3
+		if kind == "Farming" then
+			set(x, 0, PORTAL_Z, "Farmland")
+			local top = BlockWorld.position(world, x, 0, PORTAL_Z) + Vector3.new(0, SIZE / 2, 0)
+			local crop = Props.Place(if side < 0 then "Crop_Wheat" else "Crop_Carrot", top, nil, world.Model)
+			if crop then
+				crop:ScaleTo(0.68)
+				crop:PivotTo(CFrame.new(top))
+			end
+		elseif kind == "Woodcutting" then
+			set(x, 1, PORTAL_Z, "Wood")
+			set(x, 2, PORTAL_Z, "Wood")
+			set(x, 3, PORTAL_Z, "Leaves")
+		elseif kind == "Mining" then
+			set(x, 1, PORTAL_Z, "Stone")
+			set(x, 2, PORTAL_Z, if side < 0 then "CoalOre" else "IronOre")
+		else
+			set(x, 1, PORTAL_Z, "Obsidian")
+			set(x, 2, PORTAL_Z, "Obsidian")
+		end
+	end
 end
 
 local function build()
 	world = BlockWorld.new(TOWN_CENTER - Vector3.new(0, SIZE / 2, 0), "Town", workspace)
+	local npcs = Instance.new("Folder")
+	npcs.Name = "Npcs"
+	npcs.Parent = world.Model
 
-	-- Ground: a flat floating platform with a cobblestone plaza and path
+	-- Ground: a round floating island, paved where people walk
 	for x = -RADIUS, RADIUS do
 		for z = -RADIUS, RADIUS do
 			local distance = math.sqrt(x * x + z * z)
 			if distance <= RADIUS + 0.4 then
-				local plaza = math.abs(x) <= 3 and math.abs(z) <= 3
-				local path = math.abs(x) <= 1 and z >= -10 and z <= 6
-				set(x, 0, z, if plaza or path then "Cobblestone" else "Grass")
-				local depth = 2 + math.floor((1 - distance / RADIUS) ^ 0.8 * 8)
+				set(x, 0, z, if isPaved(x, z) then "Cobblestone" else "Grass")
+				local depth = 2 + math.floor((1 - distance / RADIUS) ^ 0.8 * 10)
 				for y = -1, -depth, -1 do
 					set(x, y, z, if y >= -2 then "Dirt" else "Stone")
 				end
@@ -254,109 +293,70 @@ local function build()
 		end
 	end
 
-	-- Market stall (faces the plaza, toward -Z)
-	for x = -2, 2 do
-		set(x, 1, 6, "Planks") -- counter
-		set(x, 1, 8, "Planks") -- back wall
-		set(x, 2, 8, "Planks")
-	end
-	for _, x in { -3, 3 } do
-		for _, z in { 6, 8 } do
-			for y = 1, 3 do
-				set(x, y, z, "Wood")
-			end
-		end
-	end
-	for x = -3, 3 do
-		for z = 6, 8 do
-			set(x, 4, z, if x % 2 == 0 then "RedWool" else "WhiteWool")
-		end
+	-- Portals first, so nothing else is built in their way
+	Portal.addCells(world.Cells, world.Protected, 0, HOME_PORTAL_Z)
+	for _, info in WORLD_PORTALS do
+		Portal.addCells(world.Cells, world.Protected, info.X, PORTAL_Z)
+		portalDecor(info.Kind, info.X)
 	end
 
-	-- Runestone portal home at the far end of the path
-	Portal.addCells(world.Cells, world.Protected, 0, HOME_PORTAL_Z)
+	well()
+	for _, info in STALLS do
+		stall(info.Shop, info.X, info.Z, info.Facing)
+	end
+	for _, spot in LAMPS do
+		lamp(spot[1], spot[2])
+	end
+	-- Hedges along the path from the arrival portal
+	for z = HOME_PORTAL_Z + 3, -11 do
+		if z ~= -14 and z ~= -10 then
+			setFree(-3, 1, z, "Leaves")
+			setFree(3, 1, z, "Leaves")
+		end
+	end
+	for _, spot in TREES do
+		Trees.Oak(spot[1], 0, spot[2], spot[3], setFree)
+	end
 
 	BlockWorld.drawAll(world)
 
-	-- Players arrive between the portal and the plaza, facing the Market
-	local spawnAt = TOWN_CENTER + Vector3.new(0, 0, -5 * SIZE)
-	spawnPoint = Instance.new("SpawnLocation")
-	spawnPoint.Name = "TownSpawn"
-	spawnPoint.Size = Vector3.new(6, 1, 6)
-	spawnPoint.CFrame = CFrame.lookAt(spawnAt - Vector3.new(0, 0.5, 0), spawnAt - Vector3.new(0, 0.5, -1))
-	spawnPoint.Anchored = true
-	spawnPoint.CanCollide = false
-	spawnPoint.Transparency = 1
-	spawnPoint.Duration = 0
-	spawnPoint.Neutral = true
-	spawnPoint.Parent = world.Model
-
-	-- Wooden sign hanging off the front of the roof (3 blocks wide)
-	local roofFront = BlockWorld.position(world, 0, 5, 6) - Vector3.new(0, 0, SIZE / 2 + 0.25)
-	local sign = Instance.new("Part")
-	sign.Name = "MarketSign"
-	sign.Size = Vector3.new(3 * SIZE, SIZE * 0.85, 0.4)
-	sign.CFrame = CFrame.new(roofFront)
-	sign.Color = Color3.fromRGB(162, 130, 78)
-	sign.Material = Enum.Material.WoodPlanks
-	sign.Anchored = true
-	sign.Parent = world.Model
-	addSign(sign, "MARKET", Vector3.new(0, 0, -1))
-	marketCounter = BlockWorld.part(world, 0, 1, 6) :: BasePart
-
-	-- The Merchant stands behind the counter, facing the plaza
-	local feet = BlockWorld.position(world, 0, 1, 7) - Vector3.new(0, SIZE / 2, 0)
-	merchant = makeMerchant(feet, Vector3.new(0, 0, -1))
-
+	-- Portal fields: home, and one to each world (the Slaying one is boarded up)
 	local home = Portal.makeField(world, 0, HOME_PORTAL_Z)
 	TravelService.AddPortal(home, "Island", "Go home", function()
 		return true
 	end)
-end
-
-local function spawnCharacter(player: Player)
-	if player.Parent == Players then
-		player:LoadCharacterAsync()
-	end
-end
-
-local function onDataLoaded(player: Player)
-	player.CharacterAdded:Connect(function(character)
-		local humanoid = character:WaitForChild("Humanoid") :: Humanoid
-		humanoid.Died:Connect(function()
-			task.wait(Players.RespawnTime)
-			if player.Character == character then
-				spawnCharacter(player)
-			end
-		end)
-	end)
-	spawnCharacter(player)
-	QuestService.Record(player, "VisitTown")
-end
-
--- Anyone who falls off the plaza lands back at the spawn point
-local function catchFallers()
-	for _, player in Players:GetPlayers() do
-		local character = player.Character
-		local root = character and character:FindFirstChild("HumanoidRootPart")
-		if character and root and root:IsA("BasePart") and root.Position.Y < TOWN_CENTER.Y - FALL_LIMIT then
-			root.AssemblyLinearVelocity = Vector3.zero
-			character:PivotTo(spawnPoint.CFrame + Vector3.new(0, 4, 0))
+	local south = -Vector3.zAxis
+	signBoard(
+		"HomeSign",
+		"HOME",
+		BlockWorld.position(world, 0, 6, HOME_PORTAL_Z) + Vector3.zAxis * (SIZE / 2 + 0.25),
+		Vector3.zAxis,
+		2
+	)
+	for _, info in WORLD_PORTALS do
+		local signAt = BlockWorld.position(world, info.X, 6, PORTAL_Z) + south * (SIZE / 2 + 0.25)
+		signBoard(`{info.Kind}Sign`, string.upper(info.Kind), signAt, south, 3)
+		if info.Open then
+			local field = Portal.makeField(world, info.X, PORTAL_Z, info.Color)
+			TravelService.AddPortal(field, info.Kind, "Travel", function()
+				return true
+			end, info.Name)
+		else
+			local field = Portal.makeClosed(world, info.X, PORTAL_Z, info.Color)
+			local prompt = Prompts.Create(field, { Action = "Coming soon", Object = info.Name, Distance = 12 })
+			prompt.Triggered:Connect(function(player)
+				StateService.Notify(player, `{info.Name} opens when monsters arrive. Coming soon!`, "info")
+			end)
 		end
 	end
 end
 
 function TownService.Start()
-	Players.CharacterAutoLoads = false
 	build()
-	DataService.OnDataLoaded(onDataLoaded)
-	local elapsed = 0
-	RunService.Heartbeat:Connect(function(dt)
-		elapsed += dt
-		if elapsed >= 0.5 then
-			elapsed = 0
-			catchFallers()
-		end
+	-- Players arrive in front of the home portal, facing the plaza
+	local spawnPoint = Spawning.MakeSpawn(TOWN_CENTER + Vector3.new(0, 0, SPAWN_Z * SIZE), Vector3.zAxis, world.Model)
+	Spawning.Start(spawnPoint, TOWN_CENTER.Y - FALL_LIMIT, function(player)
+		QuestService.Record(player, "VisitTown")
 	end)
 end
 

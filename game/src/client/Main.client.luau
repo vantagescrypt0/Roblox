@@ -10,13 +10,13 @@ local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local BlockController = require(script.Parent.BlockController)
 local Hotbar = require(script.Parent.Hotbar)
 local Hud = require(script.Parent.Hud)
-local MerchantController = require(script.Parent.MerchantController)
+local NpcController = require(script.Parent.NpcController)
 local PromptUI = require(script.Parent.PromptUI)
 local QuestTracker = require(script.Parent.QuestTracker)
 local BagWindow = require(script.Parent.Windows.BagWindow)
 local CraftingWindow = require(script.Parent.Windows.CraftingWindow)
 local IslandWindow = require(script.Parent.Windows.IslandWindow)
-local MarketWindow = require(script.Parent.Windows.MarketWindow)
+local ShopWindow = require(script.Parent.Windows.ShopWindow)
 local SkillsWindow = require(script.Parent.Windows.SkillsWindow)
 local TradeWindow = require(script.Parent.Windows.TradeWindow)
 
@@ -27,7 +27,7 @@ end)
 
 BagWindow.Start()
 IslandWindow.Start()
-MarketWindow.Start()
+ShopWindow.Start()
 CraftingWindow.Start()
 TradeWindow.Start()
 SkillsWindow.Start()
@@ -37,7 +37,7 @@ Hud.Start({
 	OnBag = BagWindow.Toggle,
 	OnSkills = SkillsWindow.Toggle,
 	OnIsland = function()
-		if Places.Current() == "Town" then
+		if Places.Current() ~= "Island" then
 			Hud.Toast("Your island is back through the portal", "info")
 		else
 			IslandWindow.Toggle()
@@ -47,9 +47,9 @@ Hud.Start({
 Hotbar.Start()
 BlockController.Start({
 	OpenCrafting = CraftingWindow.Open,
-	OpenMarket = MarketWindow.Open,
+	OpenShop = ShopWindow.Open,
 })
-MerchantController.Start()
+NpcController.Start()
 
 Remotes.State.OnClientEvent:Connect(function(state)
 	Hud.Render(state)
@@ -57,14 +57,14 @@ Remotes.State.OnClientEvent:Connect(function(state)
 	QuestTracker.Render(state)
 	BagWindow.SetState(state)
 	IslandWindow.SetState(state)
-	MarketWindow.SetState(state)
+	ShopWindow.SetState(state)
 	CraftingWindow.SetState(state)
 	TradeWindow.SetState(state)
 	SkillsWindow.SetState(state)
 end)
 Remotes.Notify.OnClientEvent:Connect(Hud.Toast)
 Remotes.OpenCrafting.OnClientEvent:Connect(CraftingWindow.Open)
-Remotes.OpenMarket.OnClientEvent:Connect(MarketWindow.Open)
+Remotes.OpenShop.OnClientEvent:Connect(ShopWindow.Open)
 Remotes.Travel.OnClientEvent:Connect(Hud.Travel)
 Remotes.IslandRebuilt.OnClientEvent:Connect(function(tier: number)
 	IslandWindow.Close()

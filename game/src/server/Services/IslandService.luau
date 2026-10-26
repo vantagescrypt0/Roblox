@@ -2,13 +2,16 @@
 -- Gives each player their own floating island made of blocks, generated for their
 -- expansion tier, with their own block changes (data.Island.Blocks) on top. Spawns them
 -- on it, rebuilds it bigger when they expand, and puts players back on it if they fall
--- off. Trees, boulders and their ores are resource nodes: a mined node block grows back
--- in the same spot after a while (Blocks.NodeRespawn), so nothing has to be replanted
--- and mined nodes are never saved as holes. The stone underside has ore veins to dig for
--- (those are ordinary blocks).
--- Players can plant saplings (TreeService): a sapling grows into a tree after
--- SAPLING_GROW_TIME (time counts while offline), and from then on it's a node tree like
--- the island's own. Planted trees are saved in data.Island.Trees by the cell they stand on.
+-- off. Boulders and their ores are resource nodes: a mined node block grows back in the
+-- same spot after a while (Blocks.NodeRespawn), so mined nodes are never saved as holes.
+-- The stone underside has ore veins to dig for (those are ordinary blocks).
+--
+-- Trees aren't nodes. Chop logs and they're gone; chop a tree's last log and the tree is
+-- felled: its leaves fall away and it's gone for good (data.Island.Felled for the
+-- island's own trees). BlockService gives the woodcutter saplings for it, always at least
+-- one. Players plant saplings (TreeService): a sapling grows into a tree after
+-- SAPLING_GROW_TIME (time counts while offline). Planted trees are saved in
+-- data.Island.Trees by the cell they stand on until they're felled.
 --
 -- Grid: y = 0 is the top grass layer; things stand on it at y = 1.
 
@@ -19,9 +22,11 @@ local RunService = game:GetService("RunService")
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Config = require(ReplicatedStorage.Shared.Config)
 local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
+local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local Portal = require(script.Parent.Parent.Util.Portal)
+local Trees = require(script.Parent.Parent.Util.Trees)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local StateService = require(script.Parent.StateService)
@@ -35,11 +40,15 @@ local COAL_CHANCE, IRON_CHANCE, IRON_MIN_DEPTH = 0.07, 0.04, 4
 local SAPLING_GROW_TIME = 180
 -- A sapling's model is scaled to about this tall (studs)
 local SAPLING_HEIGHT = 2.4
+-- A felled tree's leaves drop over this many seconds
+local LEAF_FALL_TIME = 1.6
 
 type Cell = { X: number, Y: number, Z: number }
 -- A resource node block: what grows there, and when it grows back if it's been mined
 export type Node = { X: number, Y: number, Z: number, Block: string, RespawnAt: number? }
 type PlantedTrees = { [string]: { PlantedAt: number, Height: number } }
+-- A standing tree (one of the island's own, or one the player planted): its cells
+type Tree = { Logs: { string }, Leaves: { string }, Planted: boolean }
 
 export type Island = {
 	World: BlockWorld.World,
@@ -55,8 +64,9 @@ export type Island = {
 	FarmCells: { Cell },
 	PortalSurface: BasePart,
 	Nodes: { [string]: Node }, -- by cell key
-	-- Planted trees that have grown: ground cell key -> the node cells that are theirs
-	TreeNodes: { [string]: { string } },
+	-- Standing trees by the ground cell they stand on, and which tree each of their cells is
+	Trees: { [string]: Tree },
+	TreeCells: { [string]: string },
 	-- Planted saplings still growing: ground cell key -> their model
 	Saplings: { [string]: BasePart },
 }
@@ -66,9 +76,17 @@ local IslandService = {}
 
 local islands: { [Player]: Island } = {}
 local usedPlots: { [number]: boolean } = {}
-local saplingRng = Random.new()
+local rng = Random.new()
 local createdCallbacks: { IslandCallback } = {}
 local islandsFolder: Folder
+
+-- Block types some item can place (so a block of that type might be player-made)
+local placeable: { [string]: boolean } = {}
+for _, item in Items do
+	if item.Block then
+		placeable[item.Block] = true
+	end
+end
 
 -- Runs the callback for every island, now and whenever one is created or rebuilt.
 function IslandService.OnIslandCreated(callback: IslandCallback)
@@ -116,9 +134,9 @@ local CRAFTING_TABLE = { X = 3, Y = 1, Z = -2 }
 -- The same noise for every tier, so bigger islands grow outward from the same shape
 local edgeNoise: { number } = {}
 do
-	local rng = Random.new(4242)
+	local noise = Random.new(4242)
 	for i = 0, 15 do
-		edgeNoise[i] = rng:NextNumber(-0.9, 0.9)
+		edgeNoise[i] = noise:NextNumber(-0.9, 0.9)
 	end
 end
 
@@ -142,51 +160,26 @@ local function addNode(
 	nodes[k] = { X = x, Y = y, Z = z, Block = block }
 end
 
--- Adds an oak tree of nodes standing on the cell (x, baseY, z). Cells that are already
--- taken (or that `blocked` says are) are skipped. Returns the keys of the cells it added.
+-- Adds an oak tree standing on the cell (x, baseY, z) to `cells`. Cells that are already
+-- taken (or that `blocked` says are) are skipped. Returns the tree's cells.
 local function addTree(
 	cells: { [string]: string },
-	nodes: { [string]: Node },
 	x: number,
 	baseY: number,
 	z: number,
 	height: number,
+	planted: boolean,
 	blocked: ((cellKey: string) -> boolean)?
-): { string }
-	local added = {}
-	local function put(px: number, py: number, pz: number, block: string)
+): Tree
+	local tree: Tree = { Logs = {}, Leaves = {}, Planted = planted }
+	Trees.Oak(x, baseY, z, height, function(px, py, pz, block)
 		local k = key(px, py, pz)
 		if not cells[k] and not (blocked and blocked(k)) then
-			addNode(cells, nodes, px, py, pz, block)
-			table.insert(added, k)
+			cells[k] = block
+			table.insert(if block == "Wood" then tree.Logs else tree.Leaves, k)
 		end
-	end
-	for y = 1, height do
-		put(x, baseY + y, z, "Wood")
-	end
-	-- Oak shape: two wide layers, then a small cap
-	for ly = height - 1, height do
-		for dx = -2, 2 do
-			for dz = -2, 2 do
-				local corner = math.abs(dx) == 2 and math.abs(dz) == 2
-				if not corner and not (dx == 0 and dz == 0) then
-					put(x + dx, baseY + ly, z + dz, "Leaves")
-				end
-			end
-		end
-	end
-	for dx = -1, 1 do
-		for dz = -1, 1 do
-			if math.abs(dx) + math.abs(dz) < 2 or ((dx + dz + height) % 2 == 0) then
-				put(x + dx, baseY + height + 1, z + dz, "Leaves")
-			end
-		end
-	end
-	put(x, baseY + height + 2, z, "Leaves")
-	for _, d in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
-		put(x + d[1], baseY + height + 2, z + d[2], "Leaves")
-	end
-	return added
+	end)
+	return tree
 end
 
 local function grown(tree: { PlantedAt: number }): boolean
@@ -199,7 +192,7 @@ type Generated = {
 	FarmCells: { Cell },
 	PortalZ: number,
 	Nodes: { [string]: Node },
-	TreeNodes: { [string]: { string } },
+	Trees: { [string]: Tree },
 }
 
 -- The block at a spot in the island's stone underside. Seeded by position, so an island
@@ -214,9 +207,10 @@ local function undergroundBlock(x: number, y: number, z: number): string
 	return "Stone"
 end
 
--- `planted` are the player's planted trees (the grown ones become node trees) and
--- `changes` their saved block changes (planted trees grow around their blocks)
-local function generate(tier: number, planted: PlantedTrees, changes: { [string]: string }): Generated
+-- `island` is the player's saved island data: their planted trees (the grown ones stand
+-- here), the island trees they've felled, and their block changes (planted trees grow
+-- around their blocks)
+local function generate(tier: number, island: DataService.IslandData): Generated
 	local spec = IslandTiers[tier]
 	local radius = spec.Radius
 	local cells: { [string]: string } = {}
@@ -262,21 +256,26 @@ local function generate(tier: number, planted: PlantedTrees, changes: { [string]
 	local portalZ = -(radius - 2)
 	Portal.addCells(cells, protected, 0, portalZ)
 
-	-- Tree and boulder nodes on free spots that fit this island
-	local nodes: { [string]: Node } = {}
-	local trees = 0
+	-- The island's own trees on free spots that fit this island (unless felled), then
+	-- boulder nodes
+	local trees: { [string]: Tree } = {}
+	local count = 0
 	for i, spot in TREE_SPOTS do
-		if trees >= spec.Trees then
+		if count >= spec.Trees then
 			break
 		end
 		local x, z = spot[1], spot[2]
 		if math.sqrt(x * x + z * z) <= radius - 1.5 then
-			trees += 1
-			addTree(cells, nodes, x, 0, z, 4 + (i % 2))
+			count += 1
+			local groundKey = key(x, 0, z)
+			if not island.Felled[groundKey] then
+				trees[groundKey] = addTree(cells, x, 0, z, 4 + (i % 2), false)
+			end
 		end
 	end
 	-- Boulders: stone with a lump of coal on top and some iron showing (a reason to
 	-- upgrade to a Stone Pickaxe)
+	local nodes: { [string]: Node } = {}
 	local rocks = 0
 	for _, spot in ROCK_SPOTS do
 		if rocks >= spec.Rocks then
@@ -292,15 +291,15 @@ local function generate(tier: number, planted: PlantedTrees, changes: { [string]
 	end
 
 	-- Trees the player planted that have finished growing
-	local treeNodes: { [string]: { string } } = {}
+	local changes = island.Blocks
 	local function blocked(cellKey: string): boolean
 		local change = changes[cellKey]
 		return protected[cellKey] == true or (change ~= nil and change ~= "Air")
 	end
-	for groundKey, tree in planted do
+	for groundKey, tree in island.Trees do
 		if grown(tree) then
 			local x, y, z = BlockWorld.unkey(groundKey)
-			treeNodes[groundKey] = addTree(cells, nodes, x, y, z, tree.Height, blocked)
+			trees[groundKey] = addTree(cells, x, y, z, tree.Height, true, blocked)
 		end
 	end
 
@@ -310,7 +309,7 @@ local function generate(tier: number, planted: PlantedTrees, changes: { [string]
 		FarmCells = farmCells,
 		PortalZ = portalZ,
 		Nodes = nodes,
-		TreeNodes = treeNodes,
+		Trees = trees,
 	}
 end
 
@@ -370,9 +369,90 @@ local function makeSapling(island: Island, groundKey: string)
 	island.Saplings[groundKey] = part
 end
 
+local function registerTree(island: Island, groundKey: string, tree: Tree)
+	island.Trees[groundKey] = tree
+	for _, cells in { tree.Logs, tree.Leaves } do
+		for _, cellKey in cells do
+			island.TreeCells[cellKey] = groundKey
+		end
+	end
+end
+
+-- Is this block still part of the island as it was made: a node, or a generated block
+-- the player never touched (only trees count among blocks an item could place, so
+-- placing and re-mining a block can't farm XP or copy items)?
+local function isNatural(island: Island, data: DataService.Data, cellKey: string, blockType: string): boolean
+	if island.Nodes[cellKey] then
+		return true
+	end
+	if island.Base[cellKey] ~= blockType or data.Island.Blocks[cellKey] ~= nil then
+		return false
+	end
+	return island.TreeCells[cellKey] ~= nil or not placeable[blockType]
+end
+
+-- Does the tree still have a log standing (one it grew, not one the player put back)?
+local function standing(island: Island, data: DataService.Data, tree: Tree): boolean
+	for _, cellKey in tree.Logs do
+		if island.World.Cells[cellKey] == "Wood" and isNatural(island, data, cellKey, "Wood") then
+			return true
+		end
+	end
+	return false
+end
+
+-- The tree standing on `groundKey` is gone: it's no longer part of the island, its
+-- leaves fall away (over LEAF_FALL_TIME, or at once if `instant`) and its spot is free
+-- again. Returns how many leaves fell.
+local function fell(island: Island, data: DataService.Data, groundKey: string, instant: boolean): number
+	local tree = island.Trees[groundKey]
+	if not tree then
+		return 0
+	end
+	island.Trees[groundKey] = nil
+	if tree.Planted then
+		data.Island.Trees[groundKey] = nil
+	else
+		data.Island.Felled[groundKey] = true
+	end
+
+	local world = island.World
+	local fallen = 0
+	for _, cells in { tree.Logs, tree.Leaves } do
+		for _, cellKey in cells do
+			local leaf = world.Cells[cellKey] == "Leaves" and isNatural(island, data, cellKey, "Leaves")
+			island.TreeCells[cellKey] = nil
+			island.Base[cellKey] = nil
+			-- A hole where the tree was is just air now; anything built there stays
+			if data.Island.Blocks[cellKey] == "Air" then
+				data.Island.Blocks[cellKey] = nil
+			end
+			if leaf then
+				fallen += 1
+				local x, y, z = BlockWorld.unkey(cellKey)
+				if instant then
+					BlockWorld.setRaw(world, x, y, z, nil)
+				else
+					task.delay(rng:NextNumber(0.1, LEAF_FALL_TIME), function()
+						-- (unless the island was rebuilt meanwhile)
+						if
+							island.Model.Parent
+							and world.Cells[cellKey] == "Leaves"
+							and not island.TreeCells[cellKey]
+						then
+							BlockWorld.set(world, x, y, z, nil)
+						end
+					end)
+				end
+			end
+		end
+	end
+	return fallen
+end
+
 local function build(player: Player, data: DataService.Data, tier: number, plot: number): Island
 	local center = plotCenter(plot)
-	local generated = generate(tier, data.Island.Trees, data.Island.Blocks)
+	local generated = generate(tier, data.Island)
 	local world = BlockWorld.new(center - Vector3.new(0, SIZE / 2, 0), `Island_{player.UserId}`, islandsFolder)
 	world.Model:SetAttribute("OwnerUserId", player.UserId)
 	world.Model:SetAttribute("Tier", tier)
@@ -389,7 +469,6 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 			(world.Cells :: any)[cellKey] = if blockType == "Air" then nil else blockType
 		end
 	end
-	BlockWorld.drawAll(world)
 
 	local spawnPoint = makeSpawn(center, world.Model)
 	local island: Island = {
@@ -404,9 +483,21 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 		FarmCells = generated.FarmCells,
 		PortalSurface = Portal.makeField(world, 0, generated.PortalZ),
 		Nodes = generated.Nodes,
-		TreeNodes = generated.TreeNodes,
+		Trees = {},
+		TreeCells = {},
 		Saplings = {},
 	}
+	for groundKey, tree in generated.Trees do
+		registerTree(island, groundKey, tree)
+	end
+	-- A tree whose logs were all chopped (say the server stopped before it fell) falls now
+	for groundKey, tree in generated.Trees do
+		if not standing(island, data, tree) then
+			fell(island, data, groundKey, true)
+		end
+	end
+	BlockWorld.drawAll(world)
+
 	for groundKey, tree in data.Island.Trees do
 		if not grown(tree) then
 			local x, y, z = BlockWorld.unkey(groundKey)
@@ -425,7 +516,8 @@ local function announce(player: Player, island: Island)
 	end
 end
 
--- Remembers a block change in the player's save (only differences from the generated island)
+-- Remembers a block change in the player's save. Every change to a generated block is
+-- kept (even putting the same block back), so a block once broken is never "natural" again.
 function IslandService.RecordChange(player: Player, x: number, y: number, z: number, blockType: string?)
 	local island = islands[player]
 	local data = DataService.GetData(player)
@@ -433,8 +525,8 @@ function IslandService.RecordChange(player: Player, x: number, y: number, z: num
 		return
 	end
 	local cellKey = key(x, y, z)
-	if island.Base[cellKey] == blockType then
-		data.Island.Blocks[cellKey] = nil
+	if blockType == nil and island.Base[cellKey] == nil then
+		data.Island.Blocks[cellKey] = nil -- broke something the player built on open air
 	else
 		data.Island.Blocks[cellKey] = blockType or "Air"
 	end
@@ -510,25 +602,38 @@ function IslandService.GetNode(player: Player, x: number, y: number, z: number):
 	return if island then island.Nodes[key(x, y, z)] else nil
 end
 
--- Marks a node as mined: it grows back after its block's NodeRespawn time
-function IslandService.DepleteNode(player: Player, x: number, y: number, z: number)
-	local node = IslandService.GetNode(player, x, y, z)
-	if node then
-		local respawn = Blocks.Types[node.Block].NodeRespawn or 30
-		node.RespawnAt = os.clock() + respawn
-	end
+-- Is the block at this cell still the island's own (gives skill XP and double drops)?
+-- Call before breaking it.
+function IslandService.IsNatural(player: Player, x: number, y: number, z: number, blockType: string): boolean
+	local island = islands[player]
+	local data = DataService.GetData(player)
+	return island ~= nil and data ~= nil and isNatural(island, data, key(x, y, z), blockType)
 end
 
--- Is someone standing in this cell? (nodes wait until they move)
-local function cellOccupied(world: BlockWorld.World, x: number, y: number, z: number): boolean
-	local size = Vector3.one * (SIZE - 0.3)
-	for _, part in workspace:GetPartBoundsInBox(CFrame.new(BlockWorld.position(world, x, y, z)), size) do
-		local model = part:FindFirstAncestorOfClass("Model")
-		if model and model:FindFirstChildOfClass("Humanoid") then
-			return true
-		end
+-- After a block on the island was broken: a node starts growing back, anything else is
+-- saved as changed. Chopping a tree's last log fells it; then this returns how many of
+-- its leaves fell (for the woodcutter's saplings).
+function IslandService.Broken(player: Player, x: number, y: number, z: number): number?
+	local island = islands[player]
+	local data = DataService.GetData(player)
+	if not island or not data then
+		return nil
 	end
-	return false
+	local cellKey = key(x, y, z)
+	local node = island.Nodes[cellKey]
+	if node then
+		node.RespawnAt = os.clock() + (Blocks.Types[node.Block].NodeRespawn or 30)
+		return nil
+	end
+	IslandService.RecordChange(player, x, y, z, nil)
+	local groundKey = island.TreeCells[cellKey]
+	local tree = groundKey and island.Trees[groundKey]
+	if groundKey and tree and table.find(tree.Logs, cellKey) and not standing(island, data, tree) then
+		local fallen = fell(island, data, groundKey, false)
+		DataService.MarkChanged(player)
+		return fallen
+	end
+	return nil
 end
 
 -- Planted trees ------------------------------------------------------------------
@@ -559,7 +664,10 @@ function IslandService.PlantSapling(player: Player, x: number, y: number, z: num
 	if (ground ~= "Grass" and ground ~= "Dirt") or world.Protected[groundKey] or island.Nodes[groundKey] then
 		return false, "Saplings grow on grass or dirt"
 	end
-	local height = 4 + saplingRng:NextInteger(0, 1)
+	if data.Island.Trees[groundKey] or island.Trees[groundKey] then
+		return false, "Something's already growing here"
+	end
+	local height = 4 + rng:NextInteger(0, 1)
 	for dy = 1, height + 2 do
 		local k = key(x, y + dy, z)
 		if world.Cells[k] or world.Protected[k] or island.Nodes[k] then
@@ -573,57 +681,30 @@ function IslandService.PlantSapling(player: Player, x: number, y: number, z: num
 	return true, nil
 end
 
--- Digs up a tree the player planted (still a sapling, or grown) that the cell at
--- (x, y, z) belongs to. Returns whether there was one.
+-- Digs up the growing sapling at the cell above (x, y - 1, z). Returns whether there was one.
 function IslandService.Uproot(player: Player, x: number, y: number, z: number): boolean
 	local island = islands[player]
 	local data = DataService.GetData(player)
-	if not island or not data then
-		return false
-	end
-	local groundKey: string? = nil
-	if island.Saplings[key(x, y - 1, z)] then
-		groundKey = key(x, y - 1, z)
-	else
-		local cellKey = key(x, y, z)
-		for treeKey, cells in island.TreeNodes do
-			if table.find(cells, cellKey) then
-				groundKey = treeKey
-				break
-			end
-		end
-	end
-	local tree = groundKey and data.Island.Trees[groundKey]
-	if not groundKey or not tree then
+	local groundKey = key(x, y - 1, z)
+	local sapling = island and island.Saplings[groundKey]
+	local tree = data and data.Island.Trees[groundKey]
+	if not island or not data or not sapling or not tree then
 		return false
 	end
 	data.Island.Trees[groundKey] = nil
-	local sapling = island.Saplings[groundKey]
-	if sapling then
-		sapling:Destroy()
-		island.Saplings[groundKey] = nil
-		local gx, gy, gz = BlockWorld.unkey(groundKey)
-		protectTrunk(island.World, gx, gy, gz, tree.Height, false)
-	end
-	local cells: { string } = island.TreeNodes[groundKey] or {}
-	for _, cellKey in cells do
-		island.Nodes[cellKey] = nil
-		island.Base[cellKey] = nil
-		data.Island.Blocks[cellKey] = nil
-		local cx, cy, cz = BlockWorld.unkey(cellKey)
-		BlockWorld.set(island.World, cx, cy, cz, nil)
-	end
-	island.TreeNodes[groundKey] = nil
+	sapling:Destroy()
+	island.Saplings[groundKey] = nil
+	protectTrunk(island.World, x, y - 1, z, tree.Height, false)
 	DataService.MarkChanged(player)
 	return true
 end
 
--- A sapling whose time is up becomes a tree of nodes (waiting if someone stands in it)
-local function growTree(island: Island, data: DataService.Data, groundKey: string, tree: { Height: number })
+-- A sapling whose time is up becomes a tree (waiting if someone stands in it)
+local function growTree(island: Island, data: DataService.Data, groundKey: string, planted: { Height: number })
 	local world = island.World
 	local x, y, z = BlockWorld.unkey(groundKey)
-	for dy = 1, tree.Height do
-		if cellOccupied(world, x, y + dy, z) then
+	for dy = 1, planted.Height do
+		if BlockWorld.occupied(world, x, y + dy, z) then
 			return
 		end
 	end
@@ -632,20 +713,18 @@ local function growTree(island: Island, data: DataService.Data, groundKey: strin
 	if sapling then
 		sapling:Destroy()
 	end
-	protectTrunk(world, x, y, z, tree.Height, false)
+	protectTrunk(world, x, y, z, planted.Height, false)
 	local cells: { [string]: string } = {}
-	local nodes: { [string]: Node } = {}
-	local added = addTree(cells, nodes, x, y, z, tree.Height, function(cellKey)
+	local tree = addTree(cells, x, y, z, planted.Height, true, function(cellKey)
 		return world.Cells[cellKey] ~= nil or world.Protected[cellKey] == true or island.Nodes[cellKey] ~= nil
 	end)
-	for _, cellKey in added do
-		local node = nodes[cellKey]
-		island.Nodes[cellKey] = node
-		island.Base[cellKey] = node.Block
+	for cellKey, block in cells do
+		island.Base[cellKey] = block
 		data.Island.Blocks[cellKey] = nil
-		BlockWorld.set(world, node.X, node.Y, node.Z, node.Block)
+		local cx, cy, cz = BlockWorld.unkey(cellKey)
+		BlockWorld.set(world, cx, cy, cz, block)
 	end
-	island.TreeNodes[groundKey] = added
+	registerTree(island, groundKey, tree)
 end
 
 local function growSaplings()
@@ -673,7 +752,7 @@ local function respawnNodes()
 				local world = island.World
 				if BlockWorld.get(world, node.X, node.Y, node.Z) then
 					node.RespawnAt = nil -- something's already there
-				elseif not cellOccupied(world, node.X, node.Y, node.Z) then
+				elseif not BlockWorld.occupied(world, node.X, node.Y, node.Z) then
 					node.RespawnAt = nil
 					BlockWorld.set(world, node.X, node.Y, node.Z, node.Block)
 				end
@@ -681,6 +760,7 @@ local function respawnNodes()
 		end
 	end
 end
+
 -- Buying the next island size (from the Island window)
 local function onExpand(player: Player)
 	local data = DataService.GetData(player)

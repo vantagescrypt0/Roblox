@@ -1,14 +1,16 @@
 --!strict
--- Minecraft-style controls on your island (and in Town):
+-- Minecraft-style controls on your island and in the resource worlds (and in Town):
 --   aim at a block -> black outline
 --   hold left click (or hold a finger on it) -> you swing and it cracks, then breaks.
 --     How long depends on the block's toughness and the tool you hold (Mining.luau).
+--     Blocks the server marked Locked (the worlds' ground, portals) don't crack.
 --   right click (or tap) -> place the selected hotbar block against the face you aim at
+--     (only on your island)
 --   click / tap farmland -> plant the seeds you hold (or harvest when it's ripe)
 --   right click / tap grass or dirt while holding a hoe -> till it into farmland
 --   right click / tap grass or dirt while holding a sapling -> plant it
---   click a sapling, or right click a tree you planted while holding an axe -> dig it up
---   click / tap the crafting table or the Merchant -> open crafting / the market
+--   click a growing sapling -> dig it up
+--   click / tap the crafting table or a shopkeeper in Town -> open crafting / their shop
 --   right click / tap a furnace -> smelting (left click breaks it, so you can move it)
 -- The server double-checks everything.
 
@@ -22,6 +24,7 @@ local Workspace = game:GetService("Workspace")
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Mining = require(ReplicatedStorage.Shared.Mining)
+local Places = require(ReplicatedStorage.Shared.Places)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
@@ -34,7 +37,8 @@ local TAP_TIME = 0.25
 local CLICK_SLOP = 6 -- pixels the mouse may move and still count as a click
 local CRACK_STAGES = 10 -- the block darkens in steps, like Minecraft's crack texture
 local SWING_EVERY = 0.3 -- seconds between mining swings
-local TALK_DISTANCE = 16 -- how close you must be to trade with the Merchant
+local TALK_DISTANCE = 16 -- how close you must be to trade with a shopkeeper
+local ON_ISLAND = Places.Current() == "Island"
 local SLASH_ANIMATION = {
 	[Enum.HumanoidRigType.R15] = "rbxassetid://522635514",
 	[Enum.HumanoidRigType.R6] = "rbxassetid://129967478",
@@ -67,7 +71,7 @@ type Target = {
 
 export type Callbacks = {
 	OpenCrafting: (station: Recipes.Station) -> (),
-	OpenMarket: () -> (),
+	OpenShop: (shopId: string) -> (),
 }
 
 local BlockController = {}
@@ -86,15 +90,19 @@ local swingTimer = 0
 local swingTrack: AnimationTrack? = nil
 local swingCharacter: Model? = nil
 
-local function myIsland(): Instance?
-	local islands = Workspace:FindFirstChild("Islands")
-	return islands and islands:FindFirstChild(`Island_{player.UserId}`)
+-- The blocks you can work on here: your own island, or the shared resource world
+local function workArea(): Instance?
+	if ON_ISLAND then
+		local islands = Workspace:FindFirstChild("Islands")
+		return islands and islands:FindFirstChild(`Island_{player.UserId}`)
+	end
+	return Workspace:FindFirstChild("World")
 end
 
-local function merchant(): Model?
+local function shopkeepers(): { Instance }
 	local town = Workspace:FindFirstChild("Town")
-	local model = town and town:FindFirstChild("Merchant")
-	return if model and model:IsA("Model") then model else nil
+	local folder = town and town:FindFirstChild("Npcs")
+	return if folder then folder:GetChildren() else {}
 end
 
 local function rootPosition(): Vector3?
@@ -113,15 +121,15 @@ local function screenRay(): Ray?
 end
 
 local function aim(): Target?
-	local island = myIsland()
+	local area = workArea()
 	local origin = rootPosition()
 	local ray = screenRay()
-	if not island or not origin or not ray then
+	if not area or not origin or not ray then
 		return nil
 	end
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Include
-	params.FilterDescendantsInstances = { island }
+	params.FilterDescendantsInstances = { area }
 	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 120, params)
 	if not hit then
 		return nil
@@ -146,21 +154,27 @@ local function aim(): Target?
 	}
 end
 
--- Is the pointer on the Merchant, and are we close enough to talk?
-local function aimingAtMerchant(): boolean
-	local model = merchant()
+-- The shop of the shopkeeper under the pointer, if we're close enough to talk
+local function aimedShop(): string?
+	local keepers = shopkeepers()
 	local origin = rootPosition()
 	local ray = screenRay()
-	if not model or not origin or not ray or not model.PrimaryPart then
-		return false
-	end
-	if (model.PrimaryPart.Position - origin).Magnitude > TALK_DISTANCE then
-		return false
+	if #keepers == 0 or not origin or not ray then
+		return nil
 	end
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Include
-	params.FilterDescendantsInstances = { model }
-	return Workspace:Raycast(ray.Origin, ray.Direction * 120, params) ~= nil
+	params.FilterDescendantsInstances = keepers
+	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 120, params)
+	if not hit or (hit.Position - origin).Magnitude > TALK_DISTANCE then
+		return nil
+	end
+	local model = hit.Instance:FindFirstAncestorWhichIsA("Model")
+	while model and not model:GetAttribute("Shop") do
+		model = model:FindFirstAncestorWhichIsA("Model")
+	end
+	local shopId = model and model:GetAttribute("Shop")
+	return if type(shopId) == "string" then shopId else nil
 end
 
 local function burst(position: Vector3, color: Color3)
@@ -205,15 +219,18 @@ local function place()
 	local itemId = Hotbar.SelectedItem()
 	local item = itemId and Items[itemId]
 	local current = target
-	if not item or not item.Block or not current then
+	if not ON_ISLAND or not item or not item.Block or not current then
 		return
 	end
 	Remotes.PlaceBlock:FireServer(current.PX, current.PY, current.PZ, itemId)
 end
 
--- Right-clicking a block with something that works on it: a hoe tills grass or dirt, a
--- sapling is planted on it, an axe digs up a tree you planted. Returns true if used.
+-- Right-clicking a block on your island with something that works on it: a hoe tills
+-- grass or dirt, a sapling is planted on it. Returns true if used.
 local function useHeld(current: Target): boolean
+	if not ON_ISLAND then
+		return false
+	end
 	local itemId = Hotbar.SelectedItem()
 	local tool = itemId and Tools.ByItem[itemId]
 	local name = current.Part.Name
@@ -222,8 +239,6 @@ local function useHeld(current: Target): boolean
 		remote = Remotes.Till
 	elseif (name == "Grass" or name == "Dirt") and itemId == "Sapling" then
 		remote = Remotes.PlantSapling
-	elseif name == "Wood" and tool and tool.Kind == "Axe" then
-		remote = Remotes.Uproot
 	end
 	if remote then
 		remote:FireServer(current.X, current.Y, current.Z)
@@ -251,8 +266,10 @@ local function interact(secondary: boolean): boolean
 		return true
 	elseif current and secondary and useHeld(current) then
 		return true
-	elseif aimingAtMerchant() then
-		callbacks.OpenMarket()
+	end
+	local shopId = aimedShop()
+	if shopId then
+		callbacks.OpenShop(shopId)
 		return true
 	end
 	return false
@@ -265,7 +282,8 @@ local function update(dt: number)
 
 	cooldown = math.max(0, cooldown - dt)
 	local def = current and Blocks.Types[current.Part.Name]
-	if not breaking or not current or not def or not def.Breakable or cooldown > 0 then
+	local locked = current ~= nil and current.Part:GetAttribute("Locked") == true
+	if not breaking or not current or not def or not def.Breakable or locked or cooldown > 0 then
 		progress = 0
 		progressPart = nil
 		selection.SurfaceTransparency = 1

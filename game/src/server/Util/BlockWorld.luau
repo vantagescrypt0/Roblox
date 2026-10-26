@@ -120,6 +120,10 @@ local function makePart(world: World, blockType: string, x: number, y: number, z
 	part:SetAttribute("X", x)
 	part:SetAttribute("Y", y)
 	part:SetAttribute("Z", z)
+	-- Tells the client not to show cracks on blocks that can't be broken here
+	if world.Protected[BlockWorld.key(x, y, z)] then
+		part:SetAttribute("Locked", true)
+	end
 	part.Parent = world.Model
 	return part
 end
@@ -163,6 +167,18 @@ end
 
 function BlockWorld.part(world: World, x: number, y: number, z: number): BasePart?
 	return world.Parts[BlockWorld.key(x, y, z)]
+end
+
+-- Is someone standing in this cell? (blocks that grow back wait until they move)
+function BlockWorld.occupied(world: World, x: number, y: number, z: number): boolean
+	local size = Vector3.one * (SIZE - 0.3)
+	for _, part in workspace:GetPartBoundsInBox(CFrame.new(BlockWorld.position(world, x, y, z)), size) do
+		local model = part:FindFirstAncestorOfClass("Model")
+		if model and model:FindFirstChildOfClass("Humanoid") then
+			return true
+		end
+	end
+	return false
 end
 
 function BlockWorld.hasNeighbour(world: World, x: number, y: number, z: number): boolean

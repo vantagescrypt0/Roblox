@@ -6,8 +6,8 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
 | Skill | How you train it | XP | What it unlocks |
 |---|---|---|---|
 | **Farming** | Harvest ripe crops | Wheat 10, Carrot 25, Potato 55, Glowberry 90 | Stone Hoe (3), Carrot seeds (5), Iron Hoe (6, + Crafting 3), Glowberry (8), Potato (10), Crystal Hoe (12, + Crafting 8); more tilled plots as you level |
-| **Mining** | Mine the island's boulders and ore with a pickaxe | Stone 5, Coal Ore 12, Iron Ore 20 | Iron Pickaxe and Shovel (4), Crystal ones (8) |
-| **Woodcutting** | Chop the island's trees (and trees you planted) | Wood 6 | Iron Axe (4), Crystal Axe (8); more planted trees as you level |
+| **Mining** | Mine the island's boulders and ore with a pickaxe, or anything in the Mining World | Stone 5, Coal Ore 12, Iron Ore 20 | Iron Pickaxe and Shovel (4), Crystal ones (8) |
+| **Woodcutting** | Chop the island's trees, trees you planted, or the Woodcutting World's forest | Wood 6 | Iron Axe (4), Crystal Axe (8); more planted trees as you level |
 | **Crafting** | Craft or smelt anything | Planks/Sticks 4, Iron Ingot 10, Furnace 25; tools 10 / 20 / 50 / 120 by tier | Every Iron tool (3) and Crystal tool (8) |
 | **Combat** (the PvE level) | Defeat monsters in the Warzone | per monster | Crystal Sword (8); tougher monsters (Brute needs 5) |
 
@@ -22,10 +22,12 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
   - **How many:** 2 tilled plots, plus 1 more every 3 Farming levels (Farming 3 = 3, Farming 12 = 6, max 30), on top of your island's own plots.
   - **Undo:** a shovel on an empty tilled plot turns it back into dirt (a shovel on a crop still digs the crop up first).
   - **Bonus:** holding a hoe while harvesting adds +2% / 4% / 7% / 12% (Wooden → Crystal) double-crop chance on top of your Farming bonus, and uses 1 durability.
-- **Saplings (built 2026-10-25):** the island's leaves drop a Sapling 8% of the time. Hold one and right-click (or tap) grass or dirt with room above it to plant it; after 3 minutes (counting while you're offline) it grows into an oak. A grown planted tree works exactly like the island's own trees: its logs and leaves grow back after you chop them, and they give Woodcutting XP and double drops.
-  - **How many:** 1 planted tree, plus 1 more every 3 Woodcutting levels (max 20).
-  - **Undo:** click a sapling, or right-click a tree you planted while holding an axe, to dig it up and get the sapling back. The island's own trees can't be dug up.
-  - Planted trees are saved by the block they stand on and survive island expansion. Screenshot: `art/renders/sapling-planted.jpg`.
+- **Saplings and trees (built 2026-10-25, reworked the same day):** trees are **not nodes**, they don't grow back. Natural leaves drop a Sapling 8% of the time, and the Lumberjack in Town sells them (20 coins). Hold one and right-click (or tap) grass or dirt with room above it to plant it; after 3 minutes (counting while you're offline) it grows into an oak.
+  - **Felling:** chop a tree's last log and it falls: its leaves drop away over a second or two and you get saplings for them (8% per falling leaf, **always at least 1**), so you can always replant. This goes for the island's own trees too; a felled island tree is gone for good, even after expanding (saved in `Island.Felled`), and its spot is free to plant on.
+  - Chopping your island's trees (and planted ones) gives Woodcutting XP and double drops; a log you put back by hand doesn't.
+  - **How many:** up to 3 planted trees at once (saplings and grown ones), plus 1 more every 3 Woodcutting levels (max 30). Felling one frees its spot.
+  - **Undo:** click a growing sapling to dig it up and get it back.
+  - Endless wood: the **Woodcutting World** (through its portal in Town), where every tree grows back. See [[Town & Worlds]].
 
 ## Decided
 - Separate skill levels: **Farming**, **Mining**, **Woodcutting**, **Crafting** and **Combat (PvE)** (see above).
@@ -34,6 +36,7 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
 - **Player level (copied from Skybounds):**
   - Levels **1–50**.
   - **Level 10 unlocks the Warzone.** The beginner quests get you there. See [[Tutorial & Quests]].
+  - **Level 5 unlocks trading** with other players (built 2026-10-25). See [[Economy & Values]].
   - **XP comes from** PvE, grinding (farming, mining, etc.) and quests.
   - **Seasons:** each lasts 2–4 months, and player level **resets to 1** at the start of each season.
 See [[Decision Log]].

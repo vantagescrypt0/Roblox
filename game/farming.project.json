@@ -1,0 +1,71 @@
+{
+  "name": "RobloxSimFarming",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      },
+      "Blocks": {
+        "$path": "assets-replicated/Blocks.rbxm"
+      },
+      "ItemModels": {
+        "$path": "assets-replicated/ItemModels.rbxm"
+      }
+    },
+
+    "ServerStorage": {
+      "Assets": {
+        "$path": "assets"
+      }
+    },
+
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+
+    "Players": {
+      "$properties": {
+        "CharacterAutoLoads": false
+      }
+    },
+
+    "Workspace": {
+      "$properties": {
+        "FilteringEnabled": true
+      },
+      "$attributes": {
+        "PlaceKind": "Farming"
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "Ambient": [
+          0,
+          0,
+          0
+        ],
+        "Brightness": 2,
+        "GlobalShadows": true,
+        "Outlines": false,
+        "Technology": "Future"
+      }
+    },
+    "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    }
+  }
+}

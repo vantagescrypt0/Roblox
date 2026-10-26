@@ -12,14 +12,15 @@
 --
 -- Values come from Economy.luau (worn tools count at their worn value) so the window can
 -- warn about lopsided trades. Items only, no coins (see the vault note "Economy &
--- Values"). Every trade is saved in both players' data (Data.Trades) and printed to the
--- server log.
+-- Values"). Both players need player level Leveling.TradeLevel. Every trade is saved in
+-- both players' data (Data.Trades) and printed to the server log.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Economy = require(ReplicatedStorage.Shared.Economy)
 local Items = require(ReplicatedStorage.Shared.Items)
+local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local DataService = require(script.Parent.DataService)
@@ -282,12 +283,32 @@ local function startCountdown(session: Session)
 	end)
 end
 
+-- Both players are a high enough level to trade? Tells `player` if not.
+local function levelsOk(player: Player, other: Player): boolean
+	local mine, theirs = DataService.GetData(player), DataService.GetData(other)
+	if not mine or not theirs then
+		return false
+	end
+	if mine.Level < Leveling.TradeLevel then
+		StateService.Notify(
+			player,
+			`Trading unlocks at level {Leveling.TradeLevel}. You're level {mine.Level}, keep going!`,
+			"bad"
+		)
+		return false
+	elseif theirs.Level < Leveling.TradeLevel then
+		StateService.Notify(player, `{other.DisplayName} can trade once they reach level {Leveling.TradeLevel}`, "bad")
+		return false
+	end
+	return true
+end
+
 local function onRequest(player: Player, target: unknown)
 	local other = asPlayer(target)
 	if not other or other == player or other.Parent ~= Players or sessions[player] then
 		return
 	end
-	if not DataService.GetData(player) or not DataService.GetData(other) then
+	if not levelsOk(player, other) then
 		return
 	end
 	if sessions[other] then
@@ -346,6 +367,10 @@ local function onRespond(player: Player, sender: unknown, accepted: unknown)
 	if sessions[player] or sessions[from] then
 		withdraw(from)
 		StateService.Notify(player, `{from.DisplayName} is busy right now`, "bad")
+		return
+	end
+	if not levelsOk(player, from) then
+		withdraw(from)
 		return
 	end
 	if distance(player, from) > MAX_DISTANCE * 1.5 then

@@ -8,6 +8,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local Items = require(ReplicatedStorage.Shared.Items)
+local Places = require(ReplicatedStorage.Shared.Places)
 local Theme = require(script.Parent.UI.Theme)
 
 local C = Theme.Color
@@ -333,7 +334,8 @@ function Hud.Travel(destination: string)
 		setFade(false, TweenInfo.new(0.5))
 		return
 	end
-	fadeTitle.Text = if destination == "Town" then "Travelling to Town..." else "Heading home..."
+	local name = (Places.Names :: any)[destination]
+	fadeTitle.Text = if destination == "Island" or not name then "Heading home..." else `Travelling to {name}...`
 	setFade(true, TweenInfo.new(0.35))
 	-- Never leave the screen dark if the teleport silently never happens
 	task.delay(20, function()

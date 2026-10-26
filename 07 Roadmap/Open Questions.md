@@ -24,8 +24,14 @@
 - [ ] Season rewards that are kept forever (titles, cosmetics)?
 
 ## Trading
-- [ ] Should coins be tradable, or only items? *(Prototype: items only. See [[Economy & Values]])*
-- [ ] Any minimum level before you can trade (to slow down alt-account scams)? *(Prototype: none)*
+- [x] Should coins be tradable, or only items? → Items only for now ("hold off on coins", 2026-10-25)
+- [x] Any minimum level before you can trade? → Player level 5 (2026-10-25)
+- [x] Should saplings be sold? → Yes, by the Lumberjack (20); they aren't nodes, so they're cheap (2026-10-25)
+
+## Town & worlds
+- [ ] Anything you remember about the Skybounds spawn/hub to borrow? See [[Town & Worlds]]
+- [ ] More shopkeepers later (e.g. a Slayer for PvE gear next to the Slaying portal)?
+- [ ] Node items: price and how you get them (shop, rare drop, Warzone)?
 
 ## Tutorial
 - [ ] Review the draft quest chain in [[Tutorial & Quests]]

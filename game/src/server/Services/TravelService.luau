@@ -1,8 +1,9 @@
 --!strict
 -- Moves players between the experience's places with TeleportService: from their island
--- to the Town (its own servers) and back. Walk into a portal's glowing field, or use its
--- prompt. The screen fades out first; if the teleport fails the player is told, the fade
--- lifts and they stay where they are. (Teleports don't work in Studio playtests.)
+-- to the Town (its own servers), from the Town to the resource worlds, and back. Walk
+-- into a portal's glowing field, or use its prompt. The screen fades out first; if the
+-- teleport fails the player is told, the fade lifts and they stay where they are.
+-- (Teleports don't work in Studio playtests.)
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -29,16 +30,22 @@ local function failed(player: Player, message: string)
 	StateService.Notify(player, message, "bad")
 end
 
+-- "The Mining World" for messages that start with it
+local function capitalized(destination: Places.Kind): string
+	local name = Places.Names[destination]
+	return string.upper(string.sub(name, 1, 1)) .. string.sub(name, 2)
+end
+
 function TravelService.Go(player: Player, destination: Places.Kind)
 	if travelling[player] then
 		return
 	end
 	local placeId = Places.Ids[destination]
-	if RunService:IsStudio() then
-		StateService.Notify(player, `Travelling to the {destination} only works in the published game`, "bad")
+	if placeId == 0 then
+		StateService.Notify(player, `{capitalized(destination)} isn't open yet`, "bad")
 		return
-	elseif placeId == 0 then
-		StateService.Notify(player, `The {destination} isn't open yet`, "bad")
+	elseif RunService:IsStudio() then
+		StateService.Notify(player, `Travelling to {Places.Names[destination]} only works in the published game`, "bad")
 		return
 	end
 	travelling[player] = true
@@ -55,15 +62,17 @@ function TravelService.Go(player: Player, destination: Places.Kind)
 	end
 end
 
--- Lets a portal field send players somewhere: walking into it or using its prompt.
--- `allowed` decides who may use it (the island portal is only for the island's owner).
+-- Lets a portal field send players somewhere: walking into it or using its prompt
+-- (`action` on `object`, e.g. "Travel" / "Mining World"). `allowed` decides who may use
+-- it (the island portal is only for the island's owner).
 function TravelService.AddPortal(
 	field: BasePart,
 	destination: Places.Kind,
 	action: string,
-	allowed: (Player) -> boolean
+	allowed: (Player) -> boolean,
+	object: string?
 )
-	local prompt = Prompts.Create(field, { Action = action, Object = "Portal", Hold = 0.4, Distance = 12 })
+	local prompt = Prompts.Create(field, { Action = action, Object = object or "Portal", Hold = 0.4, Distance = 12 })
 	prompt.Triggered:Connect(function(player)
 		if allowed(player) then
 			TravelService.Go(player, destination)

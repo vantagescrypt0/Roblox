@@ -7,9 +7,11 @@
 --   Tool         the tool kind that breaks it fast (Pickaxe, Axe, Shovel) - see Tools.luau
 --   RequiresTool if true you need that tool (and MinTier) or it breaks very slowly and drops nothing
 --
--- Resource nodes: the island's trees, boulders and ores are nodes. Mining one gives its
--- drop and it grows back in the same spot after NodeRespawn seconds (no replanting).
--- The same block placed by a player is just a normal block.
+-- Resource nodes: blocks that grow back in the same spot NodeRespawn seconds after you
+-- mine them. On your island those are the boulders and their ore (trees aren't: a felled
+-- tree is gone and you replant a sapling). In the resource worlds every rock, log and
+-- leaf is a node, so they never run out. The same block placed by a player is just a
+-- normal block.
 
 export type Block = {
 	Name: string,
@@ -38,7 +40,7 @@ local Blocks: { [string]: Block } = {
 	},
 	Cobblestone = {
 		Name = "Cobblestone",
-		Drop = "Stone",
+		Drop = "Cobblestone",
 		Hardness = 2,
 		Tool = "Pickaxe",
 		RequiresTool = true,
@@ -78,8 +80,8 @@ local Blocks: { [string]: Block } = {
 	Wood = { Name = "Wood", Drop = "Wood", Hardness = 2, Tool = "Axe", Breakable = true, NodeRespawn = 20 },
 	Planks = { Name = "Planks", Drop = "Planks", Hardness = 2, Tool = "Axe", Breakable = true },
 	Leaves = { Name = "Leaves", Drop = nil, Hardness = 0.2, Breakable = true, SeeThrough = true, NodeRespawn = 30 },
-	RedWool = { Name = "Red Wool", Drop = nil, Hardness = 0.8, Breakable = true },
-	WhiteWool = { Name = "White Wool", Drop = nil, Hardness = 0.8, Breakable = true },
+	RedWool = { Name = "Red Wool", Drop = "RedWool", Hardness = 0.8, Breakable = true },
+	WhiteWool = { Name = "White Wool", Drop = "WhiteWool", Hardness = 0.8, Breakable = true },
 	-- Special blocks the game places; players can't break them
 	CraftingTable = { Name = "Crafting Table", Drop = nil, Hardness = 2.5, Breakable = false },
 	Farmland = { Name = "Farmland", Drop = nil, Hardness = 0.6, Breakable = false },

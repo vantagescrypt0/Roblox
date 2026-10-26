@@ -7,6 +7,9 @@ Leveling.MaxPlayerLevel = 50
 Leveling.MaxSkillLevel = 99
 -- Player level needed to enter the Warzone
 Leveling.WarzoneLevel = 10
+-- Player level needed to trade with other players: past the beginner quests and a little
+-- play, so brand-new players (and throwaway accounts) can't be talked into bad trades
+Leveling.TradeLevel = 5
 
 -- XP needed to go from `level` to `level + 1`
 function Leveling.XPToNext(level: number): number
@@ -25,9 +28,10 @@ function Leveling.TilledPlots(farmingLevel: number): number
 	return math.min(2 + farmingLevel // 3, 30)
 end
 
--- How many trees you can plant on your island: 1, plus one more every 3 Woodcutting levels
+-- How many planted trees (saplings and grown trees) you can have on your island at once:
+-- 3, plus one more every 3 Woodcutting levels. A felled tree frees its spot.
 function Leveling.PlantedTrees(woodcuttingLevel: number): number
-	return math.min(1 + woodcuttingLevel // 3, 20)
+	return math.min(3 + woodcuttingLevel // 3, 30)
 end
 
 return table.freeze(Leveling)
