@@ -42,7 +42,7 @@ Each world is **its own place** with its own servers (like Town). You arrive at 
 - **Slaying World**: not built (waits for PvE).
 
 ## Not done yet
-- The three worlds need publishing as new places in the experience; until then their portals say "isn't open yet". See [[Roadmap]].
+- Published 2026-10-25 as places in "Sky Farm Prototype" (ids in `Places.luau`). Their names in Creator Hub are still Roblox's defaults ("koiopio's Place: 10262026_1/2/3" = Mining/Woodcutting/Farming; "…10242026_1" = Town). Teleports still need a live test. See [[Roadmap]].
 - Node items (an Iron Node you buy, place and mine forever): later, with rare ores. See [[Decision Log]].
 
 Related: [[Islands (Roblox)]] · [[Skybounds (Minecraft)]] · [[Economy & Values]] · [[Skills & Levels]] · [[Warzone]]

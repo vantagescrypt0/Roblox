@@ -29,8 +29,8 @@ No dates — quality over speed.
    - [x] Nodes rethink (2026-10-25): trees are chop-once (felled trees drop their leaves and give ≥1 sapling); only ores and crops grow back — playtested in Studio; not published yet
    - [x] Trading needs level 5; items only (2026-10-25) — not published yet
    - [x] Town hub (2026-10-25): Merchant, Lumberjack, Miner and Builder stalls around a plaza with a well; portal row to the worlds — playtested in Studio; not published yet. See [[Town & Worlds]]
-   - [x] Mining, Woodcutting and Farming worlds as their own places (2026-10-25) — each playtested in Studio; **not published: needs 3 new places in the experience**
-   - [ ] Publish everything (Island + Town + the 3 worlds, together), then put the world place ids in `Places.luau` and publish again
+   - [x] Mining, Woodcutting and Farming worlds as their own places (2026-10-25) — each playtested in Studio
+   - [x] Published everything (2026-10-25): Island + Town updated, 3 new places (Mining 97612918094932, Woodcutting 75392192647539, Farming 134413726720555) — [ ] test the teleports live
    - [ ] Slaying World (PvE spawners) — its Town portal is boarded up until then
    - [ ] Rare ores, trees and crops found outside the worlds (e.g. the Warzone); node items you can own and place
    - [ ] Add the Warzone to Town (when you're ready)
