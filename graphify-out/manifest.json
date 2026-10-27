@@ -420,9 +420,9 @@
     "semantic_hash": "a2bae3de7a2250cf4ff14767c54293da"
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1793048109.201594,
-    "seen": 1793048233.6308365,
-    "ast_hash": "04307a3e6e02b3b06d06153beab1d2a9",
+    "mtime": 1793066653.395834,
+    "seen": 1793066668.6753104,
+    "ast_hash": "d14964e9ff8d1d0cd3c02e7180ce24c6",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
@@ -432,9 +432,9 @@
     "semantic_hash": ""
   },
   "07 Roadmap/Roadmap.md": {
-    "mtime": 1793048117.5588298,
-    "seen": 1793048233.6308396,
-    "ast_hash": "003b4308782b983d50be97388b2eb099",
+    "mtime": 1793066653.2793157,
+    "seen": 1793066668.675314,
+    "ast_hash": "3871121252a97c9fd52654077e923795",
     "semantic_hash": ""
   },
   "Home.md": {
@@ -636,9 +636,9 @@
     "semantic_hash": ""
   },
   "03 Design/Town & Worlds.md": {
-    "mtime": 1793048173.8359387,
-    "seen": 1793048233.6308231,
-    "ast_hash": "e5d3f3b6208c7dc578ba2ab214f476a1",
+    "mtime": 1793066662.1920052,
+    "seen": 1793066668.675296,
+    "ast_hash": "26cc546f4c2772640ca155a21580eb83",
     "semantic_hash": ""
   },
   "game/src/client/AmbientController.luau": {

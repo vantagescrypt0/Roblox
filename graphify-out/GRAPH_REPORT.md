@@ -1,7 +1,7 @@
 # Graph Report - Roblox  (2026-10-26)
 
 ## Corpus Check
-- 117 files · ~110,543 words
+- 117 files · ~111,339 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 8 file(s) not represented in the graph (top: (none) 4, .toml 3, .base 1)
 
@@ -69,8 +69,8 @@
   02 Research/Skybounds (Minecraft).md → 03 Design/Mechanics to Borrow.md
 - `NPC visits at milestones with a starter pack` --semantically_similar_to--> `Merchant NPC at the Town market`  [INFERRED] [semantically similar]
   02 Research/Islands (Roblox).md → 04 Content/Content Index.md
-- `Key-gated adventure islands` --semantically_similar_to--> `Warzone-only keys/materials unlock island tiers`  [INFERRED] [semantically similar]
-  02 Research/Islands (Roblox).md → 03 Design/Mechanics to Borrow.md
+- `Idle-grow / cozy trend (Grow a Garden spike and decay)` --semantically_similar_to--> `Offline progress and timers`  [INFERRED] [semantically similar]
+  02 Research/Trends - Oct 2026.md → 03 Design/Anti-Burnout Ideas.md
 
 ## Import Cycles
 - None detected.
@@ -211,7 +211,7 @@ Cohesion: 0.11
 Nodes (17): NPC visits at milestones with a starter pack, Economy sinks to slow inflation, Tool path quests: wood -> planks -> sticks -> pickaxe -> stone, Warzone parked until it moves into Town, Merchant NPC at the Town market, Tools: pickaxe, axe, shovel, sword in Wooden / Stone / Crystal, Decision: falling off returns you to your island, Decision: buy bigger islands with coins (4 tiers) (+9 more)
 
 ## Knowledge Gaps
-- **14 isolated node(s):** `Prototype phase (current)`, `Vertical slice, then soft launch, launch and live ops`, `Rokit toolchain: StyLua, Selene, luau-lsp`, `Claude builds code, models and notes; the user playtests and publishes`, `Skybounds (Minecraft Skyblock server, now shut down)` (+9 more)
+- **14 isolated node(s):** `Rokit toolchain: StyLua, Selene, luau-lsp`, `Claude builds code, models and notes; the user playtests and publishes`, `Skybounds (Minecraft Skyblock server, now shut down)`, `Roleplay + simulator hybrids growing [Unverified]`, `Inbox` (+9 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 167 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -222,7 +222,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.311) - this node is a cross-community bridge._
 - **Are the 22 inferred relationships involving `Theme.make()` (e.g. with `Hotbar.Start()` and `buildButtons()`) actually correct?**
   _`Theme.make()` has 22 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `Prototype phase (current)`, `Vertical slice, then soft launch, launch and live ops`, `Rokit toolchain: StyLua, Selene, luau-lsp` to the rest of the system?**
+- **What connects `Rokit toolchain: StyLua, Selene, luau-lsp`, `Claude builds code, models and notes; the user playtests and publishes`, `Skybounds (Minecraft Skyblock server, now shut down)` to the rest of the system?**
   _14 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Context.luau` be split into smaller, more focused modules?**
   _Cohesion score 0.07857142857142857 - nodes in this community are weakly interconnected._
