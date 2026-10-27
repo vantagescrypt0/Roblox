@@ -210,9 +210,9 @@
     "semantic_hash": "222dd8afa9da9e23f5becea42f89e90c"
   },
   "game/src/server/Services/TownService.luau": {
-    "mtime": 1793065863.3792543,
-    "seen": 1793066032.4208713,
-    "ast_hash": "652294b093d8e913045df456dcab32d7",
+    "mtime": 1793068522.4274318,
+    "seen": 1793068678.7767773,
+    "ast_hash": "f6f58f727a07e3d8f29e1166c3707bea",
     "semantic_hash": ""
   },
   "game/src/server/Services/WarzoneService.luau": {
@@ -420,9 +420,9 @@
     "semantic_hash": "a2bae3de7a2250cf4ff14767c54293da"
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1793066653.395834,
-    "seen": 1793066668.6753104,
-    "ast_hash": "d14964e9ff8d1d0cd3c02e7180ce24c6",
+    "mtime": 1793068148.9753828,
+    "seen": 1793068678.7769382,
+    "ast_hash": "b3132a109a92806681627456c68c88dd",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1793064263.5939965,
-    "seen": 1793066032.4210188,
-    "ast_hash": "959ec8c0764b9303bb9d25ef6c0794df",
+    "mtime": 1793068144.218629,
+    "seen": 1793068678.776887,
+    "ast_hash": "90710c0f4d766e9a860799125a7ba1a1",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -636,9 +636,9 @@
     "semantic_hash": ""
   },
   "03 Design/Town & Worlds.md": {
-    "mtime": 1793066662.1920052,
-    "seen": 1793066668.675296,
-    "ast_hash": "26cc546f4c2772640ca155a21580eb83",
+    "mtime": 1793068159.882335,
+    "seen": 1793068678.7769206,
+    "ast_hash": "bec44815d171c164f7d273bc0fbaf592",
     "semantic_hash": ""
   },
   "game/src/client/AmbientController.luau": {
@@ -660,9 +660,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Util/Decor.luau": {
-    "mtime": 1793046231.833635,
-    "seen": 1793047978.1496108,
-    "ast_hash": "9de134bd418e40ef57fe9dd1adb62af8",
+    "mtime": 1793067430.0520635,
+    "seen": 1793068678.7768,
+    "ast_hash": "cb65283a89379aae674694bf1e1c915d",
     "semantic_hash": ""
   },
   "game/src/server/Worlds/Context.luau": {
@@ -699,6 +699,12 @@
     "mtime": 1793049113.3298886,
     "seen": 1793049216.4015474,
     "ast_hash": "20cf50720d6bf9b42afdb95e6bb451c5",
+    "semantic_hash": ""
+  },
+  "game/src/server/Util/Logo.luau": {
+    "mtime": 1793067412.7598164,
+    "seen": 1793068678.7768025,
+    "ast_hash": "11303eb7bb4e203b5fbbf7a5659a99c1",
     "semantic_hash": ""
   }
 }

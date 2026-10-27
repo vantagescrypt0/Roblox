@@ -86,6 +86,31 @@ function Decor.Lantern(parent: Instance, bottom: Vector3, hanging: boolean?, ran
 	return glass
 end
 
+-- A wooden lamp post: a square post on a stone foot carrying a lantern box (a glowing
+-- pane in a dark wooden frame under a little roof). `ground` is the top of the block it
+-- stands on; `height` is the post's, in studs.
+function Decor.LampPost(parent: Instance, ground: Vector3, height: number?, range: number?): BasePart
+	local h = height or 8
+	local base = CFrame.new(ground)
+	Decor.Piece(parent, "Cobblestone", Vector3.new(1.6, 0.8, 1.6), base * CFrame.new(0, 0.4, 0))
+	Decor.Piece(parent, "DarkPlanks", Vector3.new(0.8, h, 0.8), base * CFrame.new(0, 0.8 + h / 2, 0))
+	local box = base * CFrame.new(0, 0.8 + h + 1.25, 0)
+	Decor.Piece(parent, "DarkPlanks", Vector3.new(2, 0.3, 2), box * CFrame.new(0, -1.1, 0))
+	local glow = part(parent, "LanternGlow", Vector3.new(1.4, 1.8, 1.4), box, GLOW, Enum.Material.Neon)
+	for _, corner in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
+		Decor.Piece(
+			parent,
+			"DarkPlanks",
+			Vector3.new(0.3, 2, 0.3),
+			box * CFrame.new(corner[1] * 0.85, 0, corner[2] * 0.85)
+		)
+	end
+	Decor.Piece(parent, "DarkPlanks", Vector3.new(2.4, 0.3, 2.4), box * CFrame.new(0, 1.1, 0))
+	Decor.Piece(parent, "DarkPlanks", Vector3.new(1.2, 0.4, 1.2), box * CFrame.new(0, 1.45, 0))
+	light(glow, range or 22, 1.3)
+	return glow
+end
+
 -- A lantern on a bracket sticking out of a wall: `at` is a point on the wall's face,
 -- `out` points away from the wall
 function Decor.WallLantern(parent: Instance, at: Vector3, out: Vector3)

@@ -25,8 +25,11 @@ Built 2026-10-25, rebuilt the same day for looks (your call: "make it an actual 
 - **Hanging**: a board on two chains under a beam (the mine arch).
 
 ## The Town (hub)
-A big round floating island (radius 40 blocks), all protected, lit by lanterns everywhere, with a soft atmosphere and the sun in the south. Its two gates have taller pillars now, so their signs sit well above everyone's heads.
-- **Arrival plaza** (south): smooth stone around the runestone **portal home**; a stone **"WELCOME TO TOWN" gate** with lanterns; the main street runs north between hedges, lamp posts and two planted trees.
+Rebuilt 2026-10-26 after your Skybounds spawn screenshots. A big floating island (about 50 blocks across from the fountain to the rim) and a little spawn island south of it, all protected, with natural island edges like the worlds, clouds drifting round and below, and little rocks floating nearby. Lamp posts everywhere are **wooden posts with lantern boxes**. Soft atmosphere, the sun in the south.
+- **Spawn** (its own islet): you arrive on a paved square in front of the runestone **portal home**, flower beds down both sides, and look straight up the bridge at the mountain and the logo.
+- **The bridge**: seven blocks wide, stone bricks with low walls, lantern posts on pillars along both walls with flower boxes between them, a stone arch underneath over the sky.
+- **The mountain**: a stone ridge across the south of the Town island, a wall of rock behind the logo with peaks up to about 35 blocks either side of it, grass and oaks on top, vines down its cliffs, boulders at its foot. A paved plaza with flower beds and benches lies in front. The street goes through a big **stone-brick arch** (seven wide, a tunnel lit by lanterns, a stone gate at each end), and over the south gate stands the **SKYBLOX logo**: chunky pixel letters, "SKY" in sky blue and "BLOX" in gold, with a dark outline and shadow, a rainbow arching over them and blocky clouds at its feet.
+- **Market street** (past the arch): four market stalls with striped cloth roofs, two each side: produce (red), flowers (pink), ores (blue), wood (green). Decoration for now; the shopkeepers are in the square.
 - **Market Square** (middle): cobblestone and stone-brick rings around a **fountain** (stone basin, water, a centre pillar spraying, four corner spouts), benches, lamp posts. Four **shops you walk into** face the square, each a real building with a stone foundation, timber corner posts and beams, glass windows with flower boxes, a stepped gable roof, the shop's name on the gable, lanterns by the door, and inside a counter with the shopkeeper behind it, goods on the counter, shelves, lanterns:
   | Shop (sign) | Building | Outside | Shopkeeper | Buys | Sells |
   |---|---|---|---|---|---|
@@ -83,8 +86,7 @@ Each world is **its own place** with its own servers (like Town), about **230 bl
 - **Flying** (2026-10-26, your call): only you (koiopio) can fly, in every place: double-tap Space (or the jump button), Space/E up, Ctrl/Q down. The list is `Config.Flyers`.
 
 ## Not done yet
-- Published: the first versions 2026-10-25; the Skybounds-scale worlds and flying 2026-10-26 afternoon; this second pass (signs, open farms, mine sections) 2026-10-26 ~21:00 (all 5 places). Their names in Creator Hub are still Roblox's defaults ("koiopio's Place: 10262026_1/2/3" = Mining/Woodcutting/Farming; "…10242026_1" = Town). See [[Roadmap]].
-- **Town redesign** after your Skybounds spawn shots: a stone bridge with walls and lamps up to a mountain with an arch, a big logo sign with clouds and a rainbow, market stalls with striped awnings, wooden lamp posts with lantern boxes, flowers. It waits on a name for the logo sign.
+- Published: the first versions 2026-10-25; the Skybounds-scale worlds and flying 2026-10-26 afternoon; this second pass (signs, open farms, mine sections) 2026-10-26 ~21:00 (all 5 places); the Skyblox Town 2026-10-26 evening (Town place). Their names in Creator Hub are still Roblox's defaults ("koiopio's Place: 10262026_1/2/3" = Mining/Woodcutting/Farming; "…10242026_1" = Town). See [[Roadmap]].
 - **Slaying World** zones (your PvE reference: dead trees, brown and terracotta ground, grey boulders, torches, mobs): with PvE.
 - Node items (an Iron Node you buy, place and mine forever): later, with rare ores. See [[Decision Log]].
 

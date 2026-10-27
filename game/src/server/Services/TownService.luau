@@ -1,8 +1,13 @@
 --!strict
--- The Town place: the shared hub, a big floating island on its own servers. Players
--- teleport here from their island's portal (TravelService) and arrive at the south end.
---   Arrival      a paved plaza by the runestone portal home, a welcome gate and a main
---                street lined with lamps running north
+-- The Town place: the shared hub, on its own servers. Players teleport here from their
+-- island's portal (TravelService) and arrive on a little spawn island to the south, laid
+-- out like the Skybounds spawn:
+--   Spawn        the runestone portal home on a paved islet with flower beds; ahead, a
+--                wide stone bridge with walls, lantern posts and flower boxes runs north
+--   The mountain a stone ridge across the south of the Town island, grassy and wooded on
+--                top, with the SKYBLOX logo (rainbow and clouds) over a big stone arch;
+--                the street runs through the arch into town
+--   Market street  striped market stalls either side of the street past the arch
 --   Market Square  a fountain in the middle of the town, ringed by four shops you walk
 --                into, each with its shopkeeper behind the counter (Shops.luau, Util/Npc):
 --                Market (Merchant) and Lumber Yard (Lumberjack) on the west side, Builder
@@ -10,9 +15,9 @@
 --                goods outside
 --   Lanes        a lane west to a garden with a well, a lane east to a park with a pond;
 --                four cottages with gardens around them
---   Portal Plaza at the north end, past a second gate: the runestone portals to the
---                Farming, Woodcutting and Mining worlds, and Slaying (boarded up until
---                PvE), each with banners in its colour
+--   Portal Plaza at the north end: the runestone portals to the Farming, Woodcutting
+--                and Mining worlds, and Slaying (boarded up until PvE), each with
+--                banners in its colour
 -- Nothing here can be broken, and anyone who falls off is put back at the spawn point.
 --
 -- Grid: x runs west to east, z south to north; y = 0 is the ground, things stand on y = 1.
@@ -25,6 +30,7 @@ local Ambience = require(script.Parent.Parent.Util.Ambience)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local Build = require(script.Parent.Parent.Util.Build)
 local Decor = require(script.Parent.Parent.Util.Decor)
+local Logo = require(script.Parent.Parent.Util.Logo)
 local Npc = require(script.Parent.Parent.Util.Npc)
 local Portal = require(script.Parent.Parent.Util.Portal)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
@@ -32,18 +38,40 @@ local Props = require(script.Parent.Parent.Util.Props)
 local Signs = require(script.Parent.Parent.Util.Signs)
 local Spawning = require(script.Parent.Parent.Util.Spawning)
 local Trees = require(script.Parent.Parent.Util.Trees)
+local Common = require(script.Parent.Parent.Worlds.Common)
+local Context = require(script.Parent.Parent.Worlds.Context)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 local TravelService = require(script.Parent.TravelService)
 
 local CENTER = Vector3.new(0, 200, 0) -- top of the ground at the fountain
-local RADIUS = 40
 local SIZE = Blocks.Size
 local FALL_LIMIT = 140
-local HOME_PORTAL_Z = -34
-local SPAWN_Z = -30
+local SEED = 2026
+-- The Town island reaches well south of the fountain, so the mountain stands inside it
+-- (hills ease down near an island's rim)
+local TOWN = { X = 0, Z = -12, R = 52 }
+local SPAWN = { X = 0, Z = -88, R = 10 } -- the spawn islet
+local HOME_PORTAL_Z = -93
+local SPAWN_Z = -89
+local SPAWN_PLAZA = { Z1 = -96, Z2 = -80, Half = 6 }
+local PLAZA = { Z1 = -53, Z2 = -41, Half = 10 } -- in front of the mountain, where the bridge lands
+local SOUTH_FACE, NORTH_FACE = -40, -27 -- the mountain's two cliffs (z)
+local RIDGE_HALF = 33 -- how far the mountain runs east and west
+local ARCH_HALF = 3 -- the arch through it is seven blocks wide
 local PORTAL_Z = 32 -- the row of world portals
 local SQUARE = 12 -- half-width of the Market Square
+
+-- The mountain's peaks (heights in blocks): the tallest frame the logo, either side of it
+local PEAKS = {
+	{ X = -30, Z = -32, H = 16, R = 7 },
+	{ X = -24, Z = -34, H = 34, R = 11 },
+	{ X = -12, Z = -33, H = 25, R = 9 },
+	{ X = 12, Z = -34, H = 26, R = 9 },
+	{ X = 25, Z = -33, H = 35, R = 11 },
+	{ X = 30, Z = -32, H = 15, R = 7 },
+}
+local WALL = 19 -- the rock behind the logo, tall enough to hide its back from town
 
 local FLOWER_COLORS = {
 	Color3.fromRGB(222, 62, 52),
@@ -64,9 +92,10 @@ local WORLD_PORTALS: { { Kind: Places.Kind, Name: string, X: number, Color: Colo
 local TownService = {}
 
 local world: BlockWorld.World
+local ctx: Context.Context
 local decor: Folder
 local npcs: Folder
-local rng = Random.new(2026)
+local rng = Random.new(SEED)
 local shopkeepers: { [string]: Model } = {}
 
 -- The shopkeeper models by shop id (see Shops.luau). Their "Head" model turns to look at
@@ -90,29 +119,87 @@ end
 
 -- Ground ---------------------------------------------------------------------------
 
-local edgeNoise: { number } = {}
-for i = 0, 23 do
-	edgeNoise[i] = rng:NextNumber(-1.6, 1.6)
+-- Same answer every time for a cell
+local function hash(x: number, y: number, z: number): number
+	return Random.new(x * 73856093 + y * 19349663 + z * 83492791 + SEED):NextNumber()
 end
 
-local function edgeRadius(x: number, z: number): number
-	local t = (math.atan2(z, x) / (2 * math.pi) + 0.5) * 24
-	local i0 = math.floor(t) % 24
-	local f = t - math.floor(t)
-	return RADIUS + edgeNoise[i0] * (1 - f) + edgeNoise[(i0 + 1) % 24] * f
+-- Grass, with flowers in some of it
+local function lawn(x: number, z: number): string
+	return if hash(x, 0, z) < 0.07 then "FlowerGrass" else "Grass"
 end
 
--- Same answer every time for a cell (for scattering flowers in the grass)
-local function hash(x: number, z: number): number
-	return Random.new(x * 7919 + z * 104729 + 17):NextNumber()
+-- Where the mountain's two cliffs are at x: straight behind the arch, ragged elsewhere,
+-- closing in toward its ends
+local function faces(x: number): (number, number)
+	local ax = math.abs(x)
+	local shrink = if ax > 20 then math.floor((ax - 20) / 3) else 0
+	local south = SOUTH_FACE
+	if ax > ARCH_HALF + 4 then
+		south += math.floor((math.noise(x / 5, 0.3, 7.7) + 0.5) * 3)
+	end
+	return south + shrink, NORTH_FACE - shrink
 end
 
--- What the ground is made of at (x, z): streets, plazas and lanes are paved, the rest is
--- grass with a few flowers in it
+-- The mountain's height at (x, z), 0 off it: a wall of rock between its two cliffs, peaks
+-- rising either side of the logo, stepping down a block or two at the cliff edges
+local function ridgeHeight(x: number, z: number): number
+	local south, north = faces(x)
+	local inside = math.min(z - south, north - z)
+	local ax = math.abs(x)
+	if inside < 0 or ax > RIDGE_HALF then
+		return 0
+	end
+	local h = if ax <= 16 then WALL else WALL * (1 - ((ax - 16) / (RIDGE_HALF - 14)) ^ 2)
+	for _, peak in PEAKS do
+		local d = math.sqrt((x - peak.X) ^ 2 + ((z - peak.Z) * 1.3) ^ 2)
+		h = math.max(h, peak.H * (1 - d / peak.R))
+	end
+	h += math.noise(x / 6, z / 6, 3.1) * 3
+	if inside == 0 then
+		h *= 0.6
+	elseif inside == 1 then
+		h *= 0.82
+	end
+	if ax <= ARCH_HALF + 4 then
+		h = math.max(h, 13)
+	end
+	return math.max(1, math.floor(h + 0.5))
+end
+
+-- The mountain's rock: stone with patches of cobble and moss
+local function rock(x: number, y: number, z: number): string
+	local roll = hash(x, y, z)
+	return if roll < 0.1 then "MossyCobblestone" elseif roll < 0.18 then "Cobblestone" else "Stone"
+end
+
+-- Old stone bricks, some mossy or cracked (the arch, the bridge walls)
+local function oldBricks(x: number, y: number, z: number): string
+	local roll = hash(x, y + 50, z)
+	return if roll < 0.12 then "MossyStoneBricks" elseif roll < 0.22 then "CrackedStoneBricks" else "StoneBricks"
+end
+
+-- The spawn islet: a paved square round the portal home with flower beds down its sides
+local function spawnColumn(x: number, z: number): (string, number)
+	local ax = math.abs(x)
+	if ax <= SPAWN_PLAZA.Half and z >= SPAWN_PLAZA.Z1 and z <= SPAWN_PLAZA.Z2 then
+		if ax >= 4 and ax <= 5 and z >= HOME_PORTAL_Z + 3 and z <= SPAWN_PLAZA.Z2 - 3 then
+			return "Grass", 0
+		end
+		return if ax == SPAWN_PLAZA.Half or z == SPAWN_PLAZA.Z1 then "StoneBricks" else "SmoothStone", 0
+	end
+	return lawn(x, z), 0
+end
+
+-- What the Town's ground is made of at (x, z): streets, plazas and lanes are paved, the
+-- rest is grass with a few flowers in it
 local function groundBlock(x: number, z: number): string
 	local ax, az = math.abs(x), math.abs(z)
-	if ax <= 8 and z >= HOME_PORTAL_Z - 3 and z <= -27 then -- arrival plaza
-		return if ax == 8 or z == -27 then "StoneBricks" else "SmoothStone"
+	if ax <= PLAZA.Half and z >= PLAZA.Z1 and z <= PLAZA.Z2 then -- in front of the mountain
+		return if ax == PLAZA.Half or z == PLAZA.Z1 then "StoneBricks" else "SmoothStone"
+	end
+	if ax <= 10 and z > NORTH_FACE and z < -SQUARE then -- the market street
+		return if ax <= 3 then "Cobblestone" elseif ax == 4 or ax == 10 then "StoneBricks" else "Path"
 	end
 	if ax <= SQUARE and az <= SQUARE and ax + az <= 21 then -- Market Square
 		local ring = math.max(ax, az)
@@ -133,74 +220,284 @@ local function groundBlock(x: number, z: number): string
 	if az <= 1 and ax > SQUARE and ax <= 30 then -- lanes to the garden and the park
 		return "Path"
 	end
-	return if hash(x, z) < 0.07 then "FlowerGrass" else "Grass"
+	return lawn(x, z)
 end
 
-local function buildGround()
-	for x = -RADIUS - 2, RADIUS + 2 do
-		for z = -RADIUS - 2, RADIUS + 2 do
-			local distance = math.sqrt(x * x + z * z)
-			local edge = edgeRadius(x, z)
-			if distance <= edge then
-				set(x, 0, z, groundBlock(x, z))
-				local t = distance / edge
-				local depth = 2 + math.floor((1 - t) ^ 0.8 * 12) + (if (x * 7 + z * 13) % 4 == 0 then 1 else 0)
-				for y = -1, -depth, -1 do
-					set(x, y, z, if y >= -2 then "Dirt" else "Stone")
-				end
-			end
+-- The Town island's columns: the mountain's rock and grass, or the flat town
+local function townColumn(x: number, z: number): (string, number)
+	local h = ridgeHeight(x, z)
+	if h == 0 then
+		return groundBlock(x, z), 0
+	end
+	-- Grass where it's gentle, bare rock on the steep bits
+	for _, d in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
+		if math.abs(ridgeHeight(x + d[1], z + d[2]) - h) > 1 then
+			return rock(x, h, z), h
 		end
 	end
+	return "Grass", h
 end
 
 -- Street furniture ---------------------------------------------------------------------
 
--- A lamp post: a three-log post with a lantern on top
+-- A wooden lamp post with a lantern box on top
 local function lampPost(x: number, z: number)
-	for y = 1, 3 do
-		set(x, y, z, "Wood")
-	end
-	Decor.Lantern(decor, top(x, 3, z), false, 22)
-end
-
--- A gate over a street: two tall stone pillars with lanterns and a beam carrying a sign,
--- well above everyone's heads
-local function gate(z: number, halfWidth: number, text: string, front: Vector3)
-	for _, x in { -halfWidth, halfWidth } do
-		for y = 1, 6 do
-			set(x, y, z, "StoneBricks")
-		end
-		set(x, 7, z, "SmoothStone")
-		Decor.Lantern(decor, top(x, 7, z), false, 18)
-	end
-	for x = -halfWidth + 1, halfWidth - 1 do
-		set(x, 6, z, "DarkPlanks")
-	end
-	Signs.Board(
-		decor,
-		"GateSign",
-		text,
-		BlockWorld.position(world, 0, 5.1, z) + front * (SIZE / 2 + 0.25),
-		front,
-		math.min(halfWidth * 2 - 2, 8)
-	)
+	Decor.LampPost(decor, top(x, 0, z))
 end
 
 local function tree(x: number, z: number, height: number)
 	Trees.Oak(x, 0, z, height, setFree)
 end
 
--- A planter box with a small tree in it
-local function plantedTree(x: number, z: number)
-	for dx = -1, 1 do
-		for dz = -1, 1 do
-			if dx ~= 0 or dz ~= 0 then
-				set(x + dx, 1, z + dz, "StoneBricks")
+-- A raised flower bed: a stone kerb round grass full of flowers
+local function flowerBed(x1: number, z1: number, x2: number, z2: number)
+	for x = math.min(x1, x2), math.max(x1, x2) do
+		for z = math.min(z1, z2), math.max(z1, z2) do
+			if x == x1 or x == x2 or z == z1 or z == z2 then
+				set(x, 1, z, "StoneBricks")
+			else
+				set(x, 1, z, "Grass")
+				if rng:NextNumber() < 0.8 then
+					Decor.Flower(decor, top(x, 1, z), FLOWER_COLORS[rng:NextInteger(1, #FLOWER_COLORS)])
+				end
 			end
 		end
 	end
-	set(x, 1, z, "Grass")
-	Trees.Oak(x, 1, z, 3, setFree)
+end
+
+-- The way in ---------------------------------------------------------------------------
+
+-- The bridge from the spawn islet to Town: seven blocks wide, stone bricks with low walls,
+-- lantern posts on pillars along the walls with flower boxes between them, and a stone
+-- arch underneath where it crosses the sky
+local function bridge(z1: number, z2: number)
+	local half = 3
+	for z = z1, z2 do
+		for x = -half, half do
+			set(x, 0, z, if x == 0 then "SmoothStone" else "StoneBricks")
+		end
+		for _, x in { -half, half } do
+			set(x, 1, z, oldBricks(x, 1, z))
+		end
+	end
+	local pillars = {}
+	for z = z1 + 1, z2 - 1, 5 do
+		table.insert(pillars, z)
+	end
+	for i, z in pillars do
+		for _, x in { -half, half } do
+			set(x, 2, z, "SmoothStone")
+			Decor.LampPost(decor, top(x, 2, z), 6)
+			local nextZ = pillars[i + 1]
+			if nextZ then
+				-- Flowers along the top of the wall to the next pillar
+				local inward = Vector3.new(-math.sign(x), 0, 0)
+				Decor.FlowerBox(
+					decor,
+					top(x, 1, (z + nextZ) / 2) - inward * 0.45,
+					inward,
+					(nextZ - z - 1) * SIZE - 0.4,
+					FLOWER_COLORS
+				)
+			end
+		end
+	end
+	-- The arch underneath, thin in the middle and deep at the ends
+	local gapFrom, gapTo
+	for z = z1, z2 do
+		if not ctx.IslandAt(0, z) then
+			gapFrom = gapFrom or z
+			gapTo = z
+		end
+	end
+	if gapFrom and gapTo then
+		local a, b = gapFrom - 1, gapTo + 1
+		for z = a, b do
+			local middle = 1 - math.abs((z - a) / math.max(b - a, 1) * 2 - 1)
+			local depth = 1 + math.floor((1 - middle) ^ 2 * 5)
+			for x = -half, half do
+				for y = -1, -depth, -1 do
+					set(x, y, z, if y == -1 then "StoneBricks" else "Cobblestone")
+				end
+			end
+		end
+	end
+end
+
+-- Is (x, y) in the arch's opening (seen end on)? Seven wide, eight high, corners cut
+local function opening(x: number, y: number): boolean
+	return y >= 1 and (math.abs(x) <= ARCH_HALF and y <= 7 or math.abs(x) <= ARCH_HALF - 1 and y == 8)
+end
+
+-- The arch through the mountain: a stone-brick tunnel lit by lanterns, with a stone gate
+-- standing out from the cliff at each end
+local function arch()
+	for z = SOUTH_FACE, NORTH_FACE do
+		for x = -ARCH_HALF - 1, ARCH_HALF + 1 do
+			set(x, 0, z, if math.abs(x) <= 1 then "SmoothStone" else "Cobblestone")
+			for y = 1, 9 do
+				if opening(x, y) then
+					ctx.Carve(x, y, z)
+				else
+					local lining = false
+					for dx = -1, 1 do
+						for dy = -1, 1 do
+							lining = lining or opening(x + dx, y + dy)
+						end
+					end
+					if lining then
+						set(x, y, z, oldBricks(x, y, z))
+					end
+				end
+			end
+		end
+	end
+	for z = SOUTH_FACE + 2, NORTH_FACE - 1, 4 do
+		for _, side in { -1, 1 } do
+			Decor.WallLantern(
+				decor,
+				BlockWorld.position(world, side * (ARCH_HALF + 0.5), 4, z),
+				Vector3.new(-side, 0, 0)
+			)
+		end
+	end
+	-- The gates: two pillars and a lintel with a keystone, capped with smooth stone
+	for _, face in { { SOUTH_FACE - 1, -1 }, { NORTH_FACE + 1, 1 } } do
+		local z, out = face[1], Vector3.new(0, 0, face[2])
+		for _, x in { -ARCH_HALF - 2, ARCH_HALF + 2 } do
+			for y = 1, 10 do
+				set(x, y, z, if y == 1 then "SmoothStone" else oldBricks(x, y, z))
+			end
+			Decor.WallLantern(decor, BlockWorld.position(world, x, 6, z) + out * (SIZE / 2), out)
+		end
+		for x = -ARCH_HALF - 1, ARCH_HALF + 1 do
+			set(x, 10, z, if x == 0 then "SmoothStone" else oldBricks(x, 10, z))
+		end
+		for x = -ARCH_HALF - 3, ARCH_HALF + 3 do
+			set(x, 11, z, "SmoothStone")
+		end
+	end
+end
+
+-- Trees, vines and boulders on the mountain, and the logo over the arch
+local function mountain(island: Context.Island)
+	Common.Forest(ctx, island, 6, 3, function(x, z)
+		local h = ridgeHeight(x, z)
+		return h < 5 or math.abs(x) <= ARCH_HALF + 6 or world.Cells[BlockWorld.key(x, ctx.HeightAt(x, z), z)] ~= "Grass"
+	end, function(x, h, z)
+		Trees.Oak(x, h, z, rng:NextInteger(4, 6), ctx.SetFree)
+	end)
+	Common.CliffVines(ctx, island, 0.3, function(x, z)
+		-- Only on the mountain, and not over the arch or behind the logo
+		return ridgeHeight(x, z) == 0 or math.abs(x) <= 16 and z <= SOUTH_FACE + 1 or math.abs(x) <= ARCH_HALF + 2
+	end)
+	for _, spot in { { -15, -45 }, { 17, -46 }, { -27, -43 }, { 28, -42 }, { -36, -30 }, { 36, -29 } } do
+		Common.Boulder(ctx, spot[1], spot[2], 3, { "Stone", "Cobblestone", "MossyCobblestone", "Stone" })
+	end
+	Logo.Build(
+		decor,
+		BlockWorld.position(world, 0, 11, SOUTH_FACE - 3) + Vector3.new(0, SIZE / 2 + 0.6, 0),
+		-Vector3.zAxis
+	)
+end
+
+-- The market street ----------------------------------------------------------------------
+
+type StallInfo = {
+	Z: number,
+	Side: number, -- -1 west of the street, 1 east
+	Colors: { Color3 },
+	Goods: { string }, -- on the counter: crops, block pieces or "Flowers"
+	Back: { string }, -- blocks at the back
+}
+
+local CREAM = Color3.fromRGB(240, 234, 222)
+local STALLS: { StallInfo } = {
+	{
+		Z = -23,
+		Side = -1,
+		Colors = { Color3.fromRGB(200, 58, 52), CREAM },
+		Goods = { "Crop_Wheat", "Crop_Carrot", "Crop_Potato" },
+		Back = { "Pumpkin", "HayBale", "Melon" },
+	},
+	{
+		Z = -16,
+		Side = -1,
+		Colors = { Color3.fromRGB(226, 110, 172), CREAM },
+		Goods = { "Flowers", "Flowers", "Flowers" },
+		Back = { "Leaves", "Barrel", "Leaves" },
+	},
+	{
+		Z = -23,
+		Side = 1,
+		Colors = { Color3.fromRGB(64, 112, 196), CREAM },
+		Goods = { "CoalOre", "IronOre", "GoldOre" },
+		Back = { "Barrel", "Crate", "Barrel" },
+	},
+	{
+		Z = -16,
+		Side = 1,
+		Colors = { Color3.fromRGB(70, 150, 72), CREAM },
+		Goods = { "BirchWood", "CherryWood", "SpruceWood" },
+		Back = { "Wood", "Crate", "Wood" },
+	},
+}
+
+-- A market stall facing the street: posts at the corners, a counter with goods on it, more
+-- stock at the back, and a striped cloth roof sloping down to a hanging edge at the front
+local function stall(info: StallInfo)
+	local site = Build.Site(world, info.Side * 6, info.Z, Vector3.new(-info.Side, 0, 0))
+	for _, u in { -2, 2 } do
+		site:Fill(u, 1, 0, u, 3, 0, "Wood")
+		site:Fill(u, 1, 2, u, 4, 2, "Wood")
+	end
+	site:Fill(-1, 1, 0, 1, 1, 0, "Planks")
+	for i, good in info.Goods do
+		local at = site:Pos(i - 2, 1.5, 0)
+		if good == "Flowers" then
+			for _, du in { -0.25, 0.25 } do
+				Decor.Flower(decor, at + site:Dir(du, 0) * SIZE, FLOWER_COLORS[rng:NextInteger(1, #FLOWER_COLORS)])
+			end
+		elseif string.sub(good, 1, 5) == "Crop_" then
+			local crop = Props.Place(good, at, at + site.Front, decor)
+			if crop then
+				crop:ScaleTo(0.45)
+				crop:PivotTo(CFrame.lookAt(at, at + site.Front))
+			end
+		else
+			Decor.Piece(
+				decor,
+				good,
+				Vector3.one * 1.6,
+				CFrame.new(at + Vector3.new(0, 0.8, 0)) * CFrame.Angles(0, 0.3 * i, 0)
+			)
+		end
+	end
+	for i, block in info.Back do
+		site:Set(i - 2, 1, 2, block)
+	end
+	for i = 0, 4 do
+		local color = info.Colors[i % #info.Colors + 1]
+		local a = site:Pos(i - 2, 3.2, -0.8)
+		local b = site:Pos(i - 2, 4.9, 2.6)
+		Decor.Part(
+			decor,
+			"Awning",
+			Vector3.new(SIZE, 0.2, (b - a).Magnitude),
+			CFrame.lookAt((a + b) / 2, b),
+			color,
+			Enum.Material.Fabric
+		)
+		Decor.Part(
+			decor,
+			"Awning",
+			Vector3.new(SIZE, 0.9, 0.15),
+			CFrame.lookAt(a, a + site.Front) * CFrame.new(0, -0.45, 0),
+			color,
+			Enum.Material.Fabric
+		)
+	end
+	Decor.Lantern(decor, site:Pos(0, 2.9, 1.2), true, 14)
 end
 
 -- The fountain in the middle of the square: a stone basin of water with a pillar
@@ -723,20 +1020,25 @@ local function portalFields()
 	end
 end
 
--- Grass, flowers and hedges in the open lawns (after everything else is built)
-local function scatter()
-	for x = -RADIUS, RADIUS do
-		for z = -RADIUS, RADIUS do
-			local ground = BlockWorld.get(world, x, 0, z)
-			if (ground == "Grass" or ground == "FlowerGrass") and not BlockWorld.get(world, x, 1, z) then
-				local roll = rng:NextNumber()
-				if roll < 0.05 then
-					Decor.Grass(decor, top(x, 0, z), rng)
-				elseif roll < 0.075 then
-					Decor.Flower(decor, top(x, 0, z), FLOWER_COLORS[rng:NextInteger(1, #FLOWER_COLORS)])
-				end
-			end
-		end
+-- Clouds drifting round the islands, some below them, and little rocks floating nearby
+local function sky()
+	for _, cloud in
+		{
+			{ -70, 6, -60, 70 },
+			{ 75, 12, -40, 80 },
+			{ -95, -10, 25, 90 },
+			{ 80, -20, 50, 70 },
+			{ -35, 22, 85, 60 },
+			{ 45, -32, -100, 80 },
+			{ -55, -26, -120, 70 },
+			{ 105, 18, 10, 60 },
+			{ 20, 26, -130, 60 },
+		}
+	do
+		Logo.SkyCloud(decor, CENTER + Vector3.new(cloud[1], cloud[2], cloud[3]) * SIZE, cloud[4], rng)
+	end
+	for _, spot in { { -30, 3, -82, 3 }, { 28, -4, -76, 3 }, { -62, 6, 6, 4 }, { 64, -3, -22, 3 }, { 44, 9, 50, 3 } } do
+		ctx.Islet(spot[1], spot[2], spot[3], spot[4])
 	end
 end
 
@@ -748,47 +1050,93 @@ local function build()
 	decor = Instance.new("Folder")
 	decor.Name = "Decor"
 	decor.Parent = world.Model
+	ctx = Context.new(world, decor, SEED, HOME_PORTAL_Z)
 
-	buildGround()
+	-- Ground that must stay ground, even near an island's rim
+	ctx.Flatten(-SPAWN_PLAZA.Half - 1, SPAWN_PLAZA.Z1, SPAWN_PLAZA.Half + 1, SPAWN_PLAZA.Z2, true)
+	ctx.Flatten(-PLAZA.Half, PLAZA.Z1, PLAZA.Half, PLAZA.Z2 - 3, true)
+	ctx.Flatten(-22, PORTAL_Z - 9, 22, PORTAL_Z + 3, true)
+	ctx.Flatten(-32, 12, -23, 20, true)
+	ctx.Flatten(23, 12, 32, 20, true)
+	ctx.Flatten(23, -7, 37, 7, true)
+	local spawnIsland = ctx.Island({
+		Name = "Spawn",
+		X = SPAWN.X,
+		Z = SPAWN.Z,
+		Radius = SPAWN.R,
+		Column = spawnColumn,
+	})
+	local town = ctx.Island({
+		Name = "Town",
+		X = TOWN.X,
+		Z = TOWN.Z,
+		Radius = TOWN.R,
+		Column = townColumn,
+		Fill = function(x, y, z, depth)
+			if ridgeHeight(x, z) == 0 then
+				return nil
+			end
+			if depth == 1 and world.Cells[BlockWorld.key(x, y + 1, z)] == "Grass" then
+				return "Dirt"
+			end
+			return rock(x, y, z)
+		end,
+	})
+
+	-- The way in: spawn, the bridge, the plaza and the arch through the mountain
 	portals()
+	for _, x in { -5, -4, 4, 5 } do
+		for z = HOME_PORTAL_Z + 3, SPAWN_PLAZA.Z2 - 3 do
+			if rng:NextNumber() < 0.75 then
+				Decor.Flower(decor, top(x, 0, z), FLOWER_COLORS[rng:NextInteger(1, #FLOWER_COLORS)])
+			end
+		end
+	end
+	for _, spot in { { -4, HOME_PORTAL_Z }, { 4, HOME_PORTAL_Z }, { -4, SPAWN_PLAZA.Z2 }, { 4, SPAWN_PLAZA.Z2 } } do
+		lampPost(spot[1], spot[2])
+	end
+	bridge(SPAWN_PLAZA.Z2 + 1, PLAZA.Z1 - 1)
+	flowerBed(-PLAZA.Half + 1, -51, -6, -44)
+	flowerBed(6, -51, PLAZA.Half - 1, -44)
+	for _, spot in { { -7, -42 }, { 7, -42 }, { -5, PLAZA.Z1 + 1 }, { 5, PLAZA.Z1 + 1 } } do
+		lampPost(spot[1], spot[2])
+	end
+	Decor.Bench(decor, top(-4, 0, -47), Vector3.xAxis)
+	Decor.Bench(decor, top(4, 0, -47), -Vector3.xAxis)
+	arch()
+	mountain(town)
+
+	-- The town
+	for _, info in STALLS do
+		stall(info)
+	end
 	fountain()
 	for _, info in SHOPS do
 		shop(info)
 	end
-	cottage(-20, -21, Vector3.xAxis, "Thatch", { -4, -21 })
-	cottage(20, -21, -Vector3.xAxis, "RoofRed", { 4, -21 })
+	cottage(-20, -20, Vector3.xAxis, "Thatch", { -5, -20 })
+	cottage(20, -20, -Vector3.xAxis, "RoofRed", { 5, -20 })
 	cottage(-25, 16, Vector3.xAxis, "RoofRed", { -22, 1 })
 	cottage(25, 16, -Vector3.xAxis, "Thatch", { 22, 1 })
 	garden()
 	park()
 
-	gate(-26, 4, "WELCOME TO TOWN", -Vector3.zAxis)
-	-- A signpost at the square's north edge points the way (no second gate: it crowded
-	-- the portal row)
+	-- A signpost at the square's north edge points the way
 	Signs.Arrows(decor, top(5, 0, 17), -Vector3.xAxis, {
 		{ Text = "THE WORLDS", Toward = Vector3.zAxis },
 		{ Text = "HOME", Toward = -Vector3.zAxis },
 	})
-	for _, z in { -22, -16, 13 } do
+	for _, z in { -25, -19, 13 } do
 		lampPost(-4, z)
 		lampPost(4, z)
 	end
 	for _, corner in { { -10, -10 }, { 10, -10 }, { -10, 10 }, { 10, 10 } } do
 		lampPost(corner[1], corner[2])
 	end
-	for _, spot in { { -6, -30 }, { 6, -30 }, { -10, 28 }, { 0, 29 }, { 10, 28 }, { -20, 28 }, { 20, 28 } } do
+	for _, spot in { { -10, 28 }, { 0, 29 }, { 10, 28 }, { -20, 28 }, { 20, 28 } } do
 		lampPost(spot[1], spot[2])
 	end
-	for _, spot in { { -6, -16 }, { 6, -16 } } do
-		plantedTree(spot[1], spot[2])
-	end
-	-- Hedges along the arrival street
-	for z = -25, -18 do
-		for _, x in { -5, 5 } do
-			setFree(x, 1, z, "Leaves")
-		end
-	end
-	-- Trees around the edge of town
+	-- Trees round the edge of town and on the lawns either side of the plaza
 	for _, spot in
 		{
 			{ -12, -24, 5 },
@@ -799,22 +1147,24 @@ local function build()
 			{ 35, -14, 4 },
 			{ -35, 9, 4 },
 			{ 35, 9, 5 },
-			{ -12, -32, 4 },
-			{ 12, -32, 5 },
 			{ -27, 27, 4 },
 			{ 27, 27, 5 },
 			{ -35, -7, 4 },
 			{ 35, -6, 4 },
-			{ -24, -30, 5 },
-			{ 24, -30, 4 },
+			{ -17, -50, 5 },
+			{ 18, -51, 4 },
+			{ -26, -48, 4 },
+			{ 26, -47, 5 },
 		}
 	do
 		tree(spot[1], spot[2], spot[3])
 	end
+	sky()
 
-	BlockWorld.drawAll(world)
+	Common.Scatter(ctx, spawnIsland, 0.05, 0.08, FLOWER_COLORS)
+	Common.Scatter(ctx, town, 0.05, 0.03, FLOWER_COLORS)
+	BlockWorld.drawAll(world, true)
 	portalFields()
-	scatter()
 end
 
 function TownService.Start()
