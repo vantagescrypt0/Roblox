@@ -52,6 +52,10 @@ TILES = [
     "autumn_leaves", "snow", "snowy_grass_side", "gold_ore",
     "pumpkin_top", "pumpkin_side", "melon_top", "melon_side",
     "terracotta", "red_terracotta",
+    # Skybounds references: the mine's sandstone mountain, coarse woodland dirt, giant
+    # mushrooms, ruins
+    "sandstone_top", "sandstone_side", "coarse_dirt", "mushroom_cap", "mushroom_stem",
+    "cracked_stone_bricks",
 ]  # fmt: skip
 
 # Which tile each face uses: (top, bottom, sides) or (top, bottom, front, other sides)
@@ -106,6 +110,11 @@ BLOCKS = {
     "Melon": ("melon_top", "melon_top", "melon_side"),
     "Terracotta": ("terracotta", "terracotta", "terracotta"),
     "RedTerracotta": ("red_terracotta", "red_terracotta", "red_terracotta"),
+    "Sandstone": ("sandstone_top", "sandstone_top", "sandstone_side"),
+    "CoarseDirt": ("coarse_dirt", "coarse_dirt", "coarse_dirt"),
+    "MushroomCap": ("mushroom_cap", "mushroom_cap", "mushroom_cap"),
+    "MushroomStem": ("mushroom_stem", "mushroom_stem", "mushroom_stem"),
+    "CrackedStoneBricks": ("cracked_stone_bricks", "cracked_stone_bricks", "cracked_stone_bricks"),
 }
 
 # Merged pieces (x, y, z in blocks; each also fills z, y, x turned a quarter turn).
@@ -127,6 +136,10 @@ MERGED = {
     "DarkStone": SLABS + THICK + CUBES,
     "Terracotta": SLABS + THICK + CUBES,
     "RedTerracotta": SLABS + THICK + CUBES,
+    "Sandstone": SLABS + THICK + CUBES,
+    "CoarseDirt": SLABS + THICK,
+    # The worlds' open fields (the client works out which block of a piece you click)
+    "Farmland": SLABS,
 }
 
 
@@ -556,6 +569,7 @@ def draw_building_tiles(tiles):
         flowers[cy][cx] = noisy(rng, (250, 232, 120), 6)
     tiles["flower_grass"] = flowers
     draw_zone_tiles(tiles)
+    draw_reference_tiles(tiles)
 
 
 def draw_zone_tiles(tiles):
@@ -656,6 +670,59 @@ def draw_zone_tiles(tiles):
     red = fill(rng, (140, 58, 44), 5)
     speckle(rng, red, (124, 50, 38), 0.15, 4)
     tiles["red_terracotta"] = red
+
+
+def draw_reference_tiles(tiles):
+    """Tiles from the Skybounds reference shots (their own random sequence)"""
+    rng = random.Random(57)
+
+    # Sandstone: soft tan layers with a darker line every few rows, smooth on top
+    side = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        band = (214, 196, 148) if y < 4 else (204, 184, 134) if y < 10 else (194, 172, 122)
+        for x in range(TILE):
+            line = y in (3, 9, 15) or (y in (4, 10) and rng.random() < 0.3)
+            side[y][x] = noisy(rng, shade(band, 0.86) if line else band, 5)
+    tiles["sandstone_side"] = side
+    top = fill(rng, (218, 202, 156), 5)
+    speckle(rng, top, (204, 186, 138), 0.15, 4)
+    for i in range(TILE):
+        for y, x in ((0, i), (15, i), (i, 0), (i, 15)):
+            top[y][x] = noisy(rng, (198, 178, 128), 4)
+    tiles["sandstone_top"] = top
+
+    # Coarse dirt: reddish-brown with dark clods and a few pale pebbles
+    coarse = fill(rng, (138, 88, 60), 10)
+    speckle(rng, coarse, (104, 64, 44), 0.25, 6)
+    speckle(rng, coarse, (160, 110, 78), 0.12, 6)
+    speckle(rng, coarse, (150, 140, 128), 0.04, 6)
+    tiles["coarse_dirt"] = coarse
+
+    # Giant mushroom: a red cap with white spots, and a pale stem
+    cap = fill(rng, (196, 44, 40), 8)
+    for _ in range(5):
+        cx, cy, r = rng.randint(1, 14), rng.randint(1, 14), rng.uniform(1.2, 2.2)
+        for y in range(TILE):
+            for x in range(TILE):
+                if math.hypot(x - cx, y - cy) < r:
+                    cap[y][x] = noisy(rng, (238, 232, 222), 5)
+    tiles["mushroom_cap"] = cap
+    stem = fill(rng, (226, 218, 198), 5)
+    for y in range(TILE):
+        for x in range(TILE):
+            if (x + y * 3) % 7 == 0:
+                stem[y][x] = noisy(rng, (204, 194, 170), 4)
+    tiles["mushroom_stem"] = stem
+
+    # Cracked stone bricks: stone bricks with dark cracks running across
+    cracked = [row[:] for row in tiles["stone_bricks"]]
+    for _ in range(3):
+        x, y = rng.randint(0, 15), rng.randint(0, 15)
+        for _ in range(rng.randint(5, 9)):
+            cracked[y][x] = noisy(rng, (58, 58, 62), 4)
+            x = (x + rng.choice((-1, 0, 1, 1))) % TILE
+            y = (y + rng.choice((0, 1, 1))) % TILE
+    tiles["cracked_stone_bricks"] = cracked
 
 
 def build_atlas():
@@ -808,20 +875,31 @@ def main():
 
     common.save_blend("Blocks")
     os.makedirs(common.EXPORT_DIR, exist_ok=True)
-    for obj in bpy.context.scene.objects:
-        obj.select_set(obj in objects)
-    bpy.ops.export_scene.fbx(
-        filepath=os.path.join(common.EXPORT_DIR, "Blocks.fbx"),
-        use_selection=True,
-        object_types={"MESH"},
-        apply_scale_options="FBX_SCALE_ALL",
-        axis_forward="-Z",
-        axis_up="Y",
-        mesh_smooth_type="FACE",
-        path_mode="COPY",
-        embed_textures=True,
-    )
+
+    def export(path, chosen):
+        for obj in bpy.context.scene.objects:
+            obj.select_set(obj in chosen)
+        bpy.ops.export_scene.fbx(
+            filepath=path,
+            use_selection=True,
+            object_types={"MESH"},
+            apply_scale_options="FBX_SCALE_ALL",
+            axis_forward="-Z",
+            axis_up="Y",
+            mesh_smooth_type="FACE",
+            path_mode="COPY",
+            embed_textures=True,
+        )
+
+    export(os.path.join(common.EXPORT_DIR, "Blocks.fbx"), objects)
     print("fbx: done")
+    # Block names after "--" also go in Blocks_new.fbx (with their merged pieces), so new
+    # blocks can be imported without re-uploading every mesh: ... blocks.py -- Sandstone
+    names = set(sys.argv[sys.argv.index("--") + 1 :]) if "--" in sys.argv else set()
+    if names:
+        chosen = [o for o in objects if o.name.split("_")[1] in names]
+        export(os.path.join(common.EXPORT_DIR, "Blocks_new.fbx"), chosen)
+        print("new:", [o.name for o in chosen])
 
 
 main()

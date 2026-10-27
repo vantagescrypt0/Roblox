@@ -26,7 +26,7 @@ Places.Ids = table.freeze({
 	Slaying = 0,
 })
 
--- How messages and the travel screen name each place ("Travelling to the Mining World...")
+-- How messages and the travel screen name each place ("Traveling to the Mining World...")
 Places.Names = table.freeze({
 	Island = "your island",
 	Town = "Town",

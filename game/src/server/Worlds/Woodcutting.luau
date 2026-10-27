@@ -12,14 +12,18 @@
 --   Cherry Hills (east, Woodcutting 30)   pink cherry trees on soft hills, a koi pond with a
 --                                         little red bridge, stone lanterns, a pavilion and
 --                                         drifting petals
--- Main paths run north from the arrival square to the Snowy Pines bridge and across the
--- Oak Woods to the Birch and Cherry bridges; each zone has a gateway at its bridge end.
+-- Stone paths run north from the arrival square to the Snowy Pines bridge and across the
+-- Oak Woods to the Birch and Cherry bridges; a signpost at the crossroads points the way
+-- and each zone has a rough sign in its own wood where it begins. The Oak Woods has a
+-- rocky hill; patches of coarse dirt, boulders, giant red mushrooms and vines on the
+-- cliffs are dotted about (from the Skybounds woods).
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Build = require(script.Parent.Parent.Util.Build)
 local Decor = require(script.Parent.Parent.Util.Decor)
+local Signs = require(script.Parent.Parent.Util.Signs)
 local Trees = require(script.Parent.Parent.Util.Trees)
 local Common = require(script.Parent.Common)
 local Context = require(script.Parent.Context)
@@ -37,6 +41,7 @@ local BIRCH = { X = -84, Z = -36, R = 32 }
 local PINES = { X = 0, Z = 44, R = 34 }
 local CHERRY = { X = 84, Z = -36, R = 32 }
 local CROSS_Z = -36 -- the path across the Oak Woods to the Birch and Cherry bridges
+local HILL = { X = -16, Z = -20, R = 9, Height = 10 } -- the rocky hill in the Oak Woods
 -- Ponds and buildings in the zones (kept flat)
 local BIRCH_POND = { BIRCH.X - 4, BIRCH.Z + 12 }
 local PINES_LAKE = { PINES.X + 10, PINES.Z + 8 }
@@ -71,6 +76,24 @@ end
 
 -- Ground ---------------------------------------------------------------------------
 
+-- The rocky hill in the Oak Woods, north-west of the crossroads: how high it lifts the
+-- ground at (x, z) (0 off the hill), roughened so it isn't round
+local function hill(ctx: Context.Context, x: number, z: number): number
+	local d = math.sqrt((x - HILL.X) ^ 2 + (z - HILL.Z) ^ 2) + ctx.Noise(x, z, 4, 41) * 3
+	if d >= HILL.R then
+		return 0
+	end
+	return math.floor(HILL.Height * (1 - (d / HILL.R) ^ 1.6) + 0.5)
+end
+
+-- Forest-floor ground: grass with patches of coarse dirt and of flowers
+local function floor(ctx: Context.Context, x: number, z: number, flowers: number, salt: number): string
+	if ctx.Noise(x, z, 7, 40 + salt) > 0.3 then
+		return "CoarseDirt"
+	end
+	return if ctx.Noise(x, z, 6, 30 + salt) > flowers then "FlowerGrass" else "Grass"
+end
+
 local function oakColumn(ctx: Context.Context, x: number, z: number): (string, number)
 	local river = math.abs(z - riverZ(x))
 	if river <= 1.5 then
@@ -85,12 +108,19 @@ local function oakColumn(ctx: Context.Context, x: number, z: number): (string, n
 	elseif inCamp(x, z, 3) or river <= 6 then
 		h = math.min(h, 1)
 	end
-	return if ctx.Noise(x, z, 6, 30) > 0.4 then "FlowerGrass" else "Grass", h
+	local rise = hill(ctx, x, z)
+	if rise > h then
+		-- Bare rock where the hill is steep, grass on its top and gentle slopes
+		local steep = rise
+			- math.min(hill(ctx, x + 1, z), hill(ctx, x - 1, z), hill(ctx, x, z + 1), hill(ctx, x, z - 1))
+		return if steep >= 2 then (if ctx.Hash(x, 42, z) < 0.6 then "Stone" else "MossyCobblestone") else "Grass", rise
+	end
+	return floor(ctx, x, z, 0.4, 0), h
 end
 
 local function birchColumn(ctx: Context.Context, x: number, z: number): (string, number)
 	local h = math.clamp(math.round(1 + 2.4 * ctx.Noise(x, z, 16, 3)), 0, 3)
-	return if ctx.Noise(x, z, 5, 31) > 0.3 then "FlowerGrass" else "Grass", h
+	return floor(ctx, x, z, 0.3, 1), h
 end
 
 local function pinesColumn(ctx: Context.Context, x: number, z: number): (string, number)
@@ -504,6 +534,13 @@ function Woodcutting.Build(ctx: Context.Context)
 		Column = function(x, z)
 			return oakColumn(ctx, x, z)
 		end,
+		-- The hill is rock under its skin of grass
+		Fill = function(x, y, z, depth)
+			if hill(ctx, x, z) > 0 then
+				return if depth == 1 and ctx.World.Cells[`{x},{y + depth},{z}`] == "Grass" then "Dirt" else "Stone"
+			end
+			return nil
+		end,
 	})
 	local birch = ctx.Island({
 		Name = "Birch Grove",
@@ -552,19 +589,58 @@ function Woodcutting.Build(ctx: Context.Context)
 		end
 	end
 
-	Common.Path(ctx, 0, -68, 0, -10, 3)
-	Common.Path(ctx, -32, CROSS_Z, 32, CROSS_Z, 3)
+	Common.Path(ctx, 0, -68, 0, -10, 3, Common.StonePath)
+	Common.Path(ctx, -32, CROSS_Z, 32, CROSS_Z, 3, Common.StonePath)
 	ctx.Bridge(-62, CROSS_Z, -32, CROSS_Z)
 	ctx.Bridge(32, CROSS_Z, 62, CROSS_Z)
 	ctx.Bridge(0, -12, 0, 20)
-	Common.ZoneGate(ctx, BIRCH.X + 21, CROSS_Z, Vector3.xAxis, "BIRCH GROVE", "WOODCUTTING 10")
-	Common.ZoneGate(ctx, CHERRY.X - 21, CROSS_Z, -Vector3.xAxis, "CHERRY HILLS", "WOODCUTTING 30")
-	Common.ZoneGate(ctx, PINES.X, PINES.Z - 23, -Vector3.zAxis, "SNOWY PINES", "WOODCUTTING 20")
+	-- At the crossroads a signpost points the way; each zone has a rough sign where it begins
+	Common.Arrows(ctx, 3, CROSS_Z - 3, -Vector3.zAxis, {
+		{ Text = "BIRCH GROVE", Toward = -Vector3.xAxis },
+		{ Text = "SNOWY PINES", Toward = Vector3.zAxis },
+		{ Text = "CHERRY HILLS", Toward = Vector3.xAxis },
+	})
+	Common.ZoneSign(ctx, BIRCH.X + 20, CROSS_Z - 4, Vector3.xAxis, "BIRCH GROVE", "WOODCUTTING 10", Signs.Woods.Birch)
+	Common.ZoneSign(
+		ctx,
+		CHERRY.X - 20,
+		CROSS_Z - 4,
+		-Vector3.xAxis,
+		"CHERRY HILLS",
+		"WOODCUTTING 30",
+		Signs.Woods.Cherry
+	)
+	Common.ZoneSign(ctx, PINES.X + 4, PINES.Z - 22, -Vector3.zAxis, "SNOWY PINES", "WOODCUTTING 20", Signs.Woods.Spruce)
 
 	oakWoods(ctx, oak)
 	birchGrove(ctx, birch)
 	snowyPines(ctx, pines)
 	cherryHills(ctx, cherry)
+
+	-- Rocks, giant mushrooms and vines on the cliffs, as in the Skybounds woods
+	for _, spot in { { -26, -52, 3 }, { 24, -26, 4 }, { -30, -10, 3 }, { 30, -48, 3 } } do
+		if ctx.Inside(spot[1], spot[2], 4) then
+			Common.Boulder(ctx, spot[1], spot[2], spot[3], { "Stone", "MossyCobblestone", "Stone", "Cobblestone" })
+		end
+	end
+	for _, spot in { { -76, -50, 3 }, { -100, -30, 3 }, { -70, -18, 2 } } do
+		if ctx.Inside(spot[1], spot[2], 4) then
+			Common.Boulder(ctx, spot[1], spot[2], spot[3], { "Sandstone", "Stone", "Sandstone" })
+		end
+	end
+	for _, spot in { { -12, 10 }, { 18, 30 }, { -20, 60 } } do
+		if ctx.Inside(spot[1], spot[2], 4) then
+			Common.Boulder(ctx, spot[1], spot[2], 3, { "Stone", "Stone", "Snow" })
+		end
+	end
+	for _, spot in { { 22, -14, 5, 3 }, { -28, -44, 4, 2 }, { -96, -46, 5, 3 } } do
+		if ctx.Inside(spot[1], spot[2], 5) then
+			Common.GiantMushroom(ctx, spot[1], spot[2], spot[3], spot[4])
+		end
+	end
+	for _, island in { oak, birch, pines, cherry } do
+		Common.CliffVines(ctx, island, 0.35)
+	end
 end
 
 return Woodcutting

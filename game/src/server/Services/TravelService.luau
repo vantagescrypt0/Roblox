@@ -21,11 +21,11 @@ local TOUCH_COOLDOWN = 4
 
 local TravelService = {}
 
-local travelling: { [Player]: boolean } = {}
+local traveling: { [Player]: boolean } = {}
 local lastTouch: { [Player]: number } = {}
 
 local function failed(player: Player, message: string)
-	travelling[player] = nil
+	traveling[player] = nil
 	Remotes.Travel:FireClient(player, "Failed")
 	StateService.Notify(player, message, "bad")
 end
@@ -37,7 +37,7 @@ local function capitalized(destination: Places.Kind): string
 end
 
 function TravelService.Go(player: Player, destination: Places.Kind)
-	if travelling[player] then
+	if traveling[player] then
 		return
 	end
 	local placeId = Places.Ids[destination]
@@ -45,10 +45,10 @@ function TravelService.Go(player: Player, destination: Places.Kind)
 		StateService.Notify(player, `{capitalized(destination)} isn't open yet`, "bad")
 		return
 	elseif RunService:IsStudio() then
-		StateService.Notify(player, `Travelling to {Places.Names[destination]} only works in the published game`, "bad")
+		StateService.Notify(player, `Traveling to {Places.Names[destination]} only works in the published game`, "bad")
 		return
 	end
-	travelling[player] = true
+	traveling[player] = true
 	Remotes.Travel:FireClient(player, destination)
 	task.wait(FADE_TIME)
 	local options = Instance.new("TeleportOptions")
@@ -99,7 +99,7 @@ function TravelService.Start()
 		failed(player, "Couldn't travel right now. Try again in a moment.")
 	end)
 	Players.PlayerRemoving:Connect(function(player)
-		travelling[player] = nil
+		traveling[player] = nil
 		lastTouch[player] = nil
 	end)
 

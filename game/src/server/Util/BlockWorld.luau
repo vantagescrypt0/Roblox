@@ -66,6 +66,8 @@ end
 function BlockWorld.new(origin: Vector3, name: string, parent: Instance): World
 	local model = Instance.new("Model")
 	model.Name = name
+	-- Where block (0, 0, 0) is, so the client can find blocks inside merged pieces
+	model:SetAttribute("Origin", origin)
 	model.Parent = parent
 	return {
 		Origin = origin,
@@ -292,6 +294,8 @@ local function placePiece(world: World, blockType: string, shape: Shape, x: numb
 	part.Anchored = true
 	part.CFrame = CFrame.new(center) * (if shape.Turned then QUARTER_TURN else CFrame.identity) * rotation
 	part:SetAttribute("Locked", true)
+	-- The client works out which block of the piece you aim at (the world's Origin)
+	part:SetAttribute("Merged", true)
 	part.Parent = world.Model
 	piece.Part = part
 end

@@ -763,8 +763,12 @@ local function build()
 	park()
 
 	gate(-26, 4, "WELCOME TO TOWN", -Vector3.zAxis)
-	-- Back from the portal row, so the plaza opens out beyond it
-	gate(17, 6, "THE WORLDS", -Vector3.zAxis)
+	-- A signpost at the square's north edge points the way (no second gate: it crowded
+	-- the portal row)
+	Signs.Arrows(decor, top(5, 0, 17), -Vector3.xAxis, {
+		{ Text = "THE WORLDS", Toward = Vector3.zAxis },
+		{ Text = "HOME", Toward = -Vector3.zAxis },
+	})
 	for _, z in { -22, -16, 13 } do
 		lampPost(-4, z)
 		lampPost(4, z)

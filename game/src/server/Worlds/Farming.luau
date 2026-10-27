@@ -1,28 +1,36 @@
 --!strict
 -- The Farming World: four floating islands of farms joined by plank bridges, each zone with
--- its own crop (fields of wild crops: click a ripe one to harvest it and it grows back;
--- each crop needs its Farming level, see Crops.luau):
---   Wheat Plains (arrival, south)       big fenced wheat fields under a terracotta mesa,
---                                       a windmill whose sails turn, a red barn, a farmhouse
---                                       with a flower garden, a farmyard and a pond
---   Veggie Gardens (west, Farming 5/10) carrot and potato fields either side of the path,
---                                       and a glasshouse full of flowers at the end of it
---   Pumpkin Hollow (north, Farming 15)  pumpkin patches among autumn trees, hay bales,
---                                       jack-o'-lanterns, scarecrows and falling leaves
---   Melon Oasis (east, Farming 25)      a sandy island: melon fields, an oasis pool ringed
---                                       with palms, cacti and a market stall
--- Every field has a fence with a gate toward the path and a tall signpost beside it.
+-- its own crop (wild crops: click a ripe one to harvest it and it grows back; each crop
+-- needs its Farming level, see Crops.luau). Crops grow in big open fields, not fenced
+-- plots, like the Skybounds farms:
+--   Wheat Plains (arrival, south)       wheat over the whole plain, cut by winding dirt
+--                                       paths with water running along their edges, hay
+--                                       bales in the wheat, a tall red silo, a windmill, a
+--                                       red barn, a farmhouse, a farmyard, a pond and a
+--                                       striped terracotta mesa
+--   Veggie Gardens (west, Farming 5/10) rows of carrots south of the path and potatoes
+--                                       north of it, water between every few rows, a
+--                                       glasshouse at the far end
+--   Pumpkin Hollow (north, Farming 15)  pumpkin patches over the rolling ground between
+--                                       autumn trees, jack-o'-lanterns along the path, hay
+--                                       bales, leaf piles, falling leaves
+--   Melon Oasis (east, Farming 25)      a sandy island: melon patches over the dunes, an
+--                                       oasis pool ringed with palms, cacti, a market stall
+-- A signpost at the crossroads points the way; each zone has a rough sign where it begins.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local Build = require(script.Parent.Parent.Util.Build)
 local Decor = require(script.Parent.Parent.Util.Decor)
+local Signs = require(script.Parent.Parent.Util.Signs)
 local Trees = require(script.Parent.Parent.Util.Trees)
 local Common = require(script.Parent.Common)
 local Context = require(script.Parent.Context)
 
 local SIZE = Blocks.Size
+local key = BlockWorld.key
 
 local Farming = {}
 
@@ -44,56 +52,63 @@ local FLOWERS = {
 	Color3.fromRGB(110, 132, 230),
 }
 
--- A field: rows of crops between X1..X2 and Z1..Z2 (every fourth row a water channel),
--- fenced, with a gate on the `Gate` side (toward the path)
-type FieldInfo = { Crop: string, X1: number, X2: number, Z1: number, Z2: number, Gate: Vector3, Sign: string }
-
 local N, S, E, W = Vector3.zAxis, -Vector3.zAxis, Vector3.xAxis, -Vector3.xAxis
 
-local FIELDS: { FieldInfo } = {
-	-- Wheat Plains
-	{ Crop = "Wheat", X1 = -30, X2 = -6, Z1 = -64, Z2 = -50, Gate = E, Sign = "WHEAT" },
-	{ Crop = "Wheat", X1 = -24, X2 = -6, Z1 = -32, Z2 = -20, Gate = E, Sign = "WHEAT" },
-	{ Crop = "Wheat", X1 = 8, X2 = 26, Z1 = -50, Z2 = -40, Gate = W, Sign = "WHEAT" },
-	-- Veggie Gardens
-	{ Crop = "Carrot", X1 = -98, X2 = -86, Z1 = -50, Z2 = -42, Gate = N, Sign = "CARROTS\nFARMING 5" },
-	{ Crop = "Carrot", X1 = -80, X2 = -68, Z1 = -50, Z2 = -42, Gate = N, Sign = "CARROTS\nFARMING 5" },
-	{ Crop = "Potato", X1 = -98, X2 = -86, Z1 = -30, Z2 = -22, Gate = S, Sign = "POTATOES\nFARMING 10" },
-	{ Crop = "Potato", X1 = -80, X2 = -68, Z1 = -30, Z2 = -22, Gate = S, Sign = "POTATOES\nFARMING 10" },
-	-- Pumpkin Hollow
-	{ Crop = "Pumpkin", X1 = -22, X2 = -6, Z1 = 28, Z2 = 40, Gate = E, Sign = "PUMPKINS\nFARMING 15" },
-	{ Crop = "Pumpkin", X1 = 6, X2 = 22, Z1 = 28, Z2 = 40, Gate = W, Sign = "PUMPKINS\nFARMING 15" },
-	{ Crop = "Pumpkin", X1 = -8, X2 = 8, Z1 = 57, Z2 = 66, Gate = S, Sign = "PUMPKINS\nFARMING 15" },
-	-- Melon Oasis
-	{ Crop = "Melon", X1 = 70, X2 = 84, Z1 = -52, Z2 = -42, Gate = N, Sign = "MELONS\nFARMING 25" },
-	{ Crop = "Melon", X1 = 88, X2 = 102, Z1 = -52, Z2 = -42, Gate = N, Sign = "MELONS\nFARMING 25" },
-}
-
--- Buildings and ponds (kept flat)
+-- Buildings and ponds (kept flat, and clear of crops)
 local MESA = { X = 14, Z = -24 }
 local BARN = { 18, -66 } -- door; the barn extends east
 local FARMHOUSE = { 14, -76 } -- door; it extends east
 local WINDMILL = { -24, -42 }
+local SILO = { 30, -52 }
 local WELL = { 8, -57 }
 local PLAINS_POND = { -18, -72 }
 local GLASSHOUSE = { -100, -36 }
 local OASIS_POOL = { 92, -24 }
 local STALL = { 72, -26 }
 
-local function inField(x: number, z: number, margin: number): boolean
-	for _, f in FIELDS do
-		if x >= f.X1 - margin and x <= f.X2 + margin and z >= f.Z1 - margin and z <= f.Z2 + margin then
-			return true
-		end
-	end
-	return false
-end
-
 local function near(x: number, z: number, spot: { number }, r: number): boolean
 	return (x - spot[1]) ^ 2 + (z - spot[2]) ^ 2 <= r * r
 end
 
--- Ground ------------------------------------------------------------------------------
+-- Paths ----------------------------------------------------------------------------------
+
+-- A gentle wave for a winding path, fading to straight near its ends (`t` 0..1 along it)
+local function wave(t: number, at: number, amplitude: number, frequency: number): number
+	local fade = math.clamp(math.min(t, 1 - t) * 6, 0, 1)
+	return math.round(amplitude * fade * math.sin(at * frequency))
+end
+
+-- The Wheat Plains' paths: north from the square to the bridge, and across to the side
+-- bridges. Their middle lines:
+local function mainPathX(z: number): number
+	return wave((z + 70) / 64, z, 3, 0.11)
+end
+local function crossPathZ(x: number): number
+	return CROSS_Z + wave((x + 34) / 68, x, 2.5, 0.13)
+end
+-- How far (x, z) is from the nearest Plains path, in blocks across it
+local function plainsPathDistance(x: number, z: number): number
+	local d = math.huge
+	if z >= -70 and z <= -6 then
+		d = math.min(d, math.abs(x - mainPathX(z)))
+	end
+	if x >= -34 and x <= 34 then
+		d = math.min(d, math.abs(z - crossPathZ(x)))
+	end
+	return d
+end
+
+local function veggiePathZ(x: number): number
+	return CROSS_Z + wave((x + 104) / 42, x, 1.5, 0.15)
+end
+local function hollowPathX(z: number): number
+	return wave((z - 20) / 42, z, 2.5, 0.15)
+end
+local function oasisPathZ(x: number): number
+	return CROSS_Z + wave((x - 62) / 40, x, 1.5, 0.17)
+end
+
+-- Ground -----------------------------------------------------------------------------------
 
 -- How far (x, z) is from the mesa's middle, roughened so its cliffs aren't round
 local function mesaDistance(ctx: Context.Context, x: number, z: number): number
@@ -103,51 +118,79 @@ end
 -- The mesa's striped rock: layers of terracotta, red terracotta and sand
 local BANDS = { "Terracotta", "Terracotta", "RedTerracotta", "Terracotta", "Sand", "RedTerracotta" }
 
+-- The plain is flat for the wheat; only the mesa rises out of it
 local function plainsColumn(ctx: Context.Context, x: number, z: number): (string, number)
 	local d = mesaDistance(ctx, x, z)
 	if d < 10.5 then
 		local h = if d < 5 then 15 elseif d < 7 then 12 elseif d < 8.8 then 8 else 4
 		return "Grass", h
 	end
-	local h = math.clamp(math.round(0.6 + 2 * ctx.Noise(x, z, 20, 9)), 0, 2)
-	if inField(x, z, 2) then
-		h = 0
-	end
-	return if ctx.Noise(x, z, 6, 33) > 0.4 and not inField(x, z, 1) then "FlowerGrass" else "Grass", h
+	return if plainsPathDistance(x, z) <= 1 then "Path" else "Grass", 0
 end
 
 local function veggieColumn(ctx: Context.Context, x: number, z: number): (string, number)
 	local h = math.clamp(math.round(0.8 + 2 * ctx.Noise(x, z, 16, 10)), 0, 2)
-	if inField(x, z, 2) then
-		h = 0
+	if math.abs(z - CROSS_Z) <= 15 and x > VEGGIE.X - 26 then
+		h = 0 -- the gardens either side of the path
 	end
 	return "Grass", h
 end
 
 local function hollowColumn(ctx: Context.Context, x: number, z: number): (string, number)
 	local h = math.clamp(math.round(1.5 + 4 * ctx.Noise(x, z, 15, 11)), 0, 5)
-	if inField(x, z, 2) then
-		h = 0
-	end
-	return if ctx.Hash(x, 4, z) < 0.1 then "Path" else "Grass", h
+	return if ctx.Noise(x, z, 6, 12) > 0.3 then "CoarseDirt" else "Grass", h
 end
 
 local function oasisColumn(ctx: Context.Context, x: number, z: number): (string, number)
 	local h = math.clamp(math.round(1 + 3 * ctx.Noise(x, z, 12, 12)), 0, 4)
-	if inField(x, z, 2) then
-		h = 0
-	end
 	if near(x, z, OASIS_POOL, 10) then
 		return "Grass", 0
 	end
 	return "Sand", h
 end
 
--- Fields ---------------------------------------------------------------------------------
+-- Fields ------------------------------------------------------------------------------------
+
+local SOWABLE: { [string]: boolean } = { Grass = true, FlowerGrass = true, CoarseDirt = true, Sand = true }
+
+-- Sows a wild crop on the ground at (x, z) if it's open ground with nothing on it
+local function sow(ctx: Context.Context, x: number, z: number, crop: string): boolean
+	local h = ctx.HeightAt(x, z)
+	if not SOWABLE[ctx.World.Cells[key(x, h, z)] or ""] or ctx.World.Cells[key(x, h + 1, z)] then
+		return false
+	end
+	ctx.Field(x, h, z, crop)
+	return true
+end
+
+-- A water channel in the ground at (x, z) (flat ground at y = 0)
+local function channel(ctx: Context.Context, x: number, z: number)
+	if ctx.World.Cells[key(x, 1, z)] or ctx.World.Cells[key(x, 0, z)] == "Farmland" then
+		return
+	end
+	ctx.Set(x, 0, z, nil)
+	ctx.Set(x, -1, z, "Dirt")
+	Decor.Water(ctx.Decor, ctx.Top(x, -1, z) + Vector3.new(0, SIZE * 0.75, 0), Vector2.new(SIZE, SIZE), SIZE * 0.8)
+end
+
+-- A hay bale or two standing in a field
+local function hay(ctx: Context.Context, x: number, z: number)
+	local h = ctx.HeightAt(x, z)
+	ctx.SetFree(x, h + 1, z, "HayBale")
+	if ctx.Hash(x, 61, z) < 0.4 then
+		ctx.SetFree(x + 1, h + 1, z, "HayBale")
+	end
+	if ctx.Hash(x, 62, z) < 0.2 then
+		ctx.SetFree(x, h + 2, z, "HayBale")
+	end
+end
 
 -- A scarecrow: a post with a crossbar, a straw head, an old hat and a patched shirt
-local function scarecrow(ctx: Context.Context, top: Vector3, shirt: Color3?)
-	local base = CFrame.new(top)
+local function scarecrow(ctx: Context.Context, x: number, z: number, shirt: Color3?)
+	local h = ctx.HeightAt(x, z)
+	ctx.Set(x, h, z, "Farmland")
+	ctx.Set(x, h + 1, z, nil)
+	local base = CFrame.new(ctx.Top(x, h, z))
 	Decor.Piece(ctx.Decor, "Wood", Vector3.new(0.5, 5, 0.5), base * CFrame.new(0, 2.5, 0))
 	Decor.Piece(ctx.Decor, "Wood", Vector3.new(4, 0.4, 0.4), base * CFrame.new(0, 3.6, 0))
 	Decor.Part(
@@ -177,67 +220,7 @@ local function scarecrow(ctx: Context.Context, top: Vector3, shirt: Color3?)
 	)
 end
 
-local function field(ctx: Context.Context, info: FieldInfo)
-	local cx, cz = math.round((info.X1 + info.X2) / 2), math.round((info.Z1 + info.Z2) / 2)
-	if (cz - info.Z1) % 4 == 3 then
-		cz += 1
-	end
-	for x = info.X1, info.X2 do
-		for z = info.Z1, info.Z2 do
-			if (z - info.Z1) % 4 == 3 then
-				-- A water channel: a trench with water in it
-				ctx.Set(x, 0, z, nil)
-				ctx.Set(x, -1, z, "Dirt")
-			elseif x == cx and z == cz then
-				ctx.Set(x, 0, z, "Farmland")
-				scarecrow(ctx, ctx.Top(x, 0, z), if info.Crop == "Pumpkin" then Color3.fromRGB(150, 60, 40) else nil)
-			else
-				ctx.Field(x, 0, z, info.Crop)
-			end
-		end
-	end
-	for z = info.Z1, info.Z2 do
-		if (z - info.Z1) % 4 == 3 then
-			Decor.Water(
-				ctx.Decor,
-				ctx.Top(info.X1, -1, z) + Vector3.new((info.X2 - info.X1) / 2 * SIZE, SIZE * 0.75, 0),
-				Vector2.new((info.X2 - info.X1 + 1) * SIZE, SIZE),
-				SIZE * 0.8
-			)
-		end
-	end
-	-- A fence all round, with a gate in the middle of the side toward the path
-	local x1, x2, z1, z2 = info.X1 - 1, info.X2 + 1, info.Z1 - 1, info.Z2 + 1
-	local function at(x: number, z: number): Vector3
-		return ctx.Top(x, 0, z)
-	end
-	local sides = {
-		{ Dir = S, A = { x1, z1 }, B = { x2, z1 } },
-		{ Dir = N, A = { x1, z2 }, B = { x2, z2 } },
-		{ Dir = W, A = { x1, z1 }, B = { x1, z2 } },
-		{ Dir = E, A = { x2, z1 }, B = { x2, z2 } },
-	}
-	for _, side in sides do
-		local a, b = side.A, side.B
-		if side.Dir == info.Gate then
-			local alongX = a[2] == b[2]
-			local mid = if alongX then math.round((a[1] + b[1]) / 2) else math.round((a[2] + b[2]) / 2)
-			if alongX then
-				Decor.Fence(ctx.Decor, at(a[1], a[2]), at(mid - 1, a[2]))
-				Decor.Fence(ctx.Decor, at(mid + 1, a[2]), at(b[1], a[2]))
-				Common.Signpost(ctx, mid + 3, a[2] + math.round(side.Dir.Z) * 2, side.Dir, info.Sign, 4)
-			else
-				Decor.Fence(ctx.Decor, at(a[1], a[2]), at(a[1], mid - 1))
-				Decor.Fence(ctx.Decor, at(a[1], mid + 1), at(a[1], b[2]))
-				Common.Signpost(ctx, a[1] + math.round(side.Dir.X) * 2, mid + 3, side.Dir, info.Sign, 4)
-			end
-		else
-			Decor.Fence(ctx.Decor, at(a[1], a[2]), at(b[1], b[2]))
-		end
-	end
-end
-
--- Wheat Plains ---------------------------------------------------------------------------
+-- Wheat Plains -----------------------------------------------------------------------------
 
 -- The barn: red board walls with white trim, a slate roof, a big door, hay inside and out
 local function barn(ctx: Context.Context, ox: number, oz: number, front: Vector3)
@@ -275,6 +258,29 @@ local function barn(ctx: Context.Context, ox: number, oz: number, front: Vector3
 	for _, u in { -2.4, 2.4 } do
 		Decor.WallLantern(ctx.Decor, site:Pos(u, 3.6, 0) + site.Front * (SIZE / 2), site.Front)
 	end
+end
+
+-- A tall round silo: red boards with white bands, under a grey dome
+local function silo(ctx: Context.Context, x0: number, z0: number)
+	local height = 16
+	for dx = -2, 2 do
+		for dz = -2, 2 do
+			local d = math.sqrt(dx * dx + dz * dz)
+			if d <= 2.5 then
+				ctx.Set(x0 + dx, 0, z0 + dz, "SmoothStone")
+				if d > 1.5 then
+					for y = 1, height do
+						ctx.Set(x0 + dx, y, z0 + dz, if y % 4 == 0 then "WhiteWool" else "BarnPlanks")
+					end
+				end
+				ctx.Set(x0 + dx, height + 1, z0 + dz, "SmoothStone")
+			end
+			if d <= 1.5 then
+				ctx.Set(x0 + dx, height + 2, z0 + dz, "SmoothStone")
+			end
+		end
+	end
+	ctx.Set(x0, height + 3, z0, "SmoothStone")
 end
 
 -- The windmill: a stone and plaster tower with a red cap and four sails turning to the south
@@ -413,9 +419,25 @@ local function farmyard(ctx: Context.Context, wx: number, wz: number)
 	Decor.Piece(ctx.Decor, "HayBale", Vector3.new(2.6, 1.4, 4.4), CFrame.new(at + Vector3.new(0, 2.3, 0)))
 end
 
+-- Is (x, z) on the Plains somewhere crops don't grow (buildings, the pond, the mesa, the
+-- square, bridge ends)?
+local function plainsBusy(ctx: Context.Context, x: number, z: number): boolean
+	return ctx.NearArrival(x, z, 3)
+		or near(x, z, WINDMILL, 5)
+		or near(x, z, SILO, 4)
+		or near(x, z, WELL, 6)
+		or near(x, z, PLAINS_POND, 7)
+		or mesaDistance(ctx, x, z) < 12
+		or (x > BARN[1] - 4 and x < BARN[1] + 10 and z > BARN[2] - 8 and z < BARN[2] + 8)
+		or (x > FARMHOUSE[1] - 6 and x < FARMHOUSE[1] + 9 and z > FARMHOUSE[2] - 6 and z < FARMHOUSE[2] + 6)
+		or (math.abs(x) >= 28 and math.abs(z - CROSS_Z) <= 4)
+		or (math.abs(x) <= 5 and z >= -16)
+end
+
 local function wheatPlains(ctx: Context.Context, island: Context.Island)
 	windmill(ctx, WINDMILL[1], WINDMILL[2])
 	barn(ctx, BARN[1], BARN[2], W)
+	silo(ctx, SILO[1], SILO[2])
 	farmhouse(ctx, FARMHOUSE[1], FARMHOUSE[2], W)
 	farmyard(ctx, WELL[1], WELL[2])
 	local water = Common.Pond(ctx, PLAINS_POND[1], PLAINS_POND[2], 4.4, "Sand")
@@ -427,24 +449,36 @@ local function wheatPlains(ctx: Context.Context, island: Context.Island)
 			if i == 2 then FLOWERS[4] else nil
 		)
 	end
-	Common.Path(ctx, 2, FARMHOUSE[2], FARMHOUSE[1] - 1, FARMHOUSE[2], 1)
-	Common.Path(ctx, 2, BARN[2], BARN[1] - 1, BARN[2], 3)
-	for _, z in { -62, -54, -46, -28, -20, -12 } do
-		Common.Lamp(ctx, 2, z)
+	Common.Path(ctx, mainPathX(FARMHOUSE[2]) + 2, FARMHOUSE[2], FARMHOUSE[1] - 1, FARMHOUSE[2], 1)
+	Common.Path(ctx, mainPathX(BARN[2]) + 2, BARN[2], BARN[1] - 1, BARN[2], 3)
+	-- Wheat over the whole plain, water along both edges of the paths, hay in the wheat
+	local r = math.ceil(PLAINS.R * 1.2)
+	for x = PLAINS.X - r, PLAINS.X + r do
+		for z = PLAINS.Z - r, PLAINS.Z + r do
+			if ctx.IslandAt(x, z) == island and ctx.Inside(x, z, 3) and not plainsBusy(ctx, x, z) then
+				local d = plainsPathDistance(x, z)
+				if d == 2 then
+					channel(ctx, x, z)
+				elseif d > 2 then
+					if ctx.Hash(x, 60, z) < 0.012 then
+						hay(ctx, x, z)
+					else
+						sow(ctx, x, z, "Wheat")
+					end
+				end
+			end
+		end
 	end
-	-- A few oaks round the edge of the plains
-	Common.Forest(ctx, island, 9, 3, function(x, z)
-		return inField(x, z, 3)
-			or mesaDistance(ctx, x, z) < 13
-			or near(x, z, WINDMILL, 7)
-			or (x > BARN[1] - 4 and x < BARN[1] + 10 and z > BARN[2] - 8 and z < BARN[2] + 8)
-			or (x > FARMHOUSE[1] - 6 and x < FARMHOUSE[1] + 9 and z > FARMHOUSE[2] - 6 and z < FARMHOUSE[2] + 6)
-			or near(x, z, WELL, 6)
-			or near(x, z, PLAINS_POND, 8)
-			or ctx.Flat(x, z, 3)
-			or ctx.NearArrival(x, z, 4)
+	for _, spot in { { -14, -58 }, { 14, -44 }, { -12, -26 }, { 22, -44 } } do
+		if ctx.World.Cells[key(spot[1], 0, spot[2])] == "Farmland" then
+			scarecrow(ctx, spot[1], spot[2])
+		end
+	end
+	-- Oaks and autumn trees round the rim
+	Common.Forest(ctx, island, 8, 2, function(x, z)
+		return ctx.Inside(x, z, 5) or plainsBusy(ctx, x, z) or ctx.Flat(x, z, 2)
 	end, function(x, h, z)
-		Trees.Oak(x, h, z, 4 + (x % 2), ctx.SetFree)
+		Trees.Oak(x, h, z, 4 + (x % 2), ctx.SetFree, "Wood", if (x + z) % 3 == 0 then "AutumnLeaves" else nil)
 	end)
 	Common.Scatter(ctx, island, 0.05, 0.02, FLOWERS)
 end
@@ -474,25 +508,47 @@ local function glasshouse(ctx: Context.Context, x0: number, z0: number)
 end
 
 local function veggieGardens(ctx: Context.Context, island: Context.Island)
-	Common.Path(ctx, VEGGIE.X + 22, CROSS_Z, GLASSHOUSE[1] + 1, CROSS_Z, 3)
-	glasshouse(ctx, GLASSHOUSE[1], GLASSHOUSE[2])
-	for _, x in { -96, -84, -72 } do
-		Common.Lamp(ctx, x, CROSS_Z + 2)
+	for x = VEGGIE.X + 22, GLASSHOUSE[1] + 1, -1 do
+		Common.Path(ctx, x, veggiePathZ(x), x, veggiePathZ(x), 3)
 	end
-	-- Crates of produce and barrels along the path
+	glasshouse(ctx, GLASSHOUSE[1], GLASSHOUSE[2])
+	Common.ZoneSign(ctx, VEGGIE.X + 14, CROSS_Z - 4, E, "CARROTS", "FARMING 5", Signs.Woods.Oak)
+	Common.ZoneSign(ctx, VEGGIE.X + 14, CROSS_Z + 4, E, "POTATOES", "FARMING 10", Signs.Woods.Oak)
+	-- Long rows: carrots south of the path, potatoes north, water every fifth row
+	for x = VEGGIE.X - 22, VEGGIE.X + 13 do
+		local pathZ = veggiePathZ(x)
+		for z = pathZ - 13, pathZ + 13 do
+			local off = math.abs(z - pathZ)
+			if off >= 3 and ctx.IslandAt(x, z) == island and ctx.Inside(x, z, 3) and not near(x, z, GLASSHOUSE, 7) then
+				if off % 5 == 0 then
+					channel(ctx, x, z)
+				else
+					sow(ctx, x, z, if z < pathZ then "Carrot" else "Potato")
+				end
+			end
+		end
+	end
+	for _, spot in { { VEGGIE.X - 6, CROSS_Z - 7 }, { VEGGIE.X - 2, CROSS_Z + 8 } } do
+		if ctx.World.Cells[key(spot[1], 0, spot[2])] == "Farmland" then
+			scarecrow(ctx, spot[1], spot[2], Color3.fromRGB(150, 110, 50))
+		end
+	end
 	for _, spot in { { -91, CROSS_Z - 2 }, { -77, CROSS_Z + 2 } } do
 		ctx.SetFree(spot[1], 1, spot[2], "Crate")
 		ctx.SetFree(spot[1] + 1, 1, spot[2], "Barrel")
 	end
 	Common.Forest(ctx, island, 8, 3, function(x, z)
-		return inField(x, z, 3) or math.abs(z - CROSS_Z) <= 4 or near(x, z, GLASSHOUSE, 9) or ctx.Flat(x, z, 3)
+		return ctx.World.Cells[key(x, ctx.HeightAt(x, z), z)] == "Farmland"
+			or math.abs(z - CROSS_Z) <= 15 and x > VEGGIE.X - 26
+			or near(x, z, GLASSHOUSE, 9)
+			or ctx.Flat(x, z, 3)
 	end, function(x, h, z)
 		Trees.Oak(x, h, z, 4 + (z % 2), ctx.SetFree)
 	end)
 	Common.Scatter(ctx, island, 0.05, 0.04, FLOWERS)
 end
 
--- Pumpkin Hollow -----------------------------------------------------------------------------
+-- Pumpkin Hollow ----------------------------------------------------------------------------
 
 -- A pumpkin with a carved face glowing toward `out`, on the ground at (x, z)
 local function jackOLantern(ctx: Context.Context, x: number, z: number, out: Vector3)
@@ -502,19 +558,42 @@ local function jackOLantern(ctx: Context.Context, x: number, z: number, out: Vec
 end
 
 local function pumpkinHollow(ctx: Context.Context, island: Context.Island)
-	Common.Path(ctx, 0, HOLLOW.Z - 23, 0, 55, 3)
-	for z = HOLLOW.Z - 18, 50, 8 do
-		jackOLantern(ctx, -2, z, E)
-		jackOLantern(ctx, 2, z + 4, W)
+	for z = HOLLOW.Z - 24, HOLLOW.Z + 18 do
+		Common.Path(ctx, hollowPathX(z), z, hollowPathX(z), z, 3)
 	end
-	-- Hay bales and a harvest cart by the paths
-	for _, spot in { { -4, 44 }, { -5, 44 }, { -4, 45 }, { 4, 52 }, { 5, 52 } } do
-		ctx.SetFree(spot[1], 1, spot[2], "HayBale")
+	for z = HOLLOW.Z - 18, HOLLOW.Z + 14, 8 do
+		jackOLantern(ctx, hollowPathX(z) - 2, z, E)
+		jackOLantern(ctx, hollowPathX(z + 4) + 2, z + 4, W)
 	end
-	ctx.SetFree(-4, 2, 44, "HayBale")
-	-- Leaf piles under the trees
+	-- Pumpkin patches over the rolling ground between the trees
+	local r = math.ceil(HOLLOW.R * 1.2)
+	for x = HOLLOW.X - r, HOLLOW.X + r do
+		for z = HOLLOW.Z - r, HOLLOW.Z + r do
+			if
+				ctx.IslandAt(x, z) == island
+				and ctx.Inside(x, z, 4)
+				and math.abs(x - hollowPathX(z)) >= 3
+				and not ctx.Flat(x, z, 2)
+				and ctx.Noise(x, z, 9, 50) > 0.12
+			then
+				if ctx.Hash(x, 63, z) < 0.015 then
+					hay(ctx, x, z)
+				else
+					sow(ctx, x, z, "Pumpkin")
+				end
+			end
+		end
+	end
+	for _, spot in { { -14, 34 }, { 15, 50 } } do
+		if ctx.World.Cells[key(spot[1], ctx.HeightAt(spot[1], spot[2]), spot[2])] == "Farmland" then
+			scarecrow(ctx, spot[1], spot[2], Color3.fromRGB(150, 60, 40))
+		end
+	end
+	-- Autumn trees between the patches, with leaf piles under them
 	Common.Forest(ctx, island, 6, 3, function(x, z)
-		return inField(x, z, 3) or math.abs(x) <= 4 or ctx.Flat(x, z, 3)
+		return ctx.World.Cells[key(x, ctx.HeightAt(x, z), z)] == "Farmland"
+			or math.abs(x - hollowPathX(z)) <= 3
+			or ctx.Flat(x, z, 3)
 	end, function(x, h, z)
 		local roll = ctx.Rng:NextNumber()
 		if roll < 0.3 then
@@ -532,11 +611,12 @@ local function pumpkinHollow(ctx: Context.Context, island: Context.Island)
 		end
 		for _ = 1, 2 do
 			local lx, lz = x + ctx.Rng:NextInteger(-2, 2), z + ctx.Rng:NextInteger(-2, 2)
-			if ctx.Inside(lx, lz, 2) and not inField(lx, lz, 1) then
+			if ctx.Inside(lx, lz, 2) and ctx.World.Cells[key(lx, ctx.HeightAt(lx, lz), lz)] ~= "Farmland" then
 				ctx.SetFree(lx, ctx.HeightAt(lx, lz) + 1, lz, "AutumnLeaves")
 			end
 		end
 	end)
+	Common.CliffVines(ctx, island, 0.3)
 	Common.Scatter(ctx, island, 0.04, 0, {})
 	Decor.Falling(
 		ctx.Decor,
@@ -573,8 +653,10 @@ local function stall(ctx: Context.Context, x0: number, z0: number)
 end
 
 local function melonOasis(ctx: Context.Context, island: Context.Island)
-	Common.Path(ctx, OASIS.X - 22, CROSS_Z, OASIS.X + 18, CROSS_Z, 3, "Gravel")
-	Common.Path(ctx, OASIS_POOL[1], CROSS_Z, OASIS_POOL[1], OASIS_POOL[2] - 8, 3, "Gravel")
+	for x = OASIS.X - 22, OASIS.X + 18 do
+		Common.Path(ctx, x, oasisPathZ(x), x, oasisPathZ(x), 3, "Gravel")
+	end
+	Common.Path(ctx, OASIS_POOL[1], CROSS_Z + 2, OASIS_POOL[1], OASIS_POOL[2] - 8, 3, "Gravel")
 	local water = Common.Pond(ctx, OASIS_POOL[1], OASIS_POOL[2], 6, "Sand")
 	for i = 1, 4 do
 		Decor.LilyPad(
@@ -592,22 +674,41 @@ local function melonOasis(ctx: Context.Context, island: Context.Island)
 		end
 	end
 	stall(ctx, STALL[1], STALL[2])
-	-- Cacti over the dunes
+	-- Melon patches over the dunes
+	local r = math.ceil(OASIS.R * 1.2)
+	for x = OASIS.X - r, OASIS.X + r do
+		for z = OASIS.Z - r, OASIS.Z + r do
+			if
+				ctx.IslandAt(x, z) == island
+				and ctx.Inside(x, z, 4)
+				and math.abs(z - oasisPathZ(x)) >= 3
+				and not near(x, z, OASIS_POOL, 11)
+				and not near(x, z, STALL, 5)
+				and not (math.abs(x - OASIS_POOL[1]) <= 2 and z > CROSS_Z and z < OASIS_POOL[2])
+				and not ctx.Flat(x, z, 2)
+				and ctx.Noise(x, z, 8, 51) > 0.1
+			then
+				sow(ctx, x, z, "Melon")
+			end
+		end
+	end
+	-- Cacti over the rest of the sand
 	for i = 1, 40 do
 		local x = OASIS.X + ctx.Rng:NextInteger(-OASIS.R, OASIS.R)
 		local z = OASIS.Z + ctx.Rng:NextInteger(-OASIS.R, OASIS.R)
+		local h = ctx.HeightAt(x, z)
 		if
 			ctx.Inside(x, z, 3)
-			and not inField(x, z, 3)
+			and ctx.World.Cells[key(x, h, z)] == "Sand"
+			and not ctx.World.Cells[key(x, h + 1, z)]
 			and not near(x, z, OASIS_POOL, 11)
-			and math.abs(z - CROSS_Z) > 3
-			and not near(x, z, STALL, 5)
+			and math.abs(z - oasisPathZ(x)) > 3
 		then
-			Decor.Cactus(ctx.Decor, ctx.Top(x, ctx.HeightAt(x, z), z), 3 + (i % 4) * 1.2, i % 3)
+			Decor.Cactus(ctx.Decor, ctx.Top(x, h, z), 3 + (i % 4) * 1.2, i % 3)
 		end
 	end
 	for _, x in { 70, 86, 100 } do
-		Common.Lamp(ctx, x, CROSS_Z + 2)
+		Common.Lamp(ctx, x, oasisPathZ(x) + 2)
 	end
 	Common.Scatter(ctx, island, 0.06, 0.03, FLOWERS)
 end
@@ -615,26 +716,15 @@ end
 -- The world ----------------------------------------------------------------------------------
 
 function Farming.Build(ctx: Context.Context)
-	-- Main paths, bridge ends, fields and buildings stay flat
-	ctx.Flatten(-2, -70, 2, -6)
-	ctx.Flatten(-34, CROSS_Z - 2, 34, CROSS_Z + 2)
+	-- Bridge ends, buildings and the gardens stay flat
 	ctx.Flatten(-66, CROSS_Z - 2, -30, CROSS_Z + 2)
 	ctx.Flatten(30, CROSS_Z - 2, 66, CROSS_Z + 2)
-	ctx.Flatten(-2, -14, 2, 56)
-	ctx.Flatten(VEGGIE.X - 26, CROSS_Z - 2, VEGGIE.X + 30, CROSS_Z + 2)
-	ctx.Flatten(OASIS.X - 30, CROSS_Z - 2, OASIS.X + 20, CROSS_Z + 2)
-	for _, f in FIELDS do
-		ctx.Flatten(f.X1 - 1, f.Z1 - 1, f.X2 + 1, f.Z2 + 1)
-	end
-	ctx.Flatten(BARN[1] - 3, BARN[2] - 6, BARN[1] + 9, BARN[2] + 6)
-	ctx.Flatten(FARMHOUSE[1] - 5, FARMHOUSE[2] - 4, FARMHOUSE[1] + 7, FARMHOUSE[2] + 4)
-	ctx.Flatten(WINDMILL[1] - 3, WINDMILL[2] - 4, WINDMILL[1] + 3, WINDMILL[2] + 3)
-	ctx.Flatten(WELL[1] - 2, WELL[2] - 4, WELL[1] + 6, WELL[2] + 6)
-	ctx.Flatten(GLASSHOUSE[1] - 5, GLASSHOUSE[2] - 5, GLASSHOUSE[1] + 9, GLASSHOUSE[2] + 5)
+	ctx.Flatten(-2, -14, 2, 26)
+	ctx.Flatten(VEGGIE.X - 26, CROSS_Z - 15, VEGGIE.X + 30, CROSS_Z + 15)
+	ctx.Flatten(OASIS.X - 30, CROSS_Z - 3, OASIS.X + 20, CROSS_Z + 3)
 	ctx.Flatten(STALL[1] - 4, STALL[2] - 3, STALL[1] + 4, STALL[2] + 5)
-	for _, spot in { PLAINS_POND, OASIS_POOL } do
-		ctx.Flatten(spot[1] - 8, spot[2] - 8, spot[1] + 8, spot[2] + 8)
-	end
+	ctx.Flatten(OASIS_POOL[1] - 8, OASIS_POOL[2] - 8, OASIS_POOL[1] + 8, OASIS_POOL[2] + 8)
+	ctx.Flatten(PLAINS_POND[1] - 8, PLAINS_POND[2] - 8, PLAINS_POND[1] + 8, PLAINS_POND[2] + 8)
 
 	local plains = ctx.Island({
 		Name = "Wheat Plains",
@@ -697,26 +787,32 @@ function Farming.Build(ctx: Context.Context)
 		-- The one off the Melon Oasis is sandy
 		ctx.Islet(spot[1], spot[2], spot[3], spot[4], if spot[1] > 100 then "Sand" else nil)
 		if spot[4] >= 4 then
-			Trees.Oak(spot[1], spot[2], spot[3], 4, ctx.SetFree)
+			Trees.Oak(spot[1], spot[2], spot[3], 4, ctx.SetFree, "Wood", "AutumnLeaves")
 		end
 	end
 
-	Common.Path(ctx, 0, -68, 0, -10, 3)
-	Common.Path(ctx, -32, CROSS_Z, 32, CROSS_Z, 3)
 	ctx.Bridge(-62, CROSS_Z, -32, CROSS_Z)
 	ctx.Bridge(32, CROSS_Z, 62, CROSS_Z)
 	ctx.Bridge(0, -12, 0, 20)
-	Common.ZoneGate(ctx, VEGGIE.X + 21, CROSS_Z, E, "VEGGIE GARDENS", "FARMING 5 + 10")
-	Common.ZoneGate(ctx, OASIS.X - 21, CROSS_Z, W, "MELON OASIS", "FARMING 25")
-	Common.ZoneGate(ctx, HOLLOW.X, HOLLOW.Z - 23, S, "PUMPKIN HOLLOW", "FARMING 15")
-
-	for _, info in FIELDS do
-		field(ctx, info)
+	Common.Arrows(ctx, 5, CROSS_Z - 5, S, {
+		{ Text = "VEGGIE GARDENS", Toward = W },
+		{ Text = "PUMPKIN HOLLOW", Toward = N },
+		{ Text = "MELON OASIS", Toward = E },
+	})
+	Common.ZoneSign(ctx, VEGGIE.X + 20, CROSS_Z - 4, E, "VEGGIE GARDENS", "FARMING 5 + 10", Signs.Woods.Oak)
+	Common.ZoneSign(ctx, OASIS.X - 20, CROSS_Z - 4, W, "MELON OASIS", "FARMING 25", Signs.Woods.Sand)
+	Common.ZoneSign(ctx, HOLLOW.X + 4, HOLLOW.Z - 22, S, "PUMPKIN HOLLOW", "FARMING 15", Signs.Woods.Spruce)
+	for _, spot in { { -4, -64 }, { 4, -64 }, { -4, CROSS_Z - 4 }, { 4, -16 } } do
+		Common.Lamp(ctx, spot[1] + mainPathX(spot[2]), spot[2])
 	end
+
 	wheatPlains(ctx, plains)
 	veggieGardens(ctx, veggie)
 	pumpkinHollow(ctx, hollow)
 	melonOasis(ctx, oasis)
+	for _, island in { plains, veggie, oasis } do
+		Common.CliffVines(ctx, island, 0.25)
+	end
 end
 
 return Farming

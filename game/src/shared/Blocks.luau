@@ -181,6 +181,13 @@ local Blocks: { [string]: Block } = {
 	Melon = { Name = "Melon", Drop = nil, Hardness = 1, Tool = "Axe", Breakable = true },
 	Terracotta = stone("Terracotta", nil),
 	RedTerracotta = stone("Red Terracotta", nil),
+	-- From the Skybounds references: the mine's sandstone mountain, woodland dirt, giant
+	-- mushrooms, old ruins
+	Sandstone = stone("Sandstone", nil),
+	CoarseDirt = { Name = "Coarse Dirt", Drop = nil, Hardness = 0.5, Tool = "Shovel", Breakable = true },
+	MushroomCap = { Name = "Mushroom Cap", Drop = nil, Hardness = 0.2, Tool = "Axe", Breakable = true },
+	MushroomStem = { Name = "Mushroom Stem", Drop = nil, Hardness = 0.2, Tool = "Axe", Breakable = true },
+	CrackedStoneBricks = stone("Cracked Stone Bricks", nil),
 }
 
 local Size = 3

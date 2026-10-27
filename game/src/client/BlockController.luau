@@ -32,6 +32,17 @@ local Hotbar = require(script.Parent.Hotbar)
 
 local player = Players.LocalPlayer :: Player
 
+-- Stands in for the block you aim at inside a merged piece (see aim)
+local mergedCursor = Instance.new("Part")
+mergedCursor.Name = "MergedCursor"
+mergedCursor.Size = Vector3.one * Blocks.Size
+mergedCursor.Transparency = 1
+mergedCursor.Anchored = true
+mergedCursor.CanCollide = false
+mergedCursor.CanQuery = false
+mergedCursor.CanTouch = false
+mergedCursor.Parent = Workspace
+
 local TOUCH_HOLD = 0.3
 local TAP_TIME = 0.25
 local CLICK_SLOP = 6 -- pixels the mouse may move and still count as a click
@@ -151,6 +162,19 @@ local function aim(): Target?
 	end
 	local part = hit.Instance
 	local x, y, z = part:GetAttribute("X"), part:GetAttribute("Y"), part:GetAttribute("Z")
+	local worldOrigin = area:GetAttribute("Origin")
+	if part:GetAttribute("Merged") and typeof(worldOrigin) == "Vector3" and part:IsA("BasePart") then
+		-- A merged piece (many blocks in one part): work out which of its blocks was hit,
+		-- and stand an invisible block-sized cursor there to outline and name it
+		local cell = (hit.Position - hit.Normal * 0.05 - worldOrigin) / Blocks.Size
+		local cx, cy, cz = math.round(cell.X), math.round(cell.Y), math.round(cell.Z)
+		x, y, z = cx, cy, cz
+		local at = worldOrigin + Vector3.new(cx, cy, cz) * Blocks.Size
+		mergedCursor.Name = part.Name
+		mergedCursor.CFrame = CFrame.new(at)
+		mergedCursor:SetAttribute("Locked", part:GetAttribute("Locked"))
+		part = mergedCursor
+	end
 	if type(x) ~= "number" or type(y) ~= "number" or type(z) ~= "number" then
 		return nil
 	end

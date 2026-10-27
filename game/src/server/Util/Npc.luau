@@ -3,7 +3,7 @@
 -- "pixels" (1/16 of a block) so they match the world. They all share one body (boots,
 -- legs, arms at their sides, a cube head that pivots at the neck so the client can turn it
 -- to watch players) and each has their own clothes and gear:
---   Merchant    travelling trader: newsboy cap, bushy mustache, green vest, red scarf and a
+--   Merchant    traveling trader: newsboy cap, bushy mustache, green vest, red scarf and a
 --               big canvas backpack with a bedroll and a lantern
 --   Miner       yellow hard hat with a headlamp, grey beard, denim overalls, pickaxe on his back
 --   Lumberjack  red plaid shirt, suspenders, green beanie, big brown beard, axe on his back

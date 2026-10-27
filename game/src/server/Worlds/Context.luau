@@ -68,7 +68,9 @@ export type Context = {
 	-- Is (x, z) within `margin` of a flat rectangle?
 	Flat: (x: number, z: number, margin: number) -> boolean,
 	Island: (spec: IslandSpec) -> Island,
-	-- A plank bridge from (x1, z1) to (x2, z2), straight along x or z, its deck at y = 0
+	-- A bridge from (x1, z1) to (x2, z2), straight along x or z, its deck at y = 0: planks
+	-- with railings (the deck block, default Dark Planks), or "StoneBricks" for a stone
+	-- bridge with low walls and lamp posts
 	Bridge: (x1: number, z1: number, x2: number, z2: number, plank: string?) -> (),
 	-- A little floating rock with `top` on it, its top at height y
 	Islet: (x: number, y: number, z: number, radius: number, top: string?) -> (),
@@ -441,9 +443,37 @@ function Context.new(world: BlockWorld.World, decor: Folder, seed: number, south
 		if not gapFrom then
 			return
 		end
-		-- Over the gap: log beams under both edges and across every few blocks, railings,
-		-- and lantern posts at both ends and along the way
 		local a, b = gapFrom - 1, gapTo + 1
+		if deck == "StoneBricks" then
+			-- A stone bridge: low walls of stone bricks along both edges with a lamp post on
+			-- them every few blocks, and a thick arch of stone underneath
+			for s = from, to do
+				for _, w in { -2, 2 } do
+					local x, z = cell(s, w)
+					ctx.Set(x, 1, z, "StoneBricks")
+				end
+			end
+			for s = a, b do
+				local middle = 1 - math.abs((s - a) / math.max(b - a, 1) * 2 - 1)
+				local depth = 1 + math.floor((1 - middle) * 3)
+				for w = -2, 2 do
+					local x, z = cell(s, w)
+					for y = -1, -depth, -1 do
+						ctx.Set(x, y, z, if y == -1 then "StoneBricks" else "Cobblestone")
+					end
+				end
+			end
+			for s = from + 2, to - 2, 6 do
+				for _, w in { -2, 2 } do
+					local x, z = cell(s, w)
+					ctx.Set(x, 2, z, "Cobblestone")
+					Decor.Lantern(decor, ctx.Top(x, 2, z), false, 18)
+				end
+			end
+			return
+		end
+		-- A plank bridge over the gap: log beams under both edges and across every few
+		-- blocks, railings, and lantern posts at both ends and along the way
 		for s = a, b do
 			for _, w in { -2, 2 } do
 				local x, z = cell(s, w)

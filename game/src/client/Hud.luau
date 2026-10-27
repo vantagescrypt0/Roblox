@@ -335,7 +335,7 @@ function Hud.Travel(destination: string)
 		return
 	end
 	local name = (Places.Names :: any)[destination]
-	fadeTitle.Text = if destination == "Island" or not name then "Heading home..." else `Travelling to {name}...`
+	fadeTitle.Text = if destination == "Island" or not name then "Heading home..." else `Traveling to {name}...`
 	setFade(true, TweenInfo.new(0.35))
 	-- Never leave the screen dark if the teleport silently never happens
 	task.delay(20, function()
