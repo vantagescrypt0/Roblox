@@ -36,12 +36,14 @@ No dates — quality over speed.
    - [x] Flying for you only, in every place: double-tap Space (2026-10-26) - published
    - [x] Worlds, second pass (2026-10-26, your notes + 8 Skybounds shots): one-sided hand-made signs (rustic, arrow signposts, hanging) instead of big plank boards; Farming as open fields with winding paths and water lines, hay, a silo; Mining as jagged sandstone peaks, a timber arch, pavilions, a stone bridge, and a section per ore inside (Lantern Hall, Coal Seam, Iron Vein, Lava Cavern, Gold Chamber, Crystal Grotto); Woodcutting with coarse dirt, a rocky hill, boulders, giant mushrooms, vines, stone paths; "Traveling" spelling - playtested in Studio; published 2026-10-26 ~21:00 (all 5 places)
    - [x] Town redesign after your Skybounds spawn shots (2026-10-26): spawn islet, stone bridge with lantern posts and flower boxes, a mountain with the SKYBLOX logo over a stone arch, striped market stalls, lantern-box lamp posts, flowers; ~19k parts - playtested in Studio; published (Town). See [[Town & Worlds]]
+   - [ ] **Next up (your notes, 2026-10-26 night):** everything grander (mine 4x+, more zones, crops, ores, trees, NPCs; ask before new content); StreamingEnabled; ores as regrowing nodes everywhere (rarer = slower) that turn into a pale empty node when mined; no breaking nodes without the right tool in public areas; a hoe to harvest crops, an axe for pumpkins and melons; a starter hoe for every player; an **Inbox** for items from traders, starter kits and more; harder leveling for skills and player levels; quests ready to grow; a big coin economy (the richest players hold 100M+ to buy the best things). See the Decision Log
    - [ ] Phone performance check of the bigger worlds (part counts printed as "[World] ..." on server start)
    - [ ] Slaying World (PvE spawners) — its Town portal is boarded up until then
    - [ ] Rare ores, trees and crops found outside the worlds (e.g. the Warzone); node items you can own and place
    - [ ] Add the Warzone to Town (when you're ready)
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?
+   - Future ideas (your list, 2026-10-26; not started): **Enchants**, **Pets**, **Warzone** and the ideas that come with it, **Auction House**, **Coinflip** (check Roblox's gambling rules and our [[Monetization Principles]] first: if coins can be bought with Robux, a coinflip counts as paid gambling, which is off-limits for our young audience). At the very end: **Gamepasses and other Robux income** (see [[Monetization Principles]])
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.
 4. **Soft launch:** small audience, measure retention, fix.
 5. **Launch + ads.**
