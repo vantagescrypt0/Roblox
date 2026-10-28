@@ -1,5 +1,10 @@
 --!strict
--- XP curves for player level (1-50, resets each season) and skill levels.
+-- XP curves for skill levels (1-99) and player level (1-50). Both reset each season.
+-- Fitted by tools/balance.py to the targets (Decision Log, 2026-10-27): a skill reaches
+-- level 10 after about an hour of steady play and 99 after about 25 hours; player level
+-- reaches 5 after about an hour, 10 (the Warzone) after about 4 and 50 after about 80.
+-- XP per action is in BlockService (GATHER), Crops.luau, Recipes.luau and Quests.luau;
+-- re-run the model after changing any of them.
 
 local Leveling = {}
 
@@ -11,9 +16,16 @@ Leveling.WarzoneLevel = 10
 -- play, so brand-new players (and throwaway accounts) can't be talked into bad trades
 Leveling.TradeLevel = 5
 
--- XP needed to go from `level` to `level + 1`
-function Leveling.XPToNext(level: number): number
-	return math.floor(40 * level ^ 1.35)
+-- XP a skill needs to go from `level` to `level + 1`: 2,855 at first, ~54,000 at 98
+-- (3.3M from 1 to 99)
+function Leveling.SkillXPToNext(level: number): number
+	return math.round(2856 * level ^ 0.645 / 5) * 5
+end
+
+-- XP the player level needs to go from `level` to `level + 1`: 3,645 at first, ~126,000
+-- at 49 (3.3M from 1 to 50)
+function Leveling.PlayerXPToNext(level: number): number
+	return math.round(3647 * level ^ 0.91 / 5) * 5
 end
 
 -- Chance of a double harvest from a gathering skill (Farming, Mining, Woodcutting):

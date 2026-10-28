@@ -270,7 +270,7 @@ function Hud.Render(state: any)
 	if state.Level >= state.MaxLevel then
 		xpBar.Set(1, "Max level")
 	else
-		xpBar.Set(state.XP / state.XPToNext, `{state.XP} / {state.XPToNext} XP`)
+		xpBar.Set(state.XP / state.XPToNext, `{Theme.formatNumber(state.XP)} / {Theme.formatNumber(state.XPToNext)} XP`)
 	end
 
 	coinsText.Text = Theme.formatNumber(state.Coins)

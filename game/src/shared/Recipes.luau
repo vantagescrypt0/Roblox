@@ -8,7 +8,8 @@
 --
 -- Requires: skill levels you need to make it (Skills.luau), e.g. an Iron Pickaxe needs
 -- Crafting 3 and Mining 4. Everything the beginner quests ask for has no requirement.
--- CraftingXP: Crafting skill XP for making it once.
+-- CraftingXP: Crafting skill XP for making it once: 1.5x the skill XP its raw materials gave
+-- (tools/balance.py), so smelting everything you mine takes Crafting to 99 in ~30 hours.
 
 local Tools = require(script.Parent.Tools)
 
@@ -31,7 +32,7 @@ local Recipes: { Recipe } = {
 		Amount = 4,
 		Inputs = { Wood = 1 },
 		Requires = {},
-		CraftingXP = 4,
+		CraftingXP = 75,
 		Station = "CraftingTable",
 	},
 	{
@@ -40,7 +41,7 @@ local Recipes: { Recipe } = {
 		Amount = 4,
 		Inputs = { Planks = 2 },
 		Requires = {},
-		CraftingXP = 4,
+		CraftingXP = 40,
 		Station = "CraftingTable",
 	},
 	{
@@ -49,7 +50,7 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { Stone = 8 },
 		Requires = {},
-		CraftingXP = 25,
+		CraftingXP = 360,
 		Station = "CraftingTable",
 	},
 	{
@@ -58,7 +59,7 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { RawIron = 1, Coal = 1 },
 		Requires = {},
-		CraftingXP = 10,
+		CraftingXP = 140,
 		Station = "Furnace",
 	},
 	{
@@ -67,7 +68,7 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { RawGold = 1, Coal = 1 },
 		Requires = {},
-		CraftingXP = 20,
+		CraftingXP = 195,
 		Station = "Furnace",
 	},
 }
@@ -90,7 +91,9 @@ local SKILL_LEVELS: { [string]: { number } } = {
 	Default = { 0, 0, 4, 8 },
 	Hoe = { 0, 3, 6, 12 },
 }
-local TIER_XP = { 10, 20, 50, 120 }
+-- Crafting XP for a tool: each head piece by its material, plus each stick
+local MATERIAL_XP = { Planks = 19, Stone = 45, IronIngot = 140, Crystal = 540 }
+local STICK_XP = 9
 -- Combat XP only comes from the Warzone, so swords need it only at the Crystal tier
 -- (Crystal comes from the Warzone too)
 local COMBAT_FROM_TIER = 4
@@ -112,7 +115,7 @@ for _, tool in Tools.List do
 		Amount = 1,
 		Inputs = { [MATERIALS[tool.Tier]] = cost.Head, Sticks = cost.Sticks },
 		Requires = requires,
-		CraftingXP = TIER_XP[tool.Tier],
+		CraftingXP = MATERIAL_XP[MATERIALS[tool.Tier]] * cost.Head + STICK_XP * cost.Sticks,
 		Station = "CraftingTable",
 	})
 end

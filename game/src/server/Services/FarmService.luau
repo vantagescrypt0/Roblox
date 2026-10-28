@@ -3,7 +3,7 @@
 -- to plant the seeds you're holding (or your best seeds) once, and from then on the crop
 -- regrows by itself after every harvest (time keeps counting while you're offline). Hold
 -- a hoe (an axe for pumpkins and melons) and click a ripe crop to harvest it for crops and
--- Farming XP, with a small chance of a spare seed; the tool wears down a little.
+-- Farming XP, with a small chance of a spare seed.
 -- Hold a shovel and click a crop to dig it up (you get the seed back) to plant something
 -- else. Better crops need a higher Farming level, and a higher level gives a bigger chance
 -- of a bonus crop. Bigger islands have more plots (see IslandTiers).
@@ -207,12 +207,12 @@ end
 
 -- What harvesting a ripe crop with `tool` gives: the crop (sometimes two, more often with a
 -- higher Farming level or a better hoe), now and then a spare seed, and Farming and player
--- XP. The tool wears down.
+-- XP. Harvesting doesn't wear the tool (a busy farmer harvests thousands an hour; tilling
+-- does wear a hoe).
 function FarmService.Harvest(player: Player, crop: Crops.Crop, tool: Tools.Tool)
 	local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
 	local chance = Leveling.BonusChance(farmingLevel) + tool.Harvest
 	local amount = if rng:NextNumber() < chance then 2 else 1
-	useTool(player, tool)
 
 	InventoryService.Add(player, crop.Product, amount)
 	if rng:NextNumber() < SPARE_SEED_CHANCE then

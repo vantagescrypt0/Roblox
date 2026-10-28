@@ -22,31 +22,31 @@ What everything is worth, so trading between players has a fair reference. The n
 | Dark Planks | 2 | – | Builder 4 |
 | Red / Slate Roof Tiles | 3 | – | Builder 5 |
 | Wood | 2 | Lumberjack 1 | – |
-| Birch Wood (Birch Grove, Woodcutting 10) | 4 | Lumberjack 2 | – |
-| Spruce Wood (Snowy Pines, Woodcutting 20) | 7 | Lumberjack 3 | – |
-| Cherry Wood (Cherry Hills, Woodcutting 30) | 12 | Lumberjack 6 | – |
+| Birch Wood (Birch Grove, Woodcutting 10) | 12 | Lumberjack 6 | – |
+| Spruce Wood (Snowy Pines, Woodcutting 20) | 28 | Lumberjack 14 | – |
+| Cherry Wood (Cherry Hills, Woodcutting 30) | 54 | Lumberjack 27 | – |
 | Stone | 2 | Miner 1 | – |
 | Planks (1 Wood → 4) | 1 | – | – |
 | Sticks (2 Planks → 4) | 1 | – | – |
-| Coal | 5 | Miner 2 | Miner 10 |
-| Raw Iron | 10 | Miner 5 | – |
-| Iron Ingot (Raw Iron + Coal) | 17 | Miner 8 | – |
-| Raw Gold (deep in the Mining World; Iron pickaxe, Mining 10) | 25 | Miner 12 | – |
-| Gold Ingot (Raw Gold + Coal) | 33 | Miner 16 | – |
+| Coal | 2 | Miner 1 | Miner 3 |
+| Raw Iron | 8 | Miner 4 | – |
+| Iron Ingot (Raw Iron + Coal) | 11 | Miner 6 | – |
+| Raw Gold (deep in the Mining World; Iron pickaxe, Mining 10) | 32 | Miner 16 | – |
+| Gold Ingot (Raw Gold + Coal) | 37 | Miner 20 | – |
 | Furnace (8 Stone) | 18 | – | – |
 | Wheat Seeds | 12 | – | Merchant 12 |
-| Wheat | 4 | Merchant 2 | – |
-| Carrot Seeds | 45 | – | Merchant 45 |
-| Carrot | 10 | Merchant 5 | – |
-| Potato Seeds | 120 | – | Merchant 120 |
-| Potato | 24 | Merchant 12 | – |
-| Pumpkin Seeds (Farming 15) | 200 | – | Merchant 200 |
-| Pumpkin (grows in 4 min) | 40 | Merchant 20 | – |
-| Melon Seeds (Farming 25) | 320 | – | Merchant 320 |
-| Melon (grows in 6 min) | 64 | Merchant 32 | – |
+| Wheat | 2 | Merchant 1 | – |
+| Carrot Seeds | 24 | – | Merchant 24 |
+| Carrot | 4 | Merchant 2 | – |
+| Potato Seeds | 60 | – | Merchant 60 |
+| Potato | 10 | Merchant 5 | – |
+| Pumpkin Seeds (Farming 15) | 120 | – | Merchant 120 |
+| Pumpkin (grows in 4 min) | 20 | Merchant 10 | – |
+| Melon Seeds (Farming 25) | 180 | – | Merchant 180 |
+| Melon (grows in 6 min) | 30 | Merchant 15 | – |
 | Glowberry Seeds (Warzone only) | 250 | – | – |
 | Sapling (from leaves and felled trees) | 8 | – | Lumberjack 20 |
-| Glowberry | 70 | Merchant 35 | – |
+| Glowberry | 40 | Merchant 20 | – |
 | Scrap (Warzone) | 6 | – | – |
 | Crystal (Warzone) | 60 | – | – |
 
@@ -55,7 +55,7 @@ What everything is worth, so trading between players has a fair reference. The n
 |---|---|---|---|---|---|
 | Wooden | 6 | 6 | 3 | 4 | 3 |
 | Stone | 9 | 9 | 4 | 7 | 6 |
-| Iron | 58 | 58 | 21 | 40 | 39 |
+| Iron | 39 | 39 | 14 | 26 | 25 |
 | Crystal | 200 | 200 | 68 | 134 | 133 |
 
 ## Resource nodes
@@ -81,14 +81,29 @@ Plant once. After each harvest the plant stays and starts growing again, with no
 
 | Crop | Grows in | Merchant coins / plot / min | Seed pays back after |
 |---|---|---|---|
-| Wheat | 30s | 4 | 6 harvests (3 min) |
-| Carrot | 75s | 4 | 9 harvests (~11 min) |
-| Potato | 150s | 4.8 | 10 harvests (25 min) |
-| Pumpkin | 240s | 5 | 10 harvests (40 min) |
-| Melon | 360s | 5.3 | 10 harvests (60 min) |
-| Glowberry | 240s | 8.75 | 8 harvests (32 min) |
+| Wheat | 30s | 2 | 12 harvests (6 min) |
+| Carrot | 75s | 1.6 | 12 harvests (15 min) |
+| Potato | 150s | 2 | 12 harvests (30 min) |
+| Pumpkin | 240s | 2.5 | 12 harvests (48 min) |
+| Melon | 360s | 2.5 | 12 harvests (72 min) |
+| Glowberry | 240s | 5 | 12 harvests (50 min) |
 
-Better crops earn about the same coins per minute as wheat but need far fewer clicks, and they give more Farming XP. The Farming level bonus (a chance of a double crop) comes on top. *Tuning idea: if Carrot feels pointless, raise its value to 12 to 14.*
+On your island (crops grow while you're away), better crops earn about the same coins per plot per minute but need far fewer clicks. In the Farming World, where you harvest nonstop, a better crop pays far more an hour (see Coin pace). The Farming level bonus (a chance of a double crop) comes on top.
+
+## Coin pace (rebalance 2026-10-27)
+Your targets: about **2k coins an hour early**, **50k mid game**, **1M late game**; the best things cost **10M–50M** and the richest players hold **100M+**. Prices are fitted by `tools/balance.py` (run `python tools/balance.py`): each resource earns a set amount an hour at the level it unlocks, for steady play in the worlds.
+
+| Stage | Skill level | Best resource today | Coins an hour |
+|---|---|---|---|
+| Early | 1–5 | Wheat, Coal, Oak, then Raw Iron and Carrots | ~1k–6k |
+| Getting going | 10 | Raw Gold, Potatoes, Birch | ~10k–25k |
+| Mid | 20–30 | Spruce, Pumpkins; then Cherry and Melons | ~25k–45k |
+| Mid, maxed | 50–99 | the same, with bigger double-drop chances | ~35k–63k |
+| Late | — | **nothing yet** | target ~1M |
+
+**The late game is missing content:** today's best resources unlock at Mining 10, Farming 25 and Woodcutting 30, so from there to 99 nothing new pays more, and nothing costs 10M–50M yet. Closing the gap needs new top-tier ores, crops and trees at higher levels (each tier worth about 2–3x the one before) and new big purchases. That's a content decision for you (see the Roadmap).
+
+Island expansion: Meadow **3,000**, Grove **40,000**, Grand **400,000** coins (were 300 / 1,500 / 6,000).
 
 ## Trading between players
 Built 2026-10-24 (code: `TradeService.luau` on the server, `TradeWindow.luau` on the client). Screenshot: `art/renders/ui-trade-window.png`.

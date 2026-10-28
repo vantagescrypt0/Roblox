@@ -34,8 +34,9 @@ local MOB_TYPES: { MobType } = {
 		Speed = 10,
 		Size = Vector3.new(3, 2.4, 3),
 		Color = Color3.fromRGB(90, 200, 90),
-		CombatXP = 15,
-		PlayerXP = 8,
+		-- Rough, for the 2026-10-27 XP curves; fit with tools/balance.py when the Warzone opens
+		CombatXP = 100,
+		PlayerXP = 33,
 		Loot = { { Item = "Scrap", Min = 1, Max = 1, Chance = 0.6 } },
 	},
 	{
@@ -47,8 +48,8 @@ local MOB_TYPES: { MobType } = {
 		Speed = 13,
 		Size = Vector3.new(3.5, 5, 2.5),
 		Color = Color3.fromRGB(150, 50, 50),
-		CombatXP = 60,
-		PlayerXP = 25,
+		CombatXP = 400,
+		PlayerXP = 130,
 		Loot = {
 			{ Item = "Scrap", Min = 2, Max = 4, Chance = 1 },
 			{ Item = "Crystal", Min = 1, Max = 1, Chance = 0.4 },

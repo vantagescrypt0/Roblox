@@ -40,17 +40,18 @@ local SAPLING_CHANCE = 0.08
 local MAX_HEIGHT, MAX_DEPTH, EXTRA_RADIUS = 40, 40, 12
 
 -- What gathering each natural block is worth: skill XP and player XP. Level: the skill
--- level you need before you can gather it at all (the worlds' zone resources).
+-- level you need before you can gather it at all (the worlds' zone resources). Fitted by
+-- tools/balance.py so a skill takes ~25 hours to 99 (see Leveling.luau).
 local GATHER: { [string]: { Skill: string, XP: number, PlayerXP: number, Level: number? } } = {
-	Stone = { Skill = "Mining", XP = 5, PlayerXP = 2 },
-	Cobblestone = { Skill = "Mining", XP = 5, PlayerXP = 2 },
-	CoalOre = { Skill = "Mining", XP = 12, PlayerXP = 4 },
-	IronOre = { Skill = "Mining", XP = 20, PlayerXP = 6 },
-	GoldOre = { Skill = "Mining", XP = 35, PlayerXP = 10, Level = 10 },
-	Wood = { Skill = "Woodcutting", XP = 6, PlayerXP = 2 },
-	BirchWood = { Skill = "Woodcutting", XP = 12, PlayerXP = 4, Level = 10 },
-	SpruceWood = { Skill = "Woodcutting", XP = 20, PlayerXP = 6, Level = 20 },
-	CherryWood = { Skill = "Woodcutting", XP = 32, PlayerXP = 9, Level = 30 },
+	Stone = { Skill = "Mining", XP = 30, PlayerXP = 10 },
+	Cobblestone = { Skill = "Mining", XP = 30, PlayerXP = 10 },
+	CoalOre = { Skill = "Mining", XP = 40, PlayerXP = 13 },
+	IronOre = { Skill = "Mining", XP = 55, PlayerXP = 18 },
+	GoldOre = { Skill = "Mining", XP = 90, PlayerXP = 30, Level = 10 },
+	Wood = { Skill = "Woodcutting", XP = 50, PlayerXP = 17 },
+	BirchWood = { Skill = "Woodcutting", XP = 65, PlayerXP = 22, Level = 10 },
+	SpruceWood = { Skill = "Woodcutting", XP = 85, PlayerXP = 28, Level = 20 },
+	CherryWood = { Skill = "Woodcutting", XP = 105, PlayerXP = 35, Level = 30 },
 }
 
 -- Where a player breaks blocks

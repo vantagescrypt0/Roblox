@@ -40,8 +40,8 @@ function ProgressionService.AddPlayerXP(player: Player, amount: number)
 	end
 
 	data.XP += amount
-	while data.Level < Leveling.MaxPlayerLevel and data.XP >= Leveling.XPToNext(data.Level) do
-		data.XP -= Leveling.XPToNext(data.Level)
+	while data.Level < Leveling.MaxPlayerLevel and data.XP >= Leveling.PlayerXPToNext(data.Level) do
+		data.XP -= Leveling.PlayerXPToNext(data.Level)
 		data.Level += 1
 		StateService.Notify(player, `Level {data.Level}`, "levelup")
 		if data.Level == Leveling.WarzoneLevel then
@@ -64,8 +64,8 @@ function ProgressionService.AddSkillXP(player: Player, skillName: string, amount
 	local before = skill.Level
 	local info = Skills.ById[skillName]
 	skill.XP += amount
-	while skill.Level < Leveling.MaxSkillLevel and skill.XP >= Leveling.XPToNext(skill.Level) do
-		skill.XP -= Leveling.XPToNext(skill.Level)
+	while skill.Level < Leveling.MaxSkillLevel and skill.XP >= Leveling.SkillXPToNext(skill.Level) do
+		skill.XP -= Leveling.SkillXPToNext(skill.Level)
 		skill.Level += 1
 		StateService.Notify(player, `{if info then info.Name else skillName} level {skill.Level}!`, "level")
 	end

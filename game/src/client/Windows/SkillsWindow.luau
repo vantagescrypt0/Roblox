@@ -87,7 +87,7 @@ end
 
 local function skillState(skillId: string): { Level: number, XP: number, XPToNext: number }
 	local skill = state and state.Skills[skillId]
-	return skill or { Level = 1, XP = 0, XPToNext = Leveling.XPToNext(1) }
+	return skill or { Level = 1, XP = 0, XPToNext = Leveling.SkillXPToNext(1) }
 end
 
 local function levelOf(skillId: string): number

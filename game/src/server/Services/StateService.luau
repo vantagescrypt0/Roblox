@@ -17,7 +17,7 @@ local function snapshot(data: DataService.Data)
 		skills[name] = {
 			Level = skill.Level,
 			XP = skill.XP,
-			XPToNext = Leveling.XPToNext(skill.Level),
+			XPToNext = Leveling.SkillXPToNext(skill.Level),
 		}
 	end
 
@@ -57,7 +57,7 @@ local function snapshot(data: DataService.Data)
 		Coins = data.Coins,
 		Level = data.Level,
 		XP = data.XP,
-		XPToNext = Leveling.XPToNext(data.Level),
+		XPToNext = Leveling.PlayerXPToNext(data.Level),
 		MaxLevel = Leveling.MaxPlayerLevel,
 		WarzoneLevel = Leveling.WarzoneLevel,
 		Season = data.Season,

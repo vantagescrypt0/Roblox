@@ -19,7 +19,7 @@
 - [x] Skybounds Warzone requirement? → level 10 of 50, seasonal reset
 
 ## Seasons
-- [ ] What resets each season: only player level, or skills / island / items too?
+- [ ] What resets each season: player level and skills do (2026-10-27); island / items / coins?
 - [ ] Catch-up help so veterans reach level 10 again quickly?
 - [ ] Season rewards that are kept forever (titles, cosmetics)?
 
@@ -43,7 +43,7 @@
 
 ## Theme / look
 - [x] Art style: stylized/cartoon vs realistic? *(Decided: Minecraft-style blocks, low-poly 3D items, "Workshop" parchment-and-wood UI. See [[Decision Log]])*
-- [ ] Island expansion prices and sizes OK? (300 / 1,500 / 6,000 coins)
+- [ ] Island expansion prices and sizes OK? (3,000 / 40,000 / 400,000 coins since the 2026-10-27 rebalance; were 300 / 1,500 / 6,000)
 - [ ] Game name (must not reuse Islands/Skyblock/Skybounds).
 
 ## Policy

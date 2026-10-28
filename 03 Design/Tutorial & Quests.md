@@ -15,25 +15,25 @@ Only uses features that exist so far. Edit it in `game/src/shared/Quests.luau`. 
 Updated for tools and click farming (2026-10-15). The first quests walk you down Minecraft's tool path: wood → planks → sticks → a pickaxe → stone.
 | # | Quest | Reward |
 |---|---|---|
-| 1 | Hold click on a tree to chop 3 Wood | 10 XP |
-| 2 | Click the Crafting Table and craft Planks | 2 Wood, 10 XP |
-| 3 | Craft Sticks | 10 XP |
-| 4 | Craft a Wooden Pickaxe | 20 XP |
-| 5 | Hold your pickaxe and mine 3 Stone | 8 Grass blocks, 20 XP |
-| 6 | Right-click to place 3 blocks | 10 XP |
-| 7 | Click the farmland to plant 3 seeds | 3 Wheat Seeds, 15 XP |
-| 8 | Click ripe crops to harvest 3 | 20 XP |
-| 9 | Step through the portal to visit Town | 15 XP |
-| 10 | Sell crops to the Merchant in Town | 10 coins, 15 XP |
-| 11 | Buy seeds from the Merchant | 15 XP |
-| 12 | Craft a Stone Pickaxe | 4 Stone, 20 XP |
-| 13 | Mine Iron Ore with your Stone Pickaxe | 1 Coal, 20 XP |
-| 14 | Craft a Furnace (8 Stone) | 20 XP |
-| 15 | Place your Furnace and smelt an Iron Ingot | 15 coins, 30 XP |
-| 16 | Reach Farming level 3 | 25 coins, 40 XP |
-| 17 | Reach level 10 | 50 coins, 3 Iron Ingots |
+| 1 | Hold click on a tree to chop 3 Wood | 150 XP |
+| 2 | Click the Crafting Table and craft Planks | 2 Wood, 150 XP |
+| 3 | Craft Sticks | 150 XP |
+| 4 | Craft a Wooden Pickaxe | 350 XP |
+| 5 | Hold your pickaxe and mine 3 Stone | 8 Grass blocks, 350 XP |
+| 6 | Right-click to place 3 blocks | 150 XP |
+| 7 | Click the farmland to plant 3 seeds | 3 Wheat Seeds, 250 XP |
+| 8 | Hold your hoe and click ripe crops to harvest 3 | 350 XP |
+| 9 | Step through the portal to visit Town | 250 XP |
+| 10 | Sell crops to the Merchant in Town | 100 coins, 250 XP |
+| 11 | Buy seeds from the Merchant | 250 XP |
+| 12 | Craft a Stone Pickaxe | 4 Stone, 350 XP |
+| 13 | Mine Iron Ore with your Stone Pickaxe | 1 Coal, 350 XP |
+| 14 | Craft a Furnace (8 Stone) | 350 XP |
+| 15 | Place your Furnace and smelt an Iron Ingot | 150 coins, 500 XP |
+| 16 | Reach Farming level 3 | 250 coins, 700 XP |
+| 17 | Reach level 10 | 1,000 coins, 3 Iron Ingots |
 
-Quests 12-15 (2026-10-24) teach ores and smelting. Generators and conveyors from the draft below aren't built yet; they'll slot in as quests when they are.
+Rewards were scaled up with the 2026-10-27 rebalance (about 4,900 player XP in all, roughly a level and a half). Quests 12-15 (2026-10-24) teach ores and smelting. Generators and conveyors from the draft below aren't built yet; they'll slot in as quests when they are.
 
 ## Draft quest chain — [Speculation]
 | # | Quest | Teaches | Reward |

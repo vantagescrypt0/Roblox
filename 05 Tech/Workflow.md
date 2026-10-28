@@ -15,6 +15,9 @@
 2. You run Rojo (VS Code → Rojo menu) and connect from Studio's Rojo plugin; changes sync live.
 3. You playtest and report back.
 
+## Balance model
+`python tools/balance.py` works out how long each skill and the player level take and how many coins an hour each stage earns, from the game's own mechanics (break times, tools, a steady-play share), and fits the XP curves, XP per resource and prices to the targets in the Decision Log. Re-run it after changing XP, prices, tools or content; a new resource goes in its `ACTIVITIES` list. Its numbers are copied by hand into Leveling.luau, BlockService (GATHER), Crops.luau, Recipes.luau and Items.luau.
+
 ## Streaming (on in every place since 2026-10-27)
 A player's screen only has the parts near them, so client code can never assume a part exists:
 - Look things up when needed (`FindFirstChild` each time, or poll / `ChildAdded`), and drop them when they leave (their `Parent` becomes nil). Folders and models without `ModelStreamingMode` set are there from the start; their parts come and go.
