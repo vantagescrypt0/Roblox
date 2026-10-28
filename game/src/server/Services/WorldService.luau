@@ -8,8 +8,10 @@
 --   Farming      wheat plains, veggie gardens, a pumpkin hollow and a melon oasis (Worlds/Farming)
 -- Each zone island has its own resource, gated by a skill level (BlockService, Crops).
 -- This service gives them the tools (Worlds/Context) and runs what they make:
---   nodes   resource blocks (rock, ore, logs, leaves): mine one and it grows back in the
---           same spot after a while (Blocks.NodeRespawn), so a world never runs out
+--   nodes   resource blocks (ore, logs, leaves): mine one and it grows back in the same
+--           spot after a while (Blocks.NodeRespawn, the rarer the slower), so a world never
+--           runs out. A mined ore turns pale (Empty Ore) until it fills back in, so the
+--           cave never gets holes, and a node only breaks with the tool that collects it
 --   fields  wild crops on farmland: click a ripe one to harvest it, it regrows
 --           (Crops.GrowTime) for everyone
 -- Everything else is scenery nobody can break, and nobody can build here. Gathering works
@@ -182,8 +184,13 @@ local area: BlockService.Area
 local function makeArea(): BlockService.Area
 	return {
 		World = world,
+		Public = true,
 		Natural = function(x, y, z)
 			return nodes[key(x, y, z)] ~= nil
+		end,
+		Remains = function(x, y, z)
+			local mined = nodes[key(x, y, z)]
+			return if mined and Blocks.Types[mined.Block].Ore then "EmptyOre" else nil
 		end,
 		Broken = function(x, y, z)
 			local mined = nodes[key(x, y, z)]
@@ -204,13 +211,15 @@ local function regrow()
 	local now = os.clock()
 	for mined in depleted do
 		if now >= (mined.RespawnAt or 0) then
-			if BlockWorld.get(world, mined.X, mined.Y, mined.Z) then
-				depleted[mined] = nil
-				mined.RespawnAt = nil
-			elseif not BlockWorld.occupied(world, mined.X, mined.Y, mined.Z) then
+			-- An empty ore fills back in; an empty spot grows back once nobody stands in it
+			local cell = BlockWorld.get(world, mined.X, mined.Y, mined.Z)
+			if cell == "EmptyOre" or (cell == nil and not BlockWorld.occupied(world, mined.X, mined.Y, mined.Z)) then
 				depleted[mined] = nil
 				mined.RespawnAt = nil
 				BlockWorld.set(world, mined.X, mined.Y, mined.Z, mined.Block)
+			elseif cell ~= nil then
+				depleted[mined] = nil
+				mined.RespawnAt = nil
 			end
 		end
 	end

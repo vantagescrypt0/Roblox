@@ -3,7 +3,9 @@
 --   aim at a block -> black outline
 --   hold left click (or hold a finger on it) -> you swing and it cracks, then breaks.
 --     How long depends on the block's toughness and the tool you hold (Mining.luau).
---     Blocks the server marked Locked (the worlds' ground, portals) don't crack.
+--     Blocks the server marked Locked (the worlds' ground, portals) don't crack. In the
+--     shared worlds a block you can't collect with what you hold doesn't crack either:
+--     the server just says which tool you need.
 --   right click (or tap) -> place the selected hotbar block against the face you aim at
 --     (only on your island)
 --   click / tap farmland -> plant the seeds you hold (or harvest when it's ripe)
@@ -329,13 +331,24 @@ local function update(dt: number)
 		swingTimer = 0
 		return
 	end
+	-- Toughness vs tool power; switching tools mid-way changes the speed
+	local breakTime, canHarvest = Mining.BreakTime(current.Part.Name, Hotbar.SelectedItem())
+	if not ON_ISLAND and not canHarvest then
+		-- A shared world's block only breaks with the tool that collects it: ask the server
+		-- once per press, so it can say which tool you need
+		if progressPart ~= current.Part then
+			progressPart = current.Part
+			Remotes.BreakBlock:FireServer(current.X, current.Y, current.Z)
+		end
+		progress = 0
+		selection.SurfaceTransparency = 1
+		return
+	end
 	if progressPart ~= current.Part then
 		progressPart = current.Part
 		progress = 0
 	end
 
-	-- Toughness vs tool power; switching tools mid-way changes the speed
-	local breakTime = Mining.BreakTime(current.Part.Name, Hotbar.SelectedItem())
 	progress += dt / breakTime
 	local stage = math.floor(math.min(progress, 1) * CRACK_STAGES) / CRACK_STAGES
 	selection.SurfaceTransparency = 1 - stage * 0.6

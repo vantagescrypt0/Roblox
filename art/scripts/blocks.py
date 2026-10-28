@@ -56,6 +56,8 @@ TILES = [
     # mushrooms, ruins
     "sandstone_top", "sandstone_side", "coarse_dirt", "mushroom_cap", "mushroom_stem",
     "cracked_stone_bricks",
+    # Resource nodes: a mined ore while it grows back
+    "empty_ore",
 ]  # fmt: skip
 
 # Which tile each face uses: (top, bottom, sides) or (top, bottom, front, other sides)
@@ -115,6 +117,7 @@ BLOCKS = {
     "MushroomCap": ("mushroom_cap", "mushroom_cap", "mushroom_cap"),
     "MushroomStem": ("mushroom_stem", "mushroom_stem", "mushroom_stem"),
     "CrackedStoneBricks": ("cracked_stone_bricks", "cracked_stone_bricks", "cracked_stone_bricks"),
+    "EmptyOre": ("empty_ore", "empty_ore", "empty_ore"),
 }
 
 # Merged pieces (x, y, z in blocks; each also fills z, y, x turned a quarter turn).
@@ -570,6 +573,7 @@ def draw_building_tiles(tiles):
     tiles["flower_grass"] = flowers
     draw_zone_tiles(tiles)
     draw_reference_tiles(tiles)
+    draw_node_tiles(tiles)
 
 
 def draw_zone_tiles(tiles):
@@ -723,6 +727,36 @@ def draw_reference_tiles(tiles):
             x = (x + rng.choice((-1, 0, 1, 1))) % TILE
             y = (y + rng.choice((0, 1, 1))) % TILE
     tiles["cracked_stone_bricks"] = cracked
+
+
+def draw_node_tiles(tiles):
+    """Tiles for resource nodes (their own random sequence)"""
+    rng = random.Random(83)
+
+    # Empty ore: a mined ore node while it grows back. Pale stone where the ore's clumps
+    # still show, but hollow: just their outlines, nothing filled in
+    empty = [[tuple(clamp(v + (226 - v) * 0.5) for v in pixel) for pixel in row] for row in tiles["stone"]]
+    pocket = set()
+    centers = []
+    for _ in range(200):
+        if len(centers) == 6:
+            break
+        cx, cy = rng.uniform(2.5, 13.5), rng.uniform(2.5, 13.5)
+        rx, ry = rng.uniform(1.4, 2.1), rng.uniform(1.3, 1.9)
+        if any(math.hypot(cx - ox, cy - oy) < 4.6 for ox, oy in centers):
+            continue
+        centers.append((cx, cy))
+        for y in range(TILE):
+            for x in range(TILE):
+                if ((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2 <= 1:
+                    pocket.add((x, y))
+    for x, y in sorted(pocket):
+        if any((x + dx, y + dy) not in pocket for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+            empty[y][x] = noisy(rng, (116, 116, 114), 5)
+        elif (x, y - 1) in pocket and (x, y - 2) not in pocket:
+            # A faint shadow under each pocket's top edge, so it reads as a hollow
+            empty[y][x] = noisy(rng, (160, 159, 156), 4)
+    tiles["empty_ore"] = empty
 
 
 def build_atlas():

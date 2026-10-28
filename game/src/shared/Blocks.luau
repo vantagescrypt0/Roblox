@@ -8,10 +8,11 @@
 --   RequiresTool if true you need that tool (and MinTier) or it breaks very slowly and drops nothing
 --
 -- Resource nodes: blocks that grow back in the same spot NodeRespawn seconds after you
--- mine them. On your island those are the boulders and their ore (trees aren't: a felled
--- tree is gone and you replant a sapling). In the resource worlds every rock, log and
--- leaf is a node, so they never run out. The same block placed by a player is just a
--- normal block.
+-- mine them (the rarer, the slower). On your island those are the boulders and their ore
+-- (trees aren't: a felled tree is gone and you replant a sapling). In the resource worlds
+-- every ore, log and leaf is a node, so they never run out; the mine's stone is scenery
+-- nobody can break. A mined ore never leaves a hole: it turns into a pale Empty Ore block
+-- until it fills back in. The same block placed by a player is just a normal block.
 
 export type Block = {
 	Name: string,
@@ -23,6 +24,7 @@ export type Block = {
 	Breakable: boolean,
 	SeeThrough: boolean?, -- blocks behind it still get drawn (glass, water, ice)
 	NodeRespawn: number?, -- seconds a mined node takes to grow back
+	Ore: boolean?, -- a mined node of it leaves an Empty Ore block while it grows back
 }
 
 -- A stone-like building block: needs a pickaxe, like stone
@@ -75,7 +77,8 @@ local Blocks: { [string]: Block } = {
 		RequiresTool = true,
 		MinTier = 1,
 		Breakable = true,
-		NodeRespawn = 30,
+		NodeRespawn = 20,
+		Ore = true,
 	},
 	IronOre = {
 		Name = "Iron Ore",
@@ -86,7 +89,11 @@ local Blocks: { [string]: Block } = {
 		MinTier = 2,
 		Breakable = true,
 		NodeRespawn = 45,
+		Ore = true,
 	},
+	-- A mined ore node while it grows back: pale stone with empty pockets where the ore
+	-- was. Nobody can break it; it fills back in with its ore (WorldService, IslandService)
+	EmptyOre = { Name = "Empty Ore", Drop = nil, Hardness = 50, Breakable = false },
 	Furnace = {
 		Name = "Furnace",
 		Drop = "Furnace",
@@ -136,7 +143,8 @@ local Blocks: { [string]: Block } = {
 		RequiresTool = true,
 		MinTier = 3,
 		Breakable = true,
-		NodeRespawn = 60,
+		NodeRespawn = 90,
+		Ore = true,
 	},
 	RedWool = { Name = "Red Wool", Drop = "RedWool", Hardness = 0.8, Breakable = true },
 	WhiteWool = { Name = "White Wool", Drop = "WhiteWool", Hardness = 0.8, Breakable = true },

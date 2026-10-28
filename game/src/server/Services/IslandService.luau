@@ -3,8 +3,9 @@
 -- expansion tier, with their own block changes (data.Island.Blocks) on top. Spawns them
 -- on it, rebuilds it bigger when they expand, and puts players back on it if they fall
 -- off. Boulders and their ores are resource nodes: a mined node block grows back in the
--- same spot after a while (Blocks.NodeRespawn), so mined nodes are never saved as holes.
--- The stone underside has ore veins to dig for (those are ordinary blocks).
+-- same spot after a while (Blocks.NodeRespawn), so mined nodes are never saved as holes;
+-- a mined ore node turns pale (Empty Ore) meanwhile. The stone underside has ore veins
+-- to dig for (those are ordinary blocks).
 --
 -- Trees aren't nodes. Chop logs and they're gone; chop a tree's last log and the tree is
 -- felled: its leaves fall away and it's gone for good (data.Island.Felled for the
@@ -617,6 +618,14 @@ function IslandService.IsNatural(player: Player, x: number, y: number, z: number
 	return island ~= nil and data ~= nil and isNatural(island, data, key(x, y, z), blockType)
 end
 
+-- What's left in a cell when its block is mined (nil = air): a mined ore node turns into
+-- a pale Empty Ore block until it grows back
+function IslandService.Remains(player: Player, x: number, y: number, z: number): string?
+	local island = islands[player]
+	local node = island and island.Nodes[key(x, y, z)]
+	return if node and Blocks.Types[node.Block].Ore then "EmptyOre" else nil
+end
+
 -- After a block on the island was broken: a node starts growing back, anything else is
 -- saved as changed. Chopping a tree's last log fells it; then this returns how many of
 -- its leaves fell (for the woodcutter's saplings).
@@ -756,12 +765,14 @@ local function respawnNodes()
 		for _, node in island.Nodes do
 			local due = node.RespawnAt
 			if due and now >= due then
+				-- An empty ore fills back in; an empty spot grows back once nobody stands in it
 				local world = island.World
-				if BlockWorld.get(world, node.X, node.Y, node.Z) then
-					node.RespawnAt = nil -- something's already there
-				elseif not BlockWorld.occupied(world, node.X, node.Y, node.Z) then
+				local cell = BlockWorld.get(world, node.X, node.Y, node.Z)
+				if cell == "EmptyOre" or (cell == nil and not BlockWorld.occupied(world, node.X, node.Y, node.Z)) then
 					node.RespawnAt = nil
 					BlockWorld.set(world, node.X, node.Y, node.Z, node.Block)
+				elseif cell ~= nil then
+					node.RespawnAt = nil -- something's already there
 				end
 			end
 		end

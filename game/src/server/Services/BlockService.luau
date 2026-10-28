@@ -7,6 +7,8 @@
 -- (stone needs a pickaxe), and wears the tool down.
 -- Mining a resource node (a boulder or ore on your island, anything in a world) doesn't
 -- leave a saved hole: the node grows back, and nobody can build in its spot meanwhile.
+-- A mined ore leaves a pale Empty Ore block until then (the area says what remains).
+-- In a shared world a block only breaks with the tool that collects it.
 -- Chopping the last log of one of your island's trees fells it (IslandService): its
 -- leaves fall and you get saplings for them, always at least one.
 -- Mining natural stone and ore trains Mining, chopping natural trees trains Woodcutting,
@@ -21,6 +23,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Mining = require(ReplicatedStorage.Shared.Mining)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Tools = require(ReplicatedStorage.Shared.Tools)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -56,9 +59,13 @@ export type Area = {
 	-- Is this block part of the area as it was made (gives XP and double drops)? Asked
 	-- before the block is broken.
 	Natural: (x: number, y: number, z: number, blockType: string) -> boolean,
+	-- What takes its place when it's mined (nil = air): Empty Ore for an ore node
+	Remains: (x: number, y: number, z: number) -> string?,
 	-- After it's broken: nodes start growing back, other changes are saved. Returns how
 	-- many leaves fell if this felled a tree.
 	Broken: (x: number, y: number, z: number) -> number?,
+	-- A shared world: blocks only break with the tool that collects them
+	Public: boolean?,
 }
 
 local BlockService = {}
@@ -77,6 +84,9 @@ local function islandArea(player: Player): Area?
 		World = island.World,
 		Natural = function(x, y, z, blockType)
 			return IslandService.IsNatural(player, x, y, z, blockType)
+		end,
+		Remains = function(x, y, z)
+			return IslandService.Remains(player, x, y, z)
 		end,
 		Broken = function(x, y, z)
 			return IslandService.Broken(player, x, y, z)
@@ -102,6 +112,14 @@ local function inReach(player: Player, world: BlockWorld.World, x: number, y: nu
 		return false
 	end
 	return (root.Position - BlockWorld.position(world, x, y, z)).Magnitude <= Blocks.Reach + 3
+end
+
+-- "a Pickaxe", or "a Stone Pickaxe or better" for a block that needs a better tier
+local function toolNeeded(def: Blocks.Block): string
+	local tier = def.MinTier or 1
+	local tool = def.Tool or "tool"
+	local name = if tier > 1 then `{Tools.TierNames[tier]} {tool} or better` else tool
+	return `{if string.find(name, "^[AEIOUaeiou]") then "an" else "a"} {name}`
 end
 
 -- Saplings for a felled tree: a roll for each leaf that fell, and always at least one
@@ -142,6 +160,12 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	-- How long this block takes with what they're holding (toughness vs tool power)
 	local held = HotbarService.GetHeldItem(player)
 	local breakTime, canHarvest = Mining.BreakTime(blockType, held)
+	-- A shared world's nodes are for everyone: one you can't collect doesn't break at all
+	-- (the client doesn't crack it, it just asks once so the player hears why)
+	if area.Public and not canHarvest then
+		StateService.Notify(player, `You need {toolNeeded(def)} to mine {def.Name}`, "bad")
+		return
+	end
 	local now = os.clock()
 	if now - (lastBreak[player] or 0) < breakTime * 0.6 then
 		return
@@ -154,7 +178,7 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		StateService.Notify(player, `{def.Name} needs {need.Skill} level {need.Level}`, "bad")
 		return
 	end
-	BlockWorld.set(world, cx, cy, cz, nil)
+	BlockWorld.set(world, cx, cy, cz, area.Remains(cx, cy, cz))
 	local fellLeaves = area.Broken(cx, cy, cz)
 
 	local gather = if natural and canHarvest then GATHER[blockType] else nil
@@ -169,7 +193,7 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		end
 		InventoryService.Add(player, def.Drop, amount)
 	elseif not canHarvest then
-		StateService.Notify(player, `You need a {def.Tool or "tool"} to collect {def.Name}`, "bad")
+		StateService.Notify(player, `You need {toolNeeded(def)} to collect {def.Name}`, "bad")
 	end
 	if held and Mining.UsesTool(blockType, held) and InventoryService.UseTool(player, held, 1) then
 		StateService.Notify(player, `Your {Items[held].Name} broke!`, "bad")

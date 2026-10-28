@@ -38,7 +38,7 @@ One note per item, resource, mob, island type or event. Use the templates in `99
 - Island trees: chop-once (a felled tree drops its leaves and gives at least 1 sapling)
 - Boulders: 2 Stone (15s), Coal Ore on top (30s), Iron Ore at the side (45s)
 - Island underside: stone with ore veins (coal 7% of stone blocks, iron 4% from 4 blocks down) to dig for. These are not nodes; once mined they're gone
-- Resource worlds: Mining (outcrops + cliff of stone/coal/iron), Woodcutting (~40 oaks), Farming (wheat, carrot and potato fields); everything there grows back
+- Resource worlds: Mining (outcrops and cave walls of unbreakable stone, set with coal, iron and gold), Woodcutting (~40 oaks), Farming (wheat, carrot and potato fields); every ore, tree and crop there grows back (a mined ore shows as a pale Empty Ore block meanwhile)
 
 ## Mobs
 - Slime: Combat 1, outer ring

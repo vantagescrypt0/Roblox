@@ -59,20 +59,20 @@ What everything is worth, so trading between players has a fair reference. The n
 | Crystal | 200 | 200 | 68 | 134 | 133 |
 
 ## Resource nodes
-A **node** is a higher-value block because it grows back in the same spot after you harvest it. Nodes are **ores and crops** (and, later, PvE spawners). You can't build in a node's spot, and mined nodes are never saved as holes.
+A **node** is a higher-value block because it grows back in the same spot after you harvest it. Nodes are **ores and crops** (and, later, PvE spawners). You can't build in a node's spot, and mined nodes are never saved as holes. **A mined ore never leaves a hole:** it turns into a pale **Empty Ore** block (stone with hollow pockets) that can't be mined, and fills back in with its ore. The rarer the ore, the slower it comes back.
 - **On your island:** the boulders (stone with coal and iron ore) and your crops. **Trees are not nodes**: chop a tree down and it's gone, and you replant a sapling (a felled tree always gives at least one). See [[Skills & Levels]].
-- **In the resource worlds** every rock, log, leaf and wild crop grows back, so they never run out. See [[Town & Worlds]].
+- **In the resource worlds** every ore, log, leaf and wild crop grows back, so they never run out. The Mining World's stone (cave walls, outcrops) is scenery nobody can break; only its ores can be mined, and only with a pickaxe good enough to collect them (no breaking a node for nothing). See [[Town & Worlds]].
 - Later: node items you can own, trade and place (e.g. an Iron Node), worth a lot because they never run out.
 
 | Node | Grows back after |
 |---|---|
-| Stone | 15s |
+| Stone (island boulders) | 15s |
 | Wood (log, worlds only) | 20s |
 | Leaves (worlds only) | 30s |
-| Coal Ore | 30s |
+| Coal Ore | 20s |
 | Iron Ore | 45s |
 | Birch / Spruce / Cherry Wood (worlds) | 25s / 30s / 35s |
-| Gold Ore (Mining World) | 60s |
+| Gold Ore (Mining World) | 90s |
 
 Blocks you dig out of the island underside (ore veins) and blocks you placed yourself are not nodes: once mined, they're gone.
 

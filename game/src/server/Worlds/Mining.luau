@@ -12,10 +12,11 @@
 --                 (lava pouring into a glowing pool, vines and glowing mushrooms). From the
 --                 cavern a tunnel winds down to the deep Gold Chamber (Mining 10) and another
 --                 to the Crystal Grotto.
--- Each section's walls are thick with its own ore (and grow back, two blocks deep); the
--- tunnels between are mostly stone with the odd coal or iron. Behind every wall is dark
--- stone, as far as anyone can dig. Floors, the mountain's outside and the timbers can't be
--- broken. Caves stay at least four blocks inside the rock, so they never break out.
+-- Each section's walls are thick with its own ore; the tunnels between are mostly stone
+-- with the odd coal or iron. Only the ore can be mined: it turns pale (Empty Ore) and grows
+-- back, so nothing in the cave is ever destroyed for good. Stone, floors, the mountain's
+-- outside and the timbers can't be broken. Caves stay at least four blocks inside the
+-- rock, so they never break out.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -263,8 +264,9 @@ local function ore(ctx: Context.Context, x: number, y: number, z: number, sectio
 	return if roll < 0.05 then "IronOre" elseif roll < 0.13 then "CoalOre" else "Stone"
 end
 
--- Digs the caves out of the mountain and lines them: two blocks of ore that grows back
--- (a protected floor underfoot), then two of dark stone
+-- Digs the caves out of the mountain and lines them: walls of stone nobody can break,
+-- set with ore that grows back (mined ore turns pale, so the walls never get holes), a
+-- protected floor underfoot, then stone and dark stone behind
 local function digMine(ctx: Context.Context, caves: Caves)
 	-- Is (x, y, z) well inside the rock, at least four blocks from the mountain's outside?
 	local function sealed(x: number, y: number, z: number): boolean
@@ -322,7 +324,13 @@ local function digMine(ctx: Context.Context, caves: Caves)
 								if roll < 0.55 then "Stone" elseif roll < 0.8 then "Gravel" else "Cobblestone"
 							)
 						elseif layer <= 2 and not cave[key(n.X, n.Y + layer, n.Z)] then
-							ctx.Node(n.X, n.Y, n.Z, ore(ctx, n.X, n.Y, n.Z, section))
+							-- Only the wall's face can ever be reached, so ore goes there
+							local block = if layer == 1 then ore(ctx, n.X, n.Y, n.Z, section) else "Stone"
+							if block == "Stone" then
+								ctx.Set(n.X, n.Y, n.Z, block)
+							else
+								ctx.Node(n.X, n.Y, n.Z, block)
+							end
 						else
 							ctx.Set(n.X, n.Y, n.Z, "DarkStone")
 						end
@@ -701,7 +709,7 @@ local function tent(ctx: Context.Context, x: number, z: number)
 	end
 end
 
--- Rocky outcrops of stone and ore to mine on the way in
+-- Rocky outcrops on the way in: stone nobody can break, with coal and iron to mine
 local function outcrop(ctx: Context.Context, x: number, z: number)
 	local size = ctx.Rng:NextNumber(1.4, 2.2)
 	for dx = -2, 2 do
@@ -710,12 +718,12 @@ local function outcrop(ctx: Context.Context, x: number, z: number)
 			if d <= size then
 				for y = 1, math.max(1, math.round(3 * (1 - (d / size) ^ 2 * 0.7))) do
 					local roll = ctx.Hash(x + dx, y, z + dz)
-					ctx.Node(
-						x + dx,
-						y,
-						z + dz,
-						if roll < 0.08 then "IronOre" elseif roll < 0.25 then "CoalOre" else "Stone"
-					)
+					local block = if roll < 0.08 then "IronOre" elseif roll < 0.25 then "CoalOre" else "Stone"
+					if block == "Stone" then
+						ctx.SetFree(x + dx, y, z + dz, block)
+					else
+						ctx.Node(x + dx, y, z + dz, block)
+					end
 				end
 			end
 		end
