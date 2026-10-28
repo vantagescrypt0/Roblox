@@ -63,6 +63,7 @@ local function snapshot(data: DataService.Data)
 		Season = data.Season,
 		Skills = skills,
 		Items = items,
+		Inbox = data.Inbox.Mail,
 	}
 end
 

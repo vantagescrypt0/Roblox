@@ -1,12 +1,14 @@
 --!strict
 -- Crops, ordered from first to last unlocked. Each needs a minimum Farming level
 -- (see "Skills & Levels" in the vault). Grow times are in seconds and keep counting
--- while the player is offline.
+-- while the player is offline. Harvesting needs the right tool in your hand: a hoe, or an
+-- axe for pumpkins and melons.
 
 export type Crop = {
 	Id: string,
 	Seed: string, -- item id used to plant
 	Product: string, -- item id you harvest
+	Tool: string, -- the tool kind you hold to harvest it (Tools.Kind)
 	FarmingLevel: number,
 	GrowTime: number,
 	FarmingXP: number,
@@ -19,6 +21,7 @@ local Crops: { Crop } = {
 		Id = "Wheat",
 		Seed = "WheatSeeds",
 		Product = "Wheat",
+		Tool = "Hoe",
 		FarmingLevel = 1,
 		GrowTime = 30,
 		FarmingXP = 10,
@@ -29,6 +32,7 @@ local Crops: { Crop } = {
 		Id = "Carrot",
 		Seed = "CarrotSeeds",
 		Product = "Carrot",
+		Tool = "Hoe",
 		FarmingLevel = 5,
 		GrowTime = 75,
 		FarmingXP = 25,
@@ -39,6 +43,7 @@ local Crops: { Crop } = {
 		Id = "Potato",
 		Seed = "PotatoSeeds",
 		Product = "Potato",
+		Tool = "Hoe",
 		FarmingLevel = 10,
 		GrowTime = 150,
 		FarmingXP = 55,
@@ -50,6 +55,7 @@ local Crops: { Crop } = {
 		Id = "Pumpkin",
 		Seed = "PumpkinSeeds",
 		Product = "Pumpkin",
+		Tool = "Axe",
 		FarmingLevel = 15,
 		GrowTime = 240,
 		FarmingXP = 90,
@@ -60,6 +66,7 @@ local Crops: { Crop } = {
 		Id = "Melon",
 		Seed = "MelonSeeds",
 		Product = "Melon",
+		Tool = "Axe",
 		FarmingLevel = 25,
 		GrowTime = 360,
 		FarmingXP = 150,
@@ -71,6 +78,7 @@ local Crops: { Crop } = {
 		Id = "Glowberry",
 		Seed = "GlowberrySeeds",
 		Product = "Glowberry",
+		Tool = "Hoe",
 		FarmingLevel = 8,
 		GrowTime = 240,
 		FarmingXP = 90,

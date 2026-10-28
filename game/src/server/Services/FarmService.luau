@@ -1,14 +1,15 @@
 --!strict
 -- Farm plots (farmland blocks) on your island. Crops are perennial nodes: click farmland
 -- to plant the seeds you're holding (or your best seeds) once, and from then on the crop
--- regrows by itself after every harvest (time keeps counting while you're offline). Click
--- a ripe crop to harvest it for crops and Farming XP, with a small chance of a spare seed.
+-- regrows by itself after every harvest (time keeps counting while you're offline). Hold
+-- a hoe (an axe for pumpkins and melons) and click a ripe crop to harvest it for crops and
+-- Farming XP, with a small chance of a spare seed; the tool wears down a little.
 -- Hold a shovel and click a crop to dig it up (you get the seed back) to plant something
 -- else. Better crops need a higher Farming level, and a higher level gives a bigger chance
 -- of a bonus crop. Bigger islands have more plots (see IslandTiers).
 -- Hoes make more: right-click grass or dirt with one to till it into farmland (up to
 -- Leveling.TilledPlots for your Farming level; saved as a block change). A shovel turns an
--- empty tilled plot back into dirt. Holding a hoe while harvesting adds its tier's bonus.
+-- empty tilled plot back into dirt. A better hoe adds its tier's bonus to every harvest.
 -- The Farming World's wild fields use the same crop models and harvest (ShowCrop, Harvest).
 
 local Players = game:GetService("Players")
@@ -62,6 +63,7 @@ type Plot = {
 local FarmService = {}
 
 local farms: { [Player]: { Plot } } = {}
+local lastToolNotice: { [Player]: number } = {}
 local rng = Random.new()
 
 -- The tool of this kind in the player's hand, if any
@@ -189,16 +191,28 @@ local function refreshPlot(player: Player, plot: Plot)
 	plot.Part:SetAttribute("FarmState", FarmService.ShowCrop(plot, crop, progress))
 end
 
--- What harvesting a ripe crop gives: the crop (sometimes two, more often with a higher
--- Farming level or a hoe in hand), now and then a spare seed, and Farming and player XP
-function FarmService.Harvest(player: Player, crop: Crops.Crop)
-	local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
-	local hoe = heldTool(player, "Hoe")
-	local chance = Leveling.BonusChance(farmingLevel) + (if hoe then hoe.Harvest else 0)
-	local amount = if rng:NextNumber() < chance then 2 else 1
-	if hoe then
-		useTool(player, hoe)
+-- The tool in the player's hand that harvests this crop (a hoe, or an axe for pumpkins and
+-- melons). Without one, tells them what to hold (not more than once a second or so).
+function FarmService.HarvestTool(player: Player, crop: Crops.Crop): Tools.Tool?
+	local tool = heldTool(player, crop.Tool :: Tools.Kind)
+	local now = os.clock()
+	if not tool and now - (lastToolNotice[player] or 0) > 1.5 then
+		lastToolNotice[player] = now
+		local kind = string.lower(crop.Tool)
+		local article = if string.find(kind, "^[aeiou]") then "an" else "a"
+		StateService.Notify(player, `Hold {article} {kind} to harvest {crop.Id}`, "bad")
 	end
+	return tool
+end
+
+-- What harvesting a ripe crop with `tool` gives: the crop (sometimes two, more often with a
+-- higher Farming level or a better hoe), now and then a spare seed, and Farming and player
+-- XP. The tool wears down.
+function FarmService.Harvest(player: Player, crop: Crops.Crop, tool: Tools.Tool)
+	local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
+	local chance = Leveling.BonusChance(farmingLevel) + tool.Harvest
+	local amount = if rng:NextNumber() < chance then 2 else 1
+	useTool(player, tool)
 
 	InventoryService.Add(player, crop.Product, amount)
 	if rng:NextNumber() < SPARE_SEED_CHANCE then
@@ -297,9 +311,13 @@ local function onPlotClicked(player: Player, plot: Plot)
 			QuestService.Record(player, "Plant")
 		end
 	elseif progress >= 1 then
+		local tool = FarmService.HarvestTool(player, crop)
+		if not tool then
+			return
+		end
 		-- The plant stays and starts growing again
 		data.Farm.Plots[plot.Key] = { Crop = crop.Id, PlantedAt = os.time() }
-		FarmService.Harvest(player, crop)
+		FarmService.Harvest(player, crop, tool)
 	end
 	refreshPlot(player, plot)
 end
@@ -436,6 +454,7 @@ function FarmService.Start()
 		farms[player] = nil
 		lastClick[player] = nil
 		lastTill[player] = nil
+		lastToolNotice[player] = nil
 	end)
 
 	-- Update growth timers and crop models once a second

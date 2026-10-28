@@ -1,7 +1,7 @@
 --!strict
 -- The always-on HUD: profile card (level badge, XP bar, coins; click it for the Skills
--- window), Warzone status, Bag/Island/Skills buttons, the raid banner, pop-up messages and
--- big celebrations.
+-- window), Warzone status, Bag/Island/Skills/Inbox buttons (the Inbox one counts the mail
+-- waiting), the raid banner, pop-up messages and big celebrations.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,7 +16,7 @@ local localPlayer = Players.LocalPlayer :: Player
 
 local Hud = {}
 
-export type Callbacks = { OnBag: () -> (), OnIsland: () -> (), OnSkills: () -> () }
+export type Callbacks = { OnBag: () -> (), OnIsland: () -> (), OnSkills: () -> (), OnInbox: () -> () }
 
 local levelNumber: TextLabel
 local xpBar: Theme.Bar
@@ -31,8 +31,10 @@ local celebrationTitle: TextLabel
 local celebrationSub: TextLabel
 local fadeFrame: Frame
 local fadeTitle: TextLabel
+local inboxBadge: TextLabel
 local lastCoins: number? = nil
 local lastLevel: number? = nil
+local lastMail: number? = nil
 
 -- The colored edge on each kind of message
 local TOAST_COLORS: { [string]: Color3 } = {
@@ -110,18 +112,19 @@ local function buildProfile(gui: ScreenGui, onSkills: () -> ())
 end
 
 -- Wooden sign button on the left edge
-local function sideButton(parent: Instance, label: string, order: number, onClick: () -> ())
+local function sideButton(parent: Instance, label: string, order: number, onClick: () -> ()): Theme.Button
 	local button = Theme.button(parent, label, C.WoodLight, UDim2.fromOffset(104, 46), onClick)
 	button.Holder.LayoutOrder = order
 	button.Label.FontFace = Theme.Font.Title
 	button.Label.TextSize = 22
+	return button
 end
 
 local function buildButtons(gui: ScreenGui, callbacks: Callbacks)
 	local column = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 0.5),
 		Position = UDim2.new(0, 14, 0.5, 0),
-		Size = UDim2.fromOffset(110, 160),
+		Size = UDim2.fromOffset(110, 214),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	})
@@ -130,6 +133,25 @@ local function buildButtons(gui: ScreenGui, callbacks: Callbacks)
 	sideButton(column, "Bag", 1, callbacks.OnBag)
 	sideButton(column, "Island", 2, callbacks.OnIsland)
 	sideButton(column, "Skills", 3, callbacks.OnSkills)
+	local inbox = sideButton(column, "Inbox", 4, callbacks.OnInbox)
+	-- Red badge on the corner: how many letters are waiting
+	inboxBadge = Theme.make("TextLabel", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(1, -4, 0, 4),
+		Size = UDim2.fromOffset(24, 24),
+		AutomaticSize = Enum.AutomaticSize.X,
+		BackgroundColor3 = C.Red,
+		Text = "",
+		TextSize = 14,
+		FontFace = Theme.Font.Bold,
+		TextColor3 = C.Cream,
+		Visible = false,
+		ZIndex = 4,
+		Parent = inbox.Holder,
+	})
+	Theme.corner(inboxBadge, 999)
+	Theme.stroke(inboxBadge, C.WoodEdge, 2)
+	Theme.padding(inboxBadge, 6, 6, 0, 0)
 end
 
 local function buildRaidBanner(gui: ScreenGui)
@@ -262,6 +284,14 @@ function Hud.Render(state: any)
 	else
 		warzoneChip.Text = `Warzone at level {state.WarzoneLevel}`
 	end
+
+	local mail = #state.Inbox
+	inboxBadge.Visible = mail > 0
+	inboxBadge.Text = if mail > 99 then "99+" else tostring(mail)
+	if lastMail and mail > lastMail then
+		Theme.pop(inboxBadge, 1.5)
+	end
+	lastMail = mail
 
 	raidBanner.Visible = state.Raid.Active
 	local bag = {}

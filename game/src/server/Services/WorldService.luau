@@ -240,7 +240,8 @@ local function notice(player: Player, text: string)
 	end
 end
 
--- Clicking a wild crop: harvest it if it's ripe and you have the Farming level
+-- Clicking a wild crop: harvest it if it's ripe, you have the Farming level and you hold
+-- the right tool (a hoe, or an axe for pumpkins and melons)
 local function onFarmClick(player: Player, x: unknown, y: unknown, z: unknown)
 	if type(x) ~= "number" or type(y) ~= "number" or type(z) ~= "number" then
 		return
@@ -267,10 +268,14 @@ local function onFarmClick(player: Player, x: unknown, y: unknown, z: unknown)
 		notice(player, `This {crop.Id} is still growing`)
 		return
 	end
+	local tool = FarmService.HarvestTool(player, crop)
+	if not tool then
+		return
+	end
 	field.ReadyAt = now + crop.GrowTime
 	growing[field] = true
 	FarmService.ShowCrop(field, crop, 0)
-	FarmService.Harvest(player, crop)
+	FarmService.Harvest(player, crop, tool)
 end
 
 function WorldService.Start()

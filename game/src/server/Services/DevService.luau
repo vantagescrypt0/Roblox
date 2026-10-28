@@ -6,6 +6,10 @@
 --   game.ServerStorage.Dev:Invoke("Coins", 500)             give coins
 --   game.ServerStorage.Dev:Invoke("Use", "IronPickaxe", 100) wear a tool down
 --   game.ServerStorage.Dev:Invoke("Trades")                 print your last trades
+--   game.ServerStorage.Dev:Invoke("Mail", { From = "Builder", Text = "Hi", Items = { Stone = 8 }, Coins = 50 })
+--                                                           send yourself a letter (Inbox)
+--   game.ServerStorage.Dev:Invoke("MailByMessage", { ... })  the same, the way it reaches
+--                                                           a player on another server
 --   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
 -- Acts on the first player in the server unless "As" picked another (for local tests with
 -- several players). Does nothing in live servers.
@@ -15,6 +19,7 @@ local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 
 local DataService = require(script.Parent.DataService)
+local InboxService = require(script.Parent.InboxService)
 local InventoryService = require(script.Parent.InventoryService)
 
 local DevService = {}
@@ -48,6 +53,14 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 		for _, trade in data.Trades do
 			print(trade.At, trade.WithName, "gave", trade.Gave, "got", trade.Got)
 		end
+	end,
+	-- Send yourself a letter
+	Mail = function(player, _data, mail)
+		print("[Dev] mail sent:", InboxService.Send(player.UserId, mail))
+	end,
+	-- Send it through your save's messages, as if you were on another server
+	MailByMessage = function(player, _data, mail)
+		print("[Dev] message sent:", DataService.SendMessage(player.UserId, { Kind = "Mail", Mail = mail }))
 	end,
 }
 

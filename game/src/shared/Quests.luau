@@ -64,7 +64,7 @@ local Quests: { Quest } = {
 		Reward = { XP = 15, Items = { WheatSeeds = 3 } },
 	},
 	{
-		Text = "Click ripe crops to harvest 3",
+		Text = "Hold your hoe and click ripe crops to harvest 3",
 		Event = "Harvest",
 		Target = 3,
 		Highlight = "Farmland",

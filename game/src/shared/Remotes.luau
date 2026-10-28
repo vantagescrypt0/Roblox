@@ -31,6 +31,7 @@ local NAMES = {
 	"TradeAccept", -- client -> server: accept or un-accept the trade as you see it (accepted, version)
 	"TradeCancel", -- client -> server: close the trade
 	"TradeUpdate", -- server -> client: what the trade window shows, or nil when the trade closes
+	"ClaimMail", -- client -> server: claim a letter in your Inbox (its id, or "*" for all of them)
 }
 
 local folder: Instance
@@ -74,4 +75,5 @@ return {
 	TradeAccept = folder:WaitForChild("TradeAccept") :: RemoteEvent,
 	TradeCancel = folder:WaitForChild("TradeCancel") :: RemoteEvent,
 	TradeUpdate = folder:WaitForChild("TradeUpdate") :: RemoteEvent,
+	ClaimMail = folder:WaitForChild("ClaimMail") :: RemoteEvent,
 }
