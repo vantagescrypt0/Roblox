@@ -10,7 +10,11 @@ local DataService = require(script.Parent.Parent.Services.DataService)
 
 local Spawning = {}
 
-local function spawnCharacter(player: Player)
+local function spawnCharacter(player: Player, spawnPoint: SpawnLocation)
+	-- With streaming on, load the ground around the spawn on their screen first
+	pcall(function()
+		player:RequestStreamAroundAsync(spawnPoint.Position)
+	end)
 	if player.Parent == Players then
 		player:LoadCharacterAsync()
 	end
@@ -27,11 +31,11 @@ function Spawning.Start(spawnPoint: SpawnLocation, fallY: number, onArrived: ((P
 			humanoid.Died:Connect(function()
 				task.wait(Players.RespawnTime)
 				if player.Character == character then
-					spawnCharacter(player)
+					spawnCharacter(player, spawnPoint)
 				end
 			end)
 		end)
-		spawnCharacter(player)
+		spawnCharacter(player, spawnPoint)
 		if onArrived then
 			onArrived(player)
 		end

@@ -533,6 +533,13 @@ function IslandService.RecordChange(player: Player, x: number, y: number, z: num
 end
 
 local function spawnCharacter(player: Player)
+	local island = islands[player]
+	if island then
+		-- With streaming on, load the island on their screen first
+		pcall(function()
+			player:RequestStreamAroundAsync(island.Spawn.Position)
+		end)
+	end
 	if player.Parent == Players then
 		player:LoadCharacterAsync()
 	end

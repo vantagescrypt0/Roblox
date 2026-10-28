@@ -11,9 +11,15 @@ local AmbientController = {}
 
 local spinning: { [Model]: { Base: CFrame, Speed: number, Angle: number } } = {}
 
+-- Spinning models stream in whole (and out again far away), so this runs on each arrival
 local function watch(model: Instance)
 	if model:IsA("Model") and type(model:GetAttribute("Spin")) == "number" and not spinning[model] then
-		spinning[model] = { Base = model:GetPivot(), Speed = math.rad(model:GetAttribute("Spin") :: number), Angle = 0 }
+		local base = model:GetAttribute("SpinBase")
+		spinning[model] = {
+			Base = if typeof(base) == "CFrame" then base else model:GetPivot(),
+			Speed = math.rad(model:GetAttribute("Spin") :: number),
+			Angle = 0,
+		}
 	end
 end
 

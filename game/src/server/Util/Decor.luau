@@ -618,9 +618,12 @@ function Decor.JackOLantern(parent: Instance, at: Vector3, out: Vector3)
 end
 
 -- Makes a model turn around its pivot's Z axis on every player's screen
--- (client/AmbientController), `speed` degrees per second
+-- (client/AmbientController), `speed` degrees per second. With streaming on, the model
+-- arrives on a screen whole, and turns from where it rests ("SpinBase").
 function Decor.Spin(model: Model, speed: number)
 	model:SetAttribute("Spin", speed)
+	model:SetAttribute("SpinBase", model:GetPivot())
+	model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
 	CollectionService:AddTag(model, "Spin")
 end
 

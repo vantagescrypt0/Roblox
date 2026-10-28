@@ -18,6 +18,7 @@ local header: TextLabel
 local questText: TextLabel
 local bar: Theme.Bar
 local highlight: Highlight
+local highlightName: string? = nil -- what the current quest outlines on your island
 local lastQuest: number? = nil
 
 local function build()
@@ -76,11 +77,19 @@ local function findOnMyIsland(name: string): Instance?
 	return island and island:FindFirstChild(name, true)
 end
 
+-- The island can be rebuilt (expansion), so look the target up every time
+local function aimHighlight()
+	local target = if highlightName then findOnMyIsland(highlightName) else nil
+	highlight.Adornee = target
+	highlight.Enabled = target ~= nil
+end
+
 function QuestTracker.Render(state: any)
 	local quest = state.Quest
 	-- Hidden during a raid so the Warzone screen stays clear
 	if not quest or state.Raid.Active then
 		card.Visible = false
+		highlightName = nil
 		highlight.Enabled = false
 		return
 	end
@@ -93,14 +102,23 @@ function QuestTracker.Render(state: any)
 	end
 	lastQuest = quest.Number
 
-	-- The island can be rebuilt (expansion), so look the target up every time
-	local target = if quest.Highlight then findOnMyIsland(quest.Highlight) else nil
-	highlight.Adornee = target
-	highlight.Enabled = target ~= nil
+	highlightName = quest.Highlight
+	aimHighlight()
 end
 
 function QuestTracker.Start()
 	build()
+	-- With streaming on, the island's parts can still be loading in (after joining or
+	-- expanding), and parts far away leave again: keep looking until the target is there
+	task.spawn(function()
+		while true do
+			task.wait(1)
+			local adornee = highlight.Adornee
+			if highlightName and (not adornee or not adornee:IsDescendantOf(workspace)) then
+				aimHighlight()
+			end
+		end
+	end)
 end
 
 return QuestTracker

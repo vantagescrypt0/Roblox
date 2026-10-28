@@ -313,6 +313,9 @@ function Npc.Build(shopId: string, feet: Vector3, facing: Vector3, parent: Insta
 	local model = Instance.new("Model")
 	model.Name = shopId
 	model:SetAttribute("Shop", shopId)
+	-- With streaming on, the whole shopkeeper arrives on a screen at once, never a head
+	-- missing its eyes
+	model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
 	local origin = CFrame.lookAt(feet, feet + facing) -- front is -Z
 	local function add(name: string, size: Vector3, center: Vector3, color: Color3, rotation: CFrame?): Part
 		return box(model, name, origin, size, center, color, rotation)
@@ -332,6 +335,8 @@ function Npc.Build(shopId: string, feet: Vector3, facing: Vector3, parent: Insta
 	headModel.Name = "Head"
 	headModel.Parent = model
 	local neck = origin * CFrame.new(0, 21.6 * PIXEL, 0)
+	-- Where the head turns from at rest (the client reads it, whatever way the head faces now)
+	headModel:SetAttribute("Neck", neck)
 	local function addHead(name: string, size: Vector3, center: Vector3, color: Color3, rotation: CFrame?): Part
 		return box(headModel, name, neck, size, center, color, rotation)
 	end

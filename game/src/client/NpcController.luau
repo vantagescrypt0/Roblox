@@ -40,11 +40,16 @@ local function track(model: Instance)
 	if not model:IsA("Model") or not head or not head:IsA("Model") or not head.PrimaryPart or not shop then
 		return
 	end
-	local pivot = head:GetPivot()
+	-- The resting neck comes from the server (Npc.Build): a head that streamed out and back
+	-- in may still be turned
+	local neck = head:GetAttribute("Neck")
+	if typeof(neck) ~= "CFrame" then
+		return
+	end
 	local lift = CFrame.new(0, head.PrimaryPart.Size.Y / 2, 0)
 	keepers[model] = {
 		Head = head,
-		Neck = pivot * lift:Inverse(),
+		Neck = neck,
 		Lift = lift,
 		Yaw = 0,
 		Pitch = 0,
@@ -105,7 +110,8 @@ function NpcController.Start()
 	task.spawn(function()
 		local town = Workspace:WaitForChild("Town")
 		local folder = town:WaitForChild("Npcs")
-		-- Pick up shopkeepers as they arrive (their parts may still be loading in)
+		-- Pick up shopkeepers as they stream in near you (each arrives whole, and leaves again
+		-- when you walk far away)
 		while true do
 			for _, model in folder:GetChildren() do
 				if model:IsA("Model") and not keepers[model] then
