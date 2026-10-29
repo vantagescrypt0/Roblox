@@ -60,15 +60,15 @@
     "semantic_hash": ""
   },
   "game/src/client/Hud.luau": {
-    "mtime": 1793159823.594686,
-    "seen": 1793159945.7394876,
-    "ast_hash": "8c6672702894e9556d78aa167dd34d48",
+    "mtime": 1793237013.4005737,
+    "seen": 1793237320.3208528,
+    "ast_hash": "b91acbe129cfcbcb19ef0fa9e3a9ff1e",
     "semantic_hash": ""
   },
   "game/src/client/Main.client.luau": {
-    "mtime": 1793157458.7802699,
-    "seen": 1793157863.7411845,
-    "ast_hash": "82ac4af41388c4721942b508d49f4996",
+    "mtime": 1793237013.3561227,
+    "seen": 1793237320.3208556,
+    "ast_hash": "978dc7a66ddd27ec11591a4418caa8dd",
     "semantic_hash": ""
   },
   "game/src/client/PromptUI.luau": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "game/src/client/QuestTracker.luau": {
-    "mtime": 1793154063.797369,
-    "seen": 1793154819.5374732,
-    "ast_hash": "844782dc123a0ec9d8f9655816e66252",
+    "mtime": 1793237013.361725,
+    "seen": 1793237320.320862,
+    "ast_hash": "76bb849f0705826798d15751baedb1a5",
     "semantic_hash": ""
   },
   "game/src/client/UI/ItemIcon.luau": {
@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/BlockService.luau": {
-    "mtime": 1793159588.5497355,
-    "seen": 1793159945.7395315,
-    "ast_hash": "c541931d2743d8a5d5cee9e4216c6486",
+    "mtime": 1793237013.392022,
+    "seen": 1793237320.3208885,
+    "ast_hash": "9169286f1eac4f4fb8612e6a8d1721bb",
     "semantic_hash": ""
   },
   "game/src/server/Services/CombatService.luau": {
@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/DataService.luau": {
-    "mtime": 1793157495.4773834,
-    "seen": 1793157863.7412286,
-    "ast_hash": "f77f65095d106f3767644648a58e9477",
+    "mtime": 1793237013.4005737,
+    "seen": 1793237320.3208954,
+    "ast_hash": "a66fb3a248406f8f3ecdd44060b6e683",
     "semantic_hash": ""
   },
   "game/src/server/Services/DevService.luau": {
@@ -156,9 +156,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/FarmService.luau": {
-    "mtime": 1793159626.5921297,
-    "seen": 1793159945.7395446,
-    "ast_hash": "36975d771adb0927e2401feabf06c6b5",
+    "mtime": 1793237013.4321654,
+    "seen": 1793237320.3208988,
+    "ast_hash": "119e82eeece1ea3f27ac959a29034820",
     "semantic_hash": ""
   },
   "game/src/server/Services/HotbarService.luau": {
@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/IslandService.luau": {
-    "mtime": 1793156159.0082228,
-    "seen": 1793157050.218187,
-    "ast_hash": "16025be53d16aa436b04c9e051c7a969",
+    "mtime": 1793237054.8028257,
+    "seen": 1793237320.3209064,
+    "ast_hash": "141bc29dc8a0ccb7298e92112a91ab2a",
     "semantic_hash": ""
   },
   "game/src/server/Services/Leaderstats.luau": {
@@ -198,15 +198,15 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/QuestService.luau": {
-    "mtime": 1792115122.9152505,
-    "seen": 1792857775.2393253,
-    "ast_hash": "347126780d59ceb61676cc586996c451",
-    "semantic_hash": "347126780d59ceb61676cc586996c451"
+    "mtime": 1793237013.4111044,
+    "seen": 1793237320.3209133,
+    "ast_hash": "c206cc11b4898b9ea467586e8bbb8568",
+    "semantic_hash": ""
   },
   "game/src/server/Services/StateService.luau": {
-    "mtime": 1793159574.6779208,
-    "seen": 1793159945.7395666,
-    "ast_hash": "69fdc15d43d7efc75e14afdbc6c36749",
+    "mtime": 1793237013.405091,
+    "seen": 1793237320.3209164,
+    "ast_hash": "29751be8e6e1531af79dd67a93c3806d",
     "semantic_hash": ""
   },
   "game/src/server/Services/TownService.luau": {
@@ -264,9 +264,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/Items.luau": {
-    "mtime": 1793159651.1846938,
-    "seen": 1793159945.7396336,
-    "ast_hash": "6db4d638f328e6db07f3aa4a730f5b49",
+    "mtime": 1793237013.5059068,
+    "seen": 1793237320.3209767,
+    "ast_hash": "66bff8aef277dee8a478ab6046eb24bd",
     "semantic_hash": ""
   },
   "game/src/shared/Leveling.luau": {
@@ -282,9 +282,9 @@
     "semantic_hash": "a1cfd08cdedfb0c47e942fe09bc92dfe"
   },
   "game/src/shared/Quests.luau": {
-    "mtime": 1793159677.3224306,
-    "seen": 1793159945.7396426,
-    "ast_hash": "36fc5161b4c33b5b23e41f4db44865a5",
+    "mtime": 1793237013.4927363,
+    "seen": 1793237320.320983,
+    "ast_hash": "ccd3108833133fe3a93d320f32f4b206",
     "semantic_hash": ""
   },
   "game/src/shared/Recipes.luau": {
@@ -420,9 +420,9 @@
     "semantic_hash": "a2bae3de7a2250cf4ff14767c54293da"
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1793234812.164797,
-    "seen": 1793234848.5300627,
-    "ast_hash": "168ee7edf43f639031dd08600c4fd85f",
+    "mtime": 1793237296.4592888,
+    "seen": 1793237320.3210402,
+    "ast_hash": "4d754cd7711d59b19ec7889052e0300a",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
@@ -528,15 +528,15 @@
     "semantic_hash": ""
   },
   "game/src/shared/ItemOrder.luau": {
-    "mtime": 1793044742.423513,
-    "seen": 1793047978.1496644,
-    "ast_hash": "6b103ab9d9f35cc956a834b7c33194cc",
+    "mtime": 1793237013.4707506,
+    "seen": 1793237320.320975,
+    "ast_hash": "10775ce476265c6d8ab8f773c9aa2e85",
     "semantic_hash": ""
   },
   "game/src/client/Windows/SkillsWindow.luau": {
-    "mtime": 1793159574.6809368,
-    "seen": 1793159945.7395241,
-    "ast_hash": "9149e63a0de7ee917ff49e6679b75e39",
+    "mtime": 1793237285.7086692,
+    "seen": 1793237320.3208833,
+    "ast_hash": "d88335adfb5af6a6d2dc65774635fa82",
     "semantic_hash": ""
   },
   "game/src/shared/Skills.luau": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1793234835.0785933,
-    "seen": 1793234848.5300236,
-    "ast_hash": "4ba3ca31ad5deff3569273380b9e53c4",
+    "mtime": 1793237305.7095325,
+    "seen": 1793237320.3210008,
+    "ast_hash": "05e4edf3177855779d48e6bc08c8b791",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -1197,6 +1197,48 @@
     "mtime": 1793231490.7480998,
     "seen": 1793234848.5301795,
     "ast_hash": "0d8a2a8fe24e06747d37180b30c8311f",
+    "semantic_hash": ""
+  },
+  "game/src/client/Windows/ChallengesWindow.luau": {
+    "mtime": 1793236983.2997408,
+    "seen": 1793237320.320871,
+    "ast_hash": "73e666a4d54e7d930f5627c6092eb7a1",
+    "semantic_hash": ""
+  },
+  "game/src/server/Services/ChallengeService.luau": {
+    "mtime": 1793236864.7600338,
+    "seen": 1793237320.3208902,
+    "ast_hash": "d62796926ae484895970daa937dcc76d",
+    "semantic_hash": ""
+  },
+  "game/src/shared/Challenges.luau": {
+    "mtime": 1793237013.4645257,
+    "seen": 1793237320.3209627,
+    "ast_hash": "0c24f6b3fd156f448c8ad1b5ef0a7b54",
+    "semantic_hash": ""
+  },
+  "game/src/shared/Gathering.luau": {
+    "mtime": 1793236825.2809987,
+    "seen": 1793237320.3209698,
+    "ast_hash": "a6b3809125458851d98974560896e775",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/menus/01-tutorial-challenges.webp": {
+    "mtime": 1793236242.0992444,
+    "seen": 1793237320.3211136,
+    "ast_hash": "b51ebf87ab73466b4eb77519c33be604",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/menus/02-farming-skill-crops.webp": {
+    "mtime": 1793236242.1349466,
+    "seen": 1793237320.3211155,
+    "ast_hash": "313d2249711adcb6c3a549504188fd07",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/menus/03-woodcutting-challenges.webp": {
+    "mtime": 1793236242.1718242,
+    "seen": 1793237320.3211167,
+    "ast_hash": "fea055a7fa2a7a0aad3b84df363a2135",
     "semantic_hash": ""
   }
 }

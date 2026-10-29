@@ -74,10 +74,11 @@ local function checkReach(player: Player, data: DataService.Data)
 		return
 	end
 	local value
+	local skill = string.match(quest.Event, "^Reach:(%a+)$")
 	if quest.Event == "ReachLevel" then
 		value = data.Level
-	elseif quest.Event == "ReachFarming" then
-		value = data.Skills.Farming.Level
+	elseif skill and (data.Skills :: any)[skill] then
+		value = (data.Skills :: any)[skill].Level
 	else
 		return
 	end

@@ -464,10 +464,19 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 	-- The player's own changes on top of the generated island. Nodes always come back,
 	-- so any old change saved on a node's cell is dropped.
 	for cellKey, blockType in data.Island.Blocks do
-		if generated.Nodes[cellKey] then
+		if generated.Nodes[cellKey] or data.Island.Nodes[cellKey] then
 			data.Island.Blocks[cellKey] = nil
 		elseif not generated.Protected[cellKey] then
 			(world.Cells :: any)[cellKey] = if blockType == "Air" then nil else blockType
+		end
+	end
+	-- Nodes the player placed (they always come back too)
+	for cellKey, blockType in data.Island.Nodes do
+		if not generated.Protected[cellKey] and Blocks.Types[blockType] then
+			local cells: { [string]: string } = world.Cells
+			cells[cellKey] = blockType
+			local x, y, z = BlockWorld.unkey(cellKey)
+			generated.Nodes[cellKey] = { X = x, Y = y, Z = z, Block = blockType }
 		end
 	end
 
@@ -602,6 +611,22 @@ local function onPlayerRemoving(player: Player)
 		usedPlots[island.Plot] = nil
 		BlockWorld.destroy(island.World)
 	end
+end
+
+-- Places a node (an item like a Coal Node) on an empty cell of the player's island: its block
+-- grows back after it's mined, and it's saved, so it stays there for good
+function IslandService.PlaceNode(player: Player, x: number, y: number, z: number, blockType: string)
+	local island = islands[player]
+	local data = DataService.GetData(player)
+	if not island or not data then
+		return
+	end
+	local cellKey = key(x, y, z)
+	island.Nodes[cellKey] = { X = x, Y = y, Z = z, Block = blockType }
+	data.Island.Nodes[cellKey] = blockType
+	data.Island.Blocks[cellKey] = nil
+	BlockWorld.set(island.World, x, y, z, blockType)
+	DataService.MarkChanged(player)
 end
 
 -- The resource node at a cell of the player's island, if there is one

@@ -23,6 +23,7 @@ local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local Props = require(script.Parent.Parent.Util.Props)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local ChallengeService = require(script.Parent.ChallengeService)
 local DataService = require(script.Parent.DataService)
 local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -222,6 +223,8 @@ function FarmService.Harvest(player: Player, crop: Crops.Crop, tool: Tools.Tool)
 	ProgressionService.AddPlayerXP(player, crop.PlayerXP)
 	StateService.Notify(player, `+{amount} {Items[crop.Product].Name}`, "good")
 	QuestService.Record(player, "Harvest")
+	QuestService.Record(player, `Harvest:{crop.Id}`)
+	ChallengeService.Count(player, crop.Id)
 end
 
 -- The crop whose seeds the player is holding, if they can plant it

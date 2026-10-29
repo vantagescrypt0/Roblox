@@ -23,6 +23,7 @@ export type Item = {
 	SellPrice: number, -- coins per item at the market; 0 = can't sell
 	BuyPrice: number?, -- coins to buy one at the market; nil = not for sale
 	Block: string?, -- block type this item places
+	Node: boolean?, -- placed as a node: its block grows back after it's mined (islands only)
 	Model: string?, -- 3D model in ReplicatedStorage.ItemModels (icons and holding)
 }
 
@@ -128,6 +129,11 @@ local Items: { [string]: Item } = {
 	-- Drops from leaves (and the Lumberjack sells them); plant it on grass or dirt and it
 	-- grows into a tree. Trees don't grow back once felled, so saplings get used up.
 	Sapling = { Name = "Sapling", Icon = "🌳", Value = 8, SellPrice = 0, BuyPrice = 20, Model = "Sapling" },
+
+	-- Nodes for your island (rewards from the beginner challenges): place one and it's ore
+	-- that turns pale when mined and grows back, like the worlds' ore. Once placed, it stays.
+	CoalNode = { Name = "Coal Node", Icon = "⚫", Value = 400, SellPrice = 0, Block = "CoalOre", Node = true },
+	IronNode = { Name = "Iron Node", Icon = "🔸", Value = 1200, SellPrice = 0, Block = "IronOre", Node = true },
 
 	-- Warzone materials
 	Scrap = { Name = "Scrap", Icon = "⚙️", Value = 6, SellPrice = 0, Model = "Scrap" },

@@ -1,6 +1,6 @@
 --!strict
 -- The always-on HUD: profile card (level badge, XP bar, coins; click it for the Skills
--- window), Warzone status, Bag/Island/Skills/Inbox buttons (the Inbox one counts the mail
+-- window), Warzone status, Bag/Island/Skills/Challenges/Inbox buttons (the Inbox one counts the mail
 -- waiting), the raid banner, pop-up messages and big celebrations.
 
 local Players = game:GetService("Players")
@@ -16,7 +16,13 @@ local localPlayer = Players.LocalPlayer :: Player
 
 local Hud = {}
 
-export type Callbacks = { OnBag: () -> (), OnIsland: () -> (), OnSkills: () -> (), OnInbox: () -> () }
+export type Callbacks = {
+	OnBag: () -> (),
+	OnIsland: () -> (),
+	OnSkills: () -> (),
+	OnChallenges: () -> (),
+	OnInbox: () -> (),
+}
 
 local levelNumber: TextLabel
 local xpBar: Theme.Bar
@@ -124,7 +130,7 @@ local function buildButtons(gui: ScreenGui, callbacks: Callbacks)
 	local column = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 0.5),
 		Position = UDim2.new(0, 14, 0.5, 0),
-		Size = UDim2.fromOffset(110, 214),
+		Size = UDim2.fromOffset(110, 270),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	})
@@ -133,7 +139,8 @@ local function buildButtons(gui: ScreenGui, callbacks: Callbacks)
 	sideButton(column, "Bag", 1, callbacks.OnBag)
 	sideButton(column, "Island", 2, callbacks.OnIsland)
 	sideButton(column, "Skills", 3, callbacks.OnSkills)
-	local inbox = sideButton(column, "Inbox", 4, callbacks.OnInbox)
+	sideButton(column, "Challenges", 4, callbacks.OnChallenges).Label.TextSize = 17
+	local inbox = sideButton(column, "Inbox", 5, callbacks.OnInbox)
 	-- Red badge on the corner: how many letters are waiting
 	inboxBadge = Theme.make("TextLabel", {
 		AnchorPoint = Vector2.new(0.5, 0.5),

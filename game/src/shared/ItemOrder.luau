@@ -31,6 +31,8 @@ local ORDER = {
 	"IronIngot",
 	"RawGold",
 	"GoldIngot",
+	"CoalNode",
+	"IronNode",
 	"WheatSeeds",
 	"CarrotSeeds",
 	"PotatoSeeds",

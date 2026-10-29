@@ -36,6 +36,8 @@ local TEMPLATE = {
 		Trees = {} :: { [string]: { PlantedAt: number, Height: number } },
 		-- The island's own trees the player has felled (they don't grow back), by the cell they stood on
 		Felled = {} :: { [string]: boolean },
+		-- Nodes the player placed (rewards like a Coal Node): cell -> the block that grows back
+		Nodes = {} :: { [string]: string },
 	},
 	-- item id -> count
 	Items = {} :: { [string]: number },
@@ -65,6 +67,12 @@ local TEMPLATE = {
 	Inbox = {
 		Count = 0,
 		Mail = {} :: { Letter },
+	},
+	-- Skill challenges (Challenges.luau): how many of each resource you've gathered this
+	-- season and the milestones reached. They reset each season with the skills.
+	Challenges = {
+		Counts = {} :: { [string]: number },
+		Reached = {} :: { [string]: boolean },
 	},
 	-- Beginner quest chain: which quest you're on and how far along it is
 	Quest = {

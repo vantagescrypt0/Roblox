@@ -1,9 +1,13 @@
 --!strict
--- The beginner quest chain (see "Tutorial & Quests" in the vault). Each quest teaches
--- one thing, following Minecraft's early game: wood -> planks -> sticks -> pickaxe -> stone.
+-- The beginner challenges (see "Tutorial & Quests" in the vault), shown one at a time by the
+-- quest tracker and all together on the Challenges board (like the Skybounds tutorial).
+-- Each teaches one thing, following Minecraft's early game: wood -> planks -> sticks ->
+-- pickaxe -> stone, then out to Town and the Grinding Worlds. Some rewards are nodes for
+-- your island (a Coal Node grows back after you mine it).
 --
--- Event quests count actions (e.g. "Harvest" 3 times; "Craft:<recipe>" for one recipe).
--- "Reach" quests check a value (player level or a skill level) instead.
+-- Event quests count actions (e.g. "Harvest" 3 times; "Craft:<recipe>" for one recipe;
+-- "Harvest:<crop>", "Chop:<log>", "Mine:<ore>" for one kind). "Reach" quests check a
+-- value instead: "ReachLevel" (player level) or "Reach:<skill>" (a skill level).
 
 export type Reward = {
 	XP: number?,
@@ -84,7 +88,7 @@ local Quests: { Quest } = {
 		Event = "Craft:StonePickaxe",
 		Target = 1,
 		Highlight = "CraftingTable",
-		Reward = { XP = 350, Items = { Stone = 4 } },
+		Reward = { XP = 350, Items = { Stone = 4, CoalNode = 1 } },
 	},
 	{
 		Text = "Mine Iron Ore with your Stone Pickaxe",
@@ -107,7 +111,31 @@ local Quests: { Quest } = {
 		Highlight = "Furnace",
 		Reward = { XP = 500, Coins = 150 },
 	},
-	{ Text = "Reach Farming level 3", Event = "ReachFarming", Target = 3, Reward = { XP = 700, Coins = 250 } },
+	{ Text = "Reach Farming level 3", Event = "Reach:Farming", Target = 3, Reward = { XP = 700, Coins = 250 } },
+	{
+		Text = "Take the Mining portal in Town and mine 10 Coal Ore",
+		Event = "Mine:CoalOre",
+		Target = 10,
+		Reward = { XP = 700, Items = { CoalNode = 1 } },
+	},
+	{
+		Text = "Chop 20 logs in the Woodcutting World",
+		Event = "Chop",
+		Target = 20,
+		Reward = { XP = 700, Coins = 300, Items = { Sapling = 3 } },
+	},
+	{
+		Text = "Harvest 30 Wheat in the Farming World",
+		Event = "Harvest:Wheat",
+		Target = 30,
+		Reward = { XP = 700, Coins = 300, Items = { CarrotSeeds = 3 } },
+	},
+	{
+		Text = "Reach Mining level 5",
+		Event = "Reach:Mining",
+		Target = 5,
+		Reward = { XP = 900, Items = { IronNode = 1 } },
+	},
 	{
 		Text = "Reach level 10",
 		Event = "ReachLevel",

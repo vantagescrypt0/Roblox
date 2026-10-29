@@ -16,6 +16,7 @@ local NpcController = require(script.Parent.NpcController)
 local PromptUI = require(script.Parent.PromptUI)
 local QuestTracker = require(script.Parent.QuestTracker)
 local BagWindow = require(script.Parent.Windows.BagWindow)
+local ChallengesWindow = require(script.Parent.Windows.ChallengesWindow)
 local CraftingWindow = require(script.Parent.Windows.CraftingWindow)
 local InboxWindow = require(script.Parent.Windows.InboxWindow)
 local IslandWindow = require(script.Parent.Windows.IslandWindow)
@@ -35,11 +36,13 @@ CraftingWindow.Start()
 TradeWindow.Start()
 SkillsWindow.Start()
 InboxWindow.Start()
-QuestTracker.Start()
+ChallengesWindow.Start()
+QuestTracker.Start(ChallengesWindow.Toggle)
 PromptUI.Start()
 Hud.Start({
 	OnBag = BagWindow.Toggle,
 	OnSkills = SkillsWindow.Toggle,
+	OnChallenges = ChallengesWindow.Toggle,
 	OnInbox = InboxWindow.Toggle,
 	OnIsland = function()
 		if Places.Current() ~= "Island" then
@@ -69,6 +72,7 @@ Remotes.State.OnClientEvent:Connect(function(state)
 	TradeWindow.SetState(state)
 	SkillsWindow.SetState(state)
 	InboxWindow.SetState(state)
+	ChallengesWindow.SetState(state)
 end)
 Remotes.Notify.OnClientEvent:Connect(Hud.Toast)
 Remotes.OpenCrafting.OnClientEvent:Connect(CraftingWindow.Open)

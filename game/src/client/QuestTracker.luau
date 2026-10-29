@@ -1,6 +1,7 @@
 --!strict
 -- Shows the current beginner quest on the right side of the screen and outlines the
--- object on your island it's about, so new players always know where to go.
+-- object on your island it's about, so new players always know where to go. Click it for
+-- the Challenges board.
 
 local Players = game:GetService("Players")
 
@@ -21,7 +22,7 @@ local highlight: Highlight
 local highlightName: string? = nil -- what the current quest outlines on your island
 local lastQuest: number? = nil
 
-local function build()
+local function build(onOpen: () -> ())
 	local gui = Theme.screen("Quests", 1)
 
 	card = Theme.panel(gui, UDim2.fromOffset(270, 0))
@@ -33,6 +34,15 @@ local function build()
 	Theme.autoScale(card)
 
 	Theme.header(card, "Quest", HEADER)
+	-- The whole card opens the Challenges board
+	local open = Theme.make("TextButton", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Text = "",
+		ZIndex = 5,
+		Parent = card,
+	})
+	open.Activated:Connect(onOpen)
 	-- Quest number on the right of the title bar
 	header = Theme.text(card, "", 14, Theme.Font.Bold, C.Gold)
 	header.AnchorPoint = Vector2.new(1, 0)
@@ -106,8 +116,8 @@ function QuestTracker.Render(state: any)
 	aimHighlight()
 end
 
-function QuestTracker.Start()
-	build()
+function QuestTracker.Start(onOpen: () -> ())
+	build(onOpen)
 	-- With streaming on, the island's parts can still be loading in (after joining or
 	-- expanding), and parts far away leave again: keep looking until the target is there
 	task.spawn(function()

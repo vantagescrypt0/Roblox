@@ -1,11 +1,17 @@
 --!strict
 -- Skills window: your player level up top, then every skill (Farming, Mining, Woodcutting,
--- Crafting, Combat) with its level and XP. Pick a skill to see how to train it, its
--- double-drop bonus and everything it unlocks: recipes that need it (Recipes.luau) and,
--- for Farming, better crops. Open it with the Skills button or by clicking your profile.
+-- Crafting, Combat) with its level and XP. Pick a skill to see how to train it and its
+-- double-drop bonus, then two tabs:
+--   Challenges  every crop, log or ore the skill gathers (Challenges.luau, like the
+--               Skybounds skill menus): the level it needs, its XP, how many you've
+--               gathered this season and its milestones (the skill's pet and armor tiers,
+--               then the resource's trophy)
+--   Unlocks     recipes that need the skill (Recipes.luau) and, for Farming, better crops
+-- Open it with the Skills button or by clicking your profile.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Challenges = require(ReplicatedStorage.Shared.Challenges)
 local Crops = require(ReplicatedStorage.Shared.Crops)
 local ItemOrder = require(ReplicatedStorage.Shared.ItemOrder)
 local Items = require(ReplicatedStorage.Shared.Items)
@@ -40,10 +46,13 @@ local detailTrains: TextLabel
 local detailBonus: TextLabel
 local unlockGrid: Frame
 local unlockEmpty: TextLabel
+local challengeList: ScrollingFrame
+local tabButtons: { [string]: Theme.Button } = {}
 local info: TextLabel
 
 local state: any = nil
 local selected = Skills.List[1].Id
+local tab = "Challenges"
 
 local orderIndex: { [string]: number } = {}
 for index, itemId in ItemOrder do
@@ -101,6 +110,106 @@ local function xpText(level: number, xp: number, toNext: number, max: number): (
 	return xp / toNext, `{Theme.formatNumber(xp)} / {Theme.formatNumber(toNext)} XP`
 end
 
+-- 1,250 -> "1.25k", 25,000 -> "25k"
+local function short(n: number): string
+	if n >= 1000 then
+		return `{string.format("%g", math.floor(n / 10) / 100)}k`
+	end
+	return tostring(n)
+end
+
+local REWARD_LABELS = { Pet = "Pet", Armor = "Armor", Trophy = "Trophy" }
+local ROMAN = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII" }
+
+-- One row per resource the skill gathers: picture, name, level, XP, count, milestones
+local function renderChallenges()
+	Window.clear(challengeList)
+	local resources = Challenges.BySkill[selected]
+	if not resources then
+		local empty = Theme.text(
+			challengeList,
+			`{Skills.ById[selected].Name} challenges come later`,
+			15,
+			Theme.Font.Medium,
+			C.InkMuted
+		)
+		empty.Size = UDim2.new(1, 0, 0, 40)
+		empty.TextXAlignment = Enum.TextXAlignment.Center
+		return
+	end
+	local counts = if state and state.Challenges then state.Challenges.Counts else {}
+	local reached = if state and state.Challenges then state.Challenges.Reached else {}
+	local level = levelOf(selected)
+	for order, resource in resources do
+		local count = counts[resource.Id] or 0
+		local open = level >= resource.Level
+		local row = Theme.make("Frame", {
+			LayoutOrder = order,
+			Size = UDim2.new(1, 0, 0, 80),
+			BackgroundColor3 = C.ParchmentDark,
+			Parent = challengeList,
+		})
+		Theme.corner(row, 6)
+		Theme.stroke(row, if open then C.TanEdge else C.Disabled, 2)
+		local box = Theme.inset(row, UDim2.fromOffset(56, 56), UDim2.fromOffset(8, 12))
+		ItemIcon.create(box, resource.Icon, UDim2.fromScale(0.86, 0.86))
+		local name = Theme.title(row, resource.Name, 19)
+		name.Position = UDim2.fromOffset(74, 4)
+		name.Size = UDim2.new(1, -150, 0, 24)
+		local need = Theme.text(row, `Lv {resource.Level}`, 15, Theme.Font.Bold, if open then C.Leaf else C.Red)
+		need.AnchorPoint = Vector2.new(1, 0)
+		need.Position = UDim2.new(1, -10, 0, 6)
+		need.Size = UDim2.fromOffset(70, 20)
+		need.TextXAlignment = Enum.TextXAlignment.Right
+		local sub = if open
+			then `{resource.XP} XP each · {Theme.formatNumber(count)} gathered`
+			else `Needs {Skills.ById[selected].Name} {resource.Level}`
+		if resource.Note then
+			sub ..= ` · {resource.Note}`
+		end
+		local subLabel = Theme.text(row, sub, 13, Theme.Font.Medium, C.InkMuted)
+		subLabel.Position = UDim2.fromOffset(74, 28)
+		subLabel.Size = UDim2.new(1, -84, 0, 18)
+		-- The milestones, side by side
+		local strip = Theme.make("Frame", {
+			Position = UDim2.fromOffset(74, 50),
+			Size = UDim2.new(1, -84, 0, 22),
+			BackgroundTransparency = 1,
+			Parent = row,
+		})
+		Theme.list(strip, Enum.FillDirection.Horizontal, 6)
+		for index, milestone in resource.Milestones do
+			local done = reached[milestone.Id] == true
+			local label = REWARD_LABELS[milestone.Reward]
+			if milestone.Reward ~= "Trophy" then
+				label ..= ` {ROMAN[resource.Tier]}`
+			end
+			local bar = Theme.bar(strip, if done then C.Gold else C.Leaf, UDim2.new(1 / 3, -4, 1, 0))
+			bar.Track.LayoutOrder = index
+			bar.Label.TextSize = 11
+			bar.Set(
+				count / milestone.Count,
+				if done then `{label} ✓` else `{label} {short(count)}/{short(milestone.Count)}`
+			)
+			local hint = `{milestone.Name}: gather {Theme.formatNumber(milestone.Count)} {resource.Name} this season`
+				.. (if done then " · unlocked (the reward is coming soon)" else "")
+			bar.Track.MouseEnter:Connect(function()
+				info.Text = hint
+			end)
+		end
+		if not open then
+			local shade = Theme.make("Frame", {
+				Size = UDim2.fromScale(1, 1),
+				BackgroundColor3 = C.Tan,
+				BackgroundTransparency = 0.5,
+				ZIndex = 4,
+				Parent = row,
+			})
+			Theme.corner(shade, 6)
+		end
+	end
+end
+
 local function renderDetail()
 	local skill = Skills.ById[selected]
 	local current = skillState(selected)
@@ -125,6 +234,16 @@ local function renderDetail()
 		detailBonus.Text = "Tougher monsters need a higher Combat level"
 	end
 
+	for name, button in tabButtons do
+		button.SetColor(if name == tab then C.Ochre else C.WoodLight)
+	end
+	challengeList.Visible = tab == "Challenges"
+	unlockGrid.Visible = tab == "Unlocks"
+	if tab == "Challenges" then
+		unlockEmpty.Visible = false
+		renderChallenges()
+		return
+	end
 	Window.clear(unlockGrid)
 	local list = unlocks[selected]
 	unlockEmpty.Visible = #list == 0
@@ -295,10 +414,19 @@ local function buildDetail(body: Frame, top: number)
 	detailBonus.Position = UDim2.fromOffset(0, 98)
 	detailBonus.Size = UDim2.new(1, 0, 0, 18)
 
-	local unlockTitle = Theme.title(panel, "Unlocks", 20)
-	unlockTitle.Position = UDim2.fromOffset(0, 126)
-	unlockTitle.Size = UDim2.new(1, 0, 0, 24)
+	-- Tabs: the skill's challenges, or what it unlocks
+	for index, name in { "Challenges", "Unlocks" } do
+		local button = Theme.button(panel, name, C.WoodLight, UDim2.fromOffset(126, 32), function()
+			tab = name
+			info.Text = ""
+			renderDetail()
+		end)
+		button.Holder.Position = UDim2.fromOffset((index - 1) * 134, 120)
+		button.Label.TextSize = 15
+		tabButtons[name] = button
+	end
 	local well = Theme.inset(panel, UDim2.new(1, 0, 1, -184), UDim2.fromOffset(0, 154))
+	challengeList = Window.scrollList(well, UDim2.fromScale(1, 1))
 	unlockGrid = Theme.make("ScrollingFrame", {
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
@@ -341,7 +469,7 @@ end
 function SkillsWindow.Start()
 	window = Window.new("SkillsWindow", "Skills", Vector2.new(780, 600))
 	window.OnOpen = function()
-		info.Text = "Point at an unlock to see what it needs"
+		info.Text = "Point at a milestone or an unlock to see what it needs"
 		render()
 	end
 	buildPlayerCard(window.Body)
