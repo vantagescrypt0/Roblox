@@ -27,6 +27,7 @@ local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local ChallengeService = require(script.Parent.ChallengeService)
+local GearService = require(script.Parent.GearService)
 local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
@@ -174,7 +175,7 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		local amount = 1
 		if gather then
 			local level = ProgressionService.GetSkillLevel(player, gather.Skill)
-			if rng:NextNumber() < Leveling.BonusChance(level) then
+			if rng:NextNumber() < Leveling.BonusChance(level) + GearService.DropBonus(player, gather.Skill) then
 				amount = 2
 				StateService.Notify(player, `Double drop! +2 {Items[def.Drop].Name}`, "good")
 			end

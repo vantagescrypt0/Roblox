@@ -14,6 +14,8 @@
 -- nobody can break. A mined ore never leaves a hole: it turns into a pale Empty Ore block
 -- until it fills back in. The same block placed by a player is just a normal block.
 
+local Gear = require(script.Parent.Gear)
+
 export type Block = {
 	Name: string,
 	Drop: string?, -- item you get when you break it (nil = nothing)
@@ -197,6 +199,12 @@ local Blocks: { [string]: Block } = {
 	MushroomStem = { Name = "Mushroom Stem", Drop = nil, Hardness = 0.2, Tool = "Axe", Breakable = true },
 	CrackedStoneBricks = stone("Cracked Stone Bricks", nil),
 }
+
+-- Trophies (Gear.luau): a golden cup on a plinth, put on your island to show off. Their
+-- look is built in code (Util/TrophyModels), so they're see-through to the blocks round them.
+for _, trophy in Gear.TrophyList do
+	Blocks[trophy.Block] = { Name = trophy.Name, Drop = trophy.Item, Hardness = 1, Breakable = true, SeeThrough = true }
+end
 
 local Size = 3
 

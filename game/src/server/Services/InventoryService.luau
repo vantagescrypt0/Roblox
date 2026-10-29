@@ -52,7 +52,8 @@ function InventoryService.Add(player: Player, itemId: string, amount: number)
 	end
 	local before = data.Items[itemId] or 0
 	data.Items[itemId] = before + amount
-	if before == 0 then
+	-- New items drop into the hotbar, but not pets and armor (they're worn from the Bag)
+	if before == 0 and not Items[itemId].Equip then
 		autoHotbar(data, itemId)
 	end
 	DataService.MarkChanged(player)

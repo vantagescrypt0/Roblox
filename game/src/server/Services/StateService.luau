@@ -66,6 +66,7 @@ local function snapshot(data: DataService.Data)
 		Inbox = data.Inbox.Mail,
 		-- Which beginner challenge you're on (past the last one when they're all done)
 		QuestIndex = data.Quest.Index,
+		Equipped = table.clone(data.Equipped),
 		Challenges = { Counts = table.clone(data.Challenges.Counts), Reached = table.clone(data.Challenges.Reached) },
 	}
 end

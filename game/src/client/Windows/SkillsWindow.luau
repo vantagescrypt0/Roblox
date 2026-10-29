@@ -192,7 +192,7 @@ local function renderChallenges()
 				if done then `{label} ✓` else `{label} {short(count)}/{short(milestone.Count)}`
 			)
 			local hint = `{milestone.Name}: gather {Theme.formatNumber(milestone.Count)} {resource.Name} this season`
-				.. (if done then " · unlocked (the reward is coming soon)" else "")
+				.. (if done then " · done: it's in your Bag" else "")
 			bar.Track.MouseEnter:Connect(function()
 				info.Text = hint
 			end)

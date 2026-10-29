@@ -9,6 +9,7 @@ local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Skills = require(ReplicatedStorage.Shared.Skills)
 local DataService = require(script.Parent.DataService)
+local GearService = require(script.Parent.GearService)
 local StateService = require(script.Parent.StateService)
 
 local ProgressionService = {}
@@ -63,7 +64,8 @@ function ProgressionService.AddSkillXP(player: Player, skillName: string, amount
 
 	local before = skill.Level
 	local info = Skills.ById[skillName]
-	skill.XP += amount
+	-- A pet of this skill gives more XP
+	skill.XP += math.floor(amount * (1 + GearService.XPBonus(player, skillName)) + 0.5)
 	while skill.Level < Leveling.MaxSkillLevel and skill.XP >= Leveling.SkillXPToNext(skill.Level) do
 		skill.XP -= Leveling.SkillXPToNext(skill.Level)
 		skill.Level += 1

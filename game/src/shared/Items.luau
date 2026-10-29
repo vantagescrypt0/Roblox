@@ -14,6 +14,7 @@
 --   BuyPrice   what the shops in Town charge, if one sells it. Crops regrow, so a seed is
 --              a one-off cost per plot.
 
+local Gear = require(script.Parent.Gear)
 local Tools = require(script.Parent.Tools)
 
 export type Item = {
@@ -24,6 +25,7 @@ export type Item = {
 	BuyPrice: number?, -- coins to buy one at the market; nil = not for sale
 	Block: string?, -- block type this item places
 	Node: boolean?, -- placed as a node: its block grows back after it's mined (islands only)
+	Equip: string?, -- "Pet" or "Armor": worn from the Bag (Gear.luau), never put on the hotbar
 	Model: string?, -- 3D model in ReplicatedStorage.ItemModels (icons and holding)
 }
 
@@ -139,6 +141,19 @@ local Items: { [string]: Item } = {
 	Scrap = { Name = "Scrap", Icon = "⚙️", Value = 6, SellPrice = 0, Model = "Scrap" },
 	Crystal = { Name = "Crystal", Icon = "💎", Value = 60, SellPrice = 0, Model = "Crystal" },
 }
+-- The skill challenges' rewards (Gear.luau): pets, armor sets and trophies. They're earned,
+-- not bought, and the shops don't buy them; players can still trade them.
+for _, pet in Gear.PetList do
+	Items[pet.Item] = { Name = pet.Name, Icon = "🐾", Value = 1500 * pet.Tier, SellPrice = 0, Equip = "Pet" }
+end
+for _, armor in Gear.ArmorList do
+	Items[armor.Item] =
+		{ Name = armor.Name, Icon = "🛡️", Value = 4000 * armor.Tier, SellPrice = 0, Equip = "Armor" }
+end
+for _, trophy in Gear.TrophyList do
+	Items[trophy.Item] =
+		{ Name = trophy.Name, Icon = "🏆", Value = 40000 * trophy.Tier, SellPrice = 0, Block = trophy.Block }
+end
 -- Every tool from Tools.luau is an item too, e.g. "StonePickaxe" -> "Stone Pickaxe"
 local KIND_ICONS = { Sword = "🗡️", Pickaxe = "⛏️", Axe = "🔨", Shovel = "🥄", Hoe = "🌱" }
 for _, tool in Tools.List do

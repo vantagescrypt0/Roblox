@@ -25,6 +25,7 @@ local Props = require(script.Parent.Parent.Util.Props)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local ChallengeService = require(script.Parent.ChallengeService)
 local DataService = require(script.Parent.DataService)
+local GearService = require(script.Parent.GearService)
 local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
@@ -212,7 +213,7 @@ end
 -- does wear a hoe).
 function FarmService.Harvest(player: Player, crop: Crops.Crop, tool: Tools.Tool)
 	local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
-	local chance = Leveling.BonusChance(farmingLevel) + tool.Harvest
+	local chance = Leveling.BonusChance(farmingLevel) + tool.Harvest + GearService.DropBonus(player, "Farming")
 	local amount = if rng:NextNumber() < chance then 2 else 1
 
 	InventoryService.Add(player, crop.Product, amount)

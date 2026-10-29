@@ -74,6 +74,11 @@ local TEMPLATE = {
 		Counts = {} :: { [string]: number },
 		Reached = {} :: { [string]: boolean },
 	},
+	-- The pet and armor set the player wears (item ids, "" = none; see Gear.luau)
+	Equipped = {
+		Pet = "",
+		Armor = "",
+	},
 	-- Beginner quest chain: which quest you're on and how far along it is
 	Quest = {
 		Index = 1,

@@ -1,10 +1,13 @@
 --!strict
 -- The Bag: every item you own in a slot grid, with your hotbar along the bottom. Click a
 -- hotbar slot to pick it, then click an item to put it there. Right-click a hotbar slot to
--- empty it.
+-- empty it. Pets and armor sets (the skill challenges' rewards) aren't for the hotbar:
+-- click one to wear it (one of each at a time) and again to take it off; what you wear has
+-- a green "ON" tag.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Gear = require(ReplicatedStorage.Shared.Gear)
 local ItemOrder = require(ReplicatedStorage.Shared.ItemOrder)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
@@ -61,6 +64,22 @@ local function countLabel(slot: Instance, count: number)
 	label.ZIndex = 3
 end
 
+-- What a pet or armor set does, for the info line
+local function gearText(itemId: string): string
+	local pet, armor = Gear.Pets[itemId], Gear.Armors[itemId]
+	if pet then
+		return ` · +{math.round(pet.XPBonus * 100)}% {pet.Skill} XP`
+	elseif armor then
+		return ` · +{math.round(armor.DropBonus * 100)}% double {armor.Skill} drops`
+	end
+	return ""
+end
+
+local function wearing(itemId: string): boolean
+	local equipped = state and state.Equipped
+	return equipped ~= nil and (equipped.Pet == itemId or equipped.Armor == itemId)
+end
+
 local function render()
 	Window.clear(grid)
 	Window.clear(hotbarRow)
@@ -74,13 +93,31 @@ local function render()
 			local slot = slotFrame(grid, order)
 			ItemIcon.create(slot, itemId, UDim2.fromScale(0.8, 0.8))
 			countLabel(slot, count)
+			local equip = Items[itemId].Equip
+			if equip and wearing(itemId) then
+				local tag = Theme.text(slot, "ON", 12, Theme.Font.Bold, C.Cream)
+				tag.BackgroundTransparency = 0
+				tag.BackgroundColor3 = C.Green
+				tag.Position = UDim2.fromOffset(3, 3)
+				tag.Size = UDim2.fromOffset(24, 15)
+				tag.TextXAlignment = Enum.TextXAlignment.Center
+				tag.ZIndex = 3
+				Theme.corner(tag, 4)
+			end
 			slot.MouseEnter:Connect(function()
 				local tool = Tools.ByItem[itemId]
 				local uses = if tool then ` - {tool.Durability - (state.Wear[itemId] or 0)} uses left` else ""
-				info.Text = `{Items[itemId].Name}{uses}`
+				local hint = if equip
+					then (if wearing(itemId) then " · click to take off" else " · click to wear")
+					else ""
+				info.Text = `{Items[itemId].Name}{uses}{gearText(itemId)}{hint}`
 			end)
 			slot.Activated:Connect(function()
-				Remotes.SetHotbar:FireServer(Hotbar.Selected(), itemId)
+				if equip then
+					Remotes.Equip:FireServer(itemId)
+				else
+					Remotes.SetHotbar:FireServer(Hotbar.Selected(), itemId)
+				end
 			end)
 		end
 	end
