@@ -16,6 +16,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local Decor = require(script.Parent.Parent.Util.Decor)
+local Pace = require(script.Parent.Parent.Util.Pace)
 
 local SIZE = Blocks.Size
 local ROOT = Color3.fromRGB(104, 76, 48)
@@ -120,12 +121,13 @@ function Context.new(world: BlockWorld.World, decor: Folder, seed: number, south
 	ctx.Fields = {}
 
 	local function column(x: number, z: number): string
-		return `{x},{z}`
+		return `{x + 0},{z + 0}` -- + 0: -0 is the same column as 0
 	end
 
 	-- Blocks ----------------------------------------------------------------------
 
 	function ctx.Set(x, y, z, block)
+		Pace.Step()
 		local k = key(x, y, z)
 		BlockWorld.setRaw(world, x, y, z, block)
 		world.Protected[k] = true
@@ -286,6 +288,7 @@ function Context.new(world: BlockWorld.World, decor: Folder, seed: number, south
 
 		-- First the shape: which columns are ground, how high and how deep
 		for x = spec.X - reach, spec.X + reach do
+			Pace.Step()
 			for z = spec.Z - reach, spec.Z + reach do
 				local dx, dz = x - spec.X, z - spec.Z
 				local d = math.sqrt(dx * dx + dz * dz)

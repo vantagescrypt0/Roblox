@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/TownService.luau": {
-    "mtime": 1793068522.4274318,
-    "seen": 1793068678.7767773,
-    "ast_hash": "f6f58f727a07e3d8f29e1166c3707bea",
+    "mtime": 1793234048.043372,
+    "seen": 1793234848.5299437,
+    "ast_hash": "7716e5eb7cb18144c9b1ee12931f3d46",
     "semantic_hash": ""
   },
   "game/src/server/Services/WarzoneService.luau": {
@@ -222,9 +222,9 @@
     "semantic_hash": "64a171546bd10a07eaaf103aa1acde09"
   },
   "game/src/server/Util/BlockWorld.luau": {
-    "mtime": 1793063801.3389902,
-    "seen": 1793066032.4208913,
-    "ast_hash": "725749a7cfb208f35945535923638c46",
+    "mtime": 1793232519.6472945,
+    "seen": 1793234848.5299585,
+    "ast_hash": "27774f93871989829cfc0ed053184cbb",
     "semantic_hash": ""
   },
   "game/src/server/Util/Prompts.luau": {
@@ -420,9 +420,9 @@
     "semantic_hash": "a2bae3de7a2250cf4ff14767c54293da"
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1793159927.393291,
-    "seen": 1793159945.739713,
-    "ast_hash": "8a6f857c2aaaebefa800b790c88d8155",
+    "mtime": 1793234812.164797,
+    "seen": 1793234848.5300627,
+    "ast_hash": "168ee7edf43f639031dd08600c4fd85f",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
@@ -432,9 +432,9 @@
     "semantic_hash": ""
   },
   "07 Roadmap/Roadmap.md": {
-    "mtime": 1793159927.530619,
-    "seen": 1793159945.7397163,
-    "ast_hash": "8f37badd3fe6b6e4de2e48dd08ff5a07",
+    "mtime": 1793234812.177165,
+    "seen": 1793234848.530066,
+    "ast_hash": "94e82cadca7e00c9c3c38f9b2359b8d0",
     "semantic_hash": ""
   },
   "Home.md": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1793159936.1123204,
-    "seen": 1793159945.7396648,
-    "ast_hash": "2daadf1cc5e6663788e0932c91e3bf4b",
+    "mtime": 1793234835.0785933,
+    "seen": 1793234848.5300236,
+    "ast_hash": "4ba3ca31ad5deff3569273380b9e53c4",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -594,9 +594,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/WorldService.luau": {
-    "mtime": 1793157305.0084288,
-    "seen": 1793157863.74127,
-    "ast_hash": "15082fe9adb714c148ce60314bdf3716",
+    "mtime": 1793232368.1021416,
+    "seen": 1793234848.529954,
+    "ast_hash": "8efa4a7679c97e07aa0c93d5389a27e2",
     "semantic_hash": ""
   },
   "game/src/server/Util/Npc.luau": {
@@ -636,9 +636,9 @@
     "semantic_hash": ""
   },
   "03 Design/Town & Worlds.md": {
-    "mtime": 1793157014.235497,
-    "seen": 1793157050.2183108,
-    "ast_hash": "1c58577c9046c08580189f1b3e58dc25",
+    "mtime": 1793234834.9393263,
+    "seen": 1793234848.530049,
+    "ast_hash": "b3aff444d93fd71d50cdf120289ecfe9",
     "semantic_hash": ""
   },
   "game/src/client/AmbientController.luau": {
@@ -666,27 +666,27 @@
     "semantic_hash": ""
   },
   "game/src/server/Worlds/Context.luau": {
-    "mtime": 1793063633.557929,
-    "seen": 1793066032.4209363,
-    "ast_hash": "00886fa2326a91fe979316c7bbdf1fc5",
+    "mtime": 1793232519.700112,
+    "seen": 1793234848.529983,
+    "ast_hash": "322ad889453bd0fccc017219ebfd3525",
     "semantic_hash": ""
   },
   "game/src/server/Worlds/Farming.luau": {
-    "mtime": 1793064178.088938,
-    "seen": 1793066032.4209387,
-    "ast_hash": "45a77012169ddb4ec7bcb2bfa5247c8e",
+    "mtime": 1793233090.062301,
+    "seen": 1793234848.5299845,
+    "ast_hash": "ee926ea7df2ba84e073a8d31e149f8ec",
     "semantic_hash": ""
   },
   "game/src/server/Worlds/Mining.luau": {
-    "mtime": 1793156179.8256009,
-    "seen": 1793157050.2182436,
-    "ast_hash": "40e08f7909d0a3f74a9e6e413fc1eeda",
+    "mtime": 1793233438.6443512,
+    "seen": 1793234848.5299861,
+    "ast_hash": "ed926247a12d3a3254e21a4926c96f2c",
     "semantic_hash": ""
   },
   "game/src/server/Worlds/Woodcutting.luau": {
-    "mtime": 1793064178.0817237,
-    "seen": 1793066032.4209445,
-    "ast_hash": "3af563ba48f6eb62648f39f57724a20f",
+    "mtime": 1793233896.2085447,
+    "seen": 1793234848.5299873,
+    "ast_hash": "ab6adca8499bceb39141ec2bbbed0ca5",
     "semantic_hash": ""
   },
   "game/src/server/Worlds/Common.luau": {
@@ -723,6 +723,480 @@
     "mtime": 1793159517.9106028,
     "seen": 1793159945.73966,
     "ast_hash": "047c5ce0f8490fdabf36479afba599f1",
+    "semantic_hash": ""
+  },
+  "game/src/server/Util/Pace.luau": {
+    "mtime": 1793232331.8961284,
+    "seen": 1793234848.5299675,
+    "ast_hash": "2627a4813bf0f708f136cb330e757385",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/README.md": {
+    "mtime": 1793231502.9410894,
+    "seen": 1793234848.530034,
+    "ast_hash": "4bdd712149845321d14e1a81116b832d",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/01-mining-mountain-arch.webp": {
+    "mtime": 1793230597.2522664,
+    "seen": 1793234848.5300736,
+    "ast_hash": "23763a573b19b4503b9b302d8d4c6918",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/02-farming-wheat-silo.webp": {
+    "mtime": 1793230597.3055341,
+    "seen": 1793234848.5300753,
+    "ast_hash": "8e933d765e676811e7776143337fcd93",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/03-spawn-market-street.webp": {
+    "mtime": 1793230597.3490422,
+    "seen": 1793234848.5300767,
+    "ast_hash": "d1475af61ac54f69a9c7689aaceff13e",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/04-spawn-plaza-void-pit.webp": {
+    "mtime": 1793230597.3960423,
+    "seen": 1793234848.530078,
+    "ast_hash": "95ed91f06b5d0ebb8afac9965bd7c9c6",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/05-farming-carrot-fields.webp": {
+    "mtime": 1793230597.446419,
+    "seen": 1793234848.5300791,
+    "ast_hash": "3565100844efb5704f3698639a9863ae",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/06-farming-windmill-hill.webp": {
+    "mtime": 1793230597.4903927,
+    "seen": 1793234848.5300806,
+    "ast_hash": "fba46143b2fc255b578d28b8a094aed1",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/07-farming-islands-overview.webp": {
+    "mtime": 1793230597.5289698,
+    "seen": 1793234848.5300817,
+    "ast_hash": "ac1b97f059952dfe89eb3015e6ff8735",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/08-farming-sugarcane-mesa.webp": {
+    "mtime": 1793230597.584453,
+    "seen": 1793234848.5300827,
+    "ast_hash": "4275a391c343826571b21169e44830f9",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/09-mining-cave-crystals.webp": {
+    "mtime": 1793230597.6320388,
+    "seen": 1793234848.5300841,
+    "ast_hash": "20a3058f20680655bc750cbd01c63cae",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/10-mining-cave-tunnel.webp": {
+    "mtime": 1793230597.6918795,
+    "seen": 1793234848.5300853,
+    "ast_hash": "121cf7d9237985e2696fa6205aa1104a",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/11-mining-cave-hall-stream.webp": {
+    "mtime": 1793230597.73698,
+    "seen": 1793234848.5300865,
+    "ast_hash": "80795f2bf1b40e344c3fbd3da8cf1780",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/12-woodcutting-island-cleared.webp": {
+    "mtime": 1793230597.7831557,
+    "seen": 1793234848.5300877,
+    "ast_hash": "77187013e96daae83d3d9da3ba393cf3",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/01-M1ZtDbj.jpg": {
+    "mtime": 1793231490.5688522,
+    "seen": 1793234848.5300891,
+    "ast_hash": "5f8f3f7a81dc6031a7f982e91dadb2c6",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/02-eiTEodS.jpg": {
+    "mtime": 1793231490.5760777,
+    "seen": 1793234848.5300903,
+    "ast_hash": "8ed506fdc3d4eb601df43ad5aac61595",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/03-qG1uBul.jpg": {
+    "mtime": 1793231490.5846543,
+    "seen": 1793234848.5300915,
+    "ast_hash": "2667902fe0011abc3779b0d6ace215b6",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/04-eIwsClh.jpg": {
+    "mtime": 1793231490.5921533,
+    "seen": 1793234848.5300927,
+    "ast_hash": "31c09b748ab7e630eaa3c38473a081af",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/05-zKJBqNl.jpg": {
+    "mtime": 1793231490.599735,
+    "seen": 1793234848.5300941,
+    "ast_hash": "4cc941fca45762f9d434f90a908b755f",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/06-0if1rDK.jpg": {
+    "mtime": 1793231490.606841,
+    "seen": 1793234848.5300956,
+    "ast_hash": "7e85388a4c2f5a8ece50cde471ac5950",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/07-ImJGBBm.jpg": {
+    "mtime": 1793231490.6141193,
+    "seen": 1793234848.5300965,
+    "ast_hash": "4a47bccc993f8dd8505d16f393a5c0c7",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/08-SaSuiMu.jpg": {
+    "mtime": 1793231490.6209388,
+    "seen": 1793234848.530098,
+    "ast_hash": "8932a62ac23b131ae2f290ca319517c5",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/09-jAWcoOE.jpg": {
+    "mtime": 1793231490.6305816,
+    "seen": 1793234848.530099,
+    "ast_hash": "c5f916d570a5cbac2e9758e8ab65f2a2",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/10-OqRc2VL.jpg": {
+    "mtime": 1793231490.6370344,
+    "seen": 1793234848.5301,
+    "ast_hash": "6e5134b7bce3bd97123906bb9aee2851",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/11-Ryth8uf.jpg": {
+    "mtime": 1793231490.644306,
+    "seen": 1793234848.5301015,
+    "ast_hash": "d1e07f5c6d92d106fec97559a7766e8b",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/12-9qElemq.jpg": {
+    "mtime": 1793231490.6515696,
+    "seen": 1793234848.5301027,
+    "ast_hash": "b1989af5e1050775578dc7dae292cd25",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/farming/13-qv2Uy8U.jpg": {
+    "mtime": 1793231490.6586852,
+    "seen": 1793234848.530104,
+    "ast_hash": "189d80284cec60a7a928a34230f4f7bb",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/01-zxdYeu5.jpg": {
+    "mtime": 1793231490.9976804,
+    "seen": 1793234848.530105,
+    "ast_hash": "ac46906ae4e4dec463364c84a4e028f3",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/02-4xRnXoh.jpg": {
+    "mtime": 1793231491.0059485,
+    "seen": 1793234848.5301063,
+    "ast_hash": "5131da7b92791f6004ef66541aedad13",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/03-hRFk1Ce.jpg": {
+    "mtime": 1793231491.0134046,
+    "seen": 1793234848.5301075,
+    "ast_hash": "d0ba9f295101824d9fedc6826e46602c",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/04-uZdoel8.jpg": {
+    "mtime": 1793231491.0198958,
+    "seen": 1793234848.5301087,
+    "ast_hash": "20c5e4b981394183a318607a8ed9ec06",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/05-pRalE4k.jpg": {
+    "mtime": 1793231491.026405,
+    "seen": 1793234848.53011,
+    "ast_hash": "bd50b5fe0d4ea1e79f1d73769d27c6bd",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/06-jN2sJut.jpg": {
+    "mtime": 1793231491.0357795,
+    "seen": 1793234848.5301113,
+    "ast_hash": "7e3ec189edf3f5e15f6479ce6b7f6eb5",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/07-1TC9Wbb.jpg": {
+    "mtime": 1793231491.0429134,
+    "seen": 1793234848.5301125,
+    "ast_hash": "af7ab76018752d1fe3e68bb966e55290",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/08-MAdwXMJ.jpg": {
+    "mtime": 1793231491.050023,
+    "seen": 1793234848.5301137,
+    "ast_hash": "1773bb790d466a1a0537417b68ea0d73",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/09-QZX7n1h.jpg": {
+    "mtime": 1793231491.0590825,
+    "seen": 1793234848.5301151,
+    "ast_hash": "217e6eb56db6666a35fa15399a09811e",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/10-4Jfp9LS.jpg": {
+    "mtime": 1793231491.066686,
+    "seen": 1793234848.5301163,
+    "ast_hash": "34733616c9f30bc9d18c782b047d6c43",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/fishing/11-Ef0R8nm.jpg": {
+    "mtime": 1793231491.073313,
+    "seen": 1793234848.5301178,
+    "ast_hash": "debad28d2b27cb54e68bcff927ed5118",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/01-8tyVpRd.jpg": {
+    "mtime": 1793231490.376818,
+    "seen": 1793234848.530119,
+    "ast_hash": "11a08d745fffbabe4fed2c22a8a48e46",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/02-gSJaECN.jpg": {
+    "mtime": 1793231490.3832076,
+    "seen": 1793234848.5301201,
+    "ast_hash": "c93dfc369bf03424ac9b5a6ad0b54d67",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/03-j7x9QAV.jpg": {
+    "mtime": 1793231490.3912325,
+    "seen": 1793234848.5301216,
+    "ast_hash": "be187425f365f59b69bd04bec27f2313",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/04-ls39CXF.jpg": {
+    "mtime": 1793231490.3984816,
+    "seen": 1793234848.5301228,
+    "ast_hash": "0ff650a19e74620bca01d1b39a0c72e9",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/05-e0NaXmY.jpg": {
+    "mtime": 1793231490.406012,
+    "seen": 1793234848.530124,
+    "ast_hash": "4d4df1740637428f4f1f14bf6cc9299a",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/06-TuZTab3.jpg": {
+    "mtime": 1793231490.414394,
+    "seen": 1793234848.5301254,
+    "ast_hash": "7a618c1ff68d3c08541ea246f961cfcb",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/07-UieMf0g.jpg": {
+    "mtime": 1793231490.4218512,
+    "seen": 1793234848.5301266,
+    "ast_hash": "03f6e97db836ea290b5dfc89f3a26a36",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/08-RZTahzc.jpg": {
+    "mtime": 1793231490.4292438,
+    "seen": 1793234848.5301278,
+    "ast_hash": "bbf01c1e2980a68e49c7a9f2aefc4324",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/09-Qi1haUG.jpg": {
+    "mtime": 1793231490.4363754,
+    "seen": 1793234848.5301292,
+    "ast_hash": "564127ac9217b0e30e46107e9c16d734",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/10-e3viwur.jpg": {
+    "mtime": 1793231490.4440415,
+    "seen": 1793234848.5301304,
+    "ast_hash": "65e6d73a46f030e06f4fb9317b7bac7b",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/11-0L7AIoI.jpg": {
+    "mtime": 1793231490.4506404,
+    "seen": 1793234848.5301318,
+    "ast_hash": "136a1386f936b718c372f035c6ea66ca",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/12-aKJMC8d.jpg": {
+    "mtime": 1793231490.458012,
+    "seen": 1793234848.5301328,
+    "ast_hash": "1b9dea55b9243cc58ba9f0d9d99ac1d2",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/13-CXHV7zw.jpg": {
+    "mtime": 1793231490.4652872,
+    "seen": 1793234848.5301447,
+    "ast_hash": "90b9eb2d87abfd47630df0eb56ca20e0",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/14-RLjUK2r.jpg": {
+    "mtime": 1793231490.4733307,
+    "seen": 1793234848.5301461,
+    "ast_hash": "c1ec89b65a08380957dc62d60de75377",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/15-JvmPZlN.jpg": {
+    "mtime": 1793231490.4817815,
+    "seen": 1793234848.5301478,
+    "ast_hash": "a865741cf7a916a54c5b7ebb029e3f0a",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/16-hn7J0NL.jpg": {
+    "mtime": 1793231490.4893594,
+    "seen": 1793234848.5301492,
+    "ast_hash": "56d23b34820b356b188ae9173a07c7c7",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/17-Gxn7na8.jpg": {
+    "mtime": 1793231490.4977598,
+    "seen": 1793234848.5301502,
+    "ast_hash": "8c341f20e29d9b3dad1136b589dda018",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/18-uNxp77e.jpg": {
+    "mtime": 1793231490.5049644,
+    "seen": 1793234848.5301514,
+    "ast_hash": "d882abc4be4eedf3d64b7b3ec4dde017",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/mining/19-ikiWEXV.jpg": {
+    "mtime": 1793231490.5120544,
+    "seen": 1793234848.5301526,
+    "ast_hash": "77d02cb984baa8991fc06f5681dea521",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/01-6CDu4qK.jpg": {
+    "mtime": 1793231490.8191235,
+    "seen": 1793234848.530154,
+    "ast_hash": "b323400393858126905dd35f5ceb1a65",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/02-BPpQJQt.jpg": {
+    "mtime": 1793231490.8271484,
+    "seen": 1793234848.5301552,
+    "ast_hash": "bcc71c9bd05ebf84e5c212ee6a918435",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/03-3ZLQfc7.jpg": {
+    "mtime": 1793231490.8334517,
+    "seen": 1793234848.5301566,
+    "ast_hash": "abad7ed0dd69df247f78a9ff0925c5e6",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/04-ryJhL5k.jpg": {
+    "mtime": 1793231490.8413014,
+    "seen": 1793234848.5301578,
+    "ast_hash": "572f92350ad493fa095e4550e8a77b6a",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/05-ApXzOW7.jpg": {
+    "mtime": 1793231490.8487525,
+    "seen": 1793234848.5301595,
+    "ast_hash": "55986bd33d28c5c0ad10ce5e62d7d9ae",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/06-HpenU8Q.jpg": {
+    "mtime": 1793231490.8562052,
+    "seen": 1793234848.5301604,
+    "ast_hash": "9e5e295f607cf2ae38881752864cb124",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/07-iug0aJf.jpg": {
+    "mtime": 1793231490.8633378,
+    "seen": 1793234848.5301616,
+    "ast_hash": "1cfd1e1a957a6b07776cbe58f93c6b5b",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/08-jwip765.jpg": {
+    "mtime": 1793231490.8702362,
+    "seen": 1793234848.530163,
+    "ast_hash": "ea8b43e841c6d8e086493808db18d023",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/09-r1zcRNQ.jpg": {
+    "mtime": 1793231490.8785574,
+    "seen": 1793234848.530164,
+    "ast_hash": "383557aedac7a6ab6fa1fe198bcd194f",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/10-SII3t0Q.jpg": {
+    "mtime": 1793231490.8864012,
+    "seen": 1793234848.5301652,
+    "ast_hash": "aae8eb9de179c523f42f11f647e8581e",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/11-ONr6i3e.jpg": {
+    "mtime": 1793231490.8933332,
+    "seen": 1793234848.5301666,
+    "ast_hash": "10f76edbed406b62d0ba722a40e7cc62",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/12-lE8IhCY.jpg": {
+    "mtime": 1793231490.9015071,
+    "seen": 1793234848.5301678,
+    "ast_hash": "48031ea827cadccb6b85f39fcf5d42b1",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/13-gKHTCKQ.jpg": {
+    "mtime": 1793231490.9088662,
+    "seen": 1793234848.5301688,
+    "ast_hash": "63a5246abf49675ead57cb6249c2dcd0",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/14-z1FFvqq.jpg": {
+    "mtime": 1793231490.9163313,
+    "seen": 1793234848.5301702,
+    "ast_hash": "d1cc81446afc76cc8392dfbee5f29708",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/15-PBMJrpN.jpg": {
+    "mtime": 1793231490.9235206,
+    "seen": 1793234848.5301712,
+    "ast_hash": "454c97c951d6be9948a27eb55bd4383b",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/16-9DuEGu5.jpg": {
+    "mtime": 1793231490.930793,
+    "seen": 1793234848.5301723,
+    "ast_hash": "42becbfbb839bf7e2d71d81b2acb217d",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/slayer/17-ZLNwbWF.jpg": {
+    "mtime": 1793231490.9384816,
+    "seen": 1793234848.5301738,
+    "ast_hash": "5e7650af9909ffd48d40d1d11980dd26",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/woodcutting/01-IopWRVD.jpg": {
+    "mtime": 1793231490.7181468,
+    "seen": 1793234848.530175,
+    "ast_hash": "08d67eee263dfee4db920590d73e5ebd",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/woodcutting/02-YV7U2Ll.jpg": {
+    "mtime": 1793231490.7264302,
+    "seen": 1793234848.530176,
+    "ast_hash": "5c63bb8cbe3beb922524deb3e355c64c",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/woodcutting/03-Zl06q9M.jpg": {
+    "mtime": 1793231490.734661,
+    "seen": 1793234848.5301774,
+    "ast_hash": "400fa60d16115a4787d64dedb721b874",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/woodcutting/04-ZJ61uDH.jpg": {
+    "mtime": 1793231490.740819,
+    "seen": 1793234848.5301783,
+    "ast_hash": "dc36965ef77815c76a8924b8e89102fa",
+    "semantic_hash": ""
+  },
+  "02 Research/References/Skybounds/woodcutting/05-kHzXfXK.jpg": {
+    "mtime": 1793231490.7480998,
+    "seen": 1793234848.5301795,
+    "ast_hash": "0d8a2a8fe24e06747d37180b30c8311f",
     "semantic_hash": ""
   }
 }

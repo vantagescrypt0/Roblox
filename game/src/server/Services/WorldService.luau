@@ -35,6 +35,7 @@ local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Ambience = require(script.Parent.Parent.Util.Ambience)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local Decor = require(script.Parent.Parent.Util.Decor)
+local Pace = require(script.Parent.Parent.Util.Pace)
 local Portal = require(script.Parent.Parent.Util.Portal)
 local Signs = require(script.Parent.Parent.Util.Signs)
 local Spawning = require(script.Parent.Parent.Util.Spawning)
@@ -148,6 +149,7 @@ local function build(kind: string)
 	Ambience.Apply(builder.Haze, builder.Caves)
 	southZ = builder.SouthZ
 	local started = os.clock()
+	Pace.Begin()
 	local ctx = Context.new(world, decor, builder.Seed, southZ)
 	-- The arrival square stays flat
 	ctx.Flatten(-10, southZ - 2, 10, southZ + 10, true)
@@ -169,11 +171,26 @@ local function build(kind: string)
 	BlockWorld.drawAll(world, true)
 	portalFields()
 	for _, field in fields do
+		Pace.Step()
 		FarmService.ShowCrop(field, field.Crop, 1)
 	end
+	Pace.Finish()
+	local resources: { [string]: number } = {}
+	for _, node in nodes do
+		resources[node.Block] = (resources[node.Block] or 0) + 1
+	end
+	for _, field in fields do
+		resources[field.Crop.Id] = (resources[field.Crop.Id] or 0) + 1
+	end
+	local counts = {}
+	for name, count in resources do
+		table.insert(counts, `{name} {count}`)
+	end
+	table.sort(counts)
 	print(
 		`[World] {kind}: built in {string.format("%.1f", os.clock() - started)}s,`,
-		`{BlockWorld.partCount(world)} block parts, {#decor:GetDescendants()} decor instances`
+		`{BlockWorld.partCount(world)} block parts, {#decor:GetDescendants()} decor instances;`,
+		table.concat(counts, ", ")
 	)
 end
 

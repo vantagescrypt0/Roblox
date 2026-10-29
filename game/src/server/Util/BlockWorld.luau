@@ -17,6 +17,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Pace = require(script.Parent.Pace)
 
 local SIZE = Blocks.Size
 local NEIGHBOURS = {
@@ -55,7 +56,8 @@ local shapesByType: { [string]: { Shape } }? = nil
 local QUARTER_TURN = CFrame.Angles(0, math.pi / 2, 0)
 
 function BlockWorld.key(x: number, y: number, z: number): string
-	return `{x},{y},{z}`
+	-- + 0 turns -0 (from rounding a small negative number) into 0, so it's the same cell
+	return `{x + 0},{y + 0},{z + 0}`
 end
 
 function BlockWorld.unkey(key: string): (number, number, number)
@@ -304,27 +306,27 @@ end
 -- piece first
 local function mergeScenery(world: World)
 	local byType = shapes()
-	type Cell = { X: number, Y: number, Z: number, Key: string, Type: string }
-	local candidates: { Cell } = {}
+	-- Each candidate as one number ordered by y, then z, then x (sorting plain numbers is
+	-- much faster than sorting tables, and the big worlds have hundreds of thousands)
+	local order: { number } = {}
 	for key, blockType in world.Cells do
 		if byType[blockType] and world.Protected[key] then
 			local x, y, z = BlockWorld.unkey(key)
-			table.insert(candidates, { X = x, Y = y, Z = z, Key = key, Type = blockType })
+			table.insert(order, ((y + 1024) * 2048 + (z + 1024)) * 2048 + (x + 1024))
 		end
 	end
-	table.sort(candidates, function(a, b)
-		if a.Y ~= b.Y then
-			return a.Y < b.Y
-		elseif a.Z ~= b.Z then
-			return a.Z < b.Z
-		end
-		return a.X < b.X
-	end)
-	for _, cell in candidates do
-		if not world.Merged[cell.Key] then
-			for _, shape in byType[cell.Type] do
-				if fits(world, shape, cell.X, cell.Y, cell.Z, cell.Type) then
-					placePiece(world, cell.Type, shape, cell.X, cell.Y, cell.Z)
+	table.sort(order)
+	for _, n in order do
+		Pace.Step()
+		local x = n % 2048 - 1024
+		local z = (n // 2048) % 2048 - 1024
+		local y = n // 4194304 - 1024
+		local key = BlockWorld.key(x, y, z)
+		if not world.Merged[key] then
+			local blockType = world.Cells[key] :: string
+			for _, shape in byType[blockType] do
+				if fits(world, shape, x, y, z, blockType) then
+					placePiece(world, blockType, shape, x, y, z)
 					break
 				end
 			end
@@ -370,6 +372,7 @@ function BlockWorld.drawAll(world: World, merge: boolean?)
 		mergeScenery(world)
 	end
 	for key in world.Cells do
+		Pace.Step()
 		local x, y, z = BlockWorld.unkey(key)
 		refresh(world, x, y, z)
 	end
