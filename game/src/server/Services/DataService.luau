@@ -7,8 +7,10 @@
 -- they're offline: they're handed over (OnMessage) once their data is open somewhere.
 
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local Seasons = require(ReplicatedStorage.Shared.Seasons)
 local ProfileStore = require(script.Parent.Parent.Packages.ProfileStore)
 
 local STORE_NAME = if RunService:IsStudio() then "PlayerData_Studio_v1" else "PlayerData_v1"
@@ -27,6 +29,7 @@ local TEMPLATE = {
 	Coins = 0,
 	Level = 1,
 	XP = 0,
+	-- The season this save is on (Seasons.luau; SeasonService resets it for a new one)
 	Season = 1,
 	Island = {
 		Tier = 1,
@@ -104,6 +107,7 @@ local DataService = {}
 
 local store = ProfileStore.New(STORE_NAME, TEMPLATE)
 local profiles: { [Player]: any } = {}
+local loadingCallbacks: { PlayerCallback } = {}
 local loadedCallbacks: { PlayerCallback } = {}
 local changedCallbacks: { PlayerCallback } = {}
 local messageHandlers: { [string]: MessageHandler } = {}
@@ -111,6 +115,12 @@ local pendingChanges: { [Player]: boolean } = {}
 
 local function profileKey(userId: number): string
 	return `Player_{userId}`
+end
+
+-- Runs the callback on each player's data as it loads, before any OnDataLoaded callback
+-- sees it. It mustn't yield.
+function DataService.OnLoading(callback: PlayerCallback)
+	table.insert(loadingCallbacks, callback)
 end
 
 -- Runs the callback for every player whose data is loaded, now and in the future.
@@ -200,10 +210,16 @@ local function onPlayerAdded(player: Player)
 		data.Items.WoodenHoe = (data.Items.WoodenHoe or 0) + 1
 		data.Hotbar[1] = "WheatSeeds"
 		data.Hotbar[2] = "WoodenHoe"
+		-- New players start on the current season (no reset for them)
+		data.Season = Seasons.At(os.time())
 	end
 	if data.Raid.Active then
 		data.Raid.Active = false
 		data.Raid.Bag = {}
+	end
+
+	for _, callback in loadingCallbacks do
+		callback(player, data)
 	end
 
 	profiles[player] = profile

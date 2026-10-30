@@ -40,12 +40,16 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
   - **Level 10 unlocks the Warzone.** The beginner quests get you there. See [[Tutorial & Quests]].
   - **Level 5 unlocks trading** with other players (built 2026-10-25). See [[Economy & Values]].
   - **XP comes from** PvE, grinding (farming, mining, etc.) and quests.
-  - **Seasons:** each lasts 2–4 months, and player level **and every skill level reset to 1** at the start of each season (skills: your call 2026-10-27).
+  - **Seasons:** each lasts 2–4 months, and player level **and every skill level reset to 1** at the start of each season (skills: your call 2026-10-27). **On hold since 2026-10-29:** you're reconsidering resets (see Seasons below).
 - **Pace targets (your answers, 2026-10-27; the rebalance builds to these):** a skill goes 1 → 99 in about **25 hours** of steady play, with level 10 after about **1 hour**; player level 1 → 50 takes about **80 hours** (trading at 5 after ~1 hour, the Warzone at 10 after ~4 hours). Short enough to max skills within a season, since they reset.
 See [[Decision Log]].
 
-## Seasons — to decide
-- **What resets?** Player level and skill levels (decided 2026-10-27). Still open: island, items, coins? [Inference] If islands and items reset too, players lose what they built (Pillar #1 "Your island, your story"). A safer version: your island and items stay.
+## Seasons
+- **On hold (your call, 2026-10-29): you're reconsidering whether to reset at all.** The code is built and tested but switched off: Season 1 has no end date, so nothing resets and the HUD shows no countdown. To switch it on, give a season an end date in `shared/Seasons.luau`; the HUD then counts down ("Season 1 · 92 days left") and the Skills window shows the date.
+- The plan below is what the built code does when it's on.
+- **What resets:** player level, every skill, the skill challenges (counts and milestones) and their rewards: pets, armor sets and trophies, taken from the Bag, the hotbar, what you wear and your island (your call 2026-10-29). **What stays:** your island and everything else on it, the rest of the Bag, coins, the Inbox and the beginner quests.
+- Why the island, Bag and coins stay: you said Skybounds wiped everything but kits, and to do what's best if a full wipe won't suit young players. [Inference] Losing what they built is what makes young players quit, and Roblox's long-running sims keep your stuff (resets there are voluntary rebirths). Revisit with the late-game tiers: a coin wipe needs a way to stop coins being kept as placed blocks.
+- **How:** a save from an earlier season is reset as it loads (before the island is built); players online when a season ends are reset on the spot with a "New Season!" banner. Either way an Inbox letter says what reset and what stayed. New players start on the current season.
 - **Warzone re-locks each season?** If level resets to 1, veterans must hit level 10 again. [Inference] That's fine if it takes them about an hour (catch-up XP boost for returning players?), but frustrating if it takes days.
 - **Rewards for the season:** exclusive cosmetics/titles for reaching level 50 or placing high on the leaderboard, kept forever.
 - [Inference] "Confusing resets" is one reported reason big Roblox sims declined ([[Trends - Oct 2026]]). Show the season end date clearly in-game, and say exactly what resets and what stays.

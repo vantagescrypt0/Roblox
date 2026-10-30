@@ -10,6 +10,11 @@
 --                                                           send yourself a letter (Inbox)
 --   game.ServerStorage.Dev:Invoke("MailByMessage", { ... })  the same, the way it reaches
 --                                                           a player on another server
+--   game.ServerStorage.Dev:Invoke("Count", "Wheat", 500)    count gathered resources (skill challenges)
+--   game.ServerStorage.Dev:Invoke("Season")                 act as if your season just ended
+--                                                           (SeasonService resets you within a second)
+--   game.ServerStorage.Dev:Invoke("Season", "Kick")         the same, but kicked at once, so you're
+--                                                           reset as your save loads when you rejoin
 --   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
 -- Acts on the first player in the server unless "As" picked another (for local tests with
 -- several players). Does nothing in live servers.
@@ -18,6 +23,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 
+local ChallengeService = require(script.Parent.ChallengeService)
 local DataService = require(script.Parent.DataService)
 local InboxService = require(script.Parent.InboxService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -57,6 +63,18 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	-- Send yourself a letter
 	Mail = function(player, _data, mail)
 		print("[Dev] mail sent:", InboxService.Send(player.UserId, mail))
+	end,
+	-- Count resources as gathered, e.g. ("Count", "Wheat", 500) reaches Wheat's pet milestone
+	Count = function(player, _data, resourceId, amount)
+		ChallengeService.Count(player, resourceId, amount)
+	end,
+	-- Put your save back a season, as if the season ended while you're here (or, with
+	-- "Kick", while you were away)
+	Season = function(player, data, kick)
+		data.Season -= 1
+		if kick == "Kick" then
+			player:Kick("Season test: rejoin")
+		end
 	end,
 	-- Send it through your save's messages, as if you were on another server
 	MailByMessage = function(player, _data, mail)

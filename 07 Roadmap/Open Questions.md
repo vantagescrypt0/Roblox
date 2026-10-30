@@ -19,7 +19,9 @@
 - [x] Skybounds Warzone requirement? → level 10 of 50, seasonal reset
 
 ## Seasons
-- [ ] What resets each season: player level and skills do (2026-10-27); island / items / coins?
+- [x] What resets each season? → Player level, skills, skill challenges and their rewards (pets, armor sets, trophies: your call 2026-10-29). Island, Bag and coins stay for now (Claude's call for a young audience; you said Skybounds wiped everything but kits and "we will get to that later")
+- [x] How does a season end? → On a fixed date, with a countdown (2026-10-29)
+- [ ] **Should seasons reset anything at all?** You're reconsidering (2026-10-29); resets are on hold, the code is ready if you want them
 - [ ] Catch-up help so veterans reach level 10 again quickly?
 - [ ] Season rewards that are kept forever (titles, cosmetics)?
 

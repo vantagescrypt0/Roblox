@@ -1,7 +1,8 @@
 --!strict
 -- The always-on HUD: profile card (level badge, XP bar, coins; click it for the Skills
--- window), Warzone status, Bag/Island/Skills/Challenges/Inbox buttons (the Inbox one counts the mail
--- waiting), the raid banner, pop-up messages and big celebrations.
+-- window), the season's countdown (when it has an end date), Warzone status,
+-- Bag/Island/Skills/Challenges/Inbox buttons (the Inbox one counts the mail waiting), the
+-- raid banner, pop-up messages and big celebrations.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9,6 +10,7 @@ local TweenService = game:GetService("TweenService")
 
 local Items = require(ReplicatedStorage.Shared.Items)
 local Places = require(ReplicatedStorage.Shared.Places)
+local Seasons = require(ReplicatedStorage.Shared.Seasons)
 local Theme = require(script.Parent.UI.Theme)
 
 local C = Theme.Color
@@ -29,6 +31,8 @@ local xpBar: Theme.Bar
 local coinsText: TextLabel
 local coinsChip: Frame
 local warzoneChip: TextLabel
+local seasonChip: TextLabel
+local season: number? = nil
 local raidBanner: Frame
 local raidBag: TextLabel
 local toastHolder: Frame
@@ -115,6 +119,20 @@ local function buildProfile(gui: ScreenGui, onSkills: () -> ())
 	warzoneChip.Visible = false
 	warzoneChip.AnchorPoint = Vector2.new(0, 1)
 	warzoneChip.Position = UDim2.fromOffset(0, -10)
+
+	-- The season's countdown, above the card's right end (hidden while it has no end date)
+	seasonChip = Theme.chip(card, "", C.Ochre)
+	seasonChip.Visible = false
+	seasonChip.AnchorPoint = Vector2.new(1, 1)
+	seasonChip.Position = UDim2.new(1, 0, 0, -10)
+end
+
+local function renderSeason()
+	local endsAt = if season then Seasons.EndsAt(season) else nil
+	seasonChip.Visible = endsAt ~= nil
+	if endsAt then
+		seasonChip.Text = `Season {season} · {Seasons.FormatLeft(endsAt - workspace:GetServerTimeNow())} left`
+	end
 end
 
 -- Wooden sign button on the left edge
@@ -286,6 +304,9 @@ function Hud.Render(state: any)
 	end
 	lastCoins = state.Coins
 
+	season = state.Season
+	renderSeason()
+
 	if state.Level >= state.WarzoneLevel then
 		warzoneChip.Text = "Warzone open!"
 	else
@@ -313,6 +334,9 @@ local toastCount = 0
 function Hud.Toast(text: string, kind: string)
 	if kind == "levelup" then
 		Hud.Celebrate("Level Up!", text, C.Gold)
+		return
+	elseif kind == "season" then
+		Hud.Celebrate("New Season!", text, C.Gold)
 		return
 	end
 	toastCount += 1
@@ -389,6 +413,12 @@ function Hud.Start(callbacks: Callbacks)
 	buildRaidBanner(gui)
 	buildToasts(gui)
 	buildCelebration(gui)
+	task.spawn(function()
+		while true do
+			task.wait(1)
+			renderSeason()
+		end
+	end)
 
 	-- Full-screen fade for portal travel
 	local fadeGui = Theme.screen("Fade", 20)

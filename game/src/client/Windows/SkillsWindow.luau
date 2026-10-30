@@ -17,6 +17,7 @@ local ItemOrder = require(ReplicatedStorage.Shared.ItemOrder)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
+local Seasons = require(ReplicatedStorage.Shared.Seasons)
 local Skills = require(ReplicatedStorage.Shared.Skills)
 local ItemIcon = require(script.Parent.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.Parent.UI.Theme)
@@ -307,7 +308,10 @@ local function render()
 	end
 	levelNumber.Text = tostring(state.Level)
 	playerBar.Set(xpText(state.Level, state.XP, state.XPToNext, state.MaxLevel))
-	seasonText.Text = `Season {state.Season} · everything you do gives player XP`
+	local endsAt = Seasons.EndsAt(state.Season)
+	seasonText.Text = if endsAt
+		then `Season {state.Season} ends {DateTime.fromUnixTimestamp(endsAt):FormatLocalTime("MMM D", "en-us")} · everything you do gives player XP`
+		else `Season {state.Season} · everything you do gives player XP`
 
 	for _, skill in Skills.List do
 		local row = rows[skill.Id]
