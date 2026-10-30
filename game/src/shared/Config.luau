@@ -20,7 +20,7 @@ Config.Island = table.freeze({
 -- Empty = icons fall back to live 3D previews. Uploaded 2026-10-26 with the zone items
 -- (gold, pumpkins, melons, the new woods), as the texture of a plane imported with Import 3D
 -- (see art/README.md).
-Config.ItemIconSheet = "rbxassetid://127251953087926"
+Config.ItemIconSheet = "rbxassetid://88555485624105"
 
 -- Who can fly (double-tap Space, see client/FlightController): user ids. Only the game's
 -- owner for now (koiopio).

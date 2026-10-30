@@ -8,7 +8,8 @@
 --
 --   InboxService.Send(userId, { From = "Builder", Text = "Thanks!", Items = { Stone = 8 }, Coins = 50 })
 --
--- Players from before the starter hoe was in the starter kit get theirs by mail, once.
+-- Players from before the starter hoe (or the starter buckets) were in the starter kit get
+-- theirs by mail, once.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -147,6 +148,14 @@ function InboxService.Start()
 				From = "Skyblox",
 				Text = "Crops need a hoe to harvest now, so here's one to start you off. Pumpkins and melons need an axe.",
 				Items = { WoodenHoe = 1 },
+			})
+		end
+		if not data.Flags.StarterBuckets then
+			data.Flags.StarterBuckets = true
+			deliver(player, data, {
+				From = "Skyblox",
+				Text = "Water and lava are here! Pour them on your island. Where they meet, stone forms: mine it and it forms again. Don't touch the lava!",
+				Items = { WaterBucket = 1, LavaBucket = 1 },
 			})
 		end
 	end)

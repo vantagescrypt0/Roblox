@@ -1,4 +1,4 @@
-"""Low-poly 3D item models (tools incl. hoes, crops, seed pouches, ores, loot) and their UI icons.
+"""Low-poly 3D item models (tools incl. hoes, crops, seed pouches, ores, loot, buckets) and their UI icons.
 
 Tools are modelled standing up along +Z (handle at the bottom), then tilted 45 degrees
 so that, seen from the front, the handle is bottom-left and the head top-right. Every
@@ -290,6 +290,36 @@ def glowberry(b):
     b.cylinder(0.025, 0.3, location=(0, 0, 0.88), color="stalk", segments=5)
 
 
+def bucket(b, fill=None, band="iron_dark"):
+    """A tapered iron pail with two bands, a rim and a wire handle arched over the top.
+    fill: None (empty: the dark inside shows), "water" or "lava". Bottomless buckets have
+    gold bands."""
+    b.cylinder(0.36, 0.86, location=(0, 0, 0.47), color="iron", segments=10, radius2=0.48)
+    for z, r in ((0.2, 0.4), (0.68, 0.46)):
+        b.cylinder(r + 0.025, 0.08, location=(0, 0, z), color=band, segments=10)
+    b.cylinder(0.51, 0.06, location=(0, 0, 0.9), color=band, segments=10)
+    top = {None: "metal_dark", "water": "blue", "lava": "carrot"}[fill]
+    b.cylinder(0.44, 0.03, location=(0, 0, 0.92), color=top, segments=10)
+    if fill == "water":
+        b.cylinder(0.12, 0.03, location=(-0.16, 0.1, 0.935), color="berry", segments=6)
+    elif fill == "lava":
+        b.blob(0.1, location=(0.12, -0.08, 0.93), color="glow", squash=(1, 1, 0.4), jitter=0.05)
+        b.blob(0.07, location=(-0.18, 0.12, 0.93), color="glow", squash=(1, 1, 0.4), jitter=0.05)
+    # Lugs on the rim, and the handle arched between them
+    for x in (-0.5, 0.5):
+        b.box((0.08, 0.12, 0.14), location=(x, 0, 0.88), color=band)
+    steps = 8
+    points = [(math.cos(math.pi * i / steps) * 0.5, 0.9 + math.sin(math.pi * i / steps) * 0.42) for i in range(steps + 1)]
+    for (x1, z1), (x2, z2) in zip(points, points[1:]):
+        dx, dz = x2 - x1, z2 - z1
+        b.box(
+            (math.hypot(dx, dz) + 0.02, 0.05, 0.05),
+            location=((x1 + x2) / 2, 0, (z1 + z2) / 2),
+            rotation=(0, math.degrees(math.atan2(-dz, dx)), 0),
+            color="metal",
+        )
+
+
 # name -> (build function, tilted like a tool?)
 ITEMS = {}
 for tier_name, tier in TIERS.items():
@@ -318,6 +348,11 @@ ITEMS.update(
         "MelonSeeds": (lambda b: seed_pouch(b, "melon"), False),
         "Pumpkin": (pumpkin, False),
         "Melon": (melon, False),
+        "Bucket": (bucket, False),
+        "WaterBucket": (lambda b: bucket(b, "water"), False),
+        "LavaBucket": (lambda b: bucket(b, "lava"), False),
+        "BottomlessWaterBucket": (lambda b: bucket(b, "water", "gold"), False),
+        "BottomlessLavaBucket": (lambda b: bucket(b, "lava", "gold"), False),
     }
 )
 # Block items show their block, rendered from art/blend/Blocks.blend

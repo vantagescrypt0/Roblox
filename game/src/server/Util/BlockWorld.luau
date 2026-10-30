@@ -12,6 +12,9 @@
 -- quarter turn, so "Stone_8x1x4" also fills 4x1x8. Changing a cell inside a piece breaks
 -- the piece back into single blocks.
 --
+-- Water and lava (Liquids.luau) are drawn at their height on the cell's floor, and a pool
+-- only draws its outside: a liquid hides the faces of the same liquid next to it.
+--
 -- Grid coordinates are integers; (0, 0, 0) is the block whose center is `Origin`.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -41,6 +44,8 @@ export type World = {
 	-- Empty cells that count as solid rock: the hollow inside of a world's islands, which
 	-- nobody can see into, so it isn't stored block by block
 	Inner: ((x: number, y: number, z: number) -> boolean)?,
+	-- Called after `set` changes a cell (islands use it to make water and lava flow)
+	Changed: ((x: number, y: number, z: number) -> ())?,
 }
 
 -- A merged piece and its cells. Part is nil for a piece buried where nobody can see it.
@@ -123,9 +128,24 @@ local function solidAt(world: World, x: number, y: number, z: number): boolean
 end
 
 local function exposed(world: World, x: number, y: number, z: number): boolean
+	-- The cell's own liquid, looked up only once a neighbour lets light in (false: none)
+	local liquid: (string | false)? = nil
 	for _, offset in NEIGHBOURS do
-		if not solidAt(world, x + offset.X, y + offset.Y, z + offset.Z) then
-			return true
+		local nx, ny, nz = x + offset.X, y + offset.Y, z + offset.Z
+		if not solidAt(world, nx, ny, nz) then
+			if liquid == nil then
+				local own = world.Cells[BlockWorld.key(x, y, z)]
+				local def = own and Blocks.Types[own]
+				liquid = def and def.Liquid or false
+			end
+			if not liquid then
+				return true
+			end
+			local other = world.Cells[BlockWorld.key(nx, ny, nz)]
+			local otherDef = other and Blocks.Types[other]
+			if not otherDef or otherDef.Liquid ~= liquid then
+				return true
+			end
 		end
 	end
 	return false
@@ -154,7 +174,13 @@ local function makePart(world: World, blockType: string, x: number, y: number, z
 	end
 	part.Name = blockType
 	part.Anchored = true
-	part.CFrame = CFrame.new(BlockWorld.position(world, x, y, z)) * (rotation :: CFrame)
+	local position = BlockWorld.position(world, x, y, z)
+	local height = Blocks.Types[blockType] and Blocks.Types[blockType].Height
+	if height then
+		-- Shorter than a block (water, lava): stand it on the cell's floor
+		position -= Vector3.new(0, SIZE * (1 - height) / 2, 0)
+	end
+	part.CFrame = CFrame.new(position) * (rotation :: CFrame)
 	part:SetAttribute("X", x)
 	part:SetAttribute("Y", y)
 	part:SetAttribute("Z", z)
@@ -363,6 +389,10 @@ function BlockWorld.set(world: World, x: number, y: number, z: number, blockType
 	refresh(world, x, y, z)
 	for _, offset in NEIGHBOURS do
 		refresh(world, x + offset.X, y + offset.Y, z + offset.Z)
+	end
+	local changed = world.Changed
+	if changed then
+		changed(x, y, z)
 	end
 end
 

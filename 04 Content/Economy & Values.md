@@ -21,11 +21,21 @@ What everything is worth, so trading between players has a fair reference. The n
 | Bricks, Glass | 4 | – | Builder 6 |
 | Dark Planks | 2 | – | Builder 4 |
 | Red / Slate Roof Tiles | 3 | – | Builder 5 |
+| Gravel, Sand, Dirt Path, Coarse Dirt | 2 | – | Builder 3 |
+| Snow, Barn Planks, Thatch | 2 | – | Builder 4 |
+| Flowery Grass, Snowy Grass, Sandstone, Terracotta, Red Terracotta, Mossy Cobblestone, Hay Bale, Mushroom Cap / Stem | 3 | – | Builder 5 |
+| Ice, Mossy / Cracked Stone Bricks, Crate, Barrel | 4 | – | Builder 6 |
+| Bookshelf | 6 | – | Builder 10 |
+| Water Bucket (pours a water source; leaves a Bucket) | 20 | – | Builder 20 |
+| Lava Bucket (pours a lava source; leaves a Bucket) | 50 | – | Builder 50 |
+| Bucket (empty; scoops a source back up) | 10 | – | – |
+| Bottomless Water Bucket (never empties) | 2,500,000 | – | Builder 2,500,000 |
+| Bottomless Lava Bucket (never empties) | 5,000,000 | – | Builder 5,000,000 |
 | Wood | 2 | Lumberjack 1 | – |
 | Birch Wood (Birch Grove, Woodcutting 10) | 12 | Lumberjack 6 | – |
 | Spruce Wood (Snowy Pines, Woodcutting 20) | 28 | Lumberjack 14 | – |
 | Cherry Wood (Cherry Hills, Woodcutting 30) | 54 | Lumberjack 27 | – |
-| Stone | 2 | Miner 1 | – |
+| Stone | 2 | Miner 1 | Builder 4 (or free from a stone generator: lava + water) |
 | Planks (1 Wood → 4) | 1 | – | – |
 | Sticks (2 Planks → 4) | 1 | – | – |
 | Coal | 2 | Miner 1 | Miner 3 |

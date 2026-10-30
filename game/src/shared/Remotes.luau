@@ -24,6 +24,7 @@ local NAMES = {
 	"Till", -- client -> server: hoe the grass or dirt block at grid x, y, z into farmland
 	"PlantSapling", -- client -> server: plant a sapling on the grass or dirt block at grid x, y, z
 	"Uproot", -- client -> server: dig up the growing sapling at grid x, y, z
+	"Scoop", -- client -> server: scoop up the water or lava source at grid x, y, z with the empty Bucket you hold
 	"TradeRequest", -- client -> server: ask another player in Town to trade (player)
 	"TradeInvite", -- server -> client: a player wants to trade with you (player), or nil to withdraw
 	"TradeRespond", -- client -> server: answer an invite (player, accepted)
@@ -69,6 +70,7 @@ return {
 	Till = folder:WaitForChild("Till") :: RemoteEvent,
 	PlantSapling = folder:WaitForChild("PlantSapling") :: RemoteEvent,
 	Uproot = folder:WaitForChild("Uproot") :: RemoteEvent,
+	Scoop = folder:WaitForChild("Scoop") :: RemoteEvent,
 	TradeRequest = folder:WaitForChild("TradeRequest") :: RemoteEvent,
 	TradeInvite = folder:WaitForChild("TradeInvite") :: RemoteEvent,
 	TradeRespond = folder:WaitForChild("TradeRespond") :: RemoteEvent,

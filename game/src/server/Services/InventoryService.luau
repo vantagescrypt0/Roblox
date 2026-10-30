@@ -72,6 +72,35 @@ function InventoryService.Remove(player: Player, itemId: string, amount: number)
 	return true
 end
 
+-- Swaps one `from` for one `to` (a bucket filling or emptying). If that was the last `from`,
+-- `to` takes its hotbar slot, so it stays in your hand. Returns whether it worked.
+function InventoryService.Swap(player: Player, from: string, to: string): boolean
+	local data = DataService.GetData(player)
+	assert(Items[to], `Unknown item {to}`)
+	local have = if data then data.Items[from] or 0 else 0
+	if not data or have < 1 then
+		return false
+	end
+	data.Items[from] = have - 1
+	local before = data.Items[to] or 0
+	data.Items[to] = before + 1
+	if have == 1 then
+		local onHotbar = table.find(data.Hotbar, to) ~= nil
+		for slot = 1, HOTBAR_SIZE do
+			if data.Hotbar[slot] == from then
+				data.Hotbar[slot] = if onHotbar then "" else to
+				onHotbar = true
+			end
+		end
+		clearIfEmpty(data, from)
+	end
+	if before == 0 then
+		autoHotbar(data, to)
+	end
+	DataService.MarkChanged(player)
+	return true
+end
+
 -- Removes several items at once, all or nothing. Returns whether it worked.
 function InventoryService.RemoveMany(player: Player, cost: { [string]: number }): boolean
 	local data = DataService.GetData(player)

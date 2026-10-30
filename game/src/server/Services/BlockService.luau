@@ -14,6 +14,9 @@
 -- Mining natural stone and ore trains Mining, chopping natural trees trains Woodcutting,
 -- and those skills give a growing chance of a double drop. Blocks you placed give no XP
 -- and no bonus, so placing and re-mining can't farm XP or copy items.
+-- Buckets pour water and lava the way blocks are placed (LiquidService makes them flow), and
+-- a block can be placed into flowing liquid or over a source. An empty Bucket scoops a
+-- source back up.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -22,6 +25,7 @@ local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Gathering = require(ReplicatedStorage.Shared.Gathering)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
+local Liquids = require(ReplicatedStorage.Shared.Liquids)
 local Mining = require(ReplicatedStorage.Shared.Mining)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
@@ -222,7 +226,14 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	end
 	local world = island.World
 	local cellKey = BlockWorld.key(cx, cy, cz)
-	if world.Cells[cellKey] or world.Protected[cellKey] or IslandService.GetNode(player, cx, cy, cz) then
+	-- Blocks go into empty cells or liquid; a bucket pours into an empty cell or a flow
+	local occupant = world.Cells[cellKey]
+	local liquid = occupant and Liquids.ByBlock[occupant]
+	local pouring = Liquids.ByBlock[item.Block] ~= nil
+	if occupant and not (liquid and not (pouring and liquid.Source)) then
+		return
+	end
+	if world.Protected[cellKey] or IslandService.GetNode(player, cx, cy, cz) then
 		return
 	end
 	local limit = 13 + EXTRA_RADIUS
@@ -236,10 +247,20 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	if now - (lastPlace[player] or 0) < PLACE_COOLDOWN then
 		return
 	end
-	if BlockWorld.occupied(world, cx, cy, cz) then
+	if not pouring and BlockWorld.occupied(world, cx, cy, cz) then
 		return
 	end
-	if not InventoryService.Remove(player, itemId, 1) then
+	if item.Keep then
+		-- A Bottomless bucket: you need one, but it's never used up
+		if InventoryService.Count(player, itemId) < 1 then
+			return
+		end
+	elseif item.Empties then
+		-- A full bucket leaves an empty one in your hand
+		if not InventoryService.Swap(player, itemId, item.Empties) then
+			return
+		end
+	elseif not InventoryService.Remove(player, itemId, 1) then
 		return
 	end
 	lastPlace[player] = now
@@ -251,7 +272,37 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 		BlockWorld.set(world, cx, cy, cz, item.Block)
 		IslandService.RecordChange(player, cx, cy, cz, item.Block)
 	end
-	QuestService.Record(player, "Place")
+	if not pouring then
+		QuestService.Record(player, "Place")
+	end
+end
+
+-- Scooping a water or lava source on your island back into the empty Bucket you hold
+local function onScoop(player: Player, x: unknown, y: unknown, z: unknown)
+	if not isCell(x, y, z) then
+		return
+	end
+	local cx, cy, cz = x :: number, y :: number, z :: number
+	local island = IslandService.GetIsland(player)
+	if not island or HotbarService.GetHeldItem(player) ~= "Bucket" then
+		return
+	end
+	local world = island.World
+	local blockType = BlockWorld.get(world, cx, cy, cz)
+	local liquid = blockType and Liquids.ByBlock[blockType]
+	if not liquid or not liquid.Source or not inReach(player, world, cx, cy, cz) then
+		return
+	end
+	local now = os.clock()
+	if now - (lastPlace[player] or 0) < PLACE_COOLDOWN then
+		return
+	end
+	if not InventoryService.Swap(player, "Bucket", liquid.Kind.Bucket) then
+		return
+	end
+	lastPlace[player] = now
+	BlockWorld.set(world, cx, cy, cz, nil)
+	IslandService.RecordChange(player, cx, cy, cz, nil)
 end
 
 -- Starts breaking and placing on islands. A resource world passes `worldArea` instead:
@@ -262,6 +313,7 @@ function BlockService.Start(worldArea: ((Player) -> Area?)?)
 		areaFor = worldArea
 	else
 		Remotes.PlaceBlock.OnServerEvent:Connect(onPlace)
+		Remotes.Scoop.OnServerEvent:Connect(onScoop)
 	end
 	Players.PlayerRemoving:Connect(function(player)
 		lastBreak[player] = nil

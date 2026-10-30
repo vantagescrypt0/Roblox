@@ -64,6 +64,8 @@ local TEMPLATE = {
 		StarterKit = false,
 		-- The starter hoe: in the starter kit, or mailed once to players from before it was
 		StarterHoe = false,
+		-- A Water Bucket and a Lava Bucket: the same, for players from before them
+		StarterBuckets = false,
 	},
 	-- Mail waiting to be claimed, oldest first (InboxService). Count is how many letters
 	-- the player has ever had (each letter's id).
@@ -206,8 +208,11 @@ local function onPlayerAdded(player: Player)
 	if not data.Flags.StarterKit then
 		data.Flags.StarterKit = true
 		data.Flags.StarterHoe = true
+		data.Flags.StarterBuckets = true
 		data.Items.WheatSeeds = (data.Items.WheatSeeds or 0) + 6
 		data.Items.WoodenHoe = (data.Items.WoodenHoe or 0) + 1
+		data.Items.WaterBucket = (data.Items.WaterBucket or 0) + 1
+		data.Items.LavaBucket = (data.Items.LavaBucket or 0) + 1
 		data.Hotbar[1] = "WheatSeeds"
 		data.Hotbar[2] = "WoodenHoe"
 		-- New players start on the current season (no reset for them)

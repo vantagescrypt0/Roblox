@@ -23,7 +23,9 @@ export type Item = {
 	Value: number?, -- fair trade value in coins (nil = worked out from its recipe)
 	SellPrice: number, -- coins per item at the market; 0 = can't sell
 	BuyPrice: number?, -- coins to buy one at the market; nil = not for sale
-	Block: string?, -- block type this item places
+	Block: string?, -- block type this item places (a bucket pours its liquid)
+	Empties: string?, -- placing it leaves this item instead (a full bucket leaves a Bucket)
+	Keep: boolean?, -- placing it doesn't use it up (the Bottomless buckets)
 	Node: boolean?, -- placed as a node: its block grows back after it's mined (islands only)
 	Equip: string?, -- "Pet" or "Armor": worn from the Bag (Gear.luau), never put on the hotbar
 	Model: string?, -- 3D model in ReplicatedStorage.ItemModels (icons and holding)
@@ -39,7 +41,7 @@ local Items: { [string]: Item } = {
 	SpruceWood = { Name = "Spruce Wood", Icon = "🪵", Value = 28, SellPrice = 14, Block = "SpruceWood" },
 	CherryWood = { Name = "Cherry Wood", Icon = "🌸", Value = 54, SellPrice = 27, Block = "CherryWood" },
 	Planks = { Name = "Planks", Icon = "🟧", SellPrice = 0, Block = "Planks" },
-	Stone = { Name = "Stone", Icon = "⛰️", Value = 2, SellPrice = 1, Block = "Stone" },
+	Stone = { Name = "Stone", Icon = "⛰️", Value = 2, SellPrice = 1, BuyPrice = 4, Block = "Stone" },
 	Furnace = { Name = "Furnace", Icon = "🔥", SellPrice = 0, Block = "Furnace" },
 	-- Building blocks from the Builder in Town
 	Cobblestone = {
@@ -73,6 +75,123 @@ local Items: { [string]: Item } = {
 		SellPrice = 0,
 		BuyPrice = 5,
 		Block = "RoofSlate",
+	},
+	-- More from the Builder: every block you see around Town and the worlds
+	Gravel = { Name = "Gravel", Icon = "🪨", Value = 2, SellPrice = 0, BuyPrice = 3, Block = "Gravel" },
+	Sand = { Name = "Sand", Icon = "🟨", Value = 2, SellPrice = 0, BuyPrice = 3, Block = "Sand" },
+	Path = { Name = "Dirt Path", Icon = "🟫", Value = 2, SellPrice = 0, BuyPrice = 3, Block = "Path" },
+	CoarseDirt = { Name = "Coarse Dirt", Icon = "🟫", Value = 2, SellPrice = 0, BuyPrice = 3, Block = "CoarseDirt" },
+	FlowerGrass = {
+		Name = "Flowery Grass",
+		Icon = "🌼",
+		Value = 3,
+		SellPrice = 0,
+		BuyPrice = 5,
+		Block = "FlowerGrass",
+	},
+	SnowyGrass = { Name = "Snowy Grass", Icon = "⬜", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "SnowyGrass" },
+	Snow = { Name = "Snow", Icon = "⬜", Value = 2, SellPrice = 0, BuyPrice = 4, Block = "Snow" },
+	Ice = { Name = "Ice", Icon = "🧊", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "Ice" },
+	Sandstone = { Name = "Sandstone", Icon = "🟨", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "Sandstone" },
+	Terracotta = { Name = "Terracotta", Icon = "🟧", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "Terracotta" },
+	RedTerracotta = {
+		Name = "Red Terracotta",
+		Icon = "🟥",
+		Value = 3,
+		SellPrice = 0,
+		BuyPrice = 5,
+		Block = "RedTerracotta",
+	},
+	MossyCobblestone = {
+		Name = "Mossy Cobblestone",
+		Icon = "🪨",
+		Value = 3,
+		SellPrice = 0,
+		BuyPrice = 5,
+		Block = "MossyCobblestone",
+	},
+	MossyStoneBricks = {
+		Name = "Mossy Stone Bricks",
+		Icon = "🧱",
+		Value = 4,
+		SellPrice = 0,
+		BuyPrice = 6,
+		Block = "MossyStoneBricks",
+	},
+	CrackedStoneBricks = {
+		Name = "Cracked Stone Bricks",
+		Icon = "🧱",
+		Value = 4,
+		SellPrice = 0,
+		BuyPrice = 6,
+		Block = "CrackedStoneBricks",
+	},
+	BarnPlanks = { Name = "Barn Planks", Icon = "🟥", Value = 2, SellPrice = 0, BuyPrice = 4, Block = "BarnPlanks" },
+	Thatch = { Name = "Thatch", Icon = "🟨", Value = 2, SellPrice = 0, BuyPrice = 4, Block = "Thatch" },
+	HayBale = { Name = "Hay Bale", Icon = "🌾", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "HayBale" },
+	Crate = { Name = "Crate", Icon = "📦", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "Crate" },
+	Barrel = { Name = "Barrel", Icon = "🛢️", Value = 4, SellPrice = 0, BuyPrice = 6, Block = "Barrel" },
+	Bookshelf = { Name = "Bookshelf", Icon = "📚", Value = 6, SellPrice = 0, BuyPrice = 10, Block = "Bookshelf" },
+	MushroomCap = {
+		Name = "Mushroom Cap",
+		Icon = "🍄",
+		Value = 3,
+		SellPrice = 0,
+		BuyPrice = 5,
+		Block = "MushroomCap",
+	},
+	MushroomStem = {
+		Name = "Mushroom Stem",
+		Icon = "⬜",
+		Value = 3,
+		SellPrice = 0,
+		BuyPrice = 5,
+		Block = "MushroomStem",
+	},
+
+	-- Water and lava (Liquids.luau). Pour a full bucket on your island and it leaves an empty
+	-- Bucket; hold the empty Bucket and right-click a source to scoop it back up. The
+	-- Bottomless buckets never run dry.
+	Bucket = { Name = "Bucket", Icon = "🪣", Value = 10, SellPrice = 0, Model = "Bucket" },
+	WaterBucket = {
+		Name = "Water Bucket",
+		Icon = "💧",
+		Value = 20,
+		SellPrice = 0,
+		BuyPrice = 20,
+		Block = "Water",
+		Empties = "Bucket",
+		Model = "WaterBucket",
+	},
+	LavaBucket = {
+		Name = "Lava Bucket",
+		Icon = "🔥",
+		Value = 50,
+		SellPrice = 0,
+		BuyPrice = 50,
+		Block = "Lava",
+		Empties = "Bucket",
+		Model = "LavaBucket",
+	},
+	BottomlessWaterBucket = {
+		Name = "Bottomless Water Bucket",
+		Icon = "💧",
+		Value = 2500000,
+		SellPrice = 0,
+		BuyPrice = 2500000,
+		Block = "Water",
+		Keep = true,
+		Model = "BottomlessWaterBucket",
+	},
+	BottomlessLavaBucket = {
+		Name = "Bottomless Lava Bucket",
+		Icon = "🔥",
+		Value = 5000000,
+		SellPrice = 0,
+		BuyPrice = 5000000,
+		Block = "Lava",
+		Keep = true,
+		Model = "BottomlessLavaBucket",
 	},
 
 	-- Crafting materials

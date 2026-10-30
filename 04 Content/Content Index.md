@@ -20,6 +20,8 @@ One note per item, resource, mob, island type or event. Use the templates in `99
 
 ## Items
 - Blocks: Grass, Dirt, Wood, Planks, Stone, Furnace (8 Stone, placeable station); Cobblestone, Red Wool, White Wool (from the Builder)
+- Builder blocks (2026-10-29): every block seen round Town and the worlds is for sale too: Gravel, Sand, Dirt Path, Coarse Dirt, Flowery Grass, Snowy Grass, Snow, Ice, Sandstone, Terracotta, Red Terracotta, Mossy Cobblestone, Mossy / Cracked Stone Bricks, Barn Planks, Thatch, Hay Bale, Crate, Barrel, Bookshelf, Mushroom Cap, Mushroom Stem (they drop themselves when broken)
+- Water and lava (2026-10-29, `Liquids.luau`, `LiquidService`): Water Bucket, Lava Bucket, Bucket (empty), Bottomless Water Bucket, Bottomless Lava Bucket. Sources flow like Minecraft (water 7 blocks, lava 3 and slower); where they'd touch, stone forms (a stone generator); lava burns
 - Ores: Coal Ore (any pickaxe, drops Coal), Iron Ore (Stone pickaxe or better, drops Raw Iron)
 - Materials: Sticks (2 Planks -> 4), Coal, Raw Iron, Iron Ingot (smelt 1 Raw Iron + 1 Coal in a Furnace)
 - Crops: Wheat (Farming 1), Carrot (5), Potato (10), Pumpkin (15), Melon (25), Glowberry (8, Warzone seeds only)
@@ -31,7 +33,7 @@ One note per item, resource, mob, island type or event. Use the templates in `99
 - Merchant: an original travelling trader (newsboy cap, bushy mustache, green vest, red scarf, big backpack with a bedroll and lantern); buys crops, sells seeds. Replaced the earlier villager-style design (too close to Minecraft)
 - Lumberjack: red plaid shirt, suspenders, green beanie, big beard, axe on his back; buys wood, sells saplings
 - Miner: yellow hard hat with a headlamp, grey beard, overalls, pickaxe on his back; buys stone and ore, sells coal
-- Builder: white shirt, blue overalls, red bandana, tool belt with a hammer; sells building blocks
+- Builder: white shirt, blue overalls, red bandana, tool belt with a hammer; sells every block, water and lava buckets and the Bottomless buckets
 
 ## Resources
 **Nodes** grow back in the same spot, and you can't build there: ores and crops (and later PvE spawners). See [[Economy & Values]].
