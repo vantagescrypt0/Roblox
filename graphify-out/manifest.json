@@ -390,10 +390,10 @@
     "semantic_hash": ""
   },
   "03 Design/Warzone.md": {
-    "mtime": 1792119878.6017945,
-    "seen": 1792857775.2393706,
-    "ast_hash": "95a4afb99cfc6895ddd9b8794fcee136",
-    "semantic_hash": "95a4afb99cfc6895ddd9b8794fcee136"
+    "mtime": 1793333369.252559,
+    "seen": 1793333983.5808353,
+    "ast_hash": "e083f8c8f0b9486f43c8157286724d48",
+    "semantic_hash": ""
   },
   "04 Content/Content Index.md": {
     "mtime": 1793331660.9885335,
@@ -420,9 +420,9 @@
     "semantic_hash": "a2bae3de7a2250cf4ff14767c54293da"
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1793331668.413646,
-    "seen": 1793331681.138249,
-    "ast_hash": "6ede5749475402331fde24dd377b318a",
+    "mtime": 1793333369.2535644,
+    "seen": 1793333983.580852,
+    "ast_hash": "18435f7de9150e9eb17ca9ca30668cbd",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1793329965.30505,
-    "seen": 1793331681.1381617,
-    "ast_hash": "de2a6d8a25d8b768900f928925c9c6b5",
+    "mtime": 1793332089.3745017,
+    "seen": 1793333983.5807884,
+    "ast_hash": "8920177859e941cb7ba48d475128344d",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -1299,6 +1299,18 @@
     "mtime": 1793330312.8691814,
     "seen": 1793331681.1381056,
     "ast_hash": "96f6db28397d34547fc387f1846e3466",
+    "semantic_hash": ""
+  },
+  "02 Research/UI Study.md": {
+    "mtime": 1793333927.0474787,
+    "seen": 1793333983.580815,
+    "ast_hash": "afa18375ed0214194d3e606aa48cc435",
+    "semantic_hash": ""
+  },
+  "07 Roadmap/Late-game Proposal.md": {
+    "mtime": 1793333369.252559,
+    "seen": 1793333983.5808542,
+    "ast_hash": "2535973e1105ae9114f0a241f25a1bae",
     "semantic_hash": ""
   }
 }

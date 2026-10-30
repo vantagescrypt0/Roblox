@@ -28,6 +28,12 @@ Greybox arena, one shared map. These are **prototype defaults Claude picked**; c
 | Farm | Gated by Farming level; Warzone-only crops/seeds? |
 | Find chests | Spawn points, respawn timer, rarity tiers — TBD |
 
+## Skydrops (your idea, 2026-10-29; not built)
+- On top of the regular chests that spawn round the Warzone, **Skydrops** fall from the sky: chests with better loot (ore nodes among it, see [[Late-game Proposal]]).
+- **Regular Skydrops** fall every 10 minutes and everyone gets a **marker** showing where. **Legendary Skydrops** fall at a random time every 4–8 hours, with **no marker**: you have to find it.
+- A **Skydrop token** calls one down. Tokens are earned in game, bought with coins, or bought with Robux. A Skydrop is up for grabs, so anyone can take it: calling one is a flex and a chance if you're strategic, not a guaranteed prize.
+- [Inference] Before Robux tokens ship: Roblox treats paid random items as loot boxes (show the odds; some countries restrict them). Check the rules then, with our [[Monetization Principles]].
+
 ## PvP fairness — [Inference], to discuss
 High-level players can kill new players and take their loot. That's part of the fun, but it can drive young players away. Options:
 - **Zones by level:** an outer ring that's safer and low-tier, and a center that's dangerous and high-tier.
