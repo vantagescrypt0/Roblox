@@ -42,7 +42,7 @@ local function clean(mail: any): Mail
 		end
 	end
 	return {
-		From = string.sub(tostring(mail.From or "Skyblox"), 1, 40),
+		From = string.sub(tostring(mail.From or "Skycore"), 1, 40),
 		Text = string.sub(tostring(mail.Text or ""), 1, 200),
 		Items = items,
 		Coins = if type(mail.Coins) == "number" then math.max(0, math.floor(mail.Coins)) else 0,
@@ -145,7 +145,7 @@ function InboxService.Start()
 		if not data.Flags.StarterHoe then
 			data.Flags.StarterHoe = true
 			deliver(player, data, {
-				From = "Skyblox",
+				From = "Skycore",
 				Text = "Crops need a hoe to harvest now, so here's one to start you off. Pumpkins and melons need an axe.",
 				Items = { WoodenHoe = 1 },
 			})
@@ -153,7 +153,7 @@ function InboxService.Start()
 		if not data.Flags.StarterBuckets then
 			data.Flags.StarterBuckets = true
 			deliver(player, data, {
-				From = "Skyblox",
+				From = "Skycore",
 				Text = "Water and lava are here! Pour them on your island. Where they meet, stone forms: mine it and it forms again. Don't touch the lava!",
 				Items = { WaterBucket = 1, LavaBucket = 1 },
 			})

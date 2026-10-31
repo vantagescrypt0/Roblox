@@ -15,8 +15,7 @@
 --   click / tap the crafting table or a shopkeeper in Town -> open crafting / their shop
 --   right click / tap a furnace -> smelting (left click breaks it, so you can move it)
 --   water and lava: you aim straight through them (so blocks go into them and behind
---     them); holding a full bucket, right click pours it; holding an empty Bucket, you aim
---     at them, and right clicking a source scoops it up
+--     them); holding a full bucket, right click pours it (it can't be scooped back up)
 -- The server double-checks everything.
 
 local Debris = game:GetService("Debris")
@@ -34,6 +33,7 @@ local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Hotbar)
+local Sfx = require(script.Parent.UI.Sfx)
 
 local player = Players.LocalPlayer :: Player
 
@@ -59,8 +59,6 @@ local SLASH_ANIMATION = {
 	[Enum.HumanoidRigType.R15] = "rbxassetid://522635514",
 	[Enum.HumanoidRigType.R6] = "rbxassetid://129967478",
 }
--- Liquid sources an empty Bucket can scoop up
-local SOURCES = { Water = true, Lava = true }
 local DEBRIS_COLORS: { [string]: Color3 } = {
 	Grass = Color3.fromRGB(95, 159, 53),
 	Dirt = Color3.fromRGB(134, 96, 67),
@@ -164,11 +162,10 @@ local function aim(): Target?
 	params.FilterType = Enum.RaycastFilterType.Include
 	params.FilterDescendantsInstances = { area }
 	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 120, params)
-	-- Look through water and lava, unless an empty Bucket is out to scoop them
-	local throughLiquid = Hotbar.SelectedItem() ~= "Bucket"
+	-- Look through water and lava
 	for _ = 1, 8 do
 		local def = hit and Blocks.Types[hit.Instance.Name]
-		if not hit or not throughLiquid or not def or not def.Liquid then
+		if not hit or not def or not def.Liquid then
 			break
 		end
 		hit = Workspace:Raycast(hit.Position + ray.Direction * 0.05, ray.Direction * 120, params)
@@ -278,6 +275,8 @@ local function place()
 		return
 	end
 	Remotes.PlaceBlock:FireServer(current.PX, current.PY, current.PZ, itemId)
+	local sound = if item.Block == "Water" then "Pour" elseif item.Block == "Lava" then "Sizzle" else "Place"
+	Sfx.play(sound, current.Part.Position)
 end
 
 -- Right-clicking a block on your island with something that works on it: a hoe tills
@@ -290,13 +289,15 @@ local function useHeld(current: Target): boolean
 	local tool = itemId and Tools.ByItem[itemId]
 	local name = current.Part.Name
 	local remote: RemoteEvent? = nil
+	local sound = ""
 	if (name == "Grass" or name == "Dirt") and tool and tool.Kind == "Hoe" then
-		remote = Remotes.Till
+		remote, sound = Remotes.Till, "DirtHit"
 	elseif (name == "Grass" or name == "Dirt") and itemId == "Sapling" then
-		remote = Remotes.PlantSapling
+		remote, sound = Remotes.PlantSapling, "Leaves"
 	end
 	if remote then
 		remote:FireServer(current.X, current.Y, current.Z)
+		Sfx.play(sound, current.Part.Position)
 		return true
 	end
 	return false
@@ -309,6 +310,7 @@ local function interact(secondary: boolean): boolean
 	local current = target
 	if current and current.Part.Name == "Farmland" then
 		Remotes.FarmClick:FireServer(current.X, current.Y, current.Z)
+		Sfx.play("Leaves", current.Part.Position)
 		return true
 	elseif current and current.Part.Name == "CraftingTable" then
 		callbacks.OpenCrafting("CraftingTable")
@@ -318,11 +320,9 @@ local function interact(secondary: boolean): boolean
 		return true
 	elseif current and current.Part.Name == "Sapling" then
 		Remotes.Uproot:FireServer(current.X, current.Y, current.Z)
+		Sfx.play("DirtHit", current.Part.Position)
 		return true
 	elseif current and secondary and useHeld(current) then
-		return true
-	elseif current and secondary and Hotbar.SelectedItem() == "Bucket" and SOURCES[current.Part.Name] then
-		Remotes.Scoop:FireServer(current.X, current.Y, current.Z)
 		return true
 	end
 	local shopId = aimedShop()
@@ -374,11 +374,13 @@ local function update(dt: number)
 	if swingTimer <= 0 then
 		swingTimer = SWING_EVERY
 		swing()
+		Sfx.block(current.Part.Name, false, current.Part.Position)
 	end
 
 	if progress >= 1 then
 		Remotes.BreakBlock:FireServer(current.X, current.Y, current.Z)
 		burst(current.Part.Position, DEBRIS_COLORS[current.Part.Name] or Color3.fromRGB(120, 120, 120))
+		Sfx.block(current.Part.Name, true, current.Part.Position)
 		progress = 0
 		progressPart = nil
 		cooldown = 0.15

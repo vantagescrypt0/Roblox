@@ -1,7 +1,6 @@
 --!strict
 -- The hotbar: 5 white slots on a navy bar along the bottom of the screen. Keys 1-5
 -- or tapping a slot selects it; the selected item's name shows above the bar for a moment.
--- Worn tools show a durability bar (green when fresh, red when nearly broken).
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -9,7 +8,6 @@ local UserInputService = game:GetService("UserInputService")
 
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local Tools = require(ReplicatedStorage.Shared.Tools)
 local ItemIcon = require(script.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.UI.Theme)
 
@@ -28,8 +26,6 @@ type Slot = {
 	Stroke: UIStroke,
 	Icon: Frame,
 	Count: TextLabel,
-	Durability: Frame,
-	DurabilityFill: Frame,
 	ItemId: string,
 }
 
@@ -112,16 +108,6 @@ local function render()
 			end
 		end
 		slot.Count.Text = if count > 1 then tostring(count) else ""
-
-		-- Durability bar, only once a tool has been used
-		local tool = Tools.ByItem[itemId]
-		local wear = if tool then (state.Wear and state.Wear[itemId]) or 0 else 0
-		slot.Durability.Visible = tool ~= nil and wear > 0
-		if tool and wear > 0 then
-			local left = math.clamp(1 - wear / tool.Durability, 0, 1)
-			slot.DurabilityFill.Size = UDim2.fromScale(left, 1)
-			slot.DurabilityFill.BackgroundColor3 = C.Red:Lerp(C.Leaf, left)
-		end
 	end
 	for _, listener in listeners do
 		task.spawn(listener)
@@ -172,25 +158,6 @@ function Hotbar.Start()
 		count.Size = UDim2.fromOffset(40, 18)
 		count.TextXAlignment = Enum.TextXAlignment.Right
 		count.ZIndex = 3
-		local durability = Theme.make("Frame", {
-			AnchorPoint = Vector2.new(0.5, 1),
-			Position = UDim2.new(0.5, 0, 1, -5),
-			Size = UDim2.new(1, -16, 0, 5),
-			BackgroundColor3 = C.Outline,
-			BorderSizePixel = 0,
-			Visible = false,
-			ZIndex = 4,
-			Parent = frame,
-		})
-		Theme.corner(durability, 2)
-		local durabilityFill = Theme.make("Frame", {
-			Size = UDim2.fromScale(1, 1),
-			BackgroundColor3 = C.Leaf,
-			BorderSizePixel = 0,
-			ZIndex = 4,
-			Parent = durability,
-		})
-		Theme.corner(durabilityFill, 2)
 		frame.Activated:Connect(function()
 			Hotbar.Select(index)
 		end)
@@ -199,8 +166,6 @@ function Hotbar.Start()
 			Stroke = stroke,
 			Icon = icon,
 			Count = count,
-			Durability = durability,
-			DurabilityFill = durabilityFill,
 			ItemId = "",
 		}
 	end

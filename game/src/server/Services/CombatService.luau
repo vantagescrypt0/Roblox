@@ -11,9 +11,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Tools = require(ReplicatedStorage.Shared.Tools)
-local InventoryService = require(script.Parent.InventoryService)
 local MobService = require(script.Parent.MobService)
-local StateService = require(script.Parent.StateService)
 local WarzoneService = require(script.Parent.WarzoneService)
 
 -- Where the hand holds each item model and which way its head points come from
@@ -60,24 +58,17 @@ local function swing(player: Player, tool: Tools.Tool)
 		return
 	end
 
-	local landed = false
 	for _, model in targetsInFront(character, root, tool.Range) do
 		if model:GetAttribute("Mob") then
 			MobService.Damage(model, player, tool.Damage)
-			landed = true
 		else
 			local victim = Players:GetPlayerFromCharacter(model)
 			local victimHumanoid = model:FindFirstChildOfClass("Humanoid")
 			if victim and victimHumanoid and WarzoneService.IsInRaid(player) and WarzoneService.IsInRaid(victim) then
 				victimHumanoid:SetAttribute("LastAttacker", player.UserId)
 				victimHumanoid:TakeDamage(tool.Damage)
-				landed = true
 			end
 		end
-	end
-	-- Hitting something wears the tool: swords 1 use, other tools 2 (like Minecraft)
-	if landed and InventoryService.UseTool(player, tool.Item, if tool.Kind == "Sword" then 1 else 2) then
-		StateService.Notify(player, `Your {Items[tool.Item].Name} broke!`, "bad")
 	end
 end
 

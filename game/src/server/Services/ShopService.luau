@@ -123,7 +123,7 @@ local function onBuy(player: Player, shopId: unknown, itemId: unknown, amount: u
 
 	if InventoryService.SpendCoins(player, amount * price) then
 		InventoryService.Add(player, itemId, amount)
-		StateService.Notify(player, `Bought {amount} {item.Name}`, "good")
+		StateService.Notify(player, `Bought {amount} {item.Name}`, "coins")
 		if needs then
 			QuestService.Record(player, "BuySeeds")
 		end

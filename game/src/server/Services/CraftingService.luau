@@ -72,7 +72,11 @@ local function craft(player: Player, recipeId: unknown)
 	end
 	InventoryService.Add(player, recipe.Output, recipe.Amount)
 	local verb = if recipe.Station == "Furnace" then "Smelted" else "Crafted"
-	StateService.Notify(player, `{verb} {Items[recipe.Output].Name}!`, "good")
+	StateService.Notify(
+		player,
+		`{verb} {Items[recipe.Output].Name}!`,
+		if recipe.Station == "Furnace" then "smelt" else "craft"
+	)
 	ProgressionService.AddSkillXP(player, "Crafting", recipe.CraftingXP)
 	QuestService.Record(player, "Craft")
 	QuestService.Record(player, `Craft:{recipe.Id}`)

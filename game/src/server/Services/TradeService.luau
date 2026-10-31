@@ -22,7 +22,6 @@ local Economy = require(ReplicatedStorage.Shared.Economy)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local Tools = require(ReplicatedStorage.Shared.Tools)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local StateService = require(script.Parent.StateService)
@@ -74,36 +73,15 @@ local function distance(a: Player, b: Player): number
 	return (rootA.Position - rootB.Position).Magnitude
 end
 
--- The part-used tool only goes along when you trade every one you have; otherwise you
--- keep it and give fresh ones. Returns item id -> its wear for the worn tools included.
-local function wornIn(data: DataService.Data, offer: Offer): { [string]: number }
-	local worn = {}
-	for itemId, count in offer do
-		local wear = data.Wear[itemId]
-		if wear and wear > 0 and count >= (data.Items[itemId] or 0) then
-			worn[itemId] = wear
-		end
-	end
-	return worn
-end
-
 -- One side of the trade as the window shows it: a row per item with what it's worth
 local function describe(session: Session, player: Player)
 	local offer = session.Offers[player]
-	local data = DataService.GetData(player)
-	local worn = if data then wornIn(data, offer) else {}
 	local rows = {}
 	local total = 0
 	for itemId, count in offer do
 		local value = Economy.Value(itemId) * count
-		local wear = worn[itemId]
-		local usesLeft = nil
-		if wear then
-			value += Economy.Value(itemId, wear) - Economy.Value(itemId)
-			usesLeft = Tools.ByItem[itemId].Durability - wear
-		end
 		total += value
-		table.insert(rows, { Id = itemId, Count = count, Value = value, UsesLeft = usesLeft })
+		table.insert(rows, { Id = itemId, Count = count, Value = value })
 	end
 	return { Items = rows, Value = total, Accepted = session.Accepted[player] }
 end
@@ -200,15 +178,9 @@ local function owns(player: Player, offer: Offer): boolean
 	return true
 end
 
-local function give(to: Player, offer: Offer, worn: { [string]: number })
+local function give(to: Player, offer: Offer)
 	for itemId, count in offer do
-		local wear = worn[itemId]
-		if wear then
-			InventoryService.Add(to, itemId, count - 1)
-			InventoryService.AddWorn(to, itemId, wear)
-		else
-			InventoryService.Add(to, itemId, count)
-		end
+		InventoryService.Add(to, itemId, count)
 	end
 end
 
@@ -251,18 +223,17 @@ local function execute(session: Session)
 		return
 	end
 
-	local wornA, wornB = wornIn(dataA, offerA), wornIn(dataB, offerB)
 	if not InventoryService.RemoveMany(a, offerA) then
 		changed(session)
 		return
 	end
 	if not InventoryService.RemoveMany(b, offerB) then
-		give(a, offerA, wornA) -- put A's things back
+		give(a, offerA) -- put A's things back
 		changed(session)
 		return
 	end
-	give(b, offerA, wornA)
-	give(a, offerB, wornB)
+	give(b, offerA)
+	give(a, offerB)
 
 	logTrade(a, b, offerA, offerB)
 	logTrade(b, a, offerB, offerA)

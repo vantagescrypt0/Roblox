@@ -6,8 +6,8 @@
 -- loads. Wherever flowing water would touch lava, or flowing lava would touch water, that
 -- cell turns to stone instead (saved like a placed block). Mine the stone and the flow comes
 -- back and turns to stone again: a stone generator.
--- Lava burns whoever stands in it. Also builds the liquids' look (LiquidModels) on every
--- server, for icons.
+-- Lava burns whoever stands in it; water is swimmable (Swim lays terrain water under it).
+-- Also builds the liquids' look (LiquidModels) on every server, for icons.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -17,6 +17,7 @@ local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Liquids = require(ReplicatedStorage.Shared.Liquids)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local LiquidModels = require(script.Parent.Parent.Util.LiquidModels)
+local Swim = require(script.Parent.Parent.Util.Swim)
 local IslandService = require(script.Parent.IslandService)
 
 -- How far liquid may flow from the island's middle (blocks), and the lowest and highest
@@ -41,6 +42,10 @@ type State = {
 	-- Goes up with every new plan, so an older one stops filling
 	Version: number,
 	Queued: boolean,
+	-- The box the island's swimmable water fills now, and whether it's being redone
+	SwimLow: Vector3?,
+	SwimHigh: Vector3?,
+	SwimQueued: boolean,
 }
 
 -- Where everything should flow: the flowing block for each cell and the seconds until it
@@ -172,6 +177,44 @@ end
 
 -- Works out the flows again and changes the island to match: dried-up cells go at once,
 -- new ones fill as the flow reaches them (`instant`: all at once, as an island loads)
+-- Lays swimmable water (Swim) under the island's water blocks, a moment after they change
+local function swimmable(state: State)
+	if state.SwimQueued then
+		return
+	end
+	state.SwimQueued = true
+	task.delay(0.15, function()
+		state.SwimQueued = false
+		local oldLow, oldHigh = state.SwimLow, state.SwimHigh
+		if oldLow and oldHigh then
+			Swim.Clear(oldLow, oldHigh)
+		end
+		state.SwimLow, state.SwimHigh = nil, nil
+		if states[state.Player] ~= state then
+			return
+		end
+		local world = state.Island.World
+		local half = Vector3.one * (Blocks.Size / 2)
+		local low, high
+		for k, blockType in world.Cells do
+			local cell = Liquids.ByBlock[blockType]
+			if cell and cell.Kind.Id == "Water" then
+				local x, y, z = unkey(k)
+				local center = BlockWorld.position(world, x, y, z)
+				-- A flowing block is lower: fill from its floor up to its surface
+				local height = Blocks.Size * (Blocks.Types[blockType].Height or 1)
+				Swim.Fill(
+					CFrame.new(center + Vector3.new(0, (height - Blocks.Size) / 2, 0)),
+					Vector3.new(Blocks.Size, height, Blocks.Size)
+				)
+				low = if low then low:Min(center - half) else center - half
+				high = if high then high:Max(center + half) else center + half
+			end
+		end
+		state.SwimLow, state.SwimHigh = low, high
+	end)
+end
+
 local function apply(state: State, instant: boolean?)
 	if states[state.Player] ~= state then
 		return
@@ -199,6 +242,7 @@ local function apply(state: State, instant: boolean?)
 		end
 	end
 	applying = false
+	swimmable(state)
 
 	local steps: { { Key: string, Block: string, At: number } } = {}
 	for k, blockType in target.Flows do
@@ -240,6 +284,7 @@ local function apply(state: State, instant: boolean?)
 					BlockWorld.set(world, x, y, z, step.Block)
 					applying = false
 					state.Flows[step.Key] = step.Block
+					swimmable(state)
 				end
 			end
 		end
@@ -276,6 +321,9 @@ local function onChanged(state: State, x: number, y: number, z: number)
 	if next(state.Sources) or next(state.Flows) then
 		queue(state)
 	end
+	if state.SwimLow or (cell and cell.Kind.Id == "Water") then
+		swimmable(state)
+	end
 end
 
 local function onIsland(player: Player, island: IslandService.Island)
@@ -286,6 +334,7 @@ local function onIsland(player: Player, island: IslandService.Island)
 		Flows = {},
 		Version = 0,
 		Queued = false,
+		SwimQueued = false,
 	}
 	for k, blockType in island.World.Cells do
 		local cell = Liquids.ByBlock[blockType]
@@ -299,6 +348,7 @@ local function onIsland(player: Player, island: IslandService.Island)
 	end
 	if next(state.Sources) then
 		apply(state, true)
+		swimmable(state)
 	end
 end
 
@@ -346,6 +396,11 @@ function LiquidService.Start()
 	LiquidModels.Make()
 	IslandService.OnIslandCreated(onIsland)
 	Players.PlayerRemoving:Connect(function(player)
+		local state = states[player]
+		local low, high = if state then state.SwimLow else nil, if state then state.SwimHigh else nil
+		if low and high then
+			Swim.Clear(low, high)
+		end
 		states[player] = nil
 		lastBurn[player] = nil
 	end)

@@ -5,7 +5,7 @@
 --   Spawn        the runestone portal home on a paved islet with flower beds; ahead, a
 --                long, wide stone bridge with walls, lantern posts and flower boxes
 --   The mountain a stone ridge across the south of the Town island, grassy and wooded on
---                top, with the SKYBLOX logo (rainbow and clouds) over a big stone arch;
+--                top, with the SKYCORE logo (rainbow and clouds) over a big stone arch;
 --                the street runs through the arch into town
 --   Market street  eight striped market stalls either side of the street past the arch
 --   Market Square  a big fountain in the middle of the town, ringed by four shops you walk
@@ -35,6 +35,7 @@ local Decor = require(script.Parent.Parent.Util.Decor)
 local Logo = require(script.Parent.Parent.Util.Logo)
 local Npc = require(script.Parent.Parent.Util.Npc)
 local Pace = require(script.Parent.Parent.Util.Pace)
+local Swim = require(script.Parent.Parent.Util.Swim)
 local Portal = require(script.Parent.Parent.Util.Portal)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
 local Props = require(script.Parent.Parent.Util.Props)
@@ -1375,6 +1376,7 @@ local function build()
 	end)
 	BlockWorld.drawAll(world, true)
 	Pace.Finish()
+	Swim.FillSheets(decor)
 	portalFields()
 	print(
 		`[Town] built in {string.format("%.1f", os.clock() - started)}s,`,

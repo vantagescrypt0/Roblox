@@ -50,10 +50,6 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	Coins = function(player, _data, amount)
 		InventoryService.AddCoins(player, amount)
 	end,
-	-- Wear a tool down, e.g. ("Use", "IronPickaxe", 100)
-	Use = function(player, _data, item, uses)
-		InventoryService.UseTool(player, item, uses)
-	end,
 	-- Print your last trades to the Output
 	Trades = function(_player, data)
 		for _, trade in data.Trades do

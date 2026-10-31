@@ -11,6 +11,8 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
+local Sfx = require(script.Parent.Sfx)
+
 local Theme = {}
 
 Theme.Color = {
@@ -306,6 +308,7 @@ function Theme.button(parent: Instance, text: string, color: Color3, size: UDim2
 	end)
 	face.Activated:Connect(function()
 		if enabled then
+			Sfx.play("Click")
 			onClick()
 		end
 	end)

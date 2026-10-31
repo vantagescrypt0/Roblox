@@ -12,7 +12,6 @@
 
 local Items = require(script.Parent.Items)
 local Recipes = require(script.Parent.Recipes)
-local Tools = require(script.Parent.Tools)
 
 local CRAFT_PREMIUM = 1.1
 
@@ -50,14 +49,9 @@ for itemId in Items do
 	work(itemId, 0)
 end
 
--- What one of this item is worth. For tools, pass how worn it is (uses spent).
-function Economy.Value(itemId: string, wear: number?): number
-	local value = values[itemId] or 0
-	local tool = Tools.ByItem[itemId]
-	if tool and wear and wear > 0 then
-		value = math.max(1, math.round(value * (1 - wear / tool.Durability)))
-	end
-	return value
+-- What one of this item is worth
+function Economy.Value(itemId: string): number
+	return values[itemId] or 0
 end
 
 -- Total worth of a bundle of items, e.g. one side of a trade

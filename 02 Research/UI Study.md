@@ -18,10 +18,10 @@ You asked for new UIs: the current parchment, wood and serif look reads as a fan
 - Windows focus you (blur behind, one window at a time); trackers (quests) stay on the side.
 - Feedback for everything: badges, checks, bars that fill, buttons that light up when they work.
 
-## Proposed Skyblox style (combining them)
+## Proposed Skycore style (combining them)
 - **Panels:** white with a 3 px dark navy outline, 12 px corners, a faint block pattern; a **colored header band** per window (Bag blue, Shop green, Challenges gold, Inbox purple, Skills teal), with a **title sticker** breaking out of the top-left and a **red rounded X** on the top-right.
 - **Font:** a bold rounded font (FredokaOne) with dark outlines; numbers big.
-- **Colors:** sky blue and gold from the SKYBLOX logo, grass green; meaning colors as above.
+- **Colors:** sky blue and gold from the SKYCORE logo, grass green; meaning colors as above.
 - **Buttons:** chunky with a darker bottom lip (pressed look), icon + one word.
 - **HUD:** a left dock of square icon buttons (Bag, Island, Skills, Challenges, Inbox) with red badges; currencies as icon + outlined number; a compact level badge + XP bar; the quest tracker as a side card; the world blurs behind open windows.
 - **Lists and grids:** item tiles as white rounded squares with counts bottom-right; category tabs + search in the Bag; empty slots dashed; locked things dark with a padlock; challenges as achievement cards with a slim bar and reward tiles.

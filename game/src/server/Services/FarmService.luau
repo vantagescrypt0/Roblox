@@ -75,12 +75,6 @@ local function heldTool(player: Player, kind: Tools.Kind): Tools.Tool?
 	return if tool and tool.Kind == kind then tool else nil
 end
 
-local function useTool(player: Player, tool: Tools.Tool)
-	if InventoryService.UseTool(player, tool.Item, 1) then
-		StateService.Notify(player, `Your {Items[tool.Item].Name} broke!`, "bad")
-	end
-end
-
 -- The best crop the player can plant right now (level unlocked and has seeds)
 local function bestSeed(player: Player): Crops.Crop?
 	local level = ProgressionService.GetSkillLevel(player, "Farming")
@@ -222,7 +216,7 @@ function FarmService.Harvest(player: Player, crop: Crops.Crop, tool: Tools.Tool)
 	end
 	ProgressionService.AddSkillXP(player, "Farming", crop.FarmingXP)
 	ProgressionService.AddPlayerXP(player, crop.PlayerXP)
-	StateService.Notify(player, `+{amount} {Items[crop.Product].Name}`, "good")
+	StateService.Notify(player, `+{amount} {Items[crop.Product].Name}`, "harvest")
 	QuestService.Record(player, "Harvest")
 	QuestService.Record(player, `Harvest:{crop.Id}`)
 	ChallengeService.Count(player, crop.Id)
@@ -391,7 +385,6 @@ local function onTill(player: Player, x: unknown, y: unknown, z: unknown)
 		table.insert(plots, plot)
 		farms[player] = plots
 	end
-	useTool(player, hoe)
 	DataService.MarkChanged(player)
 	QuestService.Record(player, "Till")
 end

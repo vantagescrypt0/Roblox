@@ -74,7 +74,6 @@ local function snapshot(data: DataService.Data)
 
 	return {
 		Hotbar = table.clone(data.Hotbar),
-		Wear = table.clone(data.Wear),
 		Island = { Tier = tier, MaxTier = #IslandTiers },
 		Quest = if quest
 			then {
@@ -112,6 +111,8 @@ local function send(player: Player, data: DataService.Data)
 end
 
 -- kind: "info" | "good" | "bad" | "level"
+-- A pop-up message. Its kind sets its color and sound on the client (Hud): "info", "good",
+-- "bad", "coins", "level", "levelup", "season", "harvest", "craft", "smelt", "timber"
 function StateService.Notify(player: Player, text: string, kind: string?)
 	Remotes.Notify:FireClient(player, text, kind or "info")
 end

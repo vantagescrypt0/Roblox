@@ -6,6 +6,7 @@
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
 
+local Sfx = require(script.Parent.Sfx)
 local Theme = require(script.Parent.Theme)
 
 local HEADER = 46
@@ -23,6 +24,7 @@ export type Window = {
 local Window = {}
 
 local current: Window? = nil
+local switching = false -- opening another window closes this one: no closing whoosh then
 
 -- One blur for all windows, on while any window is open (Lighting changes from a client stay local)
 local blur = Instance.new("BlurEffect")
@@ -57,6 +59,9 @@ function Window.close(window: Window)
 	if not current then
 		setBlur(false)
 	end
+	if not switching then
+		Sfx.play("Close")
+	end
 	if window.OnClose then
 		window.OnClose()
 	end
@@ -64,8 +69,11 @@ end
 
 function Window.open(window: Window)
 	if current and current ~= window then
+		switching = true
 		Window.close(current)
+		switching = false
 	end
+	Sfx.play("Open")
 	current = window
 	window.IsOpen = true
 	if window.OnOpen then

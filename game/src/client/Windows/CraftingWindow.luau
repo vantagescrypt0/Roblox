@@ -26,11 +26,10 @@ local COLUMNS = 4
 local GRID_WIDTH = COLUMNS * TILE + (COLUMNS - 1) * GAP + 12
 
 -- Stat bars are relative to the best tool in the game
-local BEST = { Efficiency = 1, Damage = 1, Durability = 1 }
+local BEST = { Efficiency = 1, Damage = 1 }
 for _, tool in Tools.List do
 	BEST.Efficiency = math.max(BEST.Efficiency, tool.Efficiency)
 	BEST.Damage = math.max(BEST.Damage, tool.Damage)
-	BEST.Durability = math.max(BEST.Durability, tool.Durability)
 end
 
 -- What each tool kind is good for, from the block toughness table
@@ -152,8 +151,6 @@ local function renderDetail()
 		stats.Efficiency.Bar.Set(tool.Efficiency / BEST.Efficiency)
 		stats.Damage.Value.Text = tostring(tool.Damage)
 		stats.Damage.Bar.Set(tool.Damage / BEST.Damage)
-		stats.Durability.Value.Text = `{tool.Durability} uses`
-		stats.Durability.Bar.Set(tool.Durability / BEST.Durability)
 	end
 
 	Window.clear(costRow)
@@ -312,7 +309,6 @@ local function buildDetail(parent: Instance)
 	Theme.list(statList, Enum.FillDirection.Vertical, 5)
 	statRow(statList, "Efficiency", "Mining speed", C.Leaf, 1)
 	statRow(statList, "Damage", "Damage", C.Red, 2)
-	statRow(statList, "Durability", "Durability", C.Blue, 3)
 
 	-- Skill levels the recipe needs
 	needsRow = Theme.make("Frame", {

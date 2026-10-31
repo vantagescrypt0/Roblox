@@ -16,7 +16,6 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local Tools = require(ReplicatedStorage.Shared.Tools)
 local ItemIcon = require(script.Parent.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.Parent.UI.Theme)
 local Window = require(script.Parent.Parent.UI.Window)
@@ -139,42 +138,12 @@ local function slot(parent: Instance, itemId: string, count: number, order: numb
 	return button
 end
 
--- Thin bar along the bottom of a slot: how much of a worn tool is left
-local function wearBar(button: Instance, itemId: string, usesLeft: number)
-	local tool = Tools.ByItem[itemId]
-	if not tool then
-		return
-	end
-	local track = Theme.make("Frame", {
-		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 1, -3),
-		Size = UDim2.new(1, -12, 0, 4),
-		BackgroundColor3 = C.Outline,
-		BorderSizePixel = 0,
-		ZIndex = 3,
-		Parent = button,
-	})
-	Theme.make("Frame", {
-		Size = UDim2.fromScale(math.clamp(usesLeft / tool.Durability, 0, 1), 1),
-		BackgroundColor3 = C.Leaf,
-		BorderSizePixel = 0,
-		ZIndex = 4,
-		Parent = track,
-	})
-end
-
 local function renderSide(panel: SidePanel, side: Side, mine: boolean)
 	Window.clear(panel.Grid)
 	for order, row in sorted(side.Items) do
 		local item = Items[row.Id]
 		local hover = `{item.Name} x{row.Count} · worth {Theme.coins(row.Value)}`
-		if row.UsesLeft then
-			hover ..= ` · one has {row.UsesLeft} uses left`
-		end
 		local button = slot(panel.Grid, row.Id, row.Count, order, hover)
-		if row.UsesLeft then
-			wearBar(button, row.Id, row.UsesLeft)
-		end
 		button.Activated:Connect(function()
 			info.Text = hover
 			if mine then
@@ -202,11 +171,6 @@ local function renderBag()
 		local free = have - offered(itemId)
 		local hover = `{Items[itemId].Name} · {have} in your bag · worth {Theme.coins(Economy.Value(itemId))} each`
 		local button = slot(bagGrid, itemId, free, order, hover)
-		local wear = state.Wear[itemId]
-		local tool = Tools.ByItem[itemId]
-		if wear and wear > 0 and tool then
-			wearBar(button, itemId, tool.Durability - wear)
-		end
 		if free <= 0 then
 			-- Everything you have of it is already in the trade
 			local shade = Theme.make("Frame", {

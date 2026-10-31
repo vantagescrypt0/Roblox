@@ -24,7 +24,6 @@ export type Item = {
 	SellPrice: number, -- coins per item at the market; 0 = can't sell
 	BuyPrice: number?, -- coins to buy one at the market; nil = not for sale
 	Block: string?, -- block type this item places (a bucket pours its liquid)
-	Empties: string?, -- placing it leaves this item instead (a full bucket leaves a Bucket)
 	Keep: boolean?, -- placing it doesn't use it up (the Bottomless buckets)
 	Node: boolean?, -- placed as a node: its block grows back after it's mined (islands only)
 	Equip: string?, -- "Pet" or "Armor": worn from the Bag (Gear.luau), never put on the hotbar
@@ -149,9 +148,9 @@ local Items: { [string]: Item } = {
 		Block = "MushroomStem",
 	},
 
-	-- Water and lava (Liquids.luau). Pour a full bucket on your island and it leaves an empty
-	-- Bucket; hold the empty Bucket and right-click a source to scoop it back up. The
-	-- Bottomless buckets never run dry.
+	-- Water and lava (Liquids.luau). Pouring a bucket on your island uses it up, and poured
+	-- water and lava can't be scooped back up (build over it to get rid of it). The
+	-- Bottomless buckets never run dry. The empty Bucket is left from before (no use now).
 	Bucket = { Name = "Bucket", Icon = "🪣", Value = 10, SellPrice = 0, Model = "Bucket" },
 	WaterBucket = {
 		Name = "Water Bucket",
@@ -160,7 +159,6 @@ local Items: { [string]: Item } = {
 		SellPrice = 0,
 		BuyPrice = 20,
 		Block = "Water",
-		Empties = "Bucket",
 		Model = "WaterBucket",
 	},
 	LavaBucket = {
@@ -170,7 +168,6 @@ local Items: { [string]: Item } = {
 		SellPrice = 0,
 		BuyPrice = 50,
 		Block = "Lava",
-		Empties = "Bucket",
 		Model = "LavaBucket",
 	},
 	BottomlessWaterBucket = {

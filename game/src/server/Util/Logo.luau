@@ -1,6 +1,6 @@
 --!strict
--- The game's logo, SKYBLOX, built out of parts: chunky pixel letters ("SKY" in sky blue,
--- "BLOX" in gold) with a dark outline and a drop shadow, a rainbow arching over them and
+-- The game's logo, SKYCORE, built out of parts: chunky pixel letters ("SKY" in sky blue,
+-- "CORE" in gold) with a dark outline and a drop shadow, a rainbow arching over them and
 -- blocky clouds round its feet. Also the clouds that drift around the islands.
 --
 -- Each row of same-coloured pixels is one part, so the whole logo is a few hundred parts.
@@ -18,6 +18,9 @@ local FONT: { [string]: { string } } = {
 	B = { "#####.", "######", "##..##", "##..##", "#####.", "######", "##..##", "##..##", "######", "#####." },
 	L = { "##....", "##....", "##....", "##....", "##....", "##....", "##....", "##....", "######", "######" },
 	O = { ".####.", "######", "##..##", "##..##", "##..##", "##..##", "##..##", "##..##", "######", ".####." },
+	C = { ".#####", "######", "##....", "##....", "##....", "##....", "##....", "##....", "######", ".#####" },
+	R = { "#####.", "######", "##..##", "##..##", "#####.", "####..", "##.##.", "##.##.", "##..##", "##..##" },
+	E = { "######", "######", "##....", "##....", "#####.", "#####.", "##....", "##....", "######", "######" },
 	X = { "##..##", "##..##", ".####.", ".####.", "..##..", "..##..", ".####.", ".####.", "##..##", "##..##" },
 }
 
@@ -130,8 +133,8 @@ function Logo.Build(parent: Instance, base: Vector3, facing: Vector3): Model
 	-- Looking the way its readers look: x is their right, +z comes toward them
 	local frame = CFrame.lookAt(base, base - facing)
 
-	-- Which half of the word inks each pixel (1 = SKY, 2 = BLOX), by row (0 = bottom)
-	local word = "SKYBLOX"
+	-- Which half of the word inks each pixel (1 = SKY, 2 = CORE), by row (0 = bottom)
+	local word = "SKYCORE"
 	local width = #word * GLYPH_WIDTH + (#word - 1) * GAP
 	local ink: { [number]: { [number]: number } } = {}
 	for r = -2, GLYPH_HEIGHT + 1 do

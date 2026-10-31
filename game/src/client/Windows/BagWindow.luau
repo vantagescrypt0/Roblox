@@ -11,7 +11,6 @@ local Gear = require(ReplicatedStorage.Shared.Gear)
 local ItemOrder = require(ReplicatedStorage.Shared.ItemOrder)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Parent.Hotbar)
 local ItemIcon = require(script.Parent.Parent.UI.ItemIcon)
 local Theme = require(script.Parent.Parent.UI.Theme)
@@ -105,12 +104,10 @@ local function render()
 				Theme.corner(tag, 4)
 			end
 			slot.MouseEnter:Connect(function()
-				local tool = Tools.ByItem[itemId]
-				local uses = if tool then ` - {tool.Durability - (state.Wear[itemId] or 0)} uses left` else ""
 				local hint = if equip
 					then (if wearing(itemId) then " · click to take off" else " · click to wear")
 					else ""
-				info.Text = `{Items[itemId].Name}{uses}{gearText(itemId)}{hint}`
+				info.Text = `{Items[itemId].Name}{gearText(itemId)}{hint}`
 			end)
 			slot.Activated:Connect(function()
 				if equip then

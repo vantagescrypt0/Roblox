@@ -77,7 +77,7 @@ end
 
 local function sendLetter(player: Player, season: number)
 	InboxService.Send(player.UserId, {
-		From = "Skyblox",
+		From = "Skycore",
 		Text = `Season {season} has begun! Levels, skills and challenges start fresh, and last season's pets, armor and trophies are gone. Your island, Bag and coins are still yours.`,
 	})
 end

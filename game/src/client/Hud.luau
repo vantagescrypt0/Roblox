@@ -14,6 +14,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Seasons = require(ReplicatedStorage.Shared.Seasons)
 local ItemIcon = require(script.Parent.UI.ItemIcon)
+local Sfx = require(script.Parent.UI.Sfx)
 local Theme = require(script.Parent.UI.Theme)
 
 local C = Theme.Color
@@ -53,6 +54,18 @@ local lastCoins: number? = nil
 local lastLevel: number? = nil
 local lastMail: number? = nil
 
+-- The sound each kind of message makes ("info" makes none)
+local TOAST_SOUNDS: { [string]: string } = {
+	good = "Pop",
+	coins = "Coins",
+	bad = "Error",
+	level = "Chime",
+	harvest = "Harvest",
+	craft = "Craft",
+	smelt = "Smelt",
+	timber = "TreeFall",
+}
+
 -- The colored edge on each kind of message
 local TOAST_COLORS: { [string]: Color3 } = {
 	info = C.Blue,
@@ -61,6 +74,10 @@ local TOAST_COLORS: { [string]: Color3 } = {
 	bad = C.Red,
 	level = C.Purple,
 	levelup = C.Gold,
+	harvest = C.Leaf,
+	craft = C.Leaf,
+	smelt = C.Orange,
+	timber = C.Leaf,
 }
 
 local BUTTON = 64 -- the menu's buttons are square
@@ -356,6 +373,8 @@ local celebrateToken = 0
 function Hud.Celebrate(title: string, subtitle: string, color: Color3?)
 	celebrateToken += 1
 	local token = celebrateToken
+	Sfx.play("Stinger")
+	Sfx.play("Sparkle")
 	celebrationTitle.Text = title
 	celebrationTitle.TextColor3 = color or C.Gold
 	celebrationSub.Text = subtitle
@@ -414,6 +433,7 @@ function Hud.Render(state: any)
 		badge.Text = if mail > 99 then "99+" else tostring(mail)
 	end
 	if lastMail and mail > lastMail then
+		Sfx.play("Mail")
 		Theme.pop(menuBadge, 1.5)
 	end
 	lastMail = mail
@@ -437,6 +457,10 @@ function Hud.Toast(text: string, kind: string)
 		return
 	end
 	toastCount += 1
+	local sound = TOAST_SOUNDS[kind]
+	if sound then
+		Sfx.play(sound)
+	end
 	local color = TOAST_COLORS[kind] or C.Blue
 	-- A white tag with a navy outline and a colored dot in front
 	local toast = Theme.make("Frame", {
@@ -497,6 +521,7 @@ function Hud.Travel(destination: string)
 	local name = (Places.Names :: any)[destination]
 	fadeTitle.Text = if destination == "Island" or not name then "Heading home..." else `Traveling to {name}...`
 	setFade(true, TweenInfo.new(0.35))
+	Sfx.play("Travel")
 	-- Never leave the screen dark if the teleport silently never happens
 	task.delay(20, function()
 		if token == travelToken then
