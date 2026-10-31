@@ -110,7 +110,7 @@ local function letterCard(letter: any, order: number)
 	local button = Theme.button(
 		card,
 		if giving then "Claim" else "OK",
-		if giving then C.Green else C.WoodLight,
+		if giving then C.Green else C.Blue,
 		UDim2.fromOffset(BUTTON_WIDTH, 42),
 		function()
 			Remotes.ClaimMail:FireServer(letter.Id)
@@ -152,7 +152,7 @@ function InboxWindow.Toggle()
 end
 
 function InboxWindow.Start()
-	window = Window.new("InboxWindow", "Inbox", Vector2.new(620, 520))
+	window = Window.new("InboxWindow", "Inbox", Vector2.new(620, 520), C.Purple)
 	window.OnOpen = render
 
 	list = Window.scrollList(window.Body, UDim2.new(1, 0, 1, -58))

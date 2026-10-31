@@ -36,18 +36,18 @@ local function slotFrame(parent: Instance, order: number): TextButton
 	local slot = Theme.make("TextButton", {
 		LayoutOrder = order,
 		Size = UDim2.fromOffset(SLOT, SLOT),
-		BackgroundColor3 = C.ParchmentDark,
+		BackgroundColor3 = C.Card,
 		AutoButtonColor = false,
 		Text = "",
 		Parent = parent,
 	})
 	Theme.corner(slot, 5)
-	Theme.stroke(slot, C.TanEdge, 2)
+	Theme.stroke(slot, C.Line, 2)
 	slot.MouseEnter:Connect(function()
-		slot.BackgroundColor3 = C.Parchment
+		slot.BackgroundColor3 = C.Panel
 	end)
 	slot.MouseLeave:Connect(function()
-		slot.BackgroundColor3 = C.ParchmentDark
+		slot.BackgroundColor3 = C.Card
 	end)
 	return slot
 end
@@ -95,7 +95,7 @@ local function render()
 			countLabel(slot, count)
 			local equip = Items[itemId].Equip
 			if equip and wearing(itemId) then
-				local tag = Theme.text(slot, "ON", 12, Theme.Font.Bold, C.Cream)
+				local tag = Theme.text(slot, "ON", 12, Theme.Font.Bold, C.White)
 				tag.BackgroundTransparency = 0
 				tag.BackgroundColor3 = C.Green
 				tag.Position = UDim2.fromOffset(3, 3)
@@ -132,7 +132,7 @@ local function render()
 		end
 		local stroke = slot:FindFirstChildOfClass("UIStroke")
 		if index == Hotbar.Selected() and stroke then
-			stroke.Color = C.Ochre
+			stroke.Color = C.Orange
 			stroke.Thickness = 3
 		end
 		slot.Activated:Connect(function()
@@ -159,7 +159,7 @@ end
 function BagWindow.Start()
 	local gridWidth = COLUMNS * SLOT + (COLUMNS - 1) * GAP + 14
 	local gridHeight = ROWS * SLOT + (ROWS - 1) * GAP + 10
-	window = Window.new("Inventory", "Bag", Vector2.new(gridWidth + 28 + 20, gridHeight + SLOT + 184))
+	window = Window.new("Inventory", "Bag", Vector2.new(gridWidth + 28 + 20, gridHeight + SLOT + 184), C.Blue)
 	window.OnOpen = function()
 		info.Text = ""
 		render()
@@ -172,7 +172,7 @@ function BagWindow.Start()
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollBarThickness = 6,
-		ScrollBarImageColor3 = C.WoodLight,
+		ScrollBarImageColor3 = C.Blue,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		CanvasSize = UDim2.new(),
 		Parent = well,

@@ -5,6 +5,7 @@
 local Players = game:GetService("Players")
 
 local ProgressionService = require(script.Parent.ProgressionService)
+local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 local WarzoneService = require(script.Parent.WarzoneService)
 
@@ -143,6 +144,7 @@ local function spawnMob(mobType: MobType, home: Vector3)
 				end
 			end
 			StateService.Notify(killer, `Defeated a {mobType.Name}!`, "good")
+			QuestService.Record(killer, "Kill")
 		end
 		task.delay(1, function()
 			model:Destroy()

@@ -6,10 +6,11 @@
 -- Farming XP, with a small chance of a spare seed.
 -- Hold a shovel and click a crop to dig it up (you get the seed back) to plant something
 -- else. Better crops need a higher Farming level, and a higher level gives a bigger chance
--- of a bonus crop. Bigger islands have more plots (see IslandTiers).
--- Hoes make more: right-click grass or dirt with one to till it into farmland (up to
--- Leveling.TilledPlots for your Farming level; saved as a block change). A shovel turns an
--- empty tilled plot back into dirt. A better hoe adds its tier's bonus to every harvest.
+-- of a bonus crop.
+-- There's no ready-made farm: right-click grass or dirt with a hoe to till it into
+-- farmland, as much as you like (saved as a block change; the island's build border is the
+-- only limit). A shovel turns an empty plot back into dirt. A better hoe adds its tier's
+-- bonus to every harvest.
 -- The Farming World's wild fields use the same crop models and harvest (ShowCrop, Harvest).
 
 local Players = game:GetService("Players")
@@ -52,14 +53,13 @@ export type CropSpot = {
 
 -- A farm plot on an island (a CropSpot, plus where it is and whose it is)
 type Plot = {
-	Key: string, -- island plot number, or the cell key for a tilled plot
+	Key: string, -- the farmland's cell key
 	Cell: Vector3, -- grid position of the farmland block
 	Model: Model,
 	Part: BasePart, -- the farmland block
 	Base: CFrame,
 	Stage: string?,
 	Visual: Model?,
-	Tilled: boolean, -- made by the player with a hoe
 }
 
 local FarmService = {}
@@ -240,14 +240,7 @@ local function heldSeed(player: Player): Crops.Crop?
 	return nil
 end
 
-local function makePlot(
-	island: IslandService.Island,
-	key: string,
-	x: number,
-	y: number,
-	z: number,
-	tilled: boolean
-): Plot?
+local function makePlot(island: IslandService.Island, key: string, x: number, y: number, z: number): Plot?
 	local farmland = BlockWorld.part(island.World, x, y, z)
 	if not farmland then
 		return nil
@@ -261,11 +254,10 @@ local function makePlot(
 		Base = CFrame.new(farmland.Position + Vector3.new(0, Blocks.Size / 2, 0)),
 		Stage = nil,
 		Visual = nil,
-		Tilled = tilled,
 	}
 end
 
--- Turns an empty tilled plot back into dirt
+-- Turns an empty plot back into dirt
 local function untill(player: Player, plot: Plot)
 	local island = IslandService.GetIsland(player)
 	local data = DataService.GetData(player)
@@ -301,7 +293,7 @@ local function onPlotClicked(player: Player, plot: Plot)
 		DataService.MarkChanged(player)
 		InventoryService.Add(player, crop.Seed, 1)
 		StateService.Notify(player, `Dug up the {crop.Id}`, "info")
-	elseif not crop and shovel and plot.Tilled then
+	elseif not crop and shovel then
 		untill(player, plot)
 		return
 	elseif not crop then
@@ -328,21 +320,12 @@ end
 
 local function onIslandCreated(player: Player, island: IslandService.Island)
 	local plots: { Plot } = {}
-	local islandPlots: { [string]: boolean } = {}
-	for i, cell in island.FarmCells do
-		islandPlots[BlockWorld.key(cell.X, cell.Y, cell.Z)] = true
-		local plot = makePlot(island, tostring(i), cell.X, cell.Y, cell.Z, false)
-		if plot then
-			refreshPlot(player, plot)
-			table.insert(plots, plot)
-		end
-	end
 	-- Farmland the player tilled (saved as a block change); nothing can be built on top
 	for cellKey, blockType in island.World.Cells do
-		if blockType == "Farmland" and not islandPlots[cellKey] then
+		if blockType == "Farmland" then
 			local x, y, z = BlockWorld.unkey(cellKey)
 			island.World.Protected[BlockWorld.key(x, y + 1, z)] = true
-			local plot = makePlot(island, cellKey, x, y, z, true)
+			local plot = makePlot(island, cellKey, x, y, z)
 			if plot then
 				refreshPlot(player, plot)
 				table.insert(plots, plot)
@@ -398,24 +381,11 @@ local function onTill(player: Player, x: unknown, y: unknown, z: unknown)
 	end
 
 	local plots: { Plot } = farms[player] or {}
-	local tilled = 0
-	for _, plot in plots do
-		if plot.Tilled then
-			tilled += 1
-		end
-	end
-	local level = ProgressionService.GetSkillLevel(player, "Farming")
-	local limit = Leveling.TilledPlots(level)
-	if tilled >= limit then
-		StateService.Notify(player, `Farming level {level} lets you make {limit} farm plots. Level up for more!`, "bad")
-		return
-	end
-
 	BlockWorld.set(world, x, y, z, "Farmland")
 	IslandService.RecordChange(player, x, y, z, "Farmland")
 	world.Protected[above] = true
 	data.Farm.Plots[cellKey] = nil
-	local plot = makePlot(island, cellKey, x, y, z, true)
+	local plot = makePlot(island, cellKey, x, y, z)
 	if plot then
 		refreshPlot(player, plot)
 		table.insert(plots, plot)
@@ -423,6 +393,7 @@ local function onTill(player: Player, x: unknown, y: unknown, z: unknown)
 	end
 	useTool(player, hoe)
 	DataService.MarkChanged(player)
+	QuestService.Record(player, "Till")
 end
 
 -- Clicking farmland (no key press): plant if empty, harvest if ripe, dig up with a shovel

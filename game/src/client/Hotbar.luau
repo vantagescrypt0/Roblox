@@ -1,5 +1,5 @@
 --!strict
--- The hotbar: 5 parchment slots on a wooden bar along the bottom of the screen. Keys 1-5
+-- The hotbar: 5 white slots on a navy bar along the bottom of the screen. Keys 1-5
 -- or tapping a slot selects it; the selected item's name shows above the bar for a moment.
 -- Worn tools show a durability bar (green when fresh, red when nearly broken).
 
@@ -83,7 +83,7 @@ function Hotbar.Select(slot: number)
 	selected = math.clamp(slot, 1, SLOTS)
 	selector.Position = UDim2.fromOffset(slotX(selected) - 4, EDGE - 4)
 	for index, entry in slots do
-		entry.Stroke.Color = if index == selected then C.Gold else C.SlotEdge
+		entry.Stroke.Color = if index == selected then C.Gold else C.NavyLight
 	end
 	Remotes.SelectSlot:FireServer(selected)
 	showName()
@@ -140,24 +140,24 @@ function Hotbar.Start()
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -10),
 		Size = UDim2.fromOffset(width, SLOT + EDGE * 2),
-		BackgroundColor3 = C.WoodDark,
+		BackgroundColor3 = C.Navy,
 		Parent = gui,
 	})
-	Theme.corner(bar, 7)
-	Theme.stroke(bar, C.WoodEdge, 3)
+	Theme.corner(bar, 14)
+	Theme.stroke(bar, C.Outline, 3)
 	Theme.autoScale(bar)
 
 	for index = 1, SLOTS do
 		local frame = Theme.make("TextButton", {
 			Position = UDim2.fromOffset(slotX(index), EDGE),
 			Size = UDim2.fromOffset(SLOT, SLOT),
-			BackgroundColor3 = C.ParchmentDark,
+			BackgroundColor3 = C.Panel,
 			AutoButtonColor = false,
 			Text = "",
 			Parent = bar,
 		})
-		Theme.corner(frame, 5)
-		local stroke = Theme.stroke(frame, C.SlotEdge, 3)
+		Theme.corner(frame, 10)
+		local stroke = Theme.stroke(frame, C.NavyLight, 3)
 		local number = Theme.text(frame, tostring(index), 11, Theme.Font.Bold, C.InkMuted)
 		number.Position = UDim2.fromOffset(5, 2)
 		number.Size = UDim2.fromOffset(12, 13)
@@ -176,7 +176,7 @@ function Hotbar.Start()
 			AnchorPoint = Vector2.new(0.5, 1),
 			Position = UDim2.new(0.5, 0, 1, -5),
 			Size = UDim2.new(1, -16, 0, 5),
-			BackgroundColor3 = C.WoodEdge,
+			BackgroundColor3 = C.Outline,
 			BorderSizePixel = 0,
 			Visible = false,
 			ZIndex = 4,
@@ -205,15 +205,15 @@ function Hotbar.Start()
 		}
 	end
 
-	-- Dark ring around the selected slot (its own outline turns gold)
+	-- Gold glow around the selected slot (its own outline turns gold too)
 	selector = Theme.make("Frame", {
 		Size = UDim2.fromOffset(SLOT + 8, SLOT + 8),
-		BackgroundTransparency = 1,
+		BackgroundColor3 = C.Gold,
 		ZIndex = 0,
 		Parent = bar,
 	})
-	Theme.corner(selector, 7)
-	Theme.stroke(selector, C.WoodEdge, 2)
+	Theme.corner(selector, 13)
+	Theme.stroke(selector, C.Outline, 2)
 
 	nameLabel = Theme.worldTitle(bar, "", 24)
 	nameLabel.AnchorPoint = Vector2.new(0.5, 1)

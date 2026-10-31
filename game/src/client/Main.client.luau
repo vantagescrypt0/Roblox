@@ -37,7 +37,7 @@ TradeWindow.Start()
 SkillsWindow.Start()
 InboxWindow.Start()
 ChallengesWindow.Start()
-QuestTracker.Start(ChallengesWindow.Toggle)
+QuestTracker.Start(ChallengesWindow.OpenTracked)
 PromptUI.Start()
 Hud.Start({
 	OnBag = BagWindow.Toggle,
@@ -81,6 +81,7 @@ Remotes.Travel.OnClientEvent:Connect(Hud.Travel)
 Remotes.IslandRebuilt.OnClientEvent:Connect(function(tier: number)
 	IslandWindow.Close()
 	local info = IslandTiers[tier]
-	Hud.Celebrate("Island Expanded!", if info then info.Name else "", Color3.fromRGB(150, 214, 110))
+	local across = if info then info.Border * 2 + 1 else 0
+	Hud.Celebrate("Island Upgraded!", `Build up to {across} x {across} blocks`, Color3.fromRGB(150, 214, 110))
 end)
 Remotes.Ready:FireServer()

@@ -15,6 +15,7 @@ local HEADER = 34
 local QuestTracker = {}
 
 local card: Frame
+local title: TextLabel
 local header: TextLabel
 local questText: TextLabel
 local bar: Theme.Bar
@@ -33,7 +34,7 @@ local function build(onOpen: () -> ())
 	card.Visible = false
 	Theme.autoScale(card)
 
-	Theme.header(card, "Quest", HEADER)
+	title = Theme.header(card, "Quest", HEADER, C.Gold)
 	-- The whole card opens the Challenges board
 	local open = Theme.make("TextButton", {
 		Size = UDim2.fromScale(1, 1),
@@ -44,7 +45,7 @@ local function build(onOpen: () -> ())
 	})
 	open.Activated:Connect(onOpen)
 	-- Quest number on the right of the title bar
-	header = Theme.text(card, "", 14, Theme.Font.Bold, C.Gold)
+	header = Theme.text(card, "", 16, Theme.Font.Bold, C.White)
 	header.AnchorPoint = Vector2.new(1, 0)
 	header.Position = UDim2.new(1, -14, 0, 0)
 	header.Size = UDim2.fromOffset(80, HEADER - 3)
@@ -68,7 +69,7 @@ local function build(onOpen: () -> ())
 	questText.AutomaticSize = Enum.AutomaticSize.Y
 	questText.Size = UDim2.new(1, 0, 0, 20)
 
-	bar = Theme.bar(body, C.Ochre, UDim2.new(1, 0, 0, 18))
+	bar = Theme.bar(body, C.Orange, UDim2.new(1, 0, 0, 18))
 	bar.Track.LayoutOrder = 2
 
 	highlight = Theme.make("Highlight", {
@@ -104,6 +105,8 @@ function QuestTracker.Render(state: any)
 		return
 	end
 	card.Visible = true
+	-- "Quest" for the beginner chain, else the Challenges group you track
+	title.Text = quest.Board or "Quest"
 	header.Text = `{quest.Number} / {quest.Total}`
 	questText.Text = quest.Text
 	bar.Set(quest.Progress / quest.Target, `{quest.Progress} / {quest.Target}`)

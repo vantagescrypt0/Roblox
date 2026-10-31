@@ -1,4 +1,5 @@
-"""Low-poly 3D item models (tools incl. hoes, crops, seed pouches, ores, loot, buckets) and their UI icons.
+"""Low-poly 3D item models (tools incl. hoes, crops, seed pouches, ores, loot, buckets) and their UI icons,
+plus a few pictures for the HUD menu (bag, trophy, letter) at the end of the icon sheet.
 
 Tools are modelled standing up along +Z (handle at the bottom), then tilted 45 degrees
 so that, seen from the front, the handle is bottom-left and the head top-right. Every
@@ -320,6 +321,69 @@ def bucket(b, fill=None, band="iron_dark"):
         )
 
 
+# Pictures for the HUD menu (not items) ----------------------------------------------
+
+
+def arc(b, cx, cz, radius, start, end, thickness, color, steps=10):
+    """A bent bar along a circle in the x-z plane (angles in degrees), e.g. a handle."""
+    angles = [math.radians(start + (end - start) * i / steps) for i in range(steps + 1)]
+    points = [(cx + math.cos(a) * radius, cz + math.sin(a) * radius) for a in angles]
+    for (x1, z1), (x2, z2) in zip(points, points[1:]):
+        dx, dz = x2 - x1, z2 - z1
+        b.box(
+            (math.hypot(dx, dz) + thickness * 0.4, thickness, thickness),
+            location=((x1 + x2) / 2, 0, (z1 + z2) / 2),
+            rotation=(0, math.degrees(math.atan2(-dz, dx)), 0),
+            color=color,
+        )
+
+
+def front_slab(b, outline, thickness, y, color):
+    """A flat 2D shape (x, z points) standing in front of a model, its middle at depth y."""
+    verts = new_verts(b, lambda: slab(b, outline, lambda x, z: thickness, color))
+    for v in verts:
+        v.co.y += y
+
+
+def ui_bag(b):
+    """A tan backpack: rounded body, a darker flap over the top with a gold buckle, a front
+    pocket and a carry handle."""
+    b.box((0.9, 0.52, 1.0), location=(0, 0, 0.55), color="wood_alt", bevel=0.14)
+    b.box((0.62, 0.16, 0.4), location=(0, -0.3, 0.34), color="leather", bevel=0.05)
+    b.box((0.16, 0.05, 0.1), location=(0, -0.39, 0.46), color="gold")
+    b.box((0.96, 0.58, 0.2), location=(0, 0, 1.03), color="leather", bevel=0.08)
+    b.box((0.96, 0.08, 0.34), location=(0, -0.27, 0.88), color="leather", bevel=0.03)
+    b.box((0.18, 0.06, 0.18), location=(0, -0.32, 0.77), color="gold")
+    b.box((0.08, 0.07, 0.08), location=(0, -0.34, 0.77), color="leather_dark")
+    arc(b, 0, 1.12, 0.2, 0, 180, 0.08, "leather_dark")
+
+
+def ui_trophy(b):
+    """A gold cup with two ear handles and a white star, on a gold stem and a dark plinth."""
+    b.box((0.86, 0.86, 0.24), location=(0, 0, 0.12), color="wood_dark", bevel=0.03)
+    b.box((0.7, 0.7, 0.07), location=(0, 0, 0.275), color="gold")
+    b.cylinder(0.09, 0.26, location=(0, 0, 0.42), color="gold", segments=8)
+    b.blob(0.13, location=(0, 0, 0.47), color="gold", squash=(1, 1, 0.6), jitter=0.02)
+    b.cylinder(0.2, 0.62, location=(0, 0, 0.86), color="gold", segments=12, radius2=0.46)
+    b.cylinder(0.48, 0.07, location=(0, 0, 1.17), color="gold", segments=12)
+    b.cylinder(0.42, 0.02, location=(0, 0, 1.205), color="gold_dark", segments=12)
+    arc(b, 0.42, 0.93, 0.2, -150, 100, 0.08, "gold")
+    arc(b, -0.42, 0.93, 0.2, 80, 330, 0.08, "gold")
+    star = []
+    for i in range(10):
+        a = math.radians(90 + i * 36)
+        r = 0.13 if i % 2 == 0 else 0.055
+        star.append((math.cos(a) * r, 0.9 + math.sin(a) * r))
+    front_slab(b, star, 0.04, -0.36, "flower_white")
+
+
+def ui_mail(b):
+    """A white envelope standing up, its tan flap folded down and a red wax seal."""
+    b.box((1.15, 0.08, 0.76), location=(0, 0, 0.38), color="flower_white", bevel=0.02)
+    front_slab(b, [(-0.56, 0.75), (0.56, 0.75), (0, 0.3)], 0.03, -0.05, "sign")
+    b.cylinder(0.11, 0.05, location=(0, -0.075, 0.33), rotation=(90, 0, 0), color="red", segments=10)
+
+
 # name -> (build function, tilted like a tool?)
 ITEMS = {}
 for tier_name, tier in TIERS.items():
@@ -366,6 +430,13 @@ BLOCK_ICONS = {
     "BirchWood": "BirchWood",
     "SpruceWood": "SpruceWood",
     "CherryWood": "CherryWood",
+}
+# Pictures for the HUD menu buttons. Not items: no model is exported, only an icon cell,
+# after every item and block so their cells never move. name -> (build, azimuth, elevation)
+UI_ICONS = {
+    "IconBag": (ui_bag, -24, 18),
+    "IconTrophy": (ui_trophy, -20, 14),
+    "IconMail": (ui_mail, -14, 10),
 }
 
 # Where the hand holds an item, in the item's own modelling space (before tilting)
@@ -507,7 +578,16 @@ def write_image(array, path, name):
     bpy.data.images.remove(image)
 
 
-def render_icons(items):
+def build_ui_icons():
+    objects = {}
+    for name, (build, _, _) in UI_ICONS.items():
+        b = Builder(seed=sum(map(ord, name)))
+        build(b)
+        objects[name] = b.finish(name)
+    return objects
+
+
+def render_icons(items, ui_icons):
     scene = bpy.context.scene
     for engine in ("BLENDER_EEVEE", "BLENDER_EEVEE_NEXT"):
         try:
@@ -528,19 +608,16 @@ def render_icons(items):
     scene.camera = camera
 
     blocks = load_blocks()
-    entries = [(name, obj, ITEMS[name][1]) for name, obj in items.items()]
-    entries += [(item, blocks[block], None) for item, block in BLOCK_ICONS.items() if block in blocks]
+    # (name, object, (azimuth, elevation)); blocks show three faces
+    entries = [(name, obj, (-22, 14) if ITEMS[name][1] else (-24, 20)) for name, obj in items.items()]
+    entries += [(item, blocks[block], (-38, 28)) for item, block in BLOCK_ICONS.items() if block in blocks]
+    entries += [(name, obj, UI_ICONS[name][1:]) for name, obj in ui_icons.items()]
 
     temp = os.path.join(common.RENDER_DIR, "_icon.png")
     sheet = np.zeros((SHEET, SHEET, 4), dtype=np.float32)
     cells = {}
-    for index, (name, obj, tilted) in enumerate(entries):
-        if tilted is None:
-            render_icon(scene, camera, obj, -38, 28, temp)  # blocks: three faces showing
-        elif tilted:
-            render_icon(scene, camera, obj, -22, 14, temp)
-        else:
-            render_icon(scene, camera, obj, -24, 20, temp)
+    for index, (name, obj, (azimuth, elevation)) in enumerate(entries):
+        render_icon(scene, camera, obj, azimuth, elevation, temp)
         icon = with_outline(read_image(temp), radius=4)
         small = downscale(icon)
         row, col = divmod(index, COLUMNS)
@@ -598,7 +675,7 @@ def main():
     if words:
         subset = [obj for obj in objects if any(word in obj.name for word in words)]
         print("subset:", export_fbx(os.path.join(common.EXPORT_DIR, "Items_new.fbx"), subset), [o.name for o in subset])
-    cells = render_icons({obj.name: obj for obj in objects})
+    cells = render_icons({obj.name: obj for obj in objects}, build_ui_icons())
     print("luau:", write_luau(grips, cells))
     print(f"items: {len(objects)} models, {len(cells)} icons")
 

@@ -5,7 +5,7 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
 
 | Skill | How you train it | XP | What it unlocks |
 |---|---|---|---|
-| **Farming** | Harvest ripe crops | Wheat 25, Carrot 30, Potato 40, Pumpkin 50, Melon 60, Glowberry 45 | Stone Hoe (3), Carrot seeds (5), Iron Hoe (6, + Crafting 3), Glowberry (8), Potato (10), Crystal Hoe (12, + Crafting 8), Pumpkin (15), Melon (25); more tilled plots as you level |
+| **Farming** | Harvest ripe crops | Wheat 25, Carrot 30, Potato 40, Pumpkin 50, Melon 60, Glowberry 45 | Stone Hoe (3), Carrot seeds (5), Iron Hoe (6, + Crafting 3), Glowberry (8), Potato (10), Crystal Hoe (12, + Crafting 8), Pumpkin (15), Melon (25) |
 | **Mining** | Mine the island's boulders and ore with a pickaxe, or anything in the Mining World | Stone 30, Coal Ore 40, Iron Ore 55, Gold Ore 90 | Iron Pickaxe and Shovel (4), Crystal ones (8), Gold Ore in the Mining World (10, Iron pickaxe) |
 | **Woodcutting** | Chop the island's trees, trees you planted, or the Woodcutting World's forest | Wood 50, Birch 65, Spruce 85, Cherry 105 | Iron Axe (4), Crystal Axe (8), the Woodcutting World's Birch Grove (10), Snowy Pines (20) and Cherry Hills (30); more planted trees as you level |
 | **Crafting** | Craft or smelt anything | Planks 75, Sticks 40, Iron Ingot 140, Gold Ingot 195, Furnace 360; a tool by its materials (each head piece: Planks 19, Stone 45, Iron Ingot 140, Crystal 540; each stick 9) | Every Iron tool (3) and Crystal tool (8) |
@@ -20,7 +20,7 @@ Five skills, each with its own level (1–99), next to the player level. Code: `
 - **Crafting window:** locked recipes have a "Locked" tag; the details show a Skills row (red until you have the level) and "Needs Woodcutting 4". Screenshot: `art/renders/ui-crafting-skills.jpg`.
 - **Hoes (built 2026-10-25):** Wooden Hoe needs nothing, Stone Hoe Farming 3, Iron Hoe Crafting 3 + Farming 6, Crystal Hoe (our top tier, like a diamond hoe) Crafting 8 + Farming 12. Cost: 2 head material + 2 sticks.
   - **Tilling:** hold a hoe and right-click (or tap) grass or dirt on your island with open space above it; it becomes a real farm plot, saved with your island. Each till uses 1 durability.
-  - **How many:** 2 tilled plots, plus 1 more every 3 Farming levels (Farming 3 = 3, Farming 12 = 6, max 30), on top of your island's own plots.
+  - **How many:** as many as you like (2026-10-31, your call). Islands have no ready-made farm any more; the island's build border is the only limit. The Farming World is for early to mid game, and nodes are hard to get.
   - **Undo:** a shovel on an empty tilled plot turns it back into dirt (a shovel on a crop still digs the crop up first).
   - **Harvesting needs a tool (2026-10-27):** hold a hoe to harvest any crop ("Hold a hoe to harvest Wheat" otherwise); pumpkins and melons need an axe. Harvesting doesn't wear the tool (tilling does). Every player gets a **Wooden Hoe**: new players in the starter kit (with 6 Wheat Seeds), older players once by mail in their Inbox.
   - **Bonus:** the hoe you harvest with adds +2% / 4% / 7% / 12% (Wooden → Crystal) double-crop chance on top of your Farming bonus.

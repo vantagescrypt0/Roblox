@@ -1,5 +1,6 @@
 --!strict
--- Island expansion: shows your island's size and lets you buy the next tier with coins.
+-- Island upgrades: shows how far you can build from your island (its border) and lets you
+-- buy the next level with coins. Upgrading only moves the border out.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -23,7 +24,8 @@ local function card(parent: Instance, height: number, order: number): Frame
 	return frame
 end
 
-local function statRow(parent: Instance, tier: IslandTiers.Tier)
+-- The build area as a chip: "129 x 129 blocks"
+local function areaRow(parent: Instance, tier: IslandTiers.Tier)
 	local row = Theme.make("Frame", {
 		Size = UDim2.new(1, 0, 0, 30),
 		Position = UDim2.fromOffset(0, 36),
@@ -31,9 +33,8 @@ local function statRow(parent: Instance, tier: IslandTiers.Tier)
 		Parent = parent,
 	})
 	Theme.list(row, Enum.FillDirection.Horizontal, 8)
-	Theme.chip(row, `{tier.Plots} farm plots`).LayoutOrder = 1
-	Theme.chip(row, `{tier.Trees} trees`).LayoutOrder = 2
-	Theme.chip(row, `{tier.Rocks} boulders`).LayoutOrder = 3
+	local across = tier.Border * 2 + 1
+	Theme.chip(row, `Build area {across} x {across} blocks`).LayoutOrder = 1
 end
 
 local function render()
@@ -57,7 +58,7 @@ local function render()
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
 		Size = UDim2.fromOffset((count - 1) * 76, 4),
-		BackgroundColor3 = C.TanEdge,
+		BackgroundColor3 = C.Line,
 		BorderSizePixel = 0,
 		Parent = track,
 	})
@@ -67,13 +68,13 @@ local function render()
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.new(0.5, (i - (count + 1) / 2) * 76, 0.5, 0),
 			Size = UDim2.fromOffset(38, 38),
-			BackgroundColor3 = if reached then C.Green else C.ParchmentDark,
+			BackgroundColor3 = if reached then C.Green else C.Card,
 			ZIndex = 2,
 			Parent = track,
 		})
 		Theme.corner(marker, 999)
-		Theme.stroke(marker, if reached then Theme.darken(C.Green, 0.4) else C.TanEdge, 2.5)
-		local number = Theme.text(marker, tostring(i), 18, Theme.Font.Bold, if reached then C.Cream else C.InkMuted)
+		Theme.stroke(marker, if reached then Theme.darken(C.Green, 0.4) else C.Line, 2.5)
+		local number = Theme.text(marker, tostring(i), 18, Theme.Font.Bold, if reached then C.White else C.InkMuted)
 		number.Size = UDim2.fromScale(1, 1)
 		number.TextXAlignment = Enum.TextXAlignment.Center
 		number.ZIndex = 2
@@ -82,17 +83,17 @@ local function render()
 	local now = card(content, 84, 2)
 	local nowTitle = Theme.title(now, tier.Name, 26)
 	nowTitle.Size = UDim2.new(1, 0, 0, 30)
-	statRow(now, tier)
+	areaRow(now, tier)
 
 	local nextCard = card(content, 150, 3)
 	if nextTier then
-		local nextTitle = Theme.title(nextCard, `Next: {nextTier.Name}`, 24, C.WoodLight)
+		local nextTitle = Theme.title(nextCard, `Next: level {tierIndex + 1}`, 24, C.Blue)
 		nextTitle.Size = UDim2.new(1, 0, 0, 30)
-		statRow(nextCard, nextTier)
+		areaRow(nextCard, nextTier)
 		local affordable = state.Coins >= nextTier.Cost
 		local button = Theme.button(
 			nextCard,
-			`Expand for {Theme.coins(nextTier.Cost)}`,
+			`Upgrade for {Theme.coins(nextTier.Cost)}`,
 			C.Green,
 			UDim2.new(1, 0, 0, 48),
 			function()
@@ -106,7 +107,7 @@ local function render()
 			button.SetText(`Need {Theme.coins(nextTier.Cost - state.Coins)} more`)
 		end
 	else
-		local done = Theme.title(nextCard, "Your island is fully grown!", 26, C.WoodLight)
+		local done = Theme.title(nextCard, "Your island is at its top level!", 26, C.Blue)
 		done.Size = UDim2.fromScale(1, 1)
 		done.TextXAlignment = Enum.TextXAlignment.Center
 	end
@@ -128,7 +129,7 @@ function IslandWindow.Close()
 end
 
 function IslandWindow.Start()
-	window = Window.new("IslandWindow", "My Island", Vector2.new(500, 400))
+	window = Window.new("IslandWindow", "My Island", Vector2.new(500, 400), C.Green)
 	window.OnOpen = render
 	content = Theme.make("Frame", {
 		Size = UDim2.fromScale(1, 1),

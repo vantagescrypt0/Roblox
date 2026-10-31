@@ -23,6 +23,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Gathering = require(ReplicatedStorage.Shared.Gathering)
+local Gear = require(ReplicatedStorage.Shared.Gear)
+local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Liquids = require(ReplicatedStorage.Shared.Liquids)
@@ -43,8 +45,11 @@ local PLACE_COOLDOWN = 0.12
 -- Chance that a natural leaf block drops a sapling (TreeService plants it); a felled
 -- tree's falling leaves roll it too
 local SAPLING_CHANCE = 0.08
--- Building area around the island (in blocks)
-local MAX_HEIGHT, MAX_DEPTH, EXTRA_RADIUS = 40, 40, 12
+-- How high and deep you can build on your island (in blocks); how far out is the island
+-- level's border (IslandTiers)
+local MAX_HEIGHT, MAX_DEPTH = 96, 64
+-- Seconds between "that's your border" messages
+local BORDER_NOTICE = 2
 
 -- Where a player breaks blocks
 export type Area = {
@@ -65,6 +70,7 @@ local BlockService = {}
 
 local lastBreak: { [Player]: number } = {}
 local lastPlace: { [Player]: number } = {}
+local lastBorderNotice: { [Player]: number } = {}
 local rng = Random.new()
 
 -- The player's own island, on island servers
@@ -211,6 +217,7 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	elseif canHarvest and (blockType == "CoalOre" or blockType == "IronOre" or blockType == "GoldOre") then
 		QuestService.Record(player, "Mine")
 		QuestService.Record(player, `Mine:{blockType}`)
+		QuestService.Record(player, "MineOre")
 	end
 end
 
@@ -236,8 +243,19 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	if world.Protected[cellKey] or IslandService.GetNode(player, cx, cy, cz) then
 		return
 	end
-	local limit = 13 + EXTRA_RADIUS
-	if math.abs(cx) > limit or math.abs(cz) > limit or cy > MAX_HEIGHT or cy < -MAX_DEPTH then
+	if cy > MAX_HEIGHT or cy < -MAX_DEPTH then
+		return
+	end
+	local border = IslandTiers[math.clamp(island.Tier, 1, #IslandTiers)].Border
+	if math.abs(cx) > border or math.abs(cz) > border then
+		local now = os.clock()
+		if now - (lastBorderNotice[player] or 0) >= BORDER_NOTICE then
+			lastBorderNotice[player] = now
+			local message = if IslandTiers[island.Tier + 1]
+				then "That's the edge of your island. Upgrade it in the Island menu to build further!"
+				else "That's the edge of your island"
+			StateService.Notify(player, message, "bad")
+		end
 		return
 	end
 	if not BlockWorld.hasNeighbour(world, cx, cy, cz) or not inReach(player, world, cx, cy, cz) then
@@ -268,9 +286,13 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	if item.Node then
 		IslandService.PlaceNode(player, cx, cy, cz, item.Block)
 		StateService.Notify(player, `Placed your {item.Name}: mine it and it grows back`, "good")
+		QuestService.Record(player, "PlaceNode")
 	else
 		BlockWorld.set(world, cx, cy, cz, item.Block)
 		IslandService.RecordChange(player, cx, cy, cz, item.Block)
+		if Gear.Trophies[itemId] then
+			QuestService.Record(player, "PlaceTrophy")
+		end
 	end
 	if not pouring then
 		QuestService.Record(player, "Place")
@@ -318,6 +340,7 @@ function BlockService.Start(worldArea: ((Player) -> Area?)?)
 	Players.PlayerRemoving:Connect(function(player)
 		lastBreak[player] = nil
 		lastPlace[player] = nil
+		lastBorderNotice[player] = nil
 	end)
 end
 

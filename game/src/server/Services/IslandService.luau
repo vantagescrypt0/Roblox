@@ -1,8 +1,10 @@
 --!strict
--- Gives each player their own floating island made of blocks, generated for their
--- expansion tier, with their own block changes (data.Island.Blocks) on top. Spawns them
--- on it, rebuilds it bigger when they expand, and puts players back on it if they fall
--- off. Boulders and their ores are resource nodes: a mined node block grows back in the
+-- Gives each player their own floating island made of blocks: everyone starts on the same
+-- small island and builds outward from it, with their own block changes
+-- (data.Island.Blocks) on top. Upgrading the island (IslandTiers) only moves the build
+-- border out, BlockService checks it. Spawns players on their island and puts them back on
+-- it if they fall off. There's no ready-made farm: players hoe grass into farmland
+-- (FarmService). Boulders and their ores are resource nodes: a mined node block grows back in the
 -- same spot after a while (Blocks.NodeRespawn), so mined nodes are never saved as holes;
 -- a mined ore node turns pale (Empty Ore) meanwhile. The stone underside has ore veins
 -- to dig for (those are ordinary blocks).
@@ -58,11 +60,10 @@ export type Island = {
 	Spawn: SpawnLocation,
 	-- World position of the middle of the top grass surface
 	Center: Vector3,
-	Tier: number,
+	Tier: number, -- the island level: how far out the player can build
 	-- Generated cells before the player's changes (to work out what changed)
 	Base: { [string]: string },
 	CraftingTable: Cell,
-	FarmCells: { Cell },
 	PortalSurface: BasePart,
 	Nodes: { [string]: Node }, -- by cell key
 	-- Standing trees by the ground cell they stand on, and which tree each of their cells is
@@ -122,6 +123,8 @@ local key = BlockWorld.key
 
 -- Generation ---------------------------------------------------------------------
 
+-- The island everyone starts on: its radius in blocks, its trees and boulders
+local STARTER = { Radius = 7, Trees = 2, Rocks = 1 }
 local TREE_SPOTS = { { 4, 3 }, { -5, -1 }, { 6, -3 }, { 0, 7 }, { 8, 2 }, { -8, -6 } }
 local ROCK_SPOTS = { { 2, -4 }, { 6, 0 }, { -8, 4 } }
 local ROCK_SHAPE = {
@@ -132,7 +135,7 @@ local ROCK_SHAPE = {
 }
 local CRAFTING_TABLE = { X = 3, Y = 1, Z = -2 }
 
--- The same noise for every tier, so bigger islands grow outward from the same shape
+-- A ragged edge, the same for every island
 local edgeNoise: { number } = {}
 do
 	local noise = Random.new(4242)
@@ -190,7 +193,6 @@ end
 type Generated = {
 	Cells: { [string]: string },
 	Protected: { [string]: boolean },
-	FarmCells: { Cell },
 	PortalZ: number,
 	Nodes: { [string]: Node },
 	Trees: { [string]: Tree },
@@ -211,8 +213,8 @@ end
 -- `island` is the player's saved island data: their planted trees (the grown ones stand
 -- here), the island trees they've felled, and their block changes (planted trees grow
 -- around their blocks)
-local function generate(tier: number, island: DataService.IslandData): Generated
-	local spec = IslandTiers[tier]
+local function generate(island: DataService.IslandData): Generated
+	local spec = STARTER
 	local radius = spec.Radius
 	local cells: { [string]: string } = {}
 	local protected: { [string]: boolean } = {}
@@ -230,19 +232,6 @@ local function generate(tier: number, island: DataService.IslandData): Generated
 					cells[key(x, y, z)] = if y >= -2 then "Dirt" else undergroundBlock(x, y, z)
 				end
 			end
-		end
-	end
-
-	-- Farmland patch (crops grow on top; both protected)
-	local farmCells: { Cell } = {}
-	local width, depthRows = spec.Farm[1], spec.Farm[2]
-	for row = 0, depthRows - 1 do
-		for col = 0, width - 1 do
-			local x, z = -2 - width + col, 2 + row
-			cells[key(x, 0, z)] = "Farmland"
-			protected[key(x, 0, z)] = true
-			protected[key(x, 1, z)] = true
-			table.insert(farmCells, { X = x, Y = 0, Z = z })
 		end
 	end
 
@@ -307,7 +296,6 @@ local function generate(tier: number, island: DataService.IslandData): Generated
 	return {
 		Cells = cells,
 		Protected = protected,
-		FarmCells = farmCells,
 		PortalZ = portalZ,
 		Nodes = nodes,
 		Trees = trees,
@@ -453,7 +441,7 @@ end
 
 local function build(player: Player, data: DataService.Data, tier: number, plot: number): Island
 	local center = plotCenter(plot)
-	local generated = generate(tier, data.Island)
+	local generated = generate(data.Island)
 	local world = BlockWorld.new(center - Vector3.new(0, SIZE / 2, 0), `Island_{player.UserId}`, islandsFolder)
 	world.Model:SetAttribute("OwnerUserId", player.UserId)
 	world.Model:SetAttribute("Tier", tier)
@@ -490,7 +478,6 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 		Tier = tier,
 		Base = base,
 		CraftingTable = CRAFTING_TABLE,
-		FarmCells = generated.FarmCells,
 		PortalSurface = Portal.makeField(world, 0, generated.PortalZ),
 		Nodes = generated.Nodes,
 		Trees = {},
@@ -559,10 +546,37 @@ local function clampTier(tier: number): number
 	return math.clamp(tier, 1, #IslandTiers)
 end
 
+-- Islands used to come with a farmland patch, its plots saved by number ("1", "2"...), and
+-- bigger tiers were bigger islands. Once per old save: the patch becomes farmland the
+-- player made (a block change) with its crops still growing, so nothing is lost.
+local OLD_FARMS = { { 3, 2 }, { 3, 3 }, { 4, 3 }, { 4, 4 } }
+local function moveOldFarm(data: DataService.Data)
+	if data.Flags.OwnFarmland then
+		return
+	end
+	data.Flags.OwnFarmland = true
+	local size = OLD_FARMS[math.clamp(data.Island.Tier, 1, #OLD_FARMS)]
+	local width, rows = size[1], size[2]
+	local number = 0
+	for row = 0, rows - 1 do
+		for col = 0, width - 1 do
+			number += 1
+			local cellKey = key(-2 - width + col, 0, 2 + row)
+			data.Island.Blocks[cellKey] = data.Island.Blocks[cellKey] or "Farmland"
+			local planted = data.Farm.Plots[tostring(number)]
+			if planted then
+				data.Farm.Plots[cellKey] = planted
+				data.Farm.Plots[tostring(number)] = nil
+			end
+		end
+	end
+end
+
 local function onDataLoaded(player: Player, data: DataService.Data)
 	if islands[player] then
 		return
 	end
+	moveOldFarm(data)
 	announce(player, build(player, data, clampTier(data.Island.Tier), claimPlot()))
 
 	player.CharacterAdded:Connect(function(character)
@@ -576,24 +590,6 @@ local function onDataLoaded(player: Player, data: DataService.Data)
 	end)
 
 	spawnCharacter(player)
-end
-
--- Rebuilds the player's island at their current tier (after expanding)
-function IslandService.Rebuild(player: Player)
-	local old = islands[player]
-	local data = DataService.GetData(player)
-	if not old or not data then
-		return
-	end
-	local island = build(player, data, clampTier(data.Island.Tier), old.Plot)
-	BlockWorld.destroy(old.World)
-	announce(player, island)
-
-	local character = player.Character
-	if character then
-		character:PivotTo(island.Spawn.CFrame + Vector3.new(0, 4, 0))
-	end
-	Remotes.IslandRebuilt:FireClient(player, island.Tier)
 end
 
 function IslandService.SendHome(player: Player)
@@ -804,25 +800,29 @@ local function respawnNodes()
 	end
 end
 
--- Buying the next island size (from the Island window)
+-- Buying the next island level (from the Island window): the build border moves out
 local function onExpand(player: Player)
 	local data = DataService.GetData(player)
-	if not data then
+	local island = islands[player]
+	if not data or not island then
 		return
 	end
 	local nextTier = IslandTiers[data.Island.Tier + 1]
 	if not nextTier then
-		StateService.Notify(player, "Your island is already the biggest it can be!", "bad")
+		StateService.Notify(player, "Your island is already at its top level!", "bad")
 		return
 	end
 	if not InventoryService.SpendCoins(player, nextTier.Cost) then
-		StateService.Notify(player, `You need {nextTier.Cost} coins to expand`, "bad")
+		StateService.Notify(player, `You need {nextTier.Cost} coins to upgrade`, "bad")
 		return
 	end
 	data.Island.Tier += 1
+	island.Tier = clampTier(data.Island.Tier)
+	island.Model:SetAttribute("Tier", island.Tier)
 	DataService.MarkChanged(player)
-	IslandService.Rebuild(player)
-	StateService.Notify(player, `Your island grew into a {nextTier.Name}!`, "level")
+	local across = nextTier.Border * 2 + 1
+	StateService.Notify(player, `Your island can now be {across} x {across} blocks!`, "level")
+	Remotes.IslandRebuilt:FireClient(player, island.Tier)
 end
 
 -- Players who fall off are put back on their island instead of dying in the void

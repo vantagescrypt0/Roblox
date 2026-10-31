@@ -190,9 +190,9 @@ local function render()
 		tile.Button.Visible = recipe.Station == station
 		local enough, skilled = check(recipe)
 		local selected = recipe.Id == selectedId
-		tile.Stroke.Color = if selected then C.Ochre elseif enough and skilled then C.Green else C.TanEdge
+		tile.Stroke.Color = if selected then C.Orange elseif enough and skilled then C.Green else C.Line
 		tile.Stroke.Thickness = if selected then 3.5 elseif enough and skilled then 2.5 else 2
-		tile.Button.BackgroundColor3 = if selected then C.Parchment else C.ParchmentDark
+		tile.Button.BackgroundColor3 = if selected then C.Panel else C.Card
 		tile.Lock.Visible = not skilled
 	end
 	renderDetail()
@@ -210,7 +210,7 @@ local function buildGrid(parent: Instance)
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollBarThickness = 5,
-		ScrollBarImageColor3 = C.WoodLight,
+		ScrollBarImageColor3 = C.Blue,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		CanvasSize = UDim2.new(),
 		Parent = well,
@@ -225,14 +225,14 @@ local function buildGrid(parent: Instance)
 
 	for index, recipe in Recipes.List do
 		local button = Theme.make("TextButton", {
-			BackgroundColor3 = C.ParchmentDark,
+			BackgroundColor3 = C.Card,
 			AutoButtonColor = false,
 			Text = "",
 			LayoutOrder = index,
 			Parent = grid,
 		})
 		Theme.corner(button, 6)
-		local stroke = Theme.stroke(button, C.TanEdge, 2)
+		local stroke = Theme.stroke(button, C.Line, 2)
 		ItemIcon.create(button, recipe.Output, UDim2.fromScale(0.8, 0.8))
 		if recipe.Amount > 1 then
 			local amount = Theme.text(button, tostring(recipe.Amount), 15, Theme.Font.Bold)
@@ -246,10 +246,10 @@ local function buildGrid(parent: Instance)
 		local lock = Theme.make("TextLabel", {
 			Position = UDim2.fromOffset(3, 3),
 			Size = UDim2.fromOffset(46, 16),
-			BackgroundColor3 = C.WoodLight,
+			BackgroundColor3 = C.Blue,
 			FontFace = Theme.Font.Bold,
 			TextSize = 11,
-			TextColor3 = C.Cream,
+			TextColor3 = C.White,
 			Text = "Locked",
 			ZIndex = 3,
 			Visible = false,
@@ -293,7 +293,7 @@ local function buildDetail(parent: Instance)
 	nameLabel = Theme.title(panel, "", 28)
 	nameLabel.Position = UDim2.fromOffset(146, 0)
 	nameLabel.Size = UDim2.new(1, -146, 0, 34)
-	kindLabel = Theme.text(panel, "", 15, Theme.Font.Bold, C.WoodLight)
+	kindLabel = Theme.text(panel, "", 15, Theme.Font.Bold, C.Blue)
 	kindLabel.Position = UDim2.fromOffset(146, 38)
 	kindLabel.Size = UDim2.new(1, -146, 0, 20)
 	goodFor = Theme.text(panel, "", 14, Theme.Font.Medium, C.InkMuted)
@@ -385,7 +385,7 @@ function CraftingWindow.IsOpen(): boolean
 end
 
 function CraftingWindow.Start()
-	window = Window.new("CraftingWindow", "Crafting Table", Vector2.new(760, 480))
+	window = Window.new("CraftingWindow", "Crafting Table", Vector2.new(760, 480), C.Orange)
 	window.OnOpen = render
 	buildGrid(window.Body)
 	buildDetail(window.Body)

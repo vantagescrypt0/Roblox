@@ -17,6 +17,7 @@ local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
 local COOLDOWN = 0.25
@@ -74,6 +75,7 @@ local function onPlant(player: Player, x: unknown, y: unknown, z: unknown)
 	end
 	InventoryService.Remove(player, "Sapling", 1)
 	StateService.Notify(player, "Planted! It grows into a tree in a few minutes", "good")
+	QuestService.Record(player, "PlantSapling")
 end
 
 local function onUproot(player: Player, x: unknown, y: unknown, z: unknown)

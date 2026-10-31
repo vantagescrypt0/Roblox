@@ -14,7 +14,7 @@ local NAMES = {
 	"Sell", -- client -> server: sell to a shop (shop id, item id, amount or "all"); item "*" sells everything it buys
 	"Buy", -- client -> server: buy from a shop (shop id, item id, amount)
 	"Expand", -- client -> server: buy the next island tier
-	"IslandRebuilt", -- server -> client: your island just grew (for effects)
+	"IslandRebuilt", -- server -> client: your island was upgraded to this level (for effects)
 	"BreakBlock", -- client -> server: break the block at grid x, y, z (your island, or the world you're in)
 	"PlaceBlock", -- client -> server: place an item's block at grid x, y, z
 	"SetHotbar", -- client -> server: put an item (or "") in hotbar slot 1-5
@@ -34,6 +34,7 @@ local NAMES = {
 	"TradeUpdate", -- server -> client: what the trade window shows, or nil when the trade closes
 	"ClaimMail", -- client -> server: claim a letter in your Inbox (its id, or "*" for all of them)
 	"Equip", -- client -> server: wear a pet or armor set (item id), or take it off if worn
+	"TrackBoard", -- client -> server: show this Challenges board group in the quest tracker (Boards.luau id)
 }
 
 local folder: Instance
@@ -80,4 +81,5 @@ return {
 	TradeUpdate = folder:WaitForChild("TradeUpdate") :: RemoteEvent,
 	ClaimMail = folder:WaitForChild("ClaimMail") :: RemoteEvent,
 	Equip = folder:WaitForChild("Equip") :: RemoteEvent,
+	TrackBoard = folder:WaitForChild("TrackBoard") :: RemoteEvent,
 }

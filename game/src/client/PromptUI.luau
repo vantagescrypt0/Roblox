@@ -1,5 +1,5 @@
 --!strict
--- Draws our custom-style ProximityPrompts: a parchment card with the key to press, what it
+-- Draws our custom-style ProximityPrompts: a white card with the key to press, what it
 -- does, and a fill bar while holding. On phones the whole card is a tap/hold button.
 
 local Players = game:GetService("Players")
@@ -53,29 +53,30 @@ local function show(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInpu
 	local card = Theme.make("TextButton", {
 		Size = UDim2.new(1, -8, 1, -8),
 		Position = UDim2.fromOffset(4, 4),
-		BackgroundColor3 = C.Parchment,
+		BackgroundColor3 = C.Panel,
 		AutoButtonColor = false,
 		Text = "",
 		Parent = billboard,
 	})
-	Theme.corner(card, 7)
-	Theme.stroke(card, C.Wood, 4)
+	Theme.corner(card, 12)
+	Theme.stroke(card, C.Outline, 3)
 	local scale = Theme.make("UIScale", { Scale = 0.7, Parent = card })
 	TweenService:Create(scale, TweenInfo.new(0.18, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
 
-	-- The key to press, on a wooden key cap
+	-- The key to press, on a blue key cap
 	local key = Theme.make("TextLabel", {
 		Size = UDim2.fromOffset(44, 44),
 		Position = UDim2.fromOffset(9, 9),
-		BackgroundColor3 = C.WoodLight,
+		BackgroundColor3 = C.Blue,
 		Text = keyLabel(prompt, inputType),
 		FontFace = Theme.Font.Bold,
-		TextSize = 22,
-		TextColor3 = C.Cream,
+		TextSize = 24,
+		TextColor3 = C.White,
 		Parent = card,
 	})
-	Theme.corner(key, 6)
-	Theme.stroke(key, C.Wood, 2)
+	Theme.corner(key, 10)
+	Theme.stroke(key, C.Outline, 2.5)
+	Theme.outline(key, 1.6)
 
 	local action = Theme.title(card, prompt.ActionText, 22)
 	action.Position = UDim2.fromOffset(64, 6)

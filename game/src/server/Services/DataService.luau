@@ -66,6 +66,8 @@ local TEMPLATE = {
 		StarterHoe = false,
 		-- A Water Bucket and a Lava Bucket: the same, for players from before them
 		StarterBuckets = false,
+		-- Old islands' ready-made farm patch has become the player's own farmland (IslandService)
+		OwnFarmland = false,
 	},
 	-- Mail waiting to be claimed, oldest first (InboxService). Count is how many letters
 	-- the player has ever had (each letter's id).
@@ -89,6 +91,12 @@ local TEMPLATE = {
 		Index = 1,
 		Progress = 0,
 	},
+	-- The Challenges board's other groups (Boards.luau), by group id: the Ids of the
+	-- challenges finished, and progress on the current one (Current is its Id, so progress
+	-- never carries over to a different challenge)
+	Boards = {} :: { [string]: { Done: { [string]: boolean }, Current: string, Progress: number } },
+	-- The group the quest tracker shows
+	Tracked = "Beginner",
 	-- Warzone run in progress. The bag only becomes yours when you extract; leaving
 	-- the game mid-raid loses it.
 	Raid = {
@@ -209,6 +217,7 @@ local function onPlayerAdded(player: Player)
 		data.Flags.StarterKit = true
 		data.Flags.StarterHoe = true
 		data.Flags.StarterBuckets = true
+		data.Flags.OwnFarmland = true
 		data.Items.WheatSeeds = (data.Items.WheatSeeds or 0) + 6
 		data.Items.WoodenHoe = (data.Items.WoodenHoe or 0) + 1
 		data.Items.WaterBucket = (data.Items.WaterBucket or 0) + 1

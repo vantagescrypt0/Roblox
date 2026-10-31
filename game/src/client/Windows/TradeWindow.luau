@@ -113,13 +113,13 @@ local function slot(parent: Instance, itemId: string, count: number, order: numb
 	local button = Theme.make("TextButton", {
 		LayoutOrder = order,
 		Size = UDim2.fromOffset(SLOT, SLOT),
-		BackgroundColor3 = C.ParchmentDark,
+		BackgroundColor3 = C.Card,
 		AutoButtonColor = false,
 		Text = "",
 		Parent = parent,
 	})
 	Theme.corner(button, 5)
-	Theme.stroke(button, if isSelected then C.Ochre else C.TanEdge, if isSelected then 3 else 2)
+	Theme.stroke(button, if isSelected then C.Orange else C.Line, if isSelected then 3 else 2)
 	ItemIcon.create(button, itemId, UDim2.fromScale(0.8, 0.8))
 	if count ~= 1 then
 		local label = Theme.text(button, tostring(count), 15, Theme.Font.Bold)
@@ -130,11 +130,11 @@ local function slot(parent: Instance, itemId: string, count: number, order: numb
 		label.ZIndex = 3
 	end
 	button.MouseEnter:Connect(function()
-		button.BackgroundColor3 = C.Parchment
+		button.BackgroundColor3 = C.Panel
 		info.Text = hover
 	end)
 	button.MouseLeave:Connect(function()
-		button.BackgroundColor3 = C.ParchmentDark
+		button.BackgroundColor3 = C.Card
 	end)
 	return button
 end
@@ -149,7 +149,7 @@ local function wearBar(button: Instance, itemId: string, usesLeft: number)
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -3),
 		Size = UDim2.new(1, -12, 0, 4),
-		BackgroundColor3 = C.WoodEdge,
+		BackgroundColor3 = C.Outline,
 		BorderSizePixel = 0,
 		ZIndex = 3,
 		Parent = button,
@@ -211,7 +211,7 @@ local function renderBag()
 			-- Everything you have of it is already in the trade
 			local shade = Theme.make("Frame", {
 				Size = UDim2.fromScale(1, 1),
-				BackgroundColor3 = C.Tan,
+				BackgroundColor3 = C.Inset,
 				BackgroundTransparency = 0.35,
 				ZIndex = 5,
 				Parent = button,
@@ -266,16 +266,16 @@ local function renderAccept(current: View)
 
 	acceptButton.SetEnabled(true)
 	if current.Countdown then
-		acceptButton.SetColor(C.Ochre)
+		acceptButton.SetColor(C.Orange)
 		acceptButton.SetText(countdownText())
 	elseif mine.Accepted then
-		acceptButton.SetColor(C.Tan)
+		acceptButton.SetColor(C.Inset)
 		acceptButton.SetText(`Waiting for {current.Partner}... press to change`)
 	elseif #mine.Items == 0 and #theirs.Items == 0 then
 		acceptButton.SetEnabled(false)
 		acceptButton.SetText("Add something to trade")
 	else
-		acceptButton.SetColor(if lopsided then C.Ochre else C.Green)
+		acceptButton.SetColor(if lopsided then C.Orange else C.Green)
 		acceptButton.SetText(if lopsided then "Accept anyway" else "Accept")
 	end
 end
@@ -448,7 +448,7 @@ local function sidePanel(parent: Instance, x: number, title: string, emptyText: 
 end
 
 local function buildWindow()
-	window = Window.new("TradeWindow", "Trade", Vector2.new(800, 600))
+	window = Window.new("TradeWindow", "Trade", Vector2.new(800, 600), C.Blue)
 	window.OnOpen = function()
 		setPromptsEnabled(false)
 		TradeWindow.Render()
@@ -486,7 +486,7 @@ local function buildWindow()
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollBarThickness = 6,
-		ScrollBarImageColor3 = C.WoodLight,
+		ScrollBarImageColor3 = C.Blue,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		CanvasSize = UDim2.new(),
 		Parent = well,
@@ -558,7 +558,7 @@ local function buildWindow()
 		},
 	}
 	for order, step in steps do
-		local button = Theme.button(amounts, step.Label, C.WoodLight, UDim2.fromOffset(64, 40), function()
+		local button = Theme.button(amounts, step.Label, C.Blue, UDim2.fromOffset(64, 40), function()
 			local itemId = selected
 			if itemId then
 				setOffer(itemId, step.Count(state.Items[itemId] or 0, offered(itemId)))
@@ -612,7 +612,7 @@ local function buildInvite()
 		answerInvite(true)
 	end)
 	yes.Holder.Position = UDim2.fromOffset(16, 70)
-	local no = Theme.button(inviteCard, "No thanks", C.Tan, UDim2.fromOffset(166, 44), function()
+	local no = Theme.button(inviteCard, "No thanks", C.Inset, UDim2.fromOffset(166, 44), function()
 		answerInvite(false)
 	end)
 	no.Holder.Position = UDim2.new(1, -182, 0, 70)
@@ -621,7 +621,7 @@ local function buildInvite()
 		AnchorPoint = Vector2.new(0, 1),
 		Position = UDim2.new(0, 10, 1, -5),
 		Size = UDim2.new(1, -20, 0, 4),
-		BackgroundColor3 = C.Ochre,
+		BackgroundColor3 = C.Orange,
 		BorderSizePixel = 0,
 		Parent = inviteCard,
 	})

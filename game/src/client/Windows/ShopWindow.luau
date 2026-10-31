@@ -106,7 +106,7 @@ local function renderSell()
 			local frame = row(sellList, index)
 			iconBox(frame, itemId)
 			labels(frame, item.Name, `{count} in your bag · {Theme.coins(item.SellPrice)} each`)
-			buttonPair(frame, "Sell 1", "Sell all", C.Ochre, function()
+			buttonPair(frame, "Sell 1", "Sell all", C.Orange, function()
 				Remotes.Sell:FireServer(shop.Id, itemId, 1)
 			end, function()
 				Remotes.Sell:FireServer(shop.Id, itemId, "all")
@@ -179,7 +179,7 @@ local function render()
 	sellPage.Visible = currentTab == "Sell"
 	buyPage.Visible = currentTab == "Buy"
 	for name, button in tabButtons do
-		button.SetColor(if name == currentTab then C.WoodLight else C.Tan)
+		button.SetColor(if name == currentTab then C.Blue else C.Inset)
 	end
 	if currentTab == "Sell" then
 		renderSell()
@@ -210,7 +210,7 @@ function ShopWindow.Open(shopId: string)
 end
 
 function ShopWindow.Start()
-	window = Window.new("ShopWindow", "Shop", Vector2.new(620, 490))
+	window = Window.new("ShopWindow", "Shop", Vector2.new(620, 490), C.Green)
 	window.OnOpen = render
 
 	tabs = Theme.make("Frame", {
@@ -220,7 +220,7 @@ function ShopWindow.Start()
 	})
 	Theme.list(tabs, Enum.FillDirection.Horizontal, 8)
 	for order, tab in { { "Sell", "Sell" }, { "Buy", "Buy" } } do
-		local button = Theme.button(tabs, tab[2], C.Tan, UDim2.fromOffset(130, 40), function()
+		local button = Theme.button(tabs, tab[2], C.Inset, UDim2.fromOffset(130, 40), function()
 			currentTab = tab[1]
 			render()
 		end)
@@ -236,7 +236,7 @@ function ShopWindow.Start()
 		BackgroundTransparency = 1,
 		Parent = window.Body,
 	})
-	sellAll = Theme.button(sellPage, "Sell all crops", C.Ochre, UDim2.new(1, -10, 0, 48), function()
+	sellAll = Theme.button(sellPage, "Sell all crops", C.Orange, UDim2.new(1, -10, 0, 48), function()
 		Remotes.Sell:FireServer(shop.Id, "*")
 	end)
 	sellAll.Label.TextSize = 19

@@ -13,9 +13,11 @@ local Props = require(script.Parent.Parent.Util.Props)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
+local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 
-local ARENA_CENTER = Vector3.new(0, 200, 4000)
+-- Well clear of the islands (they start at z = 0 and go back in rows of Config.Island.Spacing)
+local ARENA_CENTER = Vector3.new(0, 200, -6000)
 local ARENA_SIZE = 300
 local CENTER_ZONE_RADIUS = 55
 local PORTAL_OFFSET = Vector3.new(-1, 0, -14)
@@ -158,6 +160,7 @@ local function extract(player: Player)
 		if total > 0 then `Extracted! Brought home {total} items` else "Extracted (empty bag)",
 		"good"
 	)
+	QuestService.Record(player, "Extract")
 end
 
 -- Loot heads -----------------------------------------------------------------------
@@ -372,6 +375,7 @@ local function buildArena()
 				WarzoneService.AddToBag(player, itemId, count)
 			end
 			StateService.Notify(player, `Found {describe(loot)}`, "good")
+			QuestService.Record(player, "OpenChest")
 			task.delay(CHEST_RESPAWN, function()
 				chest.Transparency = 0
 				prompt.Enabled = true

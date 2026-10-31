@@ -34,12 +34,6 @@ function Leveling.BonusChance(skillLevel: number): number
 	return math.clamp((skillLevel - 1) * 0.01, 0, 0.75)
 end
 
--- How many farm plots you can make yourself with a hoe (on top of your island's own):
--- 2, plus one more every 3 Farming levels
-function Leveling.TilledPlots(farmingLevel: number): number
-	return math.min(2 + farmingLevel // 3, 30)
-end
-
 -- How many planted trees (saplings and grown trees) you can have on your island at once:
 -- 3, plus one more every 3 Woodcutting levels. A felled tree frees its spot.
 function Leveling.PlantedTrees(woodcuttingLevel: number): number

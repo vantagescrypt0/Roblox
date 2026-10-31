@@ -22,6 +22,7 @@ To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_til
 It writes:
 - `export/Items.fbx` — one object per item, named by item id
 - `textures/item_icons.png` — every item (and the block items) rendered as a 128 px icon on one 1024 px sheet, with a dark outline; preview on a dark background in `renders/Items.png`
+- The sheet's last cells hold pictures for the HUD menu, not items (`UI_ICONS` in `items3d.py`: `IconBag`, `IconTrophy`, `IconMail`); they come after every item and block, so adding them never moves an item's cell
 - `game/src/shared/ItemArt.luau` — generated: where the hand holds each model and each item's icon cell
 
 Importing:

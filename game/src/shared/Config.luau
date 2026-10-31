@@ -6,8 +6,9 @@ local Config = {}
 Config.Island = table.freeze({
 	-- Y position of each island's grass surface
 	Height = 200,
-	-- Distance between island centers
-	Spacing = 220,
+	-- Distance between island centers (studs): room for the biggest build border
+	-- (IslandTiers) on both neighbours, plus a gap
+	Spacing = 2400,
 	PlotsPerRow = 6,
 	Radius = 20,
 	-- Model in ServerStorage.Assets; a greybox island is built if it's missing
@@ -20,7 +21,7 @@ Config.Island = table.freeze({
 -- Empty = icons fall back to live 3D previews. Uploaded 2026-10-26 with the zone items
 -- (gold, pumpkins, melons, the new woods), as the texture of a plane imported with Import 3D
 -- (see art/README.md).
-Config.ItemIconSheet = "rbxassetid://88555485624105"
+Config.ItemIconSheet = "rbxassetid://108158291167421"
 
 -- Who can fly (double-tap Space, see client/FlightController): user ids. Only the game's
 -- owner for now (koiopio).

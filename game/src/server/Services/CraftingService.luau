@@ -10,6 +10,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Skills = require(ReplicatedStorage.Shared.Skills)
+local Tools = require(ReplicatedStorage.Shared.Tools)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -75,6 +76,10 @@ local function craft(player: Player, recipeId: unknown)
 	ProgressionService.AddSkillXP(player, "Crafting", recipe.CraftingXP)
 	QuestService.Record(player, "Craft")
 	QuestService.Record(player, `Craft:{recipe.Id}`)
+	local tool = Tools.ByItem[recipe.Output]
+	if tool then
+		QuestService.Record(player, `CraftTool:{Tools.TierNames[tool.Tier]}`)
+	end
 end
 
 function CraftingService.Start()

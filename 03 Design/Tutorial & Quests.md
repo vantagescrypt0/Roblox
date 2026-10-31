@@ -35,6 +35,9 @@ Updated for tools and click farming (2026-10-15). The first quests walk you down
 
 Rewards were scaled up with the 2026-10-27 rebalance (about 4,900 player XP in all, roughly a level and a half). Quests 12-15 (2026-10-24) teach ores and smelting. Generators and conveyors from the draft below aren't built yet; they'll slot in as quests when they are.
 
+## Challenges board groups (built 2026-10-31)
+The Challenges window opens on a square per group: **Beginner** (the chain above), **Mining**, **Woodcutting**, **Farming**, **Crafting**, **Island**, and **Slaying** and **Warzone** ("Coming soon" until the Warzone opens). Each group is a numbered chain done in order, so every group has one current challenge, and an action counts for every group whose current challenge asks for it. "Track" shows a group in the quest tracker (Beginner by default). Lists, events and rewards: `game/src/shared/Boards.luau`; progress is saved by challenge Id, so challenges can be added anywhere later. Separate from the per-resource skill challenges (pets, armor, trophies) in the Skills window.
+
 ## Draft quest chain — [Speculation]
 | # | Quest | Teaches | Reward |
 |---|---|---|---|

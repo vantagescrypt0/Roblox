@@ -61,10 +61,9 @@ local Quests: { Quest } = {
 	},
 	{ Text = "Right-click to place 3 blocks", Event = "Place", Target = 3, Reward = { XP = 150 } },
 	{
-		Text = "Click the farmland to plant 3 seeds",
+		Text = "Right-click grass with your hoe to make farmland, then click it to plant 3 seeds",
 		Event = "Plant",
 		Target = 3,
-		Highlight = "Farmland",
 		Reward = { XP = 250, Items = { WheatSeeds = 3 } },
 	},
 	{

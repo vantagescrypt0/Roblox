@@ -44,9 +44,9 @@ That's 4 tiers past Iron. If that's too many, Sapphire and Ruby can share one ti
 ## 3. Big things to buy (10M–50M)
 | Item | Price | What it does |
 |---|---|---|
-| Island tier 5: Sky Island | 2M | Radius 16, more farmland and trees |
-| Island tier 6: Floating Isles | 10M | Radius 19, a second small island joined by a bridge |
-| Island tier 7: Sky Realm | 40M | Radius 22, a waterfall lake built in |
+| Island level 5 | 2M | A bigger build border (island levels only raise limits since 2026-10-31) |
+| Island level 6 | 10M | Bigger again |
+| Island level 7 | 40M | Bigger again (Config.Island.Spacing has room up to a border of ~350) |
 | Gold Node (for your island) | 1.5M | A gold ore that grows back, like the Coal and Iron Nodes |
 | Amethyst Node | 8M | Same, Amethyst |
 | Sapphire Node | 25M | Same, Sapphire |

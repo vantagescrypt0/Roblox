@@ -147,11 +147,11 @@ local function renderChallenges()
 		local row = Theme.make("Frame", {
 			LayoutOrder = order,
 			Size = UDim2.new(1, 0, 0, 80),
-			BackgroundColor3 = C.ParchmentDark,
+			BackgroundColor3 = C.Card,
 			Parent = challengeList,
 		})
 		Theme.corner(row, 6)
-		Theme.stroke(row, if open then C.TanEdge else C.Disabled, 2)
+		Theme.stroke(row, if open then C.Line else C.Disabled, 2)
 		local box = Theme.inset(row, UDim2.fromOffset(56, 56), UDim2.fromOffset(8, 12))
 		ItemIcon.create(box, resource.Icon, UDim2.fromScale(0.86, 0.86))
 		local name = Theme.title(row, resource.Name, 19)
@@ -201,7 +201,7 @@ local function renderChallenges()
 		if not open then
 			local shade = Theme.make("Frame", {
 				Size = UDim2.fromScale(1, 1),
-				BackgroundColor3 = C.Tan,
+				BackgroundColor3 = C.Inset,
 				BackgroundTransparency = 0.5,
 				ZIndex = 4,
 				Parent = row,
@@ -222,7 +222,7 @@ local function renderDetail()
 	detailTrains.Text = `Train it: {skill.Trains}`
 	if skill.Id == "Farming" then
 		local chance = math.floor(Leveling.BonusChance(current.Level) * 100 + 0.5)
-		detailBonus.Text = `Double crops: {chance}% · hoe up to {Leveling.TilledPlots(current.Level)} new plots`
+		detailBonus.Text = `Double crops: {chance}% · hoe grass anywhere into farmland`
 	elseif skill.Id == "Woodcutting" then
 		local chance = math.floor(Leveling.BonusChance(current.Level) * 100 + 0.5)
 		detailBonus.Text = `Double logs: {chance}% · plant up to {Leveling.PlantedTrees(current.Level)} trees`
@@ -236,7 +236,7 @@ local function renderDetail()
 	end
 
 	for name, button in tabButtons do
-		button.SetColor(if name == tab then C.Ochre else C.WoodLight)
+		button.SetColor(if name == tab then C.Orange else C.Blue)
 	end
 	challengeList.Visible = tab == "Challenges"
 	unlockGrid.Visible = tab == "Unlocks"
@@ -253,13 +253,13 @@ local function renderDetail()
 		local _, ready = Skills.Check(unlock.Requires, levelOf)
 		local tile = Theme.make("TextButton", {
 			LayoutOrder = order,
-			BackgroundColor3 = C.ParchmentDark,
+			BackgroundColor3 = C.Card,
 			AutoButtonColor = false,
 			Text = "",
 			Parent = unlockGrid,
 		})
 		Theme.corner(tile, 6)
-		Theme.stroke(tile, if ready then C.Green elseif reached then C.Ochre else C.TanEdge, if ready then 2.5 else 2)
+		Theme.stroke(tile, if ready then C.Green elseif reached then C.Orange else C.Line, if ready then 2.5 else 2)
 		local icon = ItemIcon.create(tile, unlock.Item, UDim2.fromScale(0.74, 0.74))
 		icon.Position = UDim2.fromScale(0.5, 0.44)
 		-- Level tag along the bottom
@@ -267,10 +267,10 @@ local function renderDetail()
 			AnchorPoint = Vector2.new(0.5, 1),
 			Position = UDim2.new(0.5, 0, 1, -3),
 			Size = UDim2.new(1, -8, 0, 15),
-			BackgroundColor3 = if reached then C.Leaf else C.WoodLight,
+			BackgroundColor3 = if reached then C.Leaf else C.Blue,
 			FontFace = Theme.Font.Bold,
 			TextSize = 11,
-			TextColor3 = C.Cream,
+			TextColor3 = C.White,
 			Text = `Lv {unlock.Level}`,
 			ZIndex = 3,
 			Parent = tile,
@@ -279,7 +279,7 @@ local function renderDetail()
 		if not reached then
 			local shade = Theme.make("Frame", {
 				Size = UDim2.fromScale(1, 1),
-				BackgroundColor3 = C.Tan,
+				BackgroundColor3 = C.Inset,
 				BackgroundTransparency = 0.45,
 				ZIndex = 2,
 				Parent = tile,
@@ -319,28 +319,29 @@ local function render()
 		row.Level.Text = `Lv {current.Level}`
 		row.Bar.Set(xpText(current.Level, current.XP, current.XPToNext, Leveling.MaxSkillLevel))
 		local isSelected = skill.Id == selected
-		row.Stroke.Color = if isSelected then C.Ochre else C.TanEdge
+		row.Stroke.Color = if isSelected then C.Orange else C.Line
 		row.Stroke.Thickness = if isSelected then 3 else 2
-		row.Button.BackgroundColor3 = if isSelected then C.Parchment else C.ParchmentDark
+		row.Button.BackgroundColor3 = if isSelected then C.Panel else C.Card
 	end
 	renderDetail()
 end
 
 local function buildPlayerCard(body: Frame)
 	local card = Theme.card(body, UDim2.new(1, 0, 0, 100))
-	-- Round wooden plaque with a gold rim, like the HUD's
+	-- Gold level badge, like the HUD's
 	local badge = Theme.make("Frame", {
 		Size = UDim2.fromOffset(78, 78),
 		Position = UDim2.fromOffset(12, 11),
-		BackgroundColor3 = C.WoodLight,
+		BackgroundColor3 = C.Gold,
 		Parent = card,
 	})
 	Theme.corner(badge, 999)
-	Theme.stroke(badge, C.Gold, 3)
-	local lv = Theme.text(badge, "LEVEL", 10, Theme.Font.Bold, C.Gold)
+	Theme.stroke(badge, C.Outline, 3)
+	local lv = Theme.text(badge, "LEVEL", 12, Theme.Font.Bold, C.White)
 	lv.Position = UDim2.fromOffset(0, 12)
+	lv.Size = UDim2.new(1, 0, 0, 14)
 	lv.TextXAlignment = Enum.TextXAlignment.Center
-	levelNumber = Theme.text(badge, "1", 32, Theme.Font.Bold, C.Cream)
+	levelNumber = Theme.text(badge, "1", 34, Theme.Font.Bold, C.White)
 	levelNumber.Position = UDim2.fromOffset(0, 26)
 	levelNumber.Size = UDim2.new(1, 0, 0, 36)
 	levelNumber.TextXAlignment = Enum.TextXAlignment.Center
@@ -370,13 +371,13 @@ local function buildRows(body: Frame, top: number)
 		local button = Theme.make("TextButton", {
 			LayoutOrder = order,
 			Size = UDim2.new(1, 0, 0, ROW_HEIGHT),
-			BackgroundColor3 = C.ParchmentDark,
+			BackgroundColor3 = C.Card,
 			AutoButtonColor = false,
 			Text = "",
 			Parent = column,
 		})
 		Theme.corner(button, 6)
-		local stroke = Theme.stroke(button, C.TanEdge, 2)
+		local stroke = Theme.stroke(button, C.Line, 2)
 		local box = Theme.inset(button, UDim2.fromOffset(48, 48), UDim2.fromOffset(8, 8))
 		ItemIcon.create(box, skill.Icon, UDim2.fromScale(0.86, 0.86))
 		local name = Theme.title(button, skill.Name, 20)
@@ -407,7 +408,7 @@ local function buildDetail(body: Frame, top: number)
 	detailName = Theme.title(panel, "", 26)
 	detailName.Position = UDim2.fromOffset(76, 2)
 	detailName.Size = UDim2.new(1, -76, 0, 32)
-	detailLevel = Theme.text(panel, "", 16, Theme.Font.Bold, C.WoodLight)
+	detailLevel = Theme.text(panel, "", 16, Theme.Font.Bold, C.Blue)
 	detailLevel.Position = UDim2.fromOffset(76, 36)
 	detailLevel.Size = UDim2.new(1, -76, 0, 20)
 
@@ -420,7 +421,7 @@ local function buildDetail(body: Frame, top: number)
 
 	-- Tabs: the skill's challenges, or what it unlocks
 	for index, name in { "Challenges", "Unlocks" } do
-		local button = Theme.button(panel, name, C.WoodLight, UDim2.fromOffset(126, 32), function()
+		local button = Theme.button(panel, name, C.Blue, UDim2.fromOffset(126, 32), function()
 			tab = name
 			info.Text = ""
 			renderDetail()
@@ -436,7 +437,7 @@ local function buildDetail(body: Frame, top: number)
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollBarThickness = 5,
-		ScrollBarImageColor3 = C.WoodLight,
+		ScrollBarImageColor3 = C.Blue,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		CanvasSize = UDim2.new(),
 		Parent = well,
@@ -471,7 +472,7 @@ function SkillsWindow.Toggle()
 end
 
 function SkillsWindow.Start()
-	window = Window.new("SkillsWindow", "Skills", Vector2.new(780, 600))
+	window = Window.new("SkillsWindow", "Skills", Vector2.new(780, 600), C.Teal)
 	window.OnOpen = function()
 		info.Text = "Point at a milestone or an unlock to see what it needs"
 		render()

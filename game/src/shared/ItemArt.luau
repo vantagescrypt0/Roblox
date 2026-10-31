@@ -111,5 +111,8 @@ return {
 		BirchWood = 52,
 		SpruceWood = 53,
 		CherryWood = 54,
+		IconBag = 55,
+		IconTrophy = 56,
+		IconMail = 57,
 	},
 }
