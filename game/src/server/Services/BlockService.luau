@@ -270,6 +270,11 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 		if InventoryService.Count(player, itemId) < 1 then
 			return
 		end
+	elseif item.Empties then
+		-- A full bucket leaves an empty one in your hand
+		if not InventoryService.Swap(player, itemId, item.Empties) then
+			return
+		end
 	elseif not InventoryService.Remove(player, itemId, 1) then
 		return
 	end
@@ -291,6 +296,34 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	end
 end
 
+-- Scooping a water or lava source on your island back into the empty Bucket you hold
+local function onScoop(player: Player, x: unknown, y: unknown, z: unknown)
+	if not isCell(x, y, z) then
+		return
+	end
+	local cx, cy, cz = x :: number, y :: number, z :: number
+	local island = IslandService.GetIsland(player)
+	if not island or HotbarService.GetHeldItem(player) ~= "Bucket" then
+		return
+	end
+	local world = island.World
+	local blockType = BlockWorld.get(world, cx, cy, cz)
+	local liquid = blockType and Liquids.ByBlock[blockType]
+	if not liquid or not liquid.Source or not inReach(player, world, cx, cy, cz) then
+		return
+	end
+	local now = os.clock()
+	if now - (lastPlace[player] or 0) < PLACE_COOLDOWN then
+		return
+	end
+	if not InventoryService.Swap(player, "Bucket", liquid.Kind.Bucket) then
+		return
+	end
+	lastPlace[player] = now
+	BlockWorld.set(world, cx, cy, cz, nil)
+	IslandService.RecordChange(player, cx, cy, cz, nil)
+end
+
 -- Starts breaking and placing on islands. A resource world passes `worldArea` instead:
 -- breaking happens there, and placing is off.
 function BlockService.Start(worldArea: ((Player) -> Area?)?)
@@ -299,6 +332,7 @@ function BlockService.Start(worldArea: ((Player) -> Area?)?)
 		areaFor = worldArea
 	else
 		Remotes.PlaceBlock.OnServerEvent:Connect(onPlace)
+		Remotes.Scoop.OnServerEvent:Connect(onScoop)
 	end
 	Players.PlayerRemoving:Connect(function(player)
 		lastBreak[player] = nil

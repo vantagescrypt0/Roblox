@@ -15,7 +15,8 @@
 --   click / tap the crafting table or a shopkeeper in Town -> open crafting / their shop
 --   right click / tap a furnace -> smelting (left click breaks it, so you can move it)
 --   water and lava: you aim straight through them (so blocks go into them and behind
---     them); holding a full bucket, right click pours it (it can't be scooped back up)
+--     them); holding a full bucket, right click pours it; holding an empty Bucket, you aim
+--     at them, and right clicking a source scoops it up
 -- The server double-checks everything.
 
 local Debris = game:GetService("Debris")
@@ -59,6 +60,8 @@ local SLASH_ANIMATION = {
 	[Enum.HumanoidRigType.R15] = "rbxassetid://522635514",
 	[Enum.HumanoidRigType.R6] = "rbxassetid://129967478",
 }
+-- Liquid sources an empty Bucket can scoop up
+local SOURCES = { Water = true, Lava = true }
 local DEBRIS_COLORS: { [string]: Color3 } = {
 	Grass = Color3.fromRGB(95, 159, 53),
 	Dirt = Color3.fromRGB(134, 96, 67),
@@ -162,10 +165,11 @@ local function aim(): Target?
 	params.FilterType = Enum.RaycastFilterType.Include
 	params.FilterDescendantsInstances = { area }
 	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 120, params)
-	-- Look through water and lava
+	-- Look through water and lava, unless an empty Bucket is out to scoop them
+	local throughLiquid = Hotbar.SelectedItem() ~= "Bucket"
 	for _ = 1, 8 do
 		local def = hit and Blocks.Types[hit.Instance.Name]
-		if not hit or not def or not def.Liquid then
+		if not hit or not throughLiquid or not def or not def.Liquid then
 			break
 		end
 		hit = Workspace:Raycast(hit.Position + ray.Direction * 0.05, ray.Direction * 120, params)
@@ -323,6 +327,10 @@ local function interact(secondary: boolean): boolean
 		Sfx.play("DirtHit", current.Part.Position)
 		return true
 	elseif current and secondary and useHeld(current) then
+		return true
+	elseif current and secondary and Hotbar.SelectedItem() == "Bucket" and SOURCES[current.Part.Name] then
+		Remotes.Scoop:FireServer(current.X, current.Y, current.Z)
+		Sfx.play(if current.Part.Name == "Lava" then "Sizzle" else "Splash", current.Part.Position)
 		return true
 	end
 	local shopId = aimedShop()

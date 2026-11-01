@@ -7,7 +7,7 @@
 -- Only sources are saved; the flowing blocks are worked out again when the island loads.
 --
 -- Block types (Blocks.luau gets one for each):
---   "Water", "Lava"                  sources (poured from a bucket; they can't be scooped up)
+--   "Water", "Lava"                  sources (an empty Bucket scoops them back up)
 --   "Water1".."Water7", "Lava1"..    flowing, by level: the higher, the farther from the
 --                                    source and the lower it's drawn
 --   "FallingWater", "FallingLava"    pouring straight down
