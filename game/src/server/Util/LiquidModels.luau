@@ -3,8 +3,10 @@
 -- in ReplicatedStorage.Blocks next to the block meshes, so islands draw them like any block
 -- and icons show them. Water is see-through blue glass like the worlds' ponds; lava glows.
 -- Each is as tall as Blocks says (sources nearly full, flowing ones lower); BlockWorld stands
--- it on the cell's floor. Nobody collides with them: you wade through.
+-- it on the cell's floor. Nobody collides with them: you wade through, and water is tagged
+-- "Water" (copies keep the tag) so the client's SwimController swims in it.
 
+local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
@@ -33,6 +35,7 @@ local function make(blockType: string, cell: Liquids.Cell): Part
 		part.Material = Enum.Material.Glass
 		part.Transparency = 0.35
 		part.Reflectance = 0.12
+		CollectionService:AddTag(part, "Water")
 	else
 		part.Color = LAVA
 		part.Material = Enum.Material.Neon

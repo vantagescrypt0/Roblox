@@ -204,7 +204,8 @@ function Decor.Fence(parent: Instance, a: Vector3, b: Vector3, wood: string?)
 	end
 end
 
--- A flat sheet of water, `size` wide and deep, its surface at `surface`
+-- A flat sheet of water, `size` wide and deep, its surface at `surface` (tagged "Water", so
+-- the client's SwimController swims in it where it's deep enough)
 function Decor.Water(parent: Instance, surface: Vector3, size: Vector2, depth: number?): Part
 	local d = depth or 1.5
 	local water = part(
@@ -219,6 +220,7 @@ function Decor.Water(parent: Instance, surface: Vector3, size: Vector2, depth: n
 	water.Reflectance = 0.12
 	water.CanCollide = false
 	water.CastShadow = false
+	CollectionService:AddTag(water, "Water")
 	return water
 end
 

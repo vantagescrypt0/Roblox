@@ -1,4 +1,4 @@
-# Crafting Proposal (2026-10-31, waiting for your OK)
+# Crafting Proposal (2026-10-31, APPROVED as written the same night)
 
 Your ask: crafting shouldn't be Minecraft-easy ("a sword isn't a stick and two diamonds ... maybe it needs refined diamonds"). Today every tool is head material + sticks (`game/src/shared/Recipes.luau`).
 
@@ -42,3 +42,5 @@ Crystal (from the Warzone) stays a side tier for when the Warzone opens: Refined
 1. OK with three parts per tool (head, handle, binding)?
 2. Keep Wooden tools simple for the tutorial?
 3. Anything you'd want harder still (e.g. tools needing a Crafting level *and* a station upgrade)?
+
+**Your answers (2026-10-31):** "Approve as written": three parts per tool, Wooden tools stay simple, nothing harder on top (no station upgrades).

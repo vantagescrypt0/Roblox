@@ -48,7 +48,8 @@ No dates — quality over speed.
    - [x] Water, lava and the stone generator (2026-10-29, your 10-26 plan): Water / Lava Buckets pour sources on your island that flow like Minecraft (water 7 blocks, lava 3 and slower, both fall off edges); where water and lava would touch, stone forms, and mined stone forms again; an empty Bucket scoops a source back up; lava burns; the starter kit has both buckets (older players get them by letter); the Builder sells every block plus buckets and the Bottomless buckets; bucket models and icons - playtested in Studio
    - [x] Islands as build areas (2026-10-31): one starter island for everyone, a build border that island upgrades move out (129 → 385 blocks across), no ready-made farm, unlimited hoed farmland. Playtested in Studio
    - [x] Challenges board groups (2026-10-31): Beginner, Mining, Woodcutting, Farming, Crafting, Island chains + Track; Slaying and Warzone wait for the Warzone. Playtested in Studio
-   - [ ] **Harder crafting (waiting for your OK):** tools from head + handle + binding, each refined first; Anvil and Gem Bench — see [[Crafting Proposal]]
+   - [x] Swimming (2026-10-31): our own swim controller in island water and the worlds' water sheets (Space up, Ctrl/Q down, Space at the surface hops out). Playtested in Studio
+   - [ ] **Harder crafting (approved 2026-10-31):** tools from head + handle + binding, each refined first; Anvil and Gem Bench — see [[Crafting Proposal]]. First the Iron part (Twine, Rope, Iron Plate, Sturdy Handle, Anvil), then each new ore brings its own parts
    - [x] UI restyle (2026-10-31): "Sky" style on every screen and a single Menu button in the HUD — see [[UI Study]]. Playtested in Studio
    - [ ] **Late-game tiers (needs your OK):** new top ores, crops and trees at higher levels so coins reach ~1M/h, plus big purchases (10M–50M) to save for
    - [ ] Phone performance check of the bigger worlds (part counts printed as "[World] ..." on server start)

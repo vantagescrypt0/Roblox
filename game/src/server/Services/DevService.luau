@@ -15,6 +15,8 @@
 --                                                           (SeasonService resets you within a second)
 --   game.ServerStorage.Dev:Invoke("Season", "Kick")         the same, but kicked at once, so you're
 --                                                           reset as your save loads when you rejoin
+--   game.ServerStorage.Dev:Invoke("Fill", Vector3.new(2, -3, 2), Vector3.new(4, -1, 4), "Water")
+--                                                           fill a box of island cells (or "Air")
 --   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
 -- Acts on the first player in the server unless "As" picked another (for local tests with
 -- several players). Does nothing in live servers.
@@ -23,10 +25,12 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 
+local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local ChallengeService = require(script.Parent.ChallengeService)
 local DataService = require(script.Parent.DataService)
 local InboxService = require(script.Parent.InboxService)
 local InventoryService = require(script.Parent.InventoryService)
+local IslandService = require(script.Parent.IslandService)
 
 local DevService = {}
 
@@ -75,6 +79,24 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	-- Send it through your save's messages, as if you were on another server
 	MailByMessage = function(player, _data, mail)
 		print("[Dev] message sent:", DataService.SendMessage(player.UserId, { Kind = "Mail", Mail = mail }))
+	end,
+	-- Fill a box of cells on your island with a block (saved like placed blocks), or with
+	-- nothing for "Air", e.g. ("Fill", Vector3.new(2, -3, 2), Vector3.new(4, -1, 4), "Air")
+	Fill = function(player, _data, from, to, blockType)
+		local island = IslandService.GetIsland(player)
+		if not island then
+			return
+		end
+		local block = if blockType == "Air" then nil else blockType
+		local low, high = (from :: Vector3):Min(to), (from :: Vector3):Max(to)
+		for x = low.X, high.X do
+			for y = low.Y, high.Y do
+				for z = low.Z, high.Z do
+					BlockWorld.set(island.World, x, y, z, block)
+					IslandService.RecordChange(player, x, y, z, block)
+				end
+			end
+		end
 	end,
 }
 
