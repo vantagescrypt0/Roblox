@@ -1,8 +1,8 @@
 --!strict
 -- The pets' looks (Gear.luau), built from blocky parts: a chicken for Farming, a beaver for
 -- Woodcutting and a mole in a miner's helmet for Mining. A pet's tier shows as a coloured
--- collar (bronze, silver, gold, emerald, diamond) and it grows a little with each tier; the
--- top tiers sparkle. Every part is welded to an invisible root ("Root", the PrimaryPart),
+-- collar (bronze, silver, gold, emerald, diamond, amethyst, ruby, starlight) and it grows a
+-- little with each tier; the top tiers sparkle. Every part is welded to an invisible root ("Root", the PrimaryPart),
 -- which GearService floats along beside its owner.
 
 local PetModels = {}
@@ -13,6 +13,10 @@ local TIER_COLORS = {
 	Color3.fromRGB(242, 193, 78),
 	Color3.fromRGB(80, 200, 120),
 	Color3.fromRGB(120, 222, 244),
+	-- The deep cave's tiers (Mining has eight resources)
+	Color3.fromRGB(168, 96, 230),
+	Color3.fromRGB(220, 40, 60),
+	Color3.fromRGB(255, 236, 170),
 }
 local BLACK = Color3.fromRGB(28, 24, 22)
 

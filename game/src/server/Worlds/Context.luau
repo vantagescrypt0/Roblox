@@ -86,6 +86,8 @@ export type Context = {
 	NearArrival: (x: number, z: number, margin: number) -> boolean,
 	-- The ground's height at (x, z), as built (0 off the islands)
 	HeightAt: (x: number, z: number) -> number,
+	-- The lowest block of the island's rock under (x, z) (0 off the islands)
+	BottomAt: (x: number, z: number) -> number,
 
 	Set: (x: number, y: number, z: number, block: string?) -> (),
 	SetFree: (x: number, y: number, z: number, block: string) -> (),
@@ -105,6 +107,7 @@ local Context = {}
 
 function Context.new(world: BlockWorld.World, decor: Folder, seed: number, southZ: number): Context
 	local heights: { [string]: number } = {}
+	local depths: { [string]: number } = {}
 	local owner: { [string]: Island } = {}
 	local flats: { { number } } = {}
 	local lands: { { number } } = {}
@@ -181,6 +184,9 @@ function Context.new(world: BlockWorld.World, decor: Folder, seed: number, south
 	end
 	function ctx.HeightAt(x, z)
 		return heights[column(x, z)] or 0
+	end
+	function ctx.BottomAt(x, z)
+		return depths[column(x, z)] or 0
 	end
 	function ctx.Flatten(x1, z1, x2, z2, land)
 		local r = { math.min(x1, x2), math.min(z1, z2), math.max(x1, x2), math.max(z1, z2) }
@@ -332,6 +338,7 @@ function Context.new(world: BlockWorld.World, decor: Folder, seed: number, south
 					end
 					heights[col] = height
 					bottoms[col] = bottom
+					depths[col] = bottom
 					tops[col] = block
 					owner[col] = island
 					table.insert(ground, { x, z })

@@ -83,6 +83,11 @@ add("Woodcutting", "CherryWood", "Cherry", "CherryWood", { 625, 3000, 30000 })
 add("Mining", "CoalOre", "Coal", "CoalOre", { 250, 1250, 12500 }, "Any pickaxe")
 add("Mining", "IronOre", "Iron", "IronOre", { 375, 1750, 17500 }, "Stone Pickaxe or better")
 add("Mining", "GoldOre", "Gold", "GoldOre", { 500, 2500, 25000 }, "Iron Pickaxe or better")
+add("Mining", "SilverOre", "Silver", "SilverOre", { 625, 3000, 30000 }, "Iron Pickaxe or better")
+add("Mining", "AmethystOre", "Amethyst", "AmethystOre", { 750, 3500, 35000 }, "Iron Pickaxe or better")
+add("Mining", "SapphireOre", "Sapphire", "SapphireOre", { 875, 4000, 40000 }, "Amethyst Pickaxe or better")
+add("Mining", "RubyOre", "Ruby", "RubyOre", { 1000, 5000, 50000 }, "Sapphire Pickaxe or better")
+add("Mining", "StarstoneOre", "Starstone", "StarstoneOre", { 1250, 6000, 60000 }, "Ruby Pickaxe or better")
 
 local Challenges = {
 	List = table.freeze(List),

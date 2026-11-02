@@ -1,8 +1,9 @@
 --!strict
 -- The armor sets' look (Gear.luau): plates welded over a character's body, in the skill's
 -- colours (Farming: green and straw, Woodcutting: brown leather, Mining: steel), shading
--- toward the tier's colour as the tier goes up (bronze, silver, gold, emerald, diamond);
--- the top tiers are metal with glowing trim. Works on R15 and R6 characters.
+-- toward the tier's colour as the tier goes up (bronze, silver, gold, emerald, diamond,
+-- amethyst, ruby, starlight); the top tiers are metal with glowing trim. Works on R15 and R6
+-- characters.
 
 local ArmorModels = {}
 
@@ -17,6 +18,10 @@ local TIER_COLORS = {
 	Color3.fromRGB(242, 193, 78),
 	Color3.fromRGB(80, 200, 120),
 	Color3.fromRGB(120, 222, 244),
+	-- The deep cave's tiers (Mining has eight resources)
+	Color3.fromRGB(168, 96, 230),
+	Color3.fromRGB(220, 40, 60),
+	Color3.fromRGB(255, 236, 170),
 }
 
 -- Which body part each plate covers, how much bigger than it, and where on it

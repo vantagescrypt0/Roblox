@@ -1,8 +1,10 @@
 --!strict
--- Crafting at the crafting table and smelting in a furnace. Clicking either block opens
--- the crafting window on the client (showing that station's recipes); crafting is checked
--- and done entirely on the server, which makes sure the right station is close by and
--- that you have the skill levels the recipe needs. Every craft gives Crafting XP.
+-- Crafting at the crafting table, smelting in a furnace, forging on an anvil and refining
+-- gems at the gem bench. Clicking
+-- one of them opens the crafting window on the client (showing that station's recipes);
+-- crafting is checked and done entirely on the server, which makes sure the right station
+-- is close by and that you have the skill levels the recipe needs. Every craft gives
+-- Crafting XP.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -21,7 +23,8 @@ local StateService = require(script.Parent.StateService)
 
 -- How close you must be to the station to craft (a bit more than block reach)
 local MAX_CRAFT_DISTANCE = 24
-local STATION_NAMES = { CraftingTable = "crafting table", Furnace = "furnace" }
+local STATION_NAMES = { CraftingTable = "crafting table", Furnace = "furnace", Anvil = "anvil", GemBench = "gem bench" }
+local VERBS = { CraftingTable = "Crafted", Furnace = "Smelted", Anvil = "Forged", GemBench = "Refined" }
 
 local CraftingService = {}
 
@@ -71,10 +74,9 @@ local function craft(player: Player, recipeId: unknown)
 		return
 	end
 	InventoryService.Add(player, recipe.Output, recipe.Amount)
-	local verb = if recipe.Station == "Furnace" then "Smelted" else "Crafted"
 	StateService.Notify(
 		player,
-		`{verb} {Items[recipe.Output].Name}!`,
+		`{VERBS[recipe.Station]} {Items[recipe.Output].Name}!`,
 		if recipe.Station == "Furnace" then "smelt" else "craft"
 	)
 	ProgressionService.AddSkillXP(player, "Crafting", recipe.CraftingXP)
@@ -82,7 +84,13 @@ local function craft(player: Player, recipeId: unknown)
 	QuestService.Record(player, `Craft:{recipe.Id}`)
 	local tool = Tools.ByItem[recipe.Output]
 	if tool then
-		QuestService.Record(player, `CraftTool:{Tools.TierNames[tool.Tier]}`)
+		QuestService.Record(player, `CraftTool:{tool.TierName}`)
+	end
+	if recipe.Station == "GemBench" then
+		QuestService.Record(player, "Refine")
+	end
+	if Items[recipe.Output].Node then
+		QuestService.Record(player, "CraftNode")
 	end
 end
 

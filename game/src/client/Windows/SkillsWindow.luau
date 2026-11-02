@@ -67,7 +67,11 @@ for _, skill in Skills.List do
 end
 for _, recipe in Recipes.List do
 	for skillId, level in recipe.Requires do
-		local verb = if recipe.Station == "Furnace" then "Smelt" else "Craft"
+		local verb = if recipe.Station == "Furnace"
+			then "Smelt"
+			elseif recipe.Station == "Anvil" then "Forge"
+			elseif recipe.Station == "GemBench" then "Refine"
+			else "Craft"
 		table.insert(unlocks[skillId], {
 			Item = recipe.Output,
 			Level = level,

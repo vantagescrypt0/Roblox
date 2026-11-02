@@ -181,7 +181,25 @@ local function onTrack(player: Player, boardId: unknown)
 	DataService.MarkChanged(player)
 end
 
+-- The beginner chain is saved by number, so a step added later moves the ones after it:
+-- saves already at or past the new step move along with them
+local TWINE_STEP = 0
+for index, quest in Quests do
+	if quest.Event == "Craft:Twine" then
+		TWINE_STEP = index
+	end
+end
+local function addedSteps(_player: Player, data: DataService.Data)
+	if not data.Flags.TwineStep then
+		data.Flags.TwineStep = true
+		if data.Quest.Index >= TWINE_STEP then
+			data.Quest.Index += 1
+		end
+	end
+end
+
 function QuestService.Start()
+	DataService.OnLoading(addedSteps)
 	DataService.OnDataLoaded(checkReach)
 	DataService.OnChanged(checkReach)
 	Remotes.TrackBoard.OnServerEvent:Connect(onTrack)

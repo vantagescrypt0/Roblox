@@ -23,7 +23,11 @@ Leveling.luau (curves), BlockService GATHER and Crops.luau (XP), Items.luau (pri
 
 STEADY = 0.8
 OVERHEAD = {"Mining": 1.2, "Woodcutting": 1.5, "Farming": 1.2}
-EFFICIENCY = {0: 1, 1: 2, 2: 4, 3: 6}  # by hand, Wooden, Stone, Iron (Crystal 8: Warzone only)
+# By hand, Wooden, Stone, Iron, then the late-game tiers: Amethyst (Crystal, from the
+# Warzone, matches it), Sapphire, Ruby, Starsteel
+EFFICIENCY = {0: 1, 1: 2, 2: 4, 3: 6, 4: 8, 5: 10, 6: 12, 7: 14}
+# Mining level at which a pickaxe of each late tier can be made (the level of its ore)
+LATE_TIERS = {4: 35, 5: 50, 6: 65, 7: 80}
 
 MAX_SKILL = 99
 MAX_PLAYER = 50
@@ -47,6 +51,12 @@ ACTIVITIES = {
         ("Coal", 1, 1, 3, 1.0, 2000),
         ("Iron", 1, 2, 3, 1.3, 6000),
         ("Gold", 10, 3, 3, 2.2, 25000),
+        # The deep cave ([[Late-game Proposal]]): each about 2x the coins of the one before
+        ("Silver", 20, 3, 3.5, 2.6, 55000),
+        ("Amethyst", 35, 3, 4, 3.0, 120000),
+        ("Sapphire", 50, 4, 4.5, 3.4, 260000),
+        ("Ruby", 65, 5, 5, 3.8, 550000),
+        ("Starstone", 80, 6, 5.5, 4.2, 1200000),
     ],
     "Woodcutting": [
         ("Oak", 1, 0, 2, 1.2, 2000),
@@ -75,9 +85,15 @@ def bonus(level):  # Leveling.BonusChance: a double drop, +1% a level
     return min(max(level - 1, 0) * 0.01, 0.75)
 
 
-def tool_tier(level):
+def tool_tier(level, skill="Mining"):
     """Best tool at this skill level: Wooden at first, Stone soon after (beginner quests),
-    Iron by level 5 (an Iron pickaxe or axe needs the skill at 4 and Crafting 3)"""
+    Iron by level 5 (an Iron pickaxe or axe needs the skill at 4 and Crafting 3). Miners
+    then make each late tier from its ore; the other skills stay on Iron for now (their late
+    tools need the deep cave's ores)"""
+    if skill == "Mining":
+        for tier in sorted(LATE_TIERS, reverse=True):
+            if level >= LATE_TIERS[tier]:
+                return tier
     if level >= 5:
         return 3
     if level >= 2:
@@ -87,7 +103,7 @@ def tool_tier(level):
 
 def actions_per_hour(skill, activity, level):
     _, unlock, need, hardness, *_ = activity
-    tier = tool_tier(level)
+    tier = tool_tier(level, skill)
     if level < unlock or tier < need:
         return 0.0
     seconds = OVERHEAD[skill]

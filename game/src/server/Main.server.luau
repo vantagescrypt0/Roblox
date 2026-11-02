@@ -10,6 +10,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Places = require(ReplicatedStorage.Shared.Places)
+local StationModels = require(script.Parent.Util.StationModels)
 local Services = script.Parent.Services
 
 local BlockService = require(Services.BlockService)
@@ -35,6 +36,8 @@ local TreeService = require(Services.TreeService)
 local WorldService = require(Services.WorldService)
 
 local kind = Places.Current()
+-- The Anvil's and Gem Bench's looks, in every place (islands draw them, icons show them)
+StationModels.Make()
 StateService.Start()
 if kind == "Town" then
 	TownService.Start()

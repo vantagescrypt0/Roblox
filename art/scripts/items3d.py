@@ -1,5 +1,6 @@
-"""Low-poly 3D item models (tools incl. hoes, crops, seed pouches, ores, loot, buckets) and their UI icons,
-plus a few pictures for the HUD menu (bag, trophy, letter) at the end of the icon sheet.
+"""Low-poly 3D item models (tools incl. hoes, tool parts, crops, seed pouches, ores, loot, buckets) and their
+UI icons, an icon for the Anvil (its look in the game is built in code), and a few pictures for the HUD
+menu (bag, trophy, letter) at the end of the icon sheet.
 
 Tools are modelled standing up along +Z (handle at the bottom), then tilted 45 degrees
 so that, seen from the front, the handle is bottom-left and the head top-right. Every
@@ -10,8 +11,9 @@ with one texture. Tiers differ in material: Wooden (light wood, leather lashing)
 Outputs:
   art/export/Items.fbx           one object per item, named by item id
   art/blend/Items.blend
-  art/textures/item_icons.png    1024x1024 icon sheet: 8x8 cells of 128 px (upload to Roblox)
-  art/renders/Items.png          the same sheet on a dark background, for previewing
+  art/textures/item_icons.png    1024x1024 icon sheet: 8x8 cells of 128 px (upload to Roblox);
+                                 past 64 icons also item_icons_2.png and on
+  art/renders/Items.png          the same sheet(s) on a dark background, for previewing
   game/src/shared/ItemArt.luau   generated: where the hand holds each model, icon cell per item
 
 Run:
@@ -37,7 +39,8 @@ REPO_DIR = os.path.dirname(common.ART_DIR)
 CELL = 128  # icon size in the sheet
 RENDER = CELL * 2  # icons are rendered at 2x and scaled down for smooth edges
 COLUMNS = 8
-SHEET = CELL * COLUMNS
+SHEET = CELL * COLUMNS  # Roblox images are at most 1024 px, so more icons go on more sheets
+PER_SHEET = COLUMNS * COLUMNS
 # Tilts a tool modelled along +Z so its head points to the top-right (towards +X, +Z)
 TILT = Matrix.Rotation(math.radians(45), 3, "Y")
 OUTLINE = (0.11, 0.09, 0.12)  # dark "sticker" outline drawn around every icon
@@ -47,6 +50,9 @@ TIERS = {
     "Stone": {"head": "stone", "dark": "stone_dark", "accent": "stone_dark", "binding": "leather", "rough": 0.028},
     "Iron": {"head": "iron", "dark": "iron_dark", "accent": "metal_dark", "binding": "metal_dark", "rough": 0.0},
     "Crystal": {"head": "crystal", "dark": "crystal_dark", "accent": "gold", "binding": "gold", "rough": 0.0},
+    # The deep cave's gem tiers (the palette is full, so they borrow its purples and blues)
+    "Amethyst": {"head": "rune", "dark": "rune_dark", "accent": "steel", "binding": "steel", "rough": 0.0},
+    "Sapphire": {"head": "blue", "dark": "crystal_dark", "accent": "gold", "binding": "steel", "rough": 0.0},
 }
 KINDS = ["Pickaxe", "Axe", "Shovel", "Hoe", "Sword"]
 
@@ -197,6 +203,59 @@ def sticks(b):
     b.cylinder(0.04, 0.4, location=(-0.2, 0, 1.6), rotation=(0, -40, 0), color="wood_alt", segments=5)
 
 
+def twine(b):
+    """A ball of straw-gold twine wound round and round, its loose end trailing off."""
+    b.blob(0.44, location=(0, 0, 0.44), color="wheat", jitter=0.02, subdivisions=2)
+    for rx, rz in ((90, 0), (90, 60), (90, 120), (35, 0), (-35, 90)):
+        b.cylinder(0.47, 0.05, location=(0, 0, 0.44), rotation=(rx, 0, rz), color="wheat_dark", segments=16)
+    b.cylinder(0.035, 0.55, location=(0.45, -0.2, 0.1), rotation=(0, 75, 20), color="wheat_dark", segments=5)
+
+
+def rope(b):
+    """A coil of hemp rope standing up: two loops wound round, tied at the bottom, the two
+    ends hanging down."""
+    for radius, y, color in ((0.5, 0.08, "sign"), (0.43, -0.08, "wood_alt")):
+        for v in new_verts(b, lambda radius=radius, color=color: arc(b, 0, 0.66, radius, 0, 360, 0.15, color, steps=18)):
+            v.co.y += y
+    b.cylinder(0.17, 0.24, location=(0, 0, 0.16), rotation=(0, 90, 0), color="wood_dark", segments=8)
+    b.cylinder(0.06, 0.4, location=(-0.09, -0.04, -0.12), rotation=(0, 14, 0), color="sign", segments=6)
+    b.cylinder(0.06, 0.34, location=(0.09, 0.04, -0.1), rotation=(0, -18, 0), color="wood_alt", segments=6)
+
+
+def iron_plate(b, rim="iron_dark", face="iron", rivet="metal_dark"):
+    """A square plate of hammered metal standing on its edge: a brighter face set in a
+    darker rim, a rivet in each corner."""
+    b.box((1.05, 0.14, 0.95), location=(0, 0, 0.475), color=rim, bevel=0.03)
+    b.box((0.84, 0.03, 0.74), location=(0, -0.07, 0.475), color=face)
+    for x in (-0.41, 0.41):
+        for z in (0.12, 0.83):
+            b.cylinder(0.055, 0.05, location=(x, -0.08, z), rotation=(90, 0, 0), color=rivet, segments=6)
+
+
+def sturdy_handle(b):
+    """A tool handle bound with iron: the tapered wooden handle and grip, an iron collar at
+    the top for the head, two iron bands and an iron cap at the end."""
+    handle(b, 2.2)
+    b.cylinder(0.175, 0.26, location=(0, 0, 2.08), color="iron_dark", segments=8)
+    for z in (1.25, 1.55):
+        b.cylinder(0.155, 0.07, location=(0, 0, z), color="metal_dark", segments=8)
+    b.cylinder(0.185, 0.12, location=(0, 0, 0.06), color="iron_dark", segments=8)
+
+
+def anvil(b):
+    """An anvil on an oak stump: a dark iron body on a waist, a pointed horn, a bright
+    working face and a hammer resting on it."""
+    b.cylinder(0.62, 0.7, location=(0, 0, 0.35), color="bark", segments=10)
+    b.cylinder(0.56, 0.03, location=(0, 0, 0.71), color="wood", segments=10)
+    b.box((1.1, 0.75, 0.2), location=(0, 0, 0.8), color="metal_dark", bevel=0.02)
+    b.box((0.55, 0.4, 0.3), location=(0, 0, 1.05), color="metal_dark")
+    b.box((1.15, 0.6, 0.3), location=(0, 0, 1.35), color="metal_dark", bevel=0.02)
+    b.box((1.13, 0.58, 0.03), location=(0, 0, 1.505), color="metal")
+    b.cone(0.22, 0.55, location=(0.85, 0, 1.38), rotation=(0, 90, 0), color="metal_dark", segments=6)
+    b.cylinder(0.04, 0.7, location=(-0.15, -0.05, 1.56), rotation=(90, 0, 30), color="wood_alt", segments=6)
+    b.box((0.3, 0.16, 0.16), location=(0.025, -0.353, 1.6), rotation=(0, 0, 30), color="steel")
+
+
 def wheat(b):
     for i, angle in enumerate((-14, -7, 0, 7, 14)):
         a = math.radians(angle)
@@ -252,10 +311,70 @@ def ingot(b, color="iron"):
     b._bevel(verts, 0.025)
 
 
-def crystal(b):
-    b.cone(0.36, 0.75, location=(0, 0, 0.9), color="crystal", segments=6)
-    b.cone(0.36, 0.38, location=(0, 0, 0.33), rotation=(180, 0, 0), color="crystal_dark", segments=6)
-    b.cone(0.16, 0.45, location=(0.34, 0.05, 0.62), rotation=(0, 30, 0), color="crystal_light", segments=6)
+def crystal(b, main="crystal", dark="crystal_dark", light="crystal_light"):
+    b.cone(0.36, 0.75, location=(0, 0, 0.9), color=main, segments=6)
+    b.cone(0.36, 0.38, location=(0, 0, 0.33), rotation=(180, 0, 0), color=dark, segments=6)
+    b.cone(0.16, 0.45, location=(0.34, 0.05, 0.62), rotation=(0, 30, 0), color=light, segments=6)
+
+
+def gem_cluster(b, main, dark, light):
+    """A raw gem as it comes out of the rock: three crystals growing out of a stone base"""
+    b.blob(0.36, location=(0, 0, 0.18), color="stone_dark", squash=(1.3, 1.0, 0.55), jitter=0.12)
+    for x, tilt, height, color in ((-0.18, -18, 0.95, main), (0.12, 10, 1.15, light), (0.34, 34, 0.7, dark)):
+        b.cylinder(0.15, height, location=(x, 0, 0.3 + height / 2 * 0.9), rotation=(0, tilt, 0), color=color, segments=6)
+        top = Vector((x + math.sin(math.radians(tilt)) * height * 0.5, 0, 0.3 + math.cos(math.radians(tilt)) * height * 0.95))
+        b.cone(0.15, 0.24, location=top, rotation=(0, tilt, 0), color=color, segments=6)
+
+
+def cut_gem(b, main, light):
+    """A refined gem, cut like a brilliant: a flat table on top, a short crown, a deep
+    pointed pavilion"""
+    b.cylinder(0.4, 0.06, location=(0, 0, 0.62), color=light, segments=8)
+    b.cylinder(0.46, 0.16, location=(0, 0, 0.54), color=main, segments=8, radius2=0.4)
+    b.cone(0.46, 0.5, location=(0, 0, 0.21), rotation=(180, 0, 0), color=main, segments=8)
+
+
+def sliver(b, main, light):
+    """A thin splinter of ore, with a chip broken off beside it"""
+    b.cone(0.11, 0.95, location=(0, 0, 0.47), rotation=(0, 12, 0), color=main, segments=5)
+    b.cone(0.11, 0.3, location=(0.035, 0, 0.05), rotation=(180, 12, 0), color=main, segments=5)
+    b.cone(0.07, 0.42, location=(0.22, -0.04, 0.2), rotation=(0, -30, 0), color=light, segments=5)
+
+
+def wood_handle(b, wood, band):
+    """A handle of a better wood bound with metal: the wood shows its own colour, the grip
+    is leather, the bands and collar are the plate's metal"""
+    length = 2.2
+    b.cylinder(0.135, length, location=(0, 0, length / 2), color=wood, segments=8, radius2=0.115)
+    b.cylinder(0.162, 0.62, location=(0, 0, 0.46), color="leather", segments=8)
+    b.cylinder(0.175, 0.26, location=(0, 0, 2.08), color=band, segments=8)
+    for z in (1.25, 1.55):
+        b.cylinder(0.155, 0.07, location=(0, 0, z), color=band, segments=8)
+    b.cylinder(0.185, 0.12, location=(0, 0, 0.06), color=band, segments=8)
+
+
+def starstone(b):
+    """A lump of near-black rock with glinting star specks"""
+    b.blob(0.5, location=(0, 0, 0.45), color="coal", jitter=0.24, subdivisions=1)
+    for x, y, z in ((-0.22, -0.42, 0.55), (0.18, -0.4, 0.32), (0.05, -0.44, 0.75), (0.36, -0.25, 0.6)):
+        b.blob(0.065, location=(x, y, z), color="glow", jitter=0.0)
+
+
+def gem_bench(b):
+    """A plank workbench with a stone grinding wheel at one end and gems on top"""
+    b.box((1.6, 1.0, 0.16), location=(0, 0, 0.82), color="plank", bevel=0.02)
+    for x in (-0.68, 0.68):
+        for y in (-0.38, 0.38):
+            b.box((0.16, 0.16, 0.8), location=(x, y, 0.4), color="wood_dark")
+    b.cylinder(0.36, 0.14, location=(0.45, 0, 1.28), rotation=(0, 90, 0), color="stone", segments=12)
+    b.cylinder(0.05, 0.36, location=(0.45, 0, 1.28), rotation=(0, 90, 0), color="metal_dark", segments=6)
+    for x in (0.3, 0.6):
+        b.box((0.05, 0.07, 0.42), location=(x, 0, 1.08), color="wood_dark")
+    b.blob(0.11, location=(-0.45, -0.15, 0.97), color="rune", jitter=0.04)
+    b.blob(0.1, location=(-0.15, 0.2, 0.96), color="blue", jitter=0.04)
+    cut = new_verts(b, lambda: cut_gem(b, "rune", "flower_purple"))
+    for v in cut:
+        v.co = v.co * 0.35 + Vector((-0.55, 0.25, 0.9))
 
 
 def scrap(b):
@@ -417,6 +536,30 @@ ITEMS.update(
         "LavaBucket": (lambda b: bucket(b, "lava"), False),
         "BottomlessWaterBucket": (lambda b: bucket(b, "water", "gold"), False),
         "BottomlessLavaBucket": (lambda b: bucket(b, "lava", "gold"), False),
+        "Twine": (twine, False),
+        "Rope": (rope, False),
+        "IronPlate": (iron_plate, False),
+        "SturdyHandle": (sturdy_handle, True),
+        # The deep cave (2026-10-31)
+        "RawSilver": (lambda b: lump(b, "steel", "iron_dark"), False),
+        "SilverIngot": (lambda b: ingot(b, "steel"), False),
+        "SilverPlate": (lambda b: iron_plate(b, "metal", "steel", "iron_dark"), False),
+        "Amethyst": (lambda b: gem_cluster(b, "rune", "rune_dark", "flower_purple"), False),
+        "Sapphire": (lambda b: gem_cluster(b, "blue", "crystal_dark", "berry"), False),
+        "Ruby": (lambda b: gem_cluster(b, "red", "red_dark", "flower_pink"), False),
+        "Starstone": (starstone, False),
+        "RefinedAmethyst": (lambda b: cut_gem(b, "rune", "flower_purple"), False),
+        "RefinedSapphire": (lambda b: cut_gem(b, "blue", "berry"), False),
+        "BirchHandle": (lambda b: wood_handle(b, "cream", "iron_dark"), True),
+        "SpruceHandle": (lambda b: wood_handle(b, "wood_darker", "steel"), True),
+        "CoalSliver": (lambda b: sliver(b, "coal", "coal_light"), False),
+        "IronSliver": (lambda b: sliver(b, "raw_iron", "raw_iron_dark"), False),
+        "GoldSliver": (lambda b: sliver(b, "gold", "gold_dark"), False),
+        "SilverSliver": (lambda b: sliver(b, "steel", "iron_dark"), False),
+        "AmethystSliver": (lambda b: sliver(b, "rune", "flower_purple"), False),
+        "SapphireSliver": (lambda b: sliver(b, "blue", "berry"), False),
+        "RubySliver": (lambda b: sliver(b, "red", "flower_pink"), False),
+        "StarstoneSliver": (lambda b: sliver(b, "glow", "gold"), False),
     }
 )
 # Block items show their block, rendered from art/blend/Blocks.blend
@@ -430,6 +573,12 @@ BLOCK_ICONS = {
     "BirchWood": "BirchWood",
     "SpruceWood": "SpruceWood",
     "CherryWood": "CherryWood",
+}
+# Items whose look in the world is built in code (game/src/server/Util/AnvilModel.luau):
+# only an icon cell, no model is exported. name -> (build, azimuth, elevation)
+ICON_ONLY = {
+    "Anvil": (anvil, -30, 22),
+    "GemBench": (gem_bench, -30, 22),
 }
 # Pictures for the HUD menu buttons. Not items: no model is exported, only an icon cell,
 # after every item and block so their cells never move. name -> (build, azimuth, elevation)
@@ -578,16 +727,16 @@ def write_image(array, path, name):
     bpy.data.images.remove(image)
 
 
-def build_ui_icons():
+def build_icon_models(icons):
     objects = {}
-    for name, (build, _, _) in UI_ICONS.items():
+    for name, (build, _, _) in icons.items():
         b = Builder(seed=sum(map(ord, name)))
         build(b)
         objects[name] = b.finish(name)
     return objects
 
 
-def render_icons(items, ui_icons):
+def render_icons(items, icon_only, ui_icons):
     scene = bpy.context.scene
     for engine in ("BLENDER_EEVEE", "BLENDER_EEVEE_NEXT"):
         try:
@@ -611,24 +760,29 @@ def render_icons(items, ui_icons):
     # (name, object, (azimuth, elevation)); blocks show three faces
     entries = [(name, obj, (-22, 14) if ITEMS[name][1] else (-24, 20)) for name, obj in items.items()]
     entries += [(item, blocks[block], (-38, 28)) for item, block in BLOCK_ICONS.items() if block in blocks]
+    entries += [(name, obj, ICON_ONLY[name][1:]) for name, obj in icon_only.items()]
     entries += [(name, obj, UI_ICONS[name][1:]) for name, obj in ui_icons.items()]
 
     temp = os.path.join(common.RENDER_DIR, "_icon.png")
-    sheet = np.zeros((SHEET, SHEET, 4), dtype=np.float32)
+    sheets = [np.zeros((SHEET, SHEET, 4), dtype=np.float32) for _ in range(-(-len(entries) // PER_SHEET))]
     cells = {}
     for index, (name, obj, (azimuth, elevation)) in enumerate(entries):
         render_icon(scene, camera, obj, azimuth, elevation, temp)
         icon = with_outline(read_image(temp), radius=4)
         small = downscale(icon)
-        row, col = divmod(index, COLUMNS)
-        sheet[row * CELL : (row + 1) * CELL, col * CELL : (col + 1) * CELL] = small
+        page, here = divmod(index, PER_SHEET)
+        row, col = divmod(here, COLUMNS)
+        sheets[page][row * CELL : (row + 1) * CELL, col * CELL : (col + 1) * CELL] = small
         cells[name] = index
     os.remove(temp)
 
-    write_image(sheet, os.path.join(common.ART_DIR, "textures", "item_icons.png"), "ItemIcons")
-    backdrop = np.zeros_like(sheet)
-    backdrop[...] = (0.17, 0.18, 0.23, 1.0)
-    write_image(over(sheet, backdrop), os.path.join(common.RENDER_DIR, "Items.png"), "ItemsPreview")
+    for page, sheet in enumerate(sheets):
+        suffix = "" if page == 0 else f"_{page + 1}"
+        write_image(sheet, os.path.join(common.ART_DIR, "textures", f"item_icons{suffix}.png"), f"ItemIcons{suffix}")
+        backdrop = np.zeros_like(sheet)
+        backdrop[...] = (0.17, 0.18, 0.23, 1.0)
+        write_image(over(sheet, backdrop), os.path.join(common.RENDER_DIR, f"Items{suffix}.png"), f"ItemsPreview{suffix}")
+    print(f"icon sheets: {len(sheets)} (upload each, in order, into Config.ItemIconSheets)")
     return cells
 
 
@@ -645,11 +799,13 @@ def write_luau(grips, cells):
         "-- GENERATED by art/scripts/items3d.py - don't edit by hand; change the script and re-run it.",
         "-- Models: where the hand holds each item model (Grip, studs from the model's centre) and",
         "--   which way its business end points (Up), in the model's imported orientation.",
-        "-- Icons: each item's cell in the icon sheet (art/textures/item_icons.png), row by row.",
+        "-- Icons: each item's cell in the icon sheets (art/textures/item_icons.png, then",
+        "--   item_icons_2.png...), row by row, numbered on from one sheet to the next.",
         "",
         "return {",
         f"\tCellSize = {CELL},",
         f"\tColumns = {COLUMNS},",
+        f"\tPerSheet = {PER_SHEET},",
         "\tModels = {",
     ]
     for name, (grip, up) in grips.items():
@@ -675,7 +831,7 @@ def main():
     if words:
         subset = [obj for obj in objects if any(word in obj.name for word in words)]
         print("subset:", export_fbx(os.path.join(common.EXPORT_DIR, "Items_new.fbx"), subset), [o.name for o in subset])
-    cells = render_icons({obj.name: obj for obj in objects}, build_ui_icons())
+    cells = render_icons({obj.name: obj for obj in objects}, build_icon_models(ICON_ONLY), build_icon_models(UI_ICONS))
     print("luau:", write_luau(grips, cells))
     print(f"items: {len(objects)} models, {len(cells)} icons")
 

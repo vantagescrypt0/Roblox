@@ -71,7 +71,15 @@ local Quests: { Quest } = {
 		Event = "Harvest",
 		Target = 3,
 		Highlight = "Farmland",
-		Reward = { XP = 350 },
+		Reward = { XP = 350, Items = { Wheat = 1 } },
+	},
+	-- (Added 2026-10-31: saves from before it skip past it, QuestService)
+	{
+		Text = "Craft Twine from 4 Wheat at the Crafting Table",
+		Event = "Craft:Twine",
+		Target = 1,
+		Highlight = "CraftingTable",
+		Reward = { XP = 250 },
 	},
 	{
 		Text = "Step through the portal to visit Town",

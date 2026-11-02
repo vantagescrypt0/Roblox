@@ -1,6 +1,7 @@
 --!strict
--- Item icons. Normally a pre-rendered picture cut from the icon sheet (Config.ItemIconSheet,
--- cells listed in ItemArt.luau, rendered by art/scripts/items3d.py). Without one, block items
+-- Item icons. Normally a pre-rendered picture cut from an icon sheet (Config.ItemIconSheets,
+-- cells listed in ItemArt.luau, rendered by art/scripts/items3d.py; cell numbers run on from
+-- one sheet to the next, PerSheet to a sheet). Without one, block items
 -- show a live 3D block, items with a model show that model, and anything else its emoji.
 -- A block type that isn't an item (e.g. "CraftingTable") also works.
 
@@ -57,16 +58,18 @@ function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObje
 
 	-- Pre-rendered picture from the icon sheet
 	local cell = ICON_CELLS[itemId]
-	if cell and Config.ItemIconSheet ~= "" then
+	local sheet = if cell then Config.ItemIconSheets[cell // ItemArt.PerSheet + 1] else nil
+	if cell and sheet then
 		local cellSize = ItemArt.CellSize
+		local here = cell % ItemArt.PerSheet
 		local image = Instance.new("ImageLabel")
 		image.Size = size
 		image.AnchorPoint = Vector2.new(0.5, 0.5)
 		image.Position = UDim2.fromScale(0.5, 0.5)
 		image.BackgroundTransparency = 1
-		image.Image = Config.ItemIconSheet
+		image.Image = sheet
 		image.ImageRectSize = Vector2.new(cellSize, cellSize)
-		image.ImageRectOffset = Vector2.new((cell % ItemArt.Columns) * cellSize, (cell // ItemArt.Columns) * cellSize)
+		image.ImageRectOffset = Vector2.new((here % ItemArt.Columns) * cellSize, (here // ItemArt.Columns) * cellSize)
 		image.ScaleType = Enum.ScaleType.Fit
 		image.Parent = parent
 		return image

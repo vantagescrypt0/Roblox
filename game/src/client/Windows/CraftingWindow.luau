@@ -1,10 +1,11 @@
 --!strict
 -- Crafting window, laid out like Minecraft's recipe book: a grid of item photos on the
 -- left (green outline = you can craft it now), and on the right the selected item up
--- close with its tool stats (mining speed, damage, durability), what it's good for, the
--- skill levels it needs (red until you have them), what it costs and a Craft button. The
--- same window serves the Crafting Table and the Furnace (smelting); each shows only its
--- own recipes. The server decides whether crafting works.
+-- close with its tool stats (mining speed, damage), what it's good for, the skill levels it
+-- needs (red until you have them), what it costs and a Craft button. The same window
+-- serves the Crafting Table, the Furnace (smelting), the Anvil (metal parts and tools) and
+-- the Gem Bench (refined gems);
+-- each shows only its own recipes. The server decides whether crafting works.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -54,6 +55,20 @@ type Tile = { Button: TextButton, Stroke: UIStroke, Lock: TextLabel }
 local STATIONS = {
 	CraftingTable = { Title = "Crafting Table", Verb = "Craft" },
 	Furnace = { Title = "Furnace", Verb = "Smelt" },
+	Anvil = { Title = "Anvil", Verb = "Forge" },
+	GemBench = { Title = "Gem Bench", Verb = "Refine" },
+}
+-- What each tool part goes into (Recipes.luau: head + handle + binding)
+local PART_USES: { [string]: string } = {
+	Twine = "The binding for stone tools; 3 make a Rope",
+	Rope = "The binding for iron tools",
+	IronPlate = "The head of iron tools (3 for a pickaxe or axe, 2 for a hoe or sword, 1 for a shovel); also binds a Birch Handle",
+	SturdyHandle = "The handle of iron tools",
+	SilverPlate = "Binds a Spruce Handle",
+	RefinedAmethyst = "The head of Amethyst tools",
+	RefinedSapphire = "The head of Sapphire tools",
+	BirchHandle = "The handle of Amethyst tools",
+	SpruceHandle = "The handle of Sapphire tools",
 }
 type StatRow = { Frame: Frame, Value: TextLabel, Bar: Theme.Bar }
 
@@ -132,12 +147,24 @@ local function renderDetail()
 	elseif recipe.Output == "Furnace" then
 		kindLabel.Text = "Station"
 		goodFor.Text = "Place it, then right-click it to smelt ores"
+	elseif recipe.Output == "Anvil" then
+		kindLabel.Text = "Station"
+		goodFor.Text = "Place it, then right-click it to hammer plates and handles and forge iron and gem tools"
+	elseif recipe.Output == "GemBench" then
+		kindLabel.Text = "Station"
+		goodFor.Text = "Place it, then right-click it to refine Amethyst and Sapphire for gem tools"
+	elseif output.Node then
+		kindLabel.Text = "Island node"
+		goodFor.Text = "Place it on your island: ore that grows back after you mine it"
 	elseif output.Block then
 		kindLabel.Text = "Building block"
 		goodFor.Text = "Place it with right click"
 	elseif recipe.Station == "Furnace" then
 		kindLabel.Text = "Smelted material"
-		goodFor.Text = "Used to make iron tools, or sell it at the Market"
+		goodFor.Text = "Used for iron parts and the Anvil, or sell it at the Market"
+	elseif PART_USES[recipe.Output] then
+		kindLabel.Text = "Tool part"
+		goodFor.Text = PART_USES[recipe.Output]
 	else
 		kindLabel.Text = "Crafting material"
 		goodFor.Text = "Used to make tools"
@@ -358,7 +385,7 @@ function CraftingWindow.SetState(newState: any)
 	end
 end
 
--- Opens the window for a station ("CraftingTable" by default, or "Furnace")
+-- Opens the window for a station ("CraftingTable" by default, "Furnace", "Anvil", "GemBench")
 function CraftingWindow.Open(which: Recipes.Station?)
 	local wanted: Recipes.Station = which or "CraftingTable"
 	if wanted ~= station or Recipes.ById[selectedId].Station ~= wanted then

@@ -22,18 +22,20 @@ Updated for tools and click farming (2026-10-15). The first quests walk you down
 | 5 | Hold your pickaxe and mine 3 Stone | 8 Grass blocks, 350 XP |
 | 6 | Right-click to place 3 blocks | 150 XP |
 | 7 | Click the farmland to plant 3 seeds | 3 Wheat Seeds, 250 XP |
-| 8 | Hold your hoe and click ripe crops to harvest 3 | 350 XP |
-| 9 | Step through the portal to visit Town | 250 XP |
-| 10 | Sell crops to the Merchant in Town | 100 coins, 250 XP |
-| 11 | Buy seeds from the Merchant | 250 XP |
-| 12 | Craft a Stone Pickaxe | 4 Stone, 350 XP |
-| 13 | Mine Iron Ore with your Stone Pickaxe | 1 Coal, 350 XP |
-| 14 | Craft a Furnace (8 Stone) | 350 XP |
-| 15 | Place your Furnace and smelt an Iron Ingot | 150 coins, 500 XP |
-| 16 | Reach Farming level 3 | 250 coins, 700 XP |
-| 17 | Reach level 10 | 1,000 coins, 3 Iron Ingots |
+| 8 | Hold your hoe and click ripe crops to harvest 3 | 1 Wheat, 350 XP |
+| 9 | Craft Twine from 4 Wheat at the Crafting Table | 250 XP |
+| 10 | Step through the portal to visit Town | 250 XP |
+| 11 | Sell crops to the Merchant in Town | 100 coins, 250 XP |
+| 12 | Buy seeds from the Merchant | 250 XP |
+| 13 | Craft a Stone Pickaxe (3 Stone, 2 Sticks, 1 Twine) | 4 Stone, 350 XP |
+| 14 | Mine Iron Ore with your Stone Pickaxe | 1 Coal, 350 XP |
+| 15 | Craft a Furnace (8 Stone) | 350 XP |
+| 16 | Place your Furnace and smelt an Iron Ingot | 150 coins, 500 XP |
+| 17 | Reach Farming level 3 | 250 coins, 700 XP |
+| … | (then the Grinding World quests in `Quests.luau`) | |
+| last | Reach level 10 | 1,000 coins, 3 Iron Ingots |
 
-Rewards were scaled up with the 2026-10-27 rebalance (about 4,900 player XP in all, roughly a level and a half). Quests 12-15 (2026-10-24) teach ores and smelting. Generators and conveyors from the draft below aren't built yet; they'll slot in as quests when they are.
+Rewards were scaled up with the 2026-10-27 rebalance (about 4,900 player XP in all, roughly a level and a half). Quests 13-16 (2026-10-24) teach ores and smelting. Quest 9 (2026-10-31) came with the three-part tools ([[Crafting Proposal]]): the harvest step gives one extra Wheat so the 3 you harvest make Twine. The chain is saved by number, so saves already past step 9 skip it (`Flags.TwineStep`, QuestService). Generators and conveyors from the draft below aren't built yet; they'll slot in as quests when they are.
 
 ## Challenges board groups (built 2026-10-31)
 The Challenges window opens on a square per group: **Beginner** (the chain above), **Mining**, **Woodcutting**, **Farming**, **Crafting**, **Island**, and **Slaying** and **Warzone** ("Coming soon" until the Warzone opens). Each group is a numbered chain done in order, so every group has one current challenge, and an action counts for every group whose current challenge asks for it. "Track" shows a group in the quest tracker (Beginner by default). Lists, events and rewards: `game/src/shared/Boards.luau`; progress is saved by challenge Id, so challenges can be added anywhere later. Separate from the per-resource skill challenges (pets, armor, trophies) in the Skills window.

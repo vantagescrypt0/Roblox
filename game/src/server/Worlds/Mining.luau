@@ -16,6 +16,12 @@
 --                 Two long galleries close the loop: the West Gallery slopes down from the
 --                 Iron Vein to the gold, and the East Gallery, with a stream and stalls
 --                 along it, runs from the Coal Seam to the grotto.
+--   The deep cave from the Gold Chamber the Descent winds down to the Silver Tunnels
+--                 (Mining 20, a miners' camp), and on: the Amethyst Geode (35, a huge hollow
+--                 ball lined with purple crystal), the Sapphire Lake (50, a lake deep enough
+--                 to swim, glowing from below), the Magma Depths (65, lava pools on a dark
+--                 floor) and, at the very bottom, the Star Vault (80, starlit black rock).
+--                 The mountain's rock hangs deep enough under it that nothing breaks out.
 -- The halls are 30-70 blocks across and up to 30 high, with pale stone floors, a dirt path
 -- down the middle, glowing vines and dripstone hanging from the roof and giant crystals
 -- (from the Skybounds cave shots). Each section's walls have veins of its own ore with
@@ -78,7 +84,9 @@ local PEAK_LIST = {
 -- A cave section: tunnels are runs between points (X, floor height, Z), chambers are domes
 -- standing on a floor. Ore: what its walls have veins of, and Vein how much: a noise
 -- threshold, so lower is rarer (-0.12 is about a quarter of the wall, -0.3 a few spots).
-type Section = { Ore: string?, Vein: number?, Deep: boolean? }
+-- Floors: the blocks its floor is made of instead of the usual pale stone and gravel.
+-- Wall: the rock between its ore, instead of stone with the odd coal or iron.
+type Section = { Ore: string?, Vein: number?, Deep: boolean?, Floors: { string }?, Wall: string? }
 type Tunnel = {
 	Points: { Vector3 },
 	Width: number,
@@ -87,6 +95,8 @@ type Tunnel = {
 	Ore: string?,
 	Vein: number?,
 	Deep: boolean?,
+	Floors: { string }?,
+	Wall: string?,
 }
 type Chamber = {
 	Name: string,
@@ -97,6 +107,8 @@ type Chamber = {
 	Ore: string?,
 	Vein: number?,
 	Deep: boolean?,
+	Floors: { string }?,
+	Wall: string?,
 }
 
 local TUNNELS: { Tunnel } = {
@@ -133,6 +145,63 @@ local TUNNELS: { Tunnel } = {
 	},
 	-- The East Gallery: from the Coal Seam to the Crystal Grotto, a stream along it
 	{ Points = { Vector3.new(58, 1, 68), Vector3.new(61, 1, 86), Vector3.new(56, 1, 103) }, Width = 6.5, Height = 13 },
+	-- The deep cave ([[Mining Phase Plan]]). The Descent: from the Gold Chamber down to the
+	-- Silver Tunnels
+	{
+		Points = { Vector3.new(-56, -14, 104), Vector3.new(-62, -21, 90), Vector3.new(-52, -29, 70) },
+		Width = 4.5,
+		Height = 9,
+		Ore = "SilverOre",
+		Vein = -0.3,
+		Deep = true,
+	},
+	-- The Silver Tunnels on down to the Amethyst Geode
+	{
+		Points = { Vector3.new(-30, -30, 50), Vector3.new(-22, -36, 40), Vector3.new(-14, -41, 30) },
+		Width = 4.5,
+		Height = 9,
+		Ore = "SilverOre",
+		Vein = -0.22,
+		Deep = true,
+	},
+	-- The geode across to the Sapphire Lake
+	{
+		Points = { Vector3.new(17, -42, 24), Vector3.new(24, -43, 30), Vector3.new(30, -44, 36) },
+		Width = 5,
+		Height = 10,
+		Ore = "AmethystOre",
+		Vein = -0.3,
+		Deep = true,
+	},
+	-- The Silver Tunnels down to the Magma Depths
+	{
+		Points = {
+			Vector3.new(-34, -30, 66),
+			Vector3.new(-26, -35, 74),
+			Vector3.new(-28, -40, 84),
+			Vector3.new(-32, -44, 90),
+		},
+		Width = 4.5,
+		Height = 9,
+		Ore = "RubyOre",
+		Vein = -0.34,
+		Deep = true,
+		Floors = { "DarkStone", "Stone", "DarkStone" },
+	},
+	-- From the lake down to the Star Vault at the very bottom
+	{
+		Points = {
+			Vector3.new(42, -44, 60),
+			Vector3.new(34, -50, 68),
+			Vector3.new(26, -56, 72),
+			Vector3.new(20, -62, 74),
+		},
+		Width = 4.5,
+		Height = 9,
+		Ore = "SapphireOre",
+		Vein = -0.32,
+		Deep = true,
+	},
 }
 local CHAMBERS: { Chamber } = {
 	{ Name = "Hall", X = 0, Z = 42, Floor = 1, Radii = Vector3.new(22, 18, 17) },
@@ -150,6 +219,63 @@ local CHAMBERS: { Chamber } = {
 		Deep = true,
 	},
 	{ Name = "Grotto", X = 52, Z = 118, Floor = 1, Radii = Vector3.new(20, 18, 16), Ore = "IronOre", Vein = -0.3 },
+	-- The deep cave, each zone a level gate further down (Gathering.luau)
+	{
+		Name = "Silver",
+		X = -44,
+		Z = 58,
+		Floor = -30,
+		Radii = Vector3.new(18, 10, 16),
+		Ore = "SilverOre",
+		Vein = -0.16,
+		Deep = true,
+	},
+	-- A huge hollow ball lined with amethyst
+	{
+		Name = "Geode",
+		X = 0,
+		Z = 18,
+		Floor = -42,
+		Radii = Vector3.new(19, 26, 19),
+		Ore = "AmethystOre",
+		Vein = -0.04,
+		Deep = true,
+		Floors = { "SmoothStone", "Stone", "Gravel" },
+	},
+	{
+		Name = "Lake",
+		X = 50,
+		Z = 44,
+		Floor = -44,
+		Radii = Vector3.new(28, 15, 24),
+		Ore = "SapphireOre",
+		Vein = -0.14,
+		Deep = true,
+		Floors = { "Gravel", "SmoothStone", "Sand" },
+	},
+	{
+		Name = "Magma",
+		X = -36,
+		Z = 98,
+		Floor = -44,
+		Radii = Vector3.new(24, 16, 20),
+		Ore = "RubyOre",
+		Vein = -0.16,
+		Deep = true,
+		Floors = { "DarkStone", "Obsidian", "DarkStone", "Stone" },
+	},
+	{
+		Name = "Vault",
+		X = 14,
+		Z = 74,
+		Floor = -64,
+		Radii = Vector3.new(18, 12, 16),
+		Ore = "StarstoneOre",
+		Vein = -0.2,
+		Deep = true,
+		Floors = { "DarkStone", "Obsidian" },
+		Wall = "DarkStone",
+	},
 }
 
 local function chamber(name: string): Chamber
@@ -324,12 +450,20 @@ local function ore(ctx: Context.Context, x: number, y: number, z: number, sectio
 	if section and section.Deep and roll < 0.02 then
 		return "GoldOre"
 	end
+	if section and section.Wall then
+		return section.Wall
+	end
 	return if roll < 0.02 then "IronOre" elseif roll < 0.05 then "CoalOre" else "Stone"
 end
 
--- A cave floor's blocks: pale stone with patches of gravel and darker stone
-local function floorBlock(ctx: Context.Context, x: number, z: number): string
+-- A cave floor's blocks: pale stone with patches of gravel and darker stone (or the
+-- section's own floor blocks, in patches the same way)
+local function floorBlock(ctx: Context.Context, x: number, z: number, section: Section?): string
 	local n = ctx.Noise(x, z, 6, 301)
+	local floors = section and section.Floors
+	if floors then
+		return floors[math.clamp(math.floor((n + 0.5) * #floors) + 1, 1, #floors)]
+	end
 	return if n > 0.2 then "Gravel" elseif n < -0.24 then "Stone" else "SmoothStone"
 end
 
@@ -337,7 +471,8 @@ end
 -- set with ore that grows back (mined ore turns pale, so the walls never get holes), a
 -- protected floor underfoot, then stone and dark stone behind
 local function digMine(ctx: Context.Context, caves: Caves)
-	-- Is (x, y, z) well inside the rock, at least four blocks from the mountain's outside?
+	-- Is (x, y, z) well inside the rock, at least four blocks from the mountain's outside
+	-- (its slopes above and, for the deep cave, its underside below)?
 	local function sealed(x: number, y: number, z: number): boolean
 		if not ctx.Inside(x, z, 6) then
 			return false
@@ -346,8 +481,11 @@ local function digMine(ctx: Context.Context, caves: Caves)
 			if ctx.HeightAt(x + d[1], z + d[2]) < y + 2 and y >= -1 then
 				return false
 			end
+			if ctx.BottomAt(x + d[1], z + d[2]) > y - 5 then
+				return false
+			end
 		end
-		return ctx.HeightAt(x, z) >= y + 4
+		return ctx.HeightAt(x, z) >= y + 4 and ctx.BottomAt(x, z) <= y - 5
 	end
 
 	local cave: { [number]: Section } = {}
@@ -397,11 +535,13 @@ local function digMine(ctx: Context.Context, caves: Caves)
 					local k = key(n.X, n.Y, n.Z)
 					if not ctx.World.Cells[k] and solidHere(n.X, n.Y, n.Z) then
 						if layer == 1 and cave[nk(n.X, n.Y + 1, n.Z)] then
-							ctx.Set(n.X, n.Y, n.Z, floorBlock(ctx, n.X, n.Z))
+							ctx.Set(n.X, n.Y, n.Z, floorBlock(ctx, n.X, n.Z, section))
 						elseif layer <= 2 and not cave[nk(n.X, n.Y + layer, n.Z)] then
 							-- Only the wall's face can ever be reached, so ore goes there
-							local block = if layer == 1 then ore(ctx, n.X, n.Y, n.Z, section) else "Stone"
-							if block == "Stone" then
+							local block = if layer == 1
+								then ore(ctx, n.X, n.Y, n.Z, section)
+								else section and section.Wall or "Stone"
+							if not Blocks.Types[block].Ore then
 								ctx.Set(n.X, n.Y, n.Z, block)
 							else
 								ctx.Node(n.X, n.Y, n.Z, block)
@@ -488,6 +628,8 @@ local CRYSTAL = {
 	Purple = Color3.fromRGB(186, 88, 240),
 	Red = Color3.fromRGB(232, 48, 62),
 	Cyan = Color3.fromRGB(96, 218, 238),
+	Blue = Color3.fromRGB(60, 110, 235),
+	Star = Color3.fromRGB(255, 240, 190),
 }
 
 -- Floor cells of the dirt path (decor keeps off it)
@@ -822,6 +964,62 @@ local function lavaPool(ctx: Context.Context, cx: number, floorY: number, cz: nu
 	fire.Parent = pool
 end
 
+-- A lake sunk `depth` blocks into the floor, deep enough to swim in: carved out of the rock,
+-- lined with gravel and stone, glowing from below like the Sapphire Lake's water
+local function deepLake(ctx: Context.Context, cx: number, floorY: number, cz: number, r: number, depth: number)
+	-- First which columns it covers (cave floor inside the circle), then dig them
+	local lake: { [string]: boolean } = {}
+	local columns: { Vector2 } = {}
+	for x = cx - r, cx + r do
+		for z = cz - r, cz + r do
+			if (x - cx) ^ 2 + (z - cz) ^ 2 <= r * r and ctx.World.Cells[key(x, floorY, z)] then
+				lake[`{x},{z}`] = true
+				table.insert(columns, Vector2.new(x, z))
+			end
+		end
+	end
+	local rows: { [number]: { number } } = {}
+	for _, c in columns do
+		local x, z = c.X, c.Y
+		for y = floorY - depth + 1, floorY do
+			ctx.Carve(x, y, z)
+		end
+		ctx.Set(x, floorY - depth, z, if ctx.Hash(x, 7, z) < 0.7 then "Gravel" else "Sand")
+		-- Walls where the lake meets the rock
+		for _, d in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
+			if not lake[`{x + d[1]},{z + d[2]}`] then
+				for y = floorY - depth + 1, floorY - 1 do
+					ctx.SetFree(x + d[1], y, z + d[2], "Stone")
+				end
+			end
+		end
+		local row = rows[x] or { z, z }
+		row[1], row[2] = math.min(row[1], z), math.max(row[2], z)
+		rows[x] = row
+	end
+	-- One sheet of water per row, its surface just under the floor's top
+	local height = SIZE * (depth - 0.25)
+	for x, row in rows do
+		local from, to = ctx.Top(x, floorY - 1, row[1]), ctx.Top(x, floorY - 1, row[2])
+		local middleAt = (from + to) / 2 + Vector3.new(0, SIZE * 0.75, 0)
+		Decor.Water(ctx.Decor, middleAt, Vector2.new(SIZE, (row[2] - row[1] + 1) * SIZE), height)
+	end
+	-- The glow from the deep
+	for _ = 1, 4 do
+		local holder = Decor.Part(
+			ctx.Decor,
+			"LakeGlow",
+			Vector3.one,
+			CFrame.new(ctx.Top(cx + ctx.Rng:NextInteger(-r // 2, r // 2), floorY - depth, cz)),
+			CRYSTAL.Blue,
+			Enum.Material.Neon
+		)
+		holder.Transparency = 1
+		holder.CanCollide = false
+		glow(holder, CRYSTAL.Cyan, 40, 1.2)
+	end
+end
+
 -- A pool of water sunk one block into the floor
 local function waterPool(ctx: Context.Context, cx: number, floorY: number, cz: number, r: number)
 	for x = cx - r, cx + r do
@@ -1143,6 +1341,114 @@ local function furnishMine(ctx: Context.Context)
 	end
 end
 
+-- The deep cave's lake, dug before anything else is put in the caves so nothing ends up
+-- where its water goes
+local function digLake(ctx: Context.Context)
+	local lake = chamber("Lake")
+	local floorY = floorAt(ctx, lake.X + 2, lake.Z + 2, lake.Floor - 1)
+	if floorY then
+		deepLake(ctx, lake.X + 2, floorY, lake.Z + 2, 11, 3)
+	end
+end
+
+-- The deep cave's own look, zone by zone, and its gate signs
+local function furnishDeep(ctx: Context.Context)
+	local silver, geode, lake, magma, vault =
+		chamber("Silver"), chamber("Geode"), chamber("Lake"), chamber("Magma"), chamber("Vault")
+	local rng = ctx.Rng
+
+	-- The Silver Tunnels: an old miners' camp, lanterns, a cart of silver, braziers
+	chamberLights(ctx, silver, 5)
+	for i, spot in chamberSpots(ctx, silver, 3, 0.6, 9) do
+		if i == 1 then
+			stall(ctx, spot.X, spot.Y, spot.Z, Vector3.xAxis)
+		else
+			brazier(ctx, spot.X, spot.Y, spot.Z)
+		end
+	end
+	local cartFloor = floorAt(ctx, silver.X, silver.Z + 4, silver.Floor - 1)
+	if cartFloor then
+		Decor.Minecart(ctx.Decor, ctx.Top(silver.X, cartFloor, silver.Z + 4), Vector3.xAxis, "SilverOre")
+	end
+
+	-- The Amethyst Geode: purple crystals over every wall, a giant one in the middle
+	for i, spot in chamberSpots(ctx, geode, 14, 0.95, 5) do
+		local color = if i % 3 == 0 then CRYSTAL.Pink else CRYSTAL.Purple
+		crystal(ctx, ctx.Top(spot.X, spot.Y, spot.Z), true, color, rng:NextInteger(4, 7))
+	end
+	for i = 1, 10 do
+		local angle = i / 10 * 2 * math.pi
+		local x = math.round(geode.X + math.cos(angle) * geode.Radii.X * 0.55)
+		local z = math.round(geode.Z + math.sin(angle) * geode.Radii.Z * 0.55)
+		crystal(ctx, roofAt(ctx, geode, x, z), false, CRYSTAL.Purple, 6)
+	end
+	local heart = floorAt(ctx, geode.X, geode.Z, geode.Floor - 1)
+	if heart then
+		crystal(ctx, ctx.Top(geode.X, heart, geode.Z), true, CRYSTAL.Purple, 10)
+	end
+
+	-- The Sapphire Lake: blue crystals and glowing mushrooms round the shore and roof
+	for i, spot in chamberSpots(ctx, lake, 9, 0.95, 8) do
+		if i <= 6 then
+			crystal(ctx, ctx.Top(spot.X, spot.Y, spot.Z), true, CRYSTAL.Blue, rng:NextInteger(3, 6))
+		else
+			glowMushroom(ctx, ctx.Top(spot.X, spot.Y, spot.Z), rng:NextNumber(6, 10), CRYSTAL.Cyan)
+		end
+	end
+	for i = 1, 8 do
+		local angle = i / 8 * 2 * math.pi + 0.3
+		local x = math.round(lake.X + math.cos(angle) * lake.Radii.X * 0.6)
+		local z = math.round(lake.Z + math.sin(angle) * lake.Radii.Z * 0.6)
+		crystal(ctx, roofAt(ctx, lake, x, z), false, if i % 2 == 0 then CRYSTAL.Cyan else CRYSTAL.Blue, 5)
+	end
+
+	-- The Magma Depths: lava pouring into pools on a dark floor, red crystals, braziers
+	for _, at in { Vector2.new(-8, 4), Vector2.new(9, -6), Vector2.new(2, 10) } do
+		local x, z = magma.X + at.X, magma.Z + at.Y
+		local y = floorAt(ctx, x, z, magma.Floor - 1)
+		if y then
+			lavaPool(ctx, x, y, z, 3)
+			lavaFall(ctx, x, y, z + 1)
+		end
+	end
+	for _, spot in chamberSpots(ctx, magma, 6, 0.9, 8) do
+		crystal(ctx, ctx.Top(spot.X, spot.Y, spot.Z), true, CRYSTAL.Red, rng:NextInteger(3, 5))
+	end
+	for _, spot in chamberSpots(ctx, magma, 3, 0.6, 10) do
+		brazier(ctx, spot.X, spot.Y, spot.Z)
+	end
+
+	-- The Star Vault: near-black rock, starlight specks across the roof, pale crystals
+	for _ = 1, 70 do
+		local x = vault.X + rng:NextInteger(-math.floor(vault.Radii.X), math.floor(vault.Radii.X))
+		local z = vault.Z + rng:NextInteger(-math.floor(vault.Radii.Z), math.floor(vault.Radii.Z))
+		local floorY = floorAt(ctx, x, z, vault.Floor - 1)
+		if floorY then
+			local top = ceiling(ctx, x, floorY, z)
+			local speck = Decor.Part(
+				ctx.Decor,
+				"Star",
+				Vector3.one * rng:NextNumber(0.25, 0.6),
+				CFrame.new(ctx.Top(x, top, z) + Vector3.new(rng:NextNumber(-1, 1), -0.2, rng:NextNumber(-1, 1))),
+				CRYSTAL.Star,
+				Enum.Material.Neon
+			)
+			speck.CanCollide = false
+			speck.CastShadow = false
+		end
+	end
+	for _, spot in chamberSpots(ctx, vault, 6, 0.9, 7) do
+		crystal(ctx, ctx.Top(spot.X, spot.Y, spot.Z), true, CRYSTAL.Star, rng:NextInteger(3, 6))
+	end
+
+	-- Each zone's sign where its tunnel leaves the zone before, facing the way you come
+	caveSign(ctx, -56, 104, -14, Vector3.new(0.4, 0, 0.9).Unit, "SILVER TUNNELS", "MINING 20")
+	caveSign(ctx, -30, 50, -30, Vector3.new(-1, 0, 0.6).Unit, "AMETHYST GEODE", "MINING 35")
+	caveSign(ctx, -34, 66, -30, Vector3.new(-1, 0, -0.8).Unit, "MAGMA DEPTHS", "MINING 65")
+	caveSign(ctx, 17, 24, -42, Vector3.new(-1, 0, -0.35).Unit, "SAPPHIRE LAKE", "MINING 50")
+	caveSign(ctx, 42, 60, -44, Vector3.new(0.5, 0, -1).Unit, "STAR VAULT", "MINING 80")
+end
+
 -- The way in -----------------------------------------------------------------------------------
 
 -- The arch: a timber frame where the way in meets the mountain, "THE MINE" hanging in it
@@ -1444,7 +1750,8 @@ function Mining.Build(ctx: Context.Context)
 		Z = PEAKS.Z,
 		Radius = PEAKS.R,
 		Column = peakColumn,
-		Depth = 64,
+		-- Deep enough to hold the deep cave with rock to spare under the Star Vault
+		Depth = 110,
 		Fill = function(x, y, z, depth)
 			-- Sandstone right under the mountain's skin, a little soil under the grass
 			if heights[ck(x, z)] then
@@ -1469,8 +1776,10 @@ function Mining.Build(ctx: Context.Context)
 	end
 
 	digMine(ctx, caves)
+	digLake(ctx)
 	local mouthZ = arch(ctx)
 	furnishMine(ctx)
+	furnishDeep(ctx)
 	quarry(ctx)
 
 	-- A long stone bridge over to the mountain, a dirt path up to the arch between two

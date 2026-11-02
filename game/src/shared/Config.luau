@@ -17,11 +17,14 @@ Config.Island = table.freeze({
 	FallLimit = 120,
 })
 
--- Uploaded copy of art/textures/item_icons.png (all item icons on one sheet, see ItemArt.luau).
--- Empty = icons fall back to live 3D previews. Uploaded 2026-10-26 with the zone items
--- (gold, pumpkins, melons, the new woods), as the texture of a plane imported with Import 3D
--- (see art/README.md).
-Config.ItemIconSheet = "rbxassetid://108158291167421"
+-- Uploaded copies of the icon sheets, art/textures/item_icons.png then item_icons_2.png and on
+-- (64 icons to a sheet, see ItemArt.luau). An icon whose sheet isn't listed falls back to a
+-- live 3D preview. Uploaded as the texture of a plane imported with Import 3D (see
+-- art/README.md); every re-render of the sheets needs a new upload, since cells move.
+Config.ItemIconSheets = table.freeze({
+	"rbxassetid://105422127167243",
+	"rbxassetid://137178541756025",
+})
 
 -- Who can fly (double-tap Space, see client/FlightController): user ids. Only the game's
 -- owner for now (koiopio).

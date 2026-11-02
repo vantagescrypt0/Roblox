@@ -71,6 +71,13 @@ local DEBRIS_COLORS: { [string]: Color3 } = {
 	IronOre = Color3.fromRGB(176, 140, 112),
 	GoldOre = Color3.fromRGB(236, 196, 64),
 	Furnace = Color3.fromRGB(110, 110, 110),
+	Anvil = Color3.fromRGB(62, 64, 72),
+	GemBench = Color3.fromRGB(162, 130, 78),
+	SilverOre = Color3.fromRGB(196, 204, 214),
+	AmethystOre = Color3.fromRGB(168, 96, 230),
+	SapphireOre = Color3.fromRGB(60, 110, 235),
+	RubyOre = Color3.fromRGB(220, 40, 60),
+	StarstoneOre = Color3.fromRGB(240, 220, 140),
 	Wood = Color3.fromRGB(104, 82, 51),
 	BirchWood = Color3.fromRGB(220, 216, 204),
 	SpruceWood = Color3.fromRGB(70, 50, 30),
@@ -308,7 +315,7 @@ local function useHeld(current: Target): boolean
 end
 
 -- Clicking something you use rather than break. Returns true if the click was used.
--- `secondary` is a right click or a tap; breakable stations (the furnace) only open on
+-- `secondary` is a right click or a tap; breakable stations (furnace, anvil, gem bench) only open on
 -- those, so a left click can still break them.
 local function interact(secondary: boolean): boolean
 	local current = target
@@ -321,6 +328,12 @@ local function interact(secondary: boolean): boolean
 		return true
 	elseif current and secondary and current.Part.Name == "Furnace" then
 		callbacks.OpenCrafting("Furnace")
+		return true
+	elseif current and secondary and current.Part.Name == "Anvil" then
+		callbacks.OpenCrafting("Anvil")
+		return true
+	elseif current and secondary and current.Part.Name == "GemBench" then
+		callbacks.OpenCrafting("GemBench")
 		return true
 	elseif current and current.Part.Name == "Sapling" then
 		Remotes.Uproot:FireServer(current.X, current.Y, current.Z)

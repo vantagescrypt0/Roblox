@@ -66,6 +66,8 @@ local TEMPLATE = {
 		StarterBuckets = false,
 		-- Old islands' ready-made farm patch has become the player's own farmland (IslandService)
 		OwnFarmland = false,
+		-- The beginner chain got a "Craft Twine" step; saves past that point skip it (QuestService)
+		TwineStep = false,
 	},
 	-- Mail waiting to be claimed, oldest first (InboxService). Count is how many letters
 	-- the player has ever had (each letter's id).
@@ -216,6 +218,7 @@ local function onPlayerAdded(player: Player)
 		data.Flags.StarterHoe = true
 		data.Flags.StarterBuckets = true
 		data.Flags.OwnFarmland = true
+		data.Flags.TwineStep = true
 		data.Items.WheatSeeds = (data.Items.WheatSeeds or 0) + 6
 		data.Items.WoodenHoe = (data.Items.WoodenHoe or 0) + 1
 		data.Items.WaterBucket = (data.Items.WaterBucket or 0) + 1

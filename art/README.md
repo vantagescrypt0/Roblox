@@ -12,6 +12,15 @@ To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_til
 
 **Glass, Water and Ice aren't meshes:** they're plain 3-stud Parts in the same `Blocks` folder (Glass: Glass material, light blue, 0.6 transparency; Water: SmoothPlastic, blue, 0.3 transparency, 0.15 reflectance, CanCollide off; Ice: a Glass copy with Ice material, pale blue, 0.2 transparency). When re-importing, copy them from the old folder before Save to File (the 2026-10-26 import did this from the command bar).
 
+## Store art (the game icon and thumbnails)
+`scripts/store_art.py` builds each picture as a 3D scene from the game's own block and item meshes (`blend/Blocks.blend`, `blend/Items.blend`, so run `blocks.py` and `items3d.py` first if they changed), renders it with Cycles on the GPU, adds a soft glow in numpy, then stamps the logo and captions in the game's pixel lettering (the same letters as `Util/Logo.luau`). It writes `marketing/icon.png` (512) and `marketing/thumb1_world.png` to `thumb6_forest.png` (1920x1080).
+
+```
+"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/store_art.py -- all
+"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/store_art.py -- thumb3 preview
+```
+`preview` renders at half size into `renders/store_*.png`, about 20 s a picture. Upload on Creator Hub: Skycore → Places → start place → Icon / Thumbnails (the Thumbnails page has a Home Page tab and an Experience Detail Page tab, each with its own list).
+
 ## Items (tools, crops, seeds, ores, loot) and their icons
 `scripts/items3d.py` builds every item as a low-poly 3D model with the shared palette (`lowpoly.py`): tapered wooden handles with leather grips, curved pickaxe heads, wedge axe blades, diamond-section sword blades, seed pouches tagged by crop, crops, ore lumps, an ingot, a crystal, a scrap gear, and buckets (empty, water, lava; the Bottomless ones have gold bands). Tiers are materials: Wooden (light wood, leather lashing), Stone (rough chipped stone), Iron (steel, metal collar), Crystal (cyan, gold fittings). Tools are modelled upright and tilted 45° so the handle is bottom-left and the head top-right.
 
@@ -27,7 +36,7 @@ It writes:
 
 Importing:
 1. Import 3D `export/Items.fbx` (Anchored on), wait for `MeshContent.SourceType = Uri`, move the MeshParts into a folder `ItemModels` (CanCollide/CanTouch/CanQuery off, Massless, SmoothPlastic), Save to File → `game/assets-replicated/ItemModels.rbxm` (synced to `ReplicatedStorage.ItemModels`), then rebuild the place as above. Used for the item in your hand (`CombatService`).
-2. Upload `textures/item_icons.png` as an image (Studio → Asset Manager → Import) and put its `rbxassetid://` in `Config.ItemIconSheet`. Used for every item icon (`client/UI/ItemIcon.luau`). If the Asset Manager's Import menu won't open, run `scripts/icon_sheet_fbx.py` (see its header) and Import 3D the resulting `export/IconSheet.fbx`: the importer uploads the sheet as the plane's texture, and the MeshPart's `TextureID` is the image id (then delete the plane).
+2. Upload `textures/item_icons.png` as an image (Studio → Asset Manager → Import) and put its `rbxassetid://` in `Config.ItemIconSheets` (a list: past 64 icons the script also writes `item_icons_2.png` and on, one 1024 px sheet per 64 icons, since Roblox images stop at 1024 px; upload each and list them in order). Used for every item icon (`client/UI/ItemIcon.luau`). If the Asset Manager's Import menu won't open, run `scripts/icon_sheet_fbx.py` (see its header) and Import 3D the resulting `export/IconSheet.fbx`: the importer uploads the sheet as the plane's texture, and the MeshPart's `TextureID` is the image id (then delete the plane).
 
 To add an item: write a build function, add it to `ITEMS` (and a `Model` in `game/src/shared/Items.luau`), and re-run with the new item's name after `--` (e.g. `... --python art/scripts/items3d.py -- Hoe`). That also writes `export/Items_new.fbx` with just those items: Import 3D only that, move its MeshParts into `ReplicatedStorage.ItemModels` (same settings as the others) and Save to File over `ItemModels.rbxm`, so existing meshes keep their uploads. Then re-upload the sheet: adding items shifts the icon cells, so the sheet, `ItemArt.luau` and `Config.ItemIconSheet` must change together.
 

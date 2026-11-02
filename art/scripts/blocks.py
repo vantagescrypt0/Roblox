@@ -58,6 +58,8 @@ TILES = [
     "cracked_stone_bricks",
     # Resource nodes: a mined ore while it grows back
     "empty_ore",
+    # The Mining World's deep cave (2026-10-31): silver, gems in dark stone, starstone
+    "silver_ore", "amethyst_ore", "sapphire_ore", "ruby_ore", "starstone_ore",
 ]  # fmt: skip
 
 # Which tile each face uses: (top, bottom, sides) or (top, bottom, front, other sides)
@@ -118,6 +120,11 @@ BLOCKS = {
     "MushroomStem": ("mushroom_stem", "mushroom_stem", "mushroom_stem"),
     "CrackedStoneBricks": ("cracked_stone_bricks", "cracked_stone_bricks", "cracked_stone_bricks"),
     "EmptyOre": ("empty_ore", "empty_ore", "empty_ore"),
+    "SilverOre": ("silver_ore", "silver_ore", "silver_ore"),
+    "AmethystOre": ("amethyst_ore", "amethyst_ore", "amethyst_ore"),
+    "SapphireOre": ("sapphire_ore", "sapphire_ore", "sapphire_ore"),
+    "RubyOre": ("ruby_ore", "ruby_ore", "ruby_ore"),
+    "StarstoneOre": ("starstone_ore", "starstone_ore", "starstone_ore"),
 }
 
 # Merged pieces (x, y, z in blocks; each also fills z, y, x turned a quarter turn).
@@ -574,6 +581,7 @@ def draw_building_tiles(tiles):
     draw_zone_tiles(tiles)
     draw_reference_tiles(tiles)
     draw_node_tiles(tiles)
+    draw_deep_ore_tiles(tiles)
 
 
 def draw_zone_tiles(tiles):
@@ -757,6 +765,66 @@ def draw_node_tiles(tiles):
             # A faint shadow under each pocket's top edge, so it reads as a hollow
             empty[y][x] = noisy(rng, (160, 159, 156), 4)
     tiles["empty_ore"] = empty
+
+
+def draw_deep_ore_tiles(tiles):
+    """The deep cave's ores (their own random sequence): silver clumps like the other
+    metals, gems as little faceted crystals set in darker stone, starstone as glinting
+    specks in near-black rock"""
+    rng = random.Random(97)
+
+    def clumps(base, colors, count):
+        tile = [row[:] for row in base]
+        for _ in range(count):
+            cx, cy = rng.randint(0, 13), rng.randint(0, 13)
+            for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1), (2, 1), (1, 2), (2, 0), (0, 2), (2, 2)):
+                if rng.random() < 0.75:
+                    tile[cy + dy][cx + dx] = noisy(rng, colors[(dx + dy) % len(colors)], 6)
+        return tile
+
+    def darker(base, factor):
+        return [[tuple(clamp(v * factor) for v in pixel) for pixel in row] for row in base]
+
+    def crystals(base, dark, mid, light, count):
+        """Diamond-shaped crystals 5 wide and 7 tall: lit top-left, shaded bottom-right,
+        with a dark rim so they read against the stone"""
+        tile = [row[:] for row in base]
+        taken = []
+        for _ in range(400):
+            if len(taken) == count:
+                break
+            cx, cy = rng.randint(2, 13), rng.randint(3, 12)
+            if any(abs(cx - ox) < 6 and abs(cy - oy) < 7 for ox, oy in taken):
+                continue
+            taken.append((cx, cy))
+            for dy in range(-4, 5):
+                for dx in range(-3, 4):
+                    size = abs(dx) / 2.5 + abs(dy) / 3.5
+                    inside = size <= 1
+                    rim = not inside and size <= 1.35
+                    x, y = cx + dx, cy + dy
+                    if not (0 <= x < TILE and 0 <= y < TILE):
+                        continue
+                    if inside:
+                        color = light if (dx <= 0 and dy < 0) else dark if (dx > 0 and dy > 0) else mid
+                        tile[y][x] = noisy(rng, color, 5)
+                    elif rim and rng.random() < 0.7:
+                        tile[y][x] = noisy(rng, shade(dark, 0.55), 4)
+        return tile
+
+    stone, deep = tiles["stone"], tiles["dark_stone"]
+    tiles["silver_ore"] = clumps(stone, [(222, 228, 236), (176, 184, 196), (250, 252, 255)], 6)
+    tiles["amethyst_ore"] = crystals(deep, (110, 52, 170), (168, 96, 230), (222, 178, 255), 4)
+    tiles["sapphire_ore"] = crystals(darker(deep, 0.95), (28, 60, 170), (60, 110, 235), (150, 196, 255), 4)
+    tiles["ruby_ore"] = crystals(darker(deep, 0.8), (140, 16, 34), (220, 40, 60), (255, 140, 150), 4)
+    star = darker(deep, 0.45)
+    for _ in range(9):
+        x, y = rng.randint(1, 14), rng.randint(1, 14)
+        star[y][x] = noisy(rng, (255, 246, 200), 4)
+        if rng.random() < 0.55:
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                star[y + dy][x + dx] = noisy(rng, (236, 200, 110), 6)
+    tiles["starstone_ore"] = star
 
 
 def build_atlas():

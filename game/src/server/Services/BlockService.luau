@@ -13,7 +13,8 @@
 -- leaves fall and you get saplings for them, always at least one.
 -- Mining natural stone and ore trains Mining, chopping natural trees trains Woodcutting,
 -- and those skills give a growing chance of a double drop. Blocks you placed give no XP
--- and no bonus, so placing and re-mining can't farm XP or copy items.
+-- and no bonus, so placing and re-mining can't farm XP or copy items. Ore in the shared
+-- worlds now and then drops a sliver too (Slivers.luau).
 -- Buckets pour water and lava the way blocks are placed (LiquidService makes them flow), and
 -- a block can be placed into flowing liquid or over a source. An empty Bucket scoops a
 -- source back up.
@@ -30,6 +31,7 @@ local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Liquids = require(ReplicatedStorage.Shared.Liquids)
 local Mining = require(ReplicatedStorage.Shared.Mining)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Slivers = require(ReplicatedStorage.Shared.Slivers)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local ChallengeService = require(script.Parent.ChallengeService)
@@ -203,6 +205,12 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		InventoryService.Add(player, "Sapling", 1)
 		StateService.Notify(player, "Found a Sapling! Plant it on grass or dirt", "good")
 	end
+	-- Now and then a sliver of the ore, in the shared worlds only (Slivers.luau)
+	local sliver = Slivers.ByOre[blockType]
+	if area.Public and gather and sliver and rng:NextNumber() < sliver.Chance then
+		InventoryService.Add(player, sliver.Item, 1)
+		StateService.Notify(player, `Found a {sliver.Name}! {sliver.Need} craft a {Items[sliver.Node].Name}`, "level")
+	end
 	if fellLeaves then
 		treeFell(player, fellLeaves)
 	end
@@ -211,7 +219,7 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		QuestService.Record(player, `Chop:{blockType}`)
 	elseif canHarvest and (blockType == "Stone" or blockType == "Cobblestone") then
 		QuestService.Record(player, "Mine")
-	elseif canHarvest and (blockType == "CoalOre" or blockType == "IronOre" or blockType == "GoldOre") then
+	elseif canHarvest and def.Ore then
 		QuestService.Record(player, "Mine")
 		QuestService.Record(player, `Mine:{blockType}`)
 		QuestService.Record(player, "MineOre")
