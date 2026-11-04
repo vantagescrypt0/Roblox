@@ -13,7 +13,8 @@ local SIZE = 36
 local HOTBAR = 9
 local STACK = 64
 
-local Inventory = { Size = SIZE, Hotbar = HOTBAR, ChestSize = 27, ChestOffset = 100 }
+-- A chest holds 27. A body holds what you carried and wore, up to 45: the chest screen grows to fit.
+local Inventory = { Size = SIZE, Hotbar = HOTBAR, ChestSize = 27, BiggestChest = 45, ChestOffset = 100 }
 
 local function isGear(itemId: string): boolean
 	local item = Items[itemId]

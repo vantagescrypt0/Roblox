@@ -32,6 +32,7 @@ local Mining = require(ReplicatedStorage.Shared.Mining)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Skydrops = require(ReplicatedStorage.Shared.Skydrops)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Hotbar)
 local HeldController = require(script.Parent.HeldController)
@@ -57,6 +58,7 @@ local CRACK_STAGES = 10 -- the block darkens in steps, like Minecraft's crack te
 local SWING_EVERY = 0.3 -- seconds between mining swings
 local TALK_DISTANCE = 16 -- how close you must be to trade with a shopkeeper
 local ON_ISLAND = Places.Current() == "Island"
+local IN_WARZONE = Places.Current() == "Warzone"
 local SLASH_ANIMATION = {
 	[Enum.HumanoidRigType.R15] = "rbxassetid://522635514",
 	[Enum.HumanoidRigType.R6] = "rbxassetid://129967478",
@@ -227,23 +229,48 @@ local function aim(): Target?
 	}
 end
 
--- The Warzone chest under the pointer, if it's in reach
+-- The Warzone chest or body under the pointer, if it's in reach
 local function aimedLootChest(): string?
-	local folder = Workspace:FindFirstChild("LootChests")
+	local chests = Workspace:FindFirstChild("LootChests")
+	local bodies = Workspace:FindFirstChild("Bodies")
 	local origin = rootPosition()
 	local ray = screenRay()
-	if not folder or not origin or not ray then
+	if not chests or not bodies or not origin or not ray then
 		return nil
 	end
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Include
-	params.FilterDescendantsInstances = { folder }
+	params.FilterDescendantsInstances = { chests, bodies }
 	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 120, params)
 	if not hit or (hit.Position - origin).Magnitude > Blocks.Reach then
 		return nil
 	end
 	local id = hit.Instance:GetAttribute("ChestId")
 	return if type(id) == "string" then id else nil
+end
+
+-- The sealed Legendary Skydrop under the pointer, if it's landed and in reach, with nothing in the way
+local function aimedSealed(): BasePart?
+	local chests = Workspace:FindFirstChild("LootChests")
+	local world = Workspace:FindFirstChild("World")
+	local origin = rootPosition()
+	local ray = screenRay()
+	if not chests or not world or not origin or not ray then
+		return nil
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { chests, world }
+	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 120, params)
+	if not hit or (hit.Position - origin).Magnitude > Blocks.Reach then
+		return nil
+	end
+	local part = hit.Instance
+	local landsAt = part:GetAttribute("LandsAt")
+	if part:GetAttribute("Sealed") ~= true or type(landsAt) ~= "number" then
+		return nil
+	end
+	return if Workspace:GetServerTimeNow() >= landsAt then part else nil
 end
 
 -- The shop of the shopkeeper under the pointer, if we're close enough to talk
@@ -395,12 +422,63 @@ local function interact(secondary: boolean): boolean
 	return false
 end
 
+-- Mining a sealed Legendary Skydrop: it cracks like a block, but when the crack finishes it stays where it is and the
+-- server takes one off its health bar, and the next crack starts.
+local function mineSealed(chest: BasePart, dt: number)
+	selection.Adornee = chest
+	if not breaking or cooldown > 0 then
+		progress = 0
+		progressPart = nil
+		selection.SurfaceTransparency = 1
+		swingTimer = 0
+		return
+	end
+	local id = chest:GetAttribute("ChestId")
+	local crackTime = Skydrops.CrackTime(Hotbar.SelectedItem())
+	if not crackTime then
+		-- Ask the server once per press, so it can say you need a pickaxe
+		if progressPart ~= chest then
+			progressPart = chest
+			Remotes.MineSkydrop:FireServer(id)
+		end
+		progress = 0
+		selection.SurfaceTransparency = 1
+		return
+	end
+	if progressPart ~= chest then
+		progressPart = chest
+		progress = 0
+	end
+	progress += dt / crackTime
+	local stage = math.floor(math.min(progress, 1) * CRACK_STAGES) / CRACK_STAGES
+	selection.SurfaceTransparency = 1 - stage * 0.6
+
+	swingTimer -= dt
+	if swingTimer <= 0 then
+		swingTimer = SWING_EVERY
+		swing()
+		Sfx.block("Chest", false, chest.Position)
+	end
+	if progress >= 1 then
+		Remotes.MineSkydrop:FireServer(id)
+		burst(chest.Position, Skydrops.Purple)
+		Sfx.block("Chest", true, chest.Position)
+		progress = 0
+		cooldown = 0.15
+	end
+end
+
 local function update(dt: number)
 	target = aim()
 	local current = target
 	selection.Adornee = if current then current.Part else nil
 
 	cooldown = math.max(0, cooldown - dt)
+	local sealedChest = if IN_WARZONE then aimedSealed() else nil
+	if sealedChest then
+		mineSealed(sealedChest, dt)
+		return
+	end
 	local def = current and Blocks.Types[current.Part.Name]
 	local locked = current ~= nil and current.Part:GetAttribute("Locked") == true
 	if not breaking or not current or not def or not def.Breakable or locked or cooldown > 0 then

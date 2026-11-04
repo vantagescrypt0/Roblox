@@ -55,6 +55,8 @@ end
 
 local function addGlow(sword: MeshPart, glow: SwordArt.Glow, art: SwordArt.Art)
 	local shell = sword:Clone()
+	-- Its copy of the sword's mount would hold the glow at the chest while the sword itself moved
+	shell:ClearAllChildren()
 	shell.Name = "Glow"
 	shell.TextureID = ""
 	shell.Material = Enum.Material.Neon
@@ -125,6 +127,11 @@ function HeldModel.Remove(character: Model)
 	if reach then
 		reach:Destroy()
 	end
+	local chest = character:FindFirstChild("UpperTorso")
+	local elbow = chest and chest:FindFirstChild("HeldElbow")
+	if elbow then
+		elbow:Destroy()
+	end
 end
 
 -- Mounts a part in the right hand. `grip` is the hold on the part: its place, Y up the handle.
@@ -141,9 +148,13 @@ local function mountHeld(character: Model, held: BasePart, itemId: string, grip:
 		local shoulder, reach = SwordArt.ArmOf(character)
 		mount.Part0 = chest
 		local art = SwordArt.List[itemId]
-		mount.C0 = if art
-			then SwordArt.PoseMount(grip, SwordArt.HoldOf(art).Rest, shoulder, reach)
-			else SwordArt.RestMount(grip, shoulder, reach)
+		if art then
+			local carry = SwordArt.CarryOf(art)
+			local hold = if SwordArt.WearsArmourUp(character) then carry.Armoured else carry.Bare
+			mount.C0 = SwordArt.PoseFrame(hold.Rest, shoulder, reach) * grip:Inverse()
+		else
+			mount.C0 = SwordArt.RestMount(grip, shoulder, reach)
+		end
 	elseif arm and arm:IsA("BasePart") then
 		mount.Part0 = arm
 		mount.C0 = SwordArt.ArmMount(grip)
@@ -158,7 +169,7 @@ local function mountHeld(character: Model, held: BasePart, itemId: string, grip:
 	return true
 end
 
-local function reachFor(character: Model, held: BasePart)
+local function reachFor(character: Model, held: BasePart, isSword: boolean)
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	local shoulder = character:FindFirstChild("RightUpperArm")
 	local hand = character:FindFirstChild("RightHand")
@@ -171,6 +182,21 @@ local function reachFor(character: Model, held: BasePart)
 		reach.EndEffector = hand
 		reach.Target = gripAt
 		reach.SmoothTime = 0.02
+		local chest = character:FindFirstChild("UpperTorso")
+		if isSword and chest then
+			-- Its elbow goes down and behind you, so the arm stays clear of the guard above it
+			local joint, length = SwordArt.ArmOf(character)
+			local elbow = Instance.new("Attachment")
+			elbow.Name = "HeldElbow"
+			elbow.Position = joint + SwordArt.SwordElbow * length
+			elbow.Parent = chest
+			reach.Pole = elbow
+			-- By itself this puts your wrist on the grip, with your forearm round the handle. This puts your palm there.
+			local wrist = hand:FindFirstChild("RightWristRigAttachment")
+			if wrist and wrist:IsA("Attachment") then
+				reach.EndEffectorOffset = CFrame.new(wrist.Position)
+			end
+		end
 		reach.Parent = humanoid
 	end
 end
@@ -199,7 +225,7 @@ function HeldModel.ApplySword(character: Model, itemId: string)
 	end
 	addTrail(sword, art)
 	sword.Parent = character
-	reachFor(character, sword)
+	reachFor(character, sword, true)
 end
 
 -- Puts anything else in a character's hand: a tool's or crop's model, or a small block
@@ -211,7 +237,7 @@ function HeldModel.ApplyItem(character: Model, itemId: string, part: BasePart, g
 		return
 	end
 	part.Parent = character
-	reachFor(character, part)
+	reachFor(character, part, false)
 end
 
 -- Tells every screen a swing started

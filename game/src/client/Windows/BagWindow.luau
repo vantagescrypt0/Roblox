@@ -21,6 +21,7 @@ local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Rig = require(ReplicatedStorage.Shared.Rig)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Parent.Hotbar)
 local CrateWindow = require(script.Parent.CrateWindow)
@@ -198,55 +199,6 @@ local function bonusText(): string
 	return table.concat(parts, " · ")
 end
 
--- Stands a copy of a character straight and still: every animated joint back at rest, whatever
--- is welded on where it sits. There's no physics in a viewport, so this places each part. `posed`
--- gives parts that shouldn't rest, by name, as offsets from the chest.
-local function standStraight(copy: Model, root: BasePart, posed: { [string]: CFrame }?)
-	local chest = copy:FindFirstChild("UpperTorso") :: BasePart?
-	local links: { [BasePart]: { { Part: BasePart, Offset: CFrame } } } = {}
-	local function link(a: BasePart?, b: BasePart?, offset: CFrame?)
-		if a and b then
-			local onA = offset or a.CFrame:ToObjectSpace(b.CFrame)
-			links[a] = links[a] or {}
-			table.insert(links[a], { Part = b, Offset = onA })
-			links[b] = links[b] or {}
-			table.insert(links[b], { Part = a, Offset = onA:Inverse() })
-		end
-	end
-	for _, descendant in copy:GetDescendants() do
-		if descendant:IsA("BasePart") then
-			descendant.Anchored = true
-		elseif descendant:IsA("Motor6D") then
-			link(descendant.Part0, descendant.Part1, descendant.C0 * descendant.C1:Inverse())
-		elseif descendant:IsA("AnimationConstraint") or descendant:IsA("RigidConstraint") then
-			-- What newer avatars have in place of Motor6Ds and accessory welds
-			local from, to = descendant.Attachment0, descendant.Attachment1
-			if from and to then
-				link(from.Parent :: any, to.Parent :: any, from.CFrame * to.CFrame:Inverse())
-			end
-		elseif descendant:IsA("JointInstance") or descendant:IsA("WeldConstraint") then
-			link(descendant.Part0, descendant.Part1)
-		end
-	end
-	root.CFrame = CFrame.identity
-	local placed = { [root] = true }
-	local queue = { root }
-	while #queue > 0 do
-		local part = table.remove(queue) :: BasePart
-		local attached = links[part]
-		if attached then
-			for _, linked in attached do
-				if not placed[linked.Part] then
-					placed[linked.Part] = true
-					local pose = posed and posed[linked.Part.Name]
-					linked.Part.CFrame = if pose and chest then chest.CFrame * pose else part.CFrame * linked.Offset
-					table.insert(queue, linked.Part)
-				end
-			end
-		end
-	end
-end
-
 -- The hand holding a shield is moved by an IKControl, which doesn't run in a viewport, so the
 -- copy takes that arm's pose from you
 local function shieldArmPose(character: Model): { [string]: CFrame }?
@@ -304,7 +256,8 @@ local function buildPreview()
 		copy:Destroy()
 		return
 	end
-	standStraight(copy, root, shieldArmPose(character))
+	-- There's no physics in a viewport, so the copy stands straight and still
+	Rig.Settle(copy, root, shieldArmPose(character))
 	copy.PrimaryPart = root
 	local box, size = copy:GetBoundingBox()
 	previewFocus = box.Position

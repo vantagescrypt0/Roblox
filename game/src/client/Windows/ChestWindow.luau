@@ -1,6 +1,6 @@
 --!strict
--- The traditional chest screen, for every chest in the game: the chest's 27 slots over your 36. It
--- plays like the Bag: click a stack to pick it up and click again to put it down, right-click takes
+-- The traditional chest screen, for every chest in the game: the chest's 27 slots over your 36. A body
+-- that holds more makes the top part grow, a row at a time. It plays like the Bag: click a stack to pick it up and click again to put it down, right-click takes
 -- half or leaves one, shift-click sends it straight across. What's in your hand never leaves its slot
 -- on the server: it's only drawn that way, so closing the window can't lose anything. In a shared chest
 -- someone else can take what you were about to; your hand simply empties.
@@ -35,6 +35,7 @@ type Carried = { Item: string, Count: number, From: number }
 type How = "left" | "right" | "shift"
 
 local window: Window.Window
+local bagArea: Frame
 local state: any = nil
 local chestId: string? = nil
 local chestSlots: { Inventory.Stack } = {}
@@ -185,8 +186,8 @@ local function setHover(index: number)
 	hoverName.Text = if count > 0 and Items[item] then Items[item].Name else ""
 end
 
-local function buildSlot(body: Frame, index: number, position: UDim2): Glass.Slot
-	local slot = Glass.slot(body, SLOT, position)
+local function buildSlot(parent: Frame, index: number, position: UDim2): Glass.Slot
+	local slot = Glass.slot(parent, SLOT, position)
 	slot.Button.Name = if index > OFFSET then `Chest{index - OFFSET}` else `Bag{index}`
 	slot.Button.Activated:Connect(function()
 		onSlot(index, howClicked())
@@ -242,10 +243,22 @@ end
 
 local openPart: BasePart? = nil
 
+-- As many rows as this chest has, with your items below them
+local function fitTo(size: number)
+	local rows = math.ceil(size / COLUMNS)
+	for index, slot in chestButtons do
+		slot.Button.Visible = index <= size
+	end
+	bagArea.Position = UDim2.fromOffset(0, rowsHeight(rows) + 12)
+	local holder = window.Root.Parent :: Frame
+	holder.Size = UDim2.fromOffset(WINDOW.X, WINDOW.Y + (rows - 3) * (SLOT + GAP))
+end
+
 local function onOpened(id: string, title: string, slots: { Inventory.Stack }, part: BasePart?)
 	chestId = id
 	chestSlots = slots
 	openPart = part
+	fitTo(#slots)
 	Window.setTitle(window, title)
 	Window.open(window)
 	setLid(part, true)
@@ -267,26 +280,29 @@ function ChestWindow.Start()
 	hoverName.Size = UDim2.fromOffset(280, 22)
 	hoverName.TextXAlignment = Enum.TextXAlignment.Right
 
-	local y = 0
-	for index = 1, Inventory.ChestSize do
+	for index = 1, Inventory.BiggestChest do
 		local here = index - 1
-		chestButtons[index] =
-			buildSlot(body, index + OFFSET, slotAt(here % COLUMNS, y + (here // COLUMNS) * (SLOT + GAP)))
+		chestButtons[index] = buildSlot(body, index + OFFSET, slotAt(here % COLUMNS, (here // COLUMNS) * (SLOT + GAP)))
 	end
-	y += rowsHeight(3) + 12
 
-	local yours = Glass.text(body, "Your items", 16, Glass.Font.Bold)
-	yours.Position = UDim2.fromOffset(0, y)
+	bagArea = Theme.make("Frame", {
+		Name = "BagArea",
+		Size = UDim2.new(1, 0, 0, TITLE_ROW + rowsHeight(3) + 10 + SLOT),
+		BackgroundTransparency = 1,
+		Parent = body,
+	})
+	local yours = Glass.text(bagArea, "Your items", 16, Glass.Font.Bold)
 	yours.Size = UDim2.fromOffset(200, 20)
-	y += TITLE_ROW
+	local y = TITLE_ROW
 	for index = Inventory.Hotbar + 1, Inventory.Size do
 		local here = index - Inventory.Hotbar - 1
-		bagButtons[index] = buildSlot(body, index, slotAt(here % COLUMNS, y + (here // COLUMNS) * (SLOT + GAP)))
+		bagButtons[index] = buildSlot(bagArea, index, slotAt(here % COLUMNS, y + (here // COLUMNS) * (SLOT + GAP)))
 	end
 	y += rowsHeight(3) + 10
 	for index = 1, Inventory.Hotbar do
-		bagButtons[index] = buildSlot(body, index, slotAt(index - 1, y))
+		bagButtons[index] = buildSlot(bagArea, index, slotAt(index - 1, y))
 	end
+	fitTo(Inventory.ChestSize)
 
 	floating = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),

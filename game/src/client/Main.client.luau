@@ -32,6 +32,7 @@ local ShopWindow = require(script.Parent.Windows.ShopWindow)
 local SkillsWindow = require(script.Parent.Windows.SkillsWindow)
 local TradeWindow = require(script.Parent.Windows.TradeWindow)
 local VitalsHud = require(script.Parent.VitalsHud)
+local SkydropController = require(script.Parent.SkydropController)
 local WarzoneHud = require(script.Parent.WarzoneHud)
 local Sfx = require(script.Parent.UI.Sfx)
 
@@ -71,6 +72,7 @@ Hud.Start({
 Hotbar.Start()
 VitalsHud.Start()
 WarzoneHud.Start()
+task.spawn(SkydropController.Start)
 BlockController.Start({
 	OpenCrafting = CraftingWindow.Open,
 	OpenShop = ShopWindow.Open,

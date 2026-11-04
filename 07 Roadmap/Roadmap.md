@@ -1,6 +1,8 @@
 # Roadmap (Draft)
 No dates — quality over speed.
 
+**Agenda (your call, 2026-11-03):** fix the two sword problems (the hold, and swords overlapping armour: built 2026-11-04, for you to judge), then finish the Warzone before anything else. Skydrops and its challenges are built too (2026-11-04); what's left is a two-player check and publishing it as a new place. Server sizes are set on Roblox (Town 40, worlds 30, Island 25); the Warzone's 55 is set at that publish. What's left is in `00 Inbox/Handoff.md` and [[Warzone Rebuild Plan]]. You put release at about 65%.
+
 1. **Pre-production:** concept, pillars, core loop, open questions answered. (Mostly done; some questions still open.)
 2. **Prototype** ← *we are here*: greybox island + greybox Warzone; prove the loop is fun.
    - [x] Toolchain set up (Rojo, Blender pipeline) — 2026-10-15

@@ -1,9 +1,9 @@
 --!strict
 -- Moves what's in everyone's hands on this screen, yours and theirs (SwordArt.luau). A sword rests over
--- the shoulder, leans back while sprinting, and swings through its poses. Anything else hangs in the
--- hand, swings with your walk and chops the way Minecraft's arm does. The weld is only moved here, on
--- each screen; the hand follows because it holds the grip. Anyone else's swing starts when the server
--- says so; yours starts the moment you click.
+-- the shoulder, leans back while sprinting, changes its hold when a helmet or chest armour goes on or off, and swings
+-- through its poses. Anything else hangs in the hand, swings with your walk and chops the way Minecraft's arm
+-- does. The weld is only moved here, on each screen; the hand follows because it holds the grip. Anyone else's
+-- swing starts when the server says so; yours starts the moment you click.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,11 +14,15 @@ local SwordArt = require(ReplicatedStorage.Shared.SwordArt)
 local OWN_SWING_WINDOW = 0.4 -- the server's word on your own swing, arriving late, is ignored
 local TRAIL_UNTIL = 0.2 -- seconds into a swing
 local RUN_BLEND_SPEED = 8
+local ARMOUR_BLEND_SPEED = 8
 local WALK_SPEED = 16 -- studs a second that count as a full arm swing
 local MOST_SWING = 1.3 -- sprinting swings further
 local SWING_EASE = 8
 
-type SwordFrames = { Rest: CFrame, Run: CFrame, Keys: { { Time: number, Mount: CFrame } } }
+-- Where the grip goes, from the chest. A step with no Frame goes home.
+type HoldFrames = { Rest: CFrame, Run: CFrame }
+type SwingStep = { Time: number, Frame: CFrame? }
+type SwordFrames = { Bare: HoldFrames, Armoured: HoldFrames, Steps: { SwingStep } }
 type ItemFrames = { Mount: CFrame, Shoulder: CFrame }
 
 local localPlayer = Players.LocalPlayer
@@ -31,6 +35,7 @@ local items: { [BasePart]: ItemFrames } = setmetatable({}, WEAK) :: any
 local started: { [BasePart]: number } = setmetatable({}, WEAK) :: any
 local seen: { [BasePart]: number } = setmetatable({}, WEAK) :: any
 local runBlend: { [BasePart]: number } = setmetatable({}, WEAK) :: any
+local armourBlend: { [BasePart]: number } = setmetatable({}, WEAK) :: any
 local walkPhase: { [BasePart]: number } = setmetatable({}, WEAK) :: any
 local walkAmount: { [BasePart]: number } = setmetatable({}, WEAK) :: any
 local listeners: { () -> () } = {}
@@ -76,42 +81,46 @@ local function swingAge(player: Player, held: BasePart): number?
 	return if start then os.clock() - start else nil
 end
 
-local function swordFrames(character: Model, held: BasePart, grip: CFrame, art: SwordArt.Art): SwordFrames
+local function swordFrames(character: Model, held: BasePart, art: SwordArt.Art): SwordFrames
 	local known = swords[held]
 	if known then
 		return known
 	end
 	local shoulder, reach = SwordArt.ArmOf(character)
-	local hold = SwordArt.HoldOf(art)
-	local made: SwordFrames = {
-		Rest = SwordArt.PoseMount(grip, hold.Rest, shoulder, reach),
-		Run = SwordArt.PoseMount(grip, hold.Run, shoulder, reach),
-		Keys = {},
-	}
-	for index, key in SwordArt.Swing do
-		-- The last part goes home, wherever that is
-		local pose = if index == #SwordArt.Swing then hold.Rest else key.Pose
-		table.insert(made.Keys, { Time = key.Time, Mount = SwordArt.PoseMount(grip, pose, shoulder, reach) })
+	local carry = SwordArt.CarryOf(art)
+	local function holdFrames(hold: SwordArt.Hold): HoldFrames
+		return {
+			Rest = SwordArt.PoseFrame(hold.Rest, shoulder, reach),
+			Run = SwordArt.PoseFrame(hold.Run, shoulder, reach),
+		}
+	end
+	local made: SwordFrames = { Bare = holdFrames(carry.Bare), Armoured = holdFrames(carry.Armoured), Steps = {} }
+	for _, key in carry.Swing do
+		local frame = if key.Pose then SwordArt.PoseFrame(key.Pose, shoulder, reach) else nil
+		table.insert(made.Steps, { Time = key.Time, Frame = frame })
 	end
 	swords[held] = made
 	return made
 end
 
 -- Where a sword's swing has got to, from the pose it's in now
-local function swungMount(rest: CFrame, keys: { { Time: number, Mount: CFrame } }, elapsed: number): CFrame?
+local function swungFrame(rest: CFrame, steps: { SwingStep }, elapsed: number): CFrame?
 	local from = rest
 	local left = elapsed
-	for index, key in keys do
-		-- The last part comes home to whichever rest pose you're in now
-		local to = if index == #keys then rest else key.Mount
-		if left < key.Time then
-			local t = left / key.Time
+	for _, step in steps do
+		local to = step.Frame or rest
+		if left < step.Time then
+			local t = left / step.Time
 			return from:Lerp(to, 1 - (1 - t) * (1 - t))
 		end
-		left -= key.Time
+		left -= step.Time
 		from = to
 	end
 	return nil
+end
+
+local function eased(from: number, to: number, speed: number, dt: number): number
+	return from + (to - from) * math.min(1, dt * speed)
 end
 
 local function moveSword(
@@ -123,19 +132,23 @@ local function moveSword(
 	art: SwordArt.Art,
 	dt: number
 )
-	local frames = swordFrames(character, held, grip, art)
-	local blend = runBlend[held] or 0
-	local target = if player:GetAttribute("Sprinting") then 1 else 0
-	blend += (target - blend) * math.min(1, dt * RUN_BLEND_SPEED)
-	runBlend[held] = blend
-	local rest = frames.Rest:Lerp(frames.Run, blend)
+	local frames = swordFrames(character, held, art)
+	local running = eased(runBlend[held] or 0, if player:GetAttribute("Sprinting") then 1 else 0, RUN_BLEND_SPEED, dt)
+	runBlend[held] = running
+	local wearing = if SwordArt.WearsArmourUp(character) then 1 else 0
+	-- A sword you've just drawn starts in the right hold; it only moves across when armour changes
+	local armoured = eased(armourBlend[held] or wearing, wearing, ARMOUR_BLEND_SPEED, dt)
+	armourBlend[held] = armoured
+	local rest = frames.Bare.Rest
+		:Lerp(frames.Bare.Run, running)
+		:Lerp(frames.Armoured.Rest:Lerp(frames.Armoured.Run, running), armoured)
 
 	local elapsed = swingAge(player, held)
-	local swung = if elapsed then swungMount(rest, frames.Keys, elapsed) else nil
+	local swung = if elapsed then swungFrame(rest, frames.Steps, elapsed) else nil
 	if not swung then
 		started[held] = nil
 	end
-	mount.C0 = swung or rest
+	mount.C0 = (swung or rest) * grip:Inverse()
 
 	local trail = held:FindFirstChildOfClass("Trail")
 	if trail then

@@ -12,6 +12,7 @@ local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local WarzoneLoot = require(ReplicatedStorage.Shared.WarzoneLoot)
 local Warzone = require(script.Parent.Parent.Worlds.Warzone)
 local ChestService = require(script.Parent.ChestService)
+local QuestService = require(script.Parent.QuestService)
 
 local SIZE = Blocks.Size
 local LIVE_CHESTS = 24
@@ -30,22 +31,29 @@ local folder: Folder
 local count = 0
 local chests: { [string]: ChestService.Chest } = {}
 local onIsland: { [string]: number } = {}
+local openedBy: { [ChestService.Chest]: { [Player]: boolean } } = setmetatable({}, { __mode = "k" }) :: any
 
-local function refill(slots: { Inventory.Stack })
-	local stacks = rng:NextInteger(WarzoneLoot.MinStacks, WarzoneLoot.MaxStacks)
+-- Fills a chest's slots with what this kind of chest holds, in random slots
+function LootChestService.Refill(slots: { Inventory.Stack }, kind: WarzoneLoot.Kind)
+	local least, most = WarzoneLoot.Stacks(kind)
+	local stacks = rng:NextInteger(least, most)
 	local free = {}
 	for index = 1, #slots do
 		free[index] = index
 	end
 	for _ = 1, stacks do
-		local entry = WarzoneLoot.Roll(rng:NextNumber())
+		local entry = WarzoneLoot.Roll(kind, rng:NextNumber())
 		local slot = table.remove(free, rng:NextInteger(1, #free)) :: number
 		slots[slot] = { Item = entry.Item, Count = rng:NextInteger(entry.Min, entry.Max) }
 	end
 end
 
 -- Somewhere on this island with open air above and nothing in the way
-local function findSpot(island: Warzone.IslandSpot, world: Instance): CFrame?
+function LootChestService.FindSpot(island: Warzone.IslandSpot): CFrame?
+	local world = workspace:FindFirstChild("World")
+	if not world then
+		return nil
+	end
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Include
 	params.FilterDescendantsInstances = { world }
@@ -90,8 +98,7 @@ end
 
 function spawnOne()
 	local template = ReplicatedStorage:WaitForChild("Blocks"):FindFirstChild("LootChest")
-	local world = workspace:FindFirstChild("World")
-	if not template or not template:IsA("BasePart") or not world then
+	if not template or not template:IsA("BasePart") or not workspace:FindFirstChild("World") then
 		warn("[LootChests] nothing to spawn from")
 		return
 	end
@@ -100,7 +107,7 @@ function spawnOne()
 		local island = list[rng:NextInteger(1, #list)]
 		local cap = if island.Radius >= BIG_RADIUS then PER_BIG_ISLAND else PER_ISLAND
 		if (onIsland[island.Id] or 0) < cap then
-			local spot = findSpot(island, world)
+			local spot = LootChestService.FindSpot(island)
 			if spot then
 				count += 1
 				local id = `loot{count}`
@@ -110,7 +117,7 @@ function spawnOne()
 				part:SetAttribute("ChestId", id)
 				part.Parent = folder
 				local slots = Inventory.EmptyOf(Inventory.ChestSize)
-				refill(slots)
+				LootChestService.Refill(slots, "Chest")
 				local chest: ChestService.Chest = {
 					Id = id,
 					Title = "Warzone Chest",
@@ -120,6 +127,9 @@ function spawnOne()
 					Viewers = {},
 					OnChanged = function(self: ChestService.Chest)
 						goneAfter(self, island.Id)
+					end,
+					OnFirstOpen = function(player: Player)
+						QuestService.Record(player, "OpenChest")
 					end,
 				}
 				chests[id] = chest
@@ -138,9 +148,42 @@ local function onOpen(player: Player, id: unknown)
 	end
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if root and root:IsA("BasePart") and (root.Position - chest.Position).Magnitude <= Blocks.Reach + 3 then
-		ChestService.Open(player, chest)
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not humanoid or humanoid.Health <= 0 then
+		return
 	end
+	if not root or not root:IsA("BasePart") or (root.Position - chest.Position).Magnitude > Blocks.Reach + 3 then
+		return
+	end
+	if chest.CanOpen and not chest.CanOpen(player) then
+		return
+	end
+	ChestService.Open(player, chest)
+	local seen = openedBy[chest]
+	if not seen then
+		seen = {}
+		openedBy[chest] = seen
+	end
+	if not seen[player] then
+		seen[player] = true
+		if chest.OnFirstOpen then
+			chest.OnFirstOpen(player)
+		end
+	end
+end
+
+-- Something else that opens the same way: a body (BodyService) or a Skydrop (SkydropService)
+function LootChestService.Add(chest: ChestService.Chest)
+	chests[chest.Id] = chest
+end
+
+function LootChestService.Remove(id: string)
+	chests[id] = nil
+end
+
+-- Where the chests are in the Workspace
+function LootChestService.Folder(): Folder
+	return folder
 end
 
 function LootChestService.Start()

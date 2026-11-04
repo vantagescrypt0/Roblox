@@ -14,6 +14,7 @@ local StationModels = require(script.Parent.Util.StationModels)
 local Services = script.Parent.Services
 
 local BlockService = require(Services.BlockService)
+local BodyService = require(Services.BodyService)
 local ChestService = require(Services.ChestService)
 local CombatService = require(Services.CombatService)
 local CrateService = require(Services.CrateService)
@@ -37,6 +38,7 @@ local TownService = require(Services.TownService)
 local TradeService = require(Services.TradeService)
 local TravelService = require(Services.TravelService)
 local TreeService = require(Services.TreeService)
+local SkydropService = require(Services.SkydropService)
 local WarzoneService = require(Services.WarzoneService)
 local WorldService = require(Services.WorldService)
 
@@ -54,6 +56,8 @@ elseif Places.IsWorld(kind) then
 elseif kind == "Warzone" then
 	WarzoneService.Start()
 	LootChestService.Start()
+	SkydropService.Start()
+	BodyService.StartWarzone()
 else
 	IslandService.Start()
 	ChestService.StartIsland()
@@ -70,6 +74,7 @@ CombatService.Start()
 SprintService.Start()
 HotbarService.Start()
 InboxService.Start()
+BodyService.Start()
 CrateService.Start()
 QuestService.Start()
 SeasonService.Start()

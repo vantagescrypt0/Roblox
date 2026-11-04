@@ -15,7 +15,7 @@ Replaces the greybox prototype after your verdict: "terrible and low effort". Yo
 - [x] Combat tag: 20 seconds on screen, blocks leaving (tested by setting the tag; not yet from a real hit)
 - [x] Leave button, Warzone only: hold it (7 s, Claude's pick from your 5-10), with a noise others can hear. Letting go cancels it. Going back to Town needs publishing to test
 - [x] Chests: all the same, random spots, shared slots; emptied = gone, a new one spawns elsewhere (`Services/LootChestService`; 24 out at a time, what's in them in `shared/WarzoneLoot.luau`: Claude's picks)
-- [ ] Death: everything drops, your body lies there and anyone can loot it; gone after 15 minutes
+- [x] Death: everything drops, your body lies there and anyone can loot it; gone after 15 minutes, or at once when emptied (`Services/BodyService`; run with two players in one Studio server: real hits, a real kill, both players in one body, real quits. Going back to its server needs publishing to test)
 
 ## 3. Inventory and chests, whole game
 - [x] 36 slots with stacks; old saves move what doesn't fit into an Inbox letter, which is simpler than chests by the spawn and can't land on a build (only new saves tested: Studio saves are mock)
@@ -27,11 +27,11 @@ Replaces the greybox prototype after your verdict: "terrible and low effort". Yo
 - [x] Shield item and slot; hold right-click to block from the front
 
 ## 5. Skydrops
-- [ ] Regular (every 10 minutes, marker) and Legendary (every 4-8 hours, no marker); better loot; random spots not far from spawn, but not right next to it
+- [x] Regular (every 10 minutes, marker) and Legendary (every 4-8 hours, no marker); better loot; random spots not far from spawn, but not right next to it. Legendary: purple sparkles and a health bar, mined open (`Services/SkydropService`; tried with real clicks on the full map; the 10-minute and 4-8 hour timers themselves haven't been waited out, only dropped by hand)
 - [ ] Tokens later: loot crates, Robux with a daily limit, other ways
 
 ## Answered (2026-11-02)
-Armour is four pieces. Quit: vanish, 5 minutes to rejoin, auto-teleported to the exact server and spot; miss it, or quit while tagged, and your body drops. Fall: back where you jumped from, with a little ticking poison. Death: back to Town. Hunger bar, Warzone only. One crafted shield. See the top of [[Warzone]].
+Armour is four pieces. Quit: vanish, 5 minutes to rejoin, auto-teleported to the exact server and spot; miss it, or quit while tagged, and your body drops; quit in the citadel untagged and you're safe. Fall: back where you jumped from, with a little ticking poison. Death: back to Town. Hunger bar, Warzone only. One crafted shield. See the top of [[Warzone]].
 
 ## Map design, as built (grid in blocks, 1 block = 3 studs; our own builds, not copies)
 - **Files:** `Worlds/Warzone.luau` (layout, citadel, walkways, names), `Worlds/WarzoneBuilds.luau` (the 26 heroes), `Worlds/Shapes.luau` (cones, domes, thick lines, big trees). North is -z and east is +x here, a true compass. The numbers below were the plan; the code is the truth (four tall corner towers and eight gate towers rather than 5 side towers).

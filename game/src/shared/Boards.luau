@@ -1,13 +1,15 @@
 --!strict
 -- The Challenges board's groups. Each group is its own chain of numbered challenges (done
 -- one at a time, in order, like the Skybounds tutorial screen): Beginner (Quests.luau, the
--- tutorial the quest tracker starts on), the three Grinding Worlds, Crafting and your
--- Island, plus Slaying and the Warzone, which open with the Warzone.
+-- tutorial the quest tracker starts on), the three Grinding Worlds, Crafting, your Island
+-- and the Warzone, plus Slaying, which isn't open yet.
 --
 -- Events are the same as in Quests.luau ("Mine:CoalOre", "Chop", "Craft:IronPickaxe"...),
 -- plus "MineOre" (any ore), "CraftTool:<tier>" (any tool of a tier), "Refine" (anything at
 -- the Gem Bench), "CraftNode" (a node from slivers), "PlaceNode",
--- "PlantSapling", "PlaceTrophy", "Kill", "Extract" and "OpenChest". Reach challenges check a
+-- "PlantSapling", "PlaceTrophy" and "Kill" (a monster). In the Warzone: "PvPHit", "PvPCrit",
+-- "PvPKill", "BlockHit" (a hit your shield stopped), "OpenChest", "LootBody" (someone else's),
+-- "OpenSkydrop" and "BreakLegendary" (the last crack on one). Reach challenges check a
 -- value: "ReachLevel", "Reach:<skill>" and "ReachIsland" (the island's tier).
 --
 -- Progress is saved by challenge Id, so a challenge can be added anywhere in a list later
@@ -237,7 +239,7 @@ local List: { Board } = {
 		Name = "Slaying",
 		Icon = "IronSword",
 		Color = "Red",
-		Soon = "Opens with the Warzone",
+		Soon = "Not open yet",
 		Challenges = {
 			c("Slaying:Kill10", "Defeat 10 monsters", "Kill", 10, 500, 750),
 			c("Slaying:Lv5", "Reach Combat level 5", "Reach:Combat", 5, 1000, 1250),
@@ -255,14 +257,28 @@ local List: { Board } = {
 		Name = "Warzone",
 		Icon = "Crystal",
 		Color = "Navy",
-		Soon = "Opens with the Warzone",
+		-- PvP and looting, your call (2026-11-04); which ones and how many are Claude's picks
 		Challenges = {
-			c("Warzone:Extract1", "Make it out of the Warzone alive", "Extract", 1, 1000, 1000),
+			c("Warzone:Chest1", "Open a Warzone chest", "OpenChest", 1, 1000, 1000),
+			c("Warzone:Hit10", "Land 10 hits on other players", "PvPHit", 10, 1500, 1250),
+			c("Warzone:Kill1", "Take down another player", "PvPKill", 1, 2500, 2000),
+			c("Warzone:Loot1", "Loot someone else's body", "LootBody", 1, 2500, 2000),
 			c("Warzone:Chests10", "Open 10 Warzone chests", "OpenChest", 10, 3000, 2500),
-			c("Warzone:Extract10", "Make it out 10 times", "Extract", 10, 8000, 5000),
+			c("Warzone:Skydrop1", "Grab a Skydrop", "OpenSkydrop", 1, 4000, 3000),
+			c("Warzone:Block25", "Block 25 hits with your shield", "BlockHit", 25, 5000, 3500),
+			c("Warzone:Kill10", "Take down 10 players", "PvPKill", 10, 8000, 5000),
+			c("Warzone:Crit50", "Land 50 critical hits (hit them as you fall)", "PvPCrit", 50, 10000, 5500),
+			c("Warzone:Loot25", "Loot 25 bodies", "LootBody", 25, 15000, 7000),
 			c("Warzone:Chests100", "Open 100 Warzone chests", "OpenChest", 100, 25000, 9000),
-			c("Warzone:Extract50", "Make it out 50 times", "Extract", 50, 60000, 13000),
-			c("Warzone:Extract250", "Make it out 250 times", "Extract", 250, 200000, 20000),
+			c("Warzone:Skydrop10", "Grab 10 Skydrops", "OpenSkydrop", 10, 30000, 10000),
+			c("Warzone:Kill50", "Take down 50 players", "PvPKill", 50, 40000, 11000, { LootCrate = 1 }),
+			c("Warzone:Legendary1", "Break open a Legendary Skydrop", "BreakLegendary", 1, 60000, 13000),
+			c("Warzone:Loot100", "Loot 100 bodies", "LootBody", 100, 80000, 14000),
+			c("Warzone:Chests500", "Open 500 Warzone chests", "OpenChest", 500, 100000, 16000),
+			c("Warzone:Kill250", "Take down 250 players", "PvPKill", 250, 200000, 20000, { LootCrate = 3 }),
+			c("Warzone:Skydrop50", "Grab 50 Skydrops", "OpenSkydrop", 50, 250000, 20000),
+			c("Warzone:Legendary5", "Break open 5 Legendary Skydrops", "BreakLegendary", 5, 300000, 25000),
+			c("Warzone:Kill1000", "Take down 1,000 players", "PvPKill", 1000, 600000, 28000),
 		},
 	},
 }

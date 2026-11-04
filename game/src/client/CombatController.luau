@@ -58,7 +58,8 @@ local function aimedCharacter(screen: Vector2): Model?
 	local ray = camera:ViewportPointToRay(screen.X, screen.Y)
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { character, camera }
+	-- You aim through a body on the ground
+	params.FilterDescendantsInstances = { character, camera, Workspace:FindFirstChild("Bodies") :: Instance }
 	local far = (camera.CFrame.Position - root.Position).Magnitude + Combat.Reach
 	local hit = Workspace:Raycast(ray.Origin, ray.Direction * far, params)
 	local model = hit and hit.Instance:FindFirstAncestorOfClass("Model")

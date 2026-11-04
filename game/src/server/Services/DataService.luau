@@ -125,6 +125,12 @@ local TEMPLATE = {
 		Z = 0,
 		Hunger = 100,
 	},
+	-- You left a body in the Warzone: until this time (os.time) jumping back in takes you to that
+	-- server, so you can go after it (BodyService, TravelService)
+	Body = {
+		JobId = "",
+		Until = 0,
+	},
 	-- Your last trades with other players, newest last, so scams and duplication bugs can
 	-- be looked into
 	Trades = {} :: { { At: number, With: number, WithName: string, Gave: { [string]: number }, Got: { [string]: number } } },

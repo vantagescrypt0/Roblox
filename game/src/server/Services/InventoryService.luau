@@ -16,6 +16,7 @@ local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local DataService = require(script.Parent.DataService)
 
 local FULL_NOTICE_EVERY = 1.5
+local WORN_ORDER = { "Helmet", "Chest", "Legs", "Boots", "Shield", "Pet" }
 
 local InventoryService = {}
 
@@ -179,6 +180,42 @@ end
 function InventoryService.PutBackFromWearing(player: Player, itemId: string): boolean
 	local data = DataService.GetData(player)
 	return data ~= nil and Inventory.Insert(data.Slots, itemId, 1) == 0
+end
+
+-- A copy of everything you carry and wear, worn gear first, and which items are being worn
+function InventoryService.Everything(data: DataService.Data): ({ Inventory.Stack }, { string })
+	local stacks: { Inventory.Stack } = {}
+	local worn: { string } = {}
+	local equipped = data.Equipped :: { [string]: string }
+	for _, slot in WORN_ORDER do
+		local itemId = equipped[slot]
+		if itemId and itemId ~= "" then
+			table.insert(stacks, { Item = itemId, Count = 1 })
+			table.insert(worn, itemId)
+		end
+	end
+	for _, stack in data.Slots do
+		if stack.Count > 0 then
+			table.insert(stacks, { Item = stack.Item, Count = stack.Count })
+		end
+	end
+	return stacks, worn
+end
+
+-- Everything you carry and wear comes off, for your body to hold (BodyService). Coins aren't items, and
+-- stay yours. Returns the same as Everything.
+function InventoryService.TakeEverything(data: DataService.Data): ({ Inventory.Stack }, { string })
+	local stacks, worn = InventoryService.Everything(data)
+	local equipped = data.Equipped :: { [string]: string }
+	for slot in equipped do
+		equipped[slot] = ""
+	end
+	for _, stack in data.Slots do
+		stack.Item = ""
+		stack.Count = 0
+	end
+	table.clear(data.Items)
+	return stacks, worn
 end
 
 function InventoryService.AddCoins(player: Player, amount: number)

@@ -22,6 +22,7 @@ local NAMES = {
 	"SelectSlot", -- client -> server: hotbar slot 1-9 is now selected
 	"OpenChest", -- client -> server: open the storage chest at grid x, y, z on your island
 	"OpenLootChest", -- client -> server: open this Warzone chest (its id)
+	"MineSkydrop", -- client -> server: one finished crack on this sealed Legendary Skydrop (its id)
 	"ChestOpened", -- server -> client: show the chest screen (id, title, slots, its part)
 	"ChestUpdate", -- server -> client: what's in the chest now (id, slots)
 	"ChestClosed", -- server -> client: that chest is shut for you (id)
@@ -86,6 +87,7 @@ return {
 	SelectSlot = folder:WaitForChild("SelectSlot") :: RemoteEvent,
 	OpenChest = folder:WaitForChild("OpenChest") :: RemoteEvent,
 	OpenLootChest = folder:WaitForChild("OpenLootChest") :: RemoteEvent,
+	MineSkydrop = folder:WaitForChild("MineSkydrop") :: RemoteEvent,
 	ChestOpened = folder:WaitForChild("ChestOpened") :: RemoteEvent,
 	ChestUpdate = folder:WaitForChild("ChestUpdate") :: RemoteEvent,
 	ChestClosed = folder:WaitForChild("ChestClosed") :: RemoteEvent,

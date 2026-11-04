@@ -18,9 +18,18 @@
 --   game.ServerStorage.Dev:Invoke("Fill", Vector3.new(2, -3, 2), Vector3.new(4, -1, 4), "Water")
 --                                                           fill a box of island cells (or "Air")
 --   game.ServerStorage.Dev:Invoke("Hunger", 20)             set your hunger (Warzone)
---   game.ServerStorage.Dev:Invoke("TestQuit")               quit the Warzone and rejoin it (Warzone)
---   game.ServerStorage.Dev:Invoke("TestBlock", position, "Sword")  would your shield stop a hit from
+--   game.ServerStorage.Dev:Invoke("TestQuit", 8)            quit the Warzone and rejoin it 8 s later (Warzone)
+--   game.ServerStorage.Dev:Invoke("Kill")                   die on the spot; your body drops (Warzone)
+--   game.ServerStorage.Dev:Invoke("Tag")                    tag yourself for a fight (Warzone)
+--   game.ServerStorage.Dev:Invoke("QuitTime", 3, 1)         quitters have 3 s, plus 1 s of grace (Warzone)
+--   game.ServerStorage.Dev:Invoke("BodyTime", 20)           bodies last 20 s (Warzone)
+--   game.ServerStorage.Dev:Invoke("TestBlock", position)    would your shield stop a hit from
 --                                                           there? Prints the answer (Warzone)
+--   game.ServerStorage.Dev:Invoke("Board", "Warzone")       where you are on a Challenges board. Add a
+--                                                           challenge's Id to jump to it
+--   game.ServerStorage.Dev:Invoke("Skydrop")                a regular Skydrop falls now (Warzone)
+--   game.ServerStorage.Dev:Invoke("Legendary", 5)           a Legendary falls now, with 5 cracks left in its
+--                                                           bar; leave the number off for the full bar (Warzone)
 --   game.ServerStorage.Dev:Invoke("Dummy")                  a dummy to hit, just in front of you; hits
 --                                                           on it print what they did
 --   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
@@ -30,18 +39,22 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Boards = require(ReplicatedStorage.Shared.Boards)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local BodyService = require(script.Parent.BodyService)
 local ChallengeService = require(script.Parent.ChallengeService)
 local DataService = require(script.Parent.DataService)
 local InboxService = require(script.Parent.InboxService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
+local SkydropService = require(script.Parent.SkydropService)
 local WarzoneService = require(script.Parent.WarzoneService)
 
 local DevService = {}
 
-local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> () } = {
+local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> ...any } = {
 	Level = function(player, data, level)
 		data.Level = level
 		data.XP = 0
@@ -64,11 +77,78 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	Hunger = function(player, _data, amount)
 		WarzoneService.SetHunger(player, amount)
 	end,
-	TestQuit = function(player)
-		WarzoneService.TestQuit(player)
+	TestQuit = function(player, _data, away)
+		WarzoneService.TestQuit(player, away)
 	end,
-	TestBlock = function(player, _data, from, toolKind)
-		print("[Dev] blocked:", WarzoneService.Blocks(player, from, toolKind))
+	-- What you have, as text
+	Carried = function(_player, data)
+		local slots = {}
+		for index, stack in data.Slots do
+			if stack.Count > 0 then
+				table.insert(slots, `{index}:{stack.Item}x{stack.Count}`)
+			end
+		end
+		local totals = {}
+		for itemId, total in data.Items do
+			table.insert(totals, `{itemId}x{total}`)
+		end
+		table.sort(totals)
+		local worn = {}
+		for slot, itemId in data.Equipped :: { [string]: string } do
+			if itemId ~= "" then
+				table.insert(worn, `{slot}={itemId}`)
+			end
+		end
+		return `slots[{table.concat(slots, " ")}] totals[{table.concat(totals, " ")}] worn[{table.concat(worn, " ")}]`
+			.. ` rejoin={data.Rejoin.Until} body={data.Body.Until} mail={#data.Inbox.Mail} coins={data.Coins}`
+	end,
+	-- Die on the spot (Warzone: your body drops)
+	Kill = function(player)
+		local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			humanoid.Health = 0
+		end
+	end,
+	-- Tag yourself, as if a fight had just started (Warzone)
+	Tag = function(player)
+		WarzoneService.Tag(player)
+	end,
+	-- How long a quitter has to come back and how long a body lasts, in seconds, for testing
+	QuitTime = function(_player, _data, seconds, grace)
+		WarzoneService.SetRejoinTime(seconds, grace or 0)
+	end,
+	BodyTime = function(_player, _data, seconds)
+		BodyService.SetLifetime(seconds)
+	end,
+	TestBlock = function(player, _data, from)
+		print("[Dev] blocked:", WarzoneService.Blocks(player, from))
+	end,
+	-- Where you are on a Challenges board, and if you name a challenge, jump to it
+	Board = function(_player, data, boardId, jumpTo)
+		local board = Boards.ById[boardId]
+		local entry = data.Boards[boardId]
+		if not entry then
+			entry = { Done = {}, Current = "", Progress = 0 }
+			data.Boards[boardId] = entry
+		end
+		if jumpTo then
+			entry.Done = {}
+			entry.Progress = 0
+			for _, challenge in board.Challenges do
+				if challenge.Id == jumpTo then
+					break
+				end
+				entry.Done[challenge.Id :: string] = true
+			end
+		end
+		local current = board.Challenges[Boards.CurrentIndex(board, entry.Done)]
+		return if current then `{current.Id}: {entry.Progress} of {current.Target}` else "all done"
+	end,
+	Skydrop = function()
+		return if SkydropService.Drop("Skydrop") then "falling" else "didn't drop"
+	end,
+	Legendary = function(_player, _data, cracks)
+		return if SkydropService.Drop("Legendary", cracks) then "falling" else "didn't drop"
 	end,
 	-- Print your last trades to the Output
 	Trades = function(_player, data)
@@ -148,8 +228,7 @@ function DevService.Start()
 		if not player or not data or not run then
 			return "no player or unknown command"
 		end
-		run(player, data, ...)
-		return "ok"
+		return run(player, data, ...) or "ok"
 	end
 	bindable.Parent = ServerStorage
 end

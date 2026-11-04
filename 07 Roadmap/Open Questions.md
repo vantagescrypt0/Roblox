@@ -4,7 +4,7 @@
 - [ ] Your Roblox account is set as under 18 by mistake: fix it with ID, or publish under a group owned by an account with your real age? Decide before going public (Claude's pick: try the ID fix, then a group)
 
 ## Warzone
-- [ ] Server sizes: how many players per server in the Warzone and the other places? (You want to discuss this. Set per place, in the place's settings.)
+- [x] Server sizes: Warzone 55, Town 40, each Grinding World 30, Island 25 (your call, 2026-11-04). Set on Roblox for the five live places; the Warzone's is set when it's published as a new place.
 - [x] Death penalty: drop a lootable head (see [[Warzone]])
 - [ ] Loot head: holds all or part of your loot? Who can open it first? How long until it despawns? *(Prototype: whole raid bag, anyone, 2 minutes)*
 - [x] PvP, PvE, or both? → Both, plus farming and chests

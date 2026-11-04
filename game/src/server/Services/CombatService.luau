@@ -21,6 +21,7 @@ local HeldModel = require(script.Parent.Parent.Util.HeldModel)
 local DataService = require(script.Parent.DataService)
 local MobService = require(script.Parent.MobService)
 local SprintService = require(script.Parent.SprintService)
+local QuestService = require(script.Parent.QuestService)
 local WarzoneService = require(script.Parent.WarzoneService)
 
 -- Where the hand holds each item model and which way its head points come from
@@ -94,15 +95,7 @@ local function knockbackFrom(root: BasePart, targetRoot: BasePart, speed: number
 end
 
 -- One hit on one character. Returns true if it landed.
-local function hit(
-	player: Player,
-	root: BasePart,
-	model: Model,
-	damage: number,
-	speed: number,
-	effect: string,
-	kind: string
-): boolean
+local function hit(player: Player, root: BasePart, model: Model, damage: number, speed: number, effect: string): boolean
 	local humanoid = model:FindFirstChildOfClass("Humanoid")
 	local targetRoot = model:FindFirstChild("HumanoidRootPart")
 	if not humanoid or humanoid.Health <= 0 or not targetRoot or not targetRoot:IsA("BasePart") then
@@ -138,7 +131,7 @@ local function hit(
 	end
 	WarzoneService.Tag(player)
 	WarzoneService.Tag(victim)
-	if WarzoneService.Blocks(victim, root.Position, kind) then
+	if WarzoneService.Blocks(victim, root.Position) then
 		-- Bouncing off a shield pushes you back a little
 		Remotes.Knockback:FireClient(player, knockbackFrom(targetRoot, root, Combat.BlockedPush))
 		Remotes.HitEffect:FireAllClients(model, "block")
@@ -153,11 +146,15 @@ local function hit(
 	humanoid:TakeDamage(left)
 	Remotes.Knockback:FireClient(victim, knockbackFrom(root, targetRoot, speed))
 	Remotes.HitEffect:FireAllClients(model, effect)
+	QuestService.Record(player, "PvPHit")
+	if effect == "crit" then
+		QuestService.Record(player, "PvPCrit")
+	end
 	return true
 end
 
 -- Everyone else right next to who you hit, with a fully charged sword on the ground
-local function sweep(player: Player, root: BasePart, target: Model, targetRoot: BasePart, kind: string)
+local function sweep(player: Player, root: BasePart, target: Model, targetRoot: BasePart)
 	local params = OverlapParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = { player.Character :: Model, target }
@@ -166,7 +163,7 @@ local function sweep(player: Player, root: BasePart, target: Model, targetRoot: 
 		local model = part:FindFirstAncestorOfClass("Model")
 		if model and not seen[model] and model:FindFirstChildOfClass("Humanoid") then
 			seen[model] = true
-			hit(player, root, model, Combat.SweepDamage, Combat.Knockback, "sweep", kind)
+			hit(player, root, model, Combat.SweepDamage, Combat.Knockback, "sweep")
 		end
 	end
 end
@@ -187,7 +184,8 @@ local function reachable(character: Model, root: BasePart, target: Model): BaseP
 	end
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { character, target }
+	-- A body on the ground doesn't stop a swing
+	params.FilterDescendantsInstances = { character, target, workspace:FindFirstChild("Bodies") :: Instance }
 	if workspace:Raycast(root.Position, between, params) then
 		return nil
 	end
@@ -200,12 +198,12 @@ local function strike(player: Player, root: BasePart, target: Model, targetRoot:
 	local damage = Combat.HitDamage(swing.Damage, swing.Charge) * (if crit then Combat.CritScale else 1)
 	local sprintHit = full and swing.Sprinting
 	local speed = if sprintHit then Combat.SprintKnockback else Combat.Knockback
-	local landed = hit(player, root, target, damage, speed, if crit then "crit" else "hit", swing.Kind)
+	local landed = hit(player, root, target, damage, speed, if crit then "crit" else "hit")
 	if landed and sprintHit then
 		SprintService.Stop(player)
 	end
 	if landed and full and swing.Kind == "Sword" and not swing.Sprinting and not swing.Falling then
-		sweep(player, root, target, targetRoot, swing.Kind)
+		sweep(player, root, target, targetRoot)
 	end
 end
 

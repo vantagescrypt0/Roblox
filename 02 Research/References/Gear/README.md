@@ -24,6 +24,7 @@ Sent by you on 2026-11-03, inspired by GPO (Grand Piece Online). For inspiration
 | File | What it shows | What to take from it |
 |---|---|---|
 | `yours_ruby_hold_LOVED.webp` | Your screen: the Ruby crescent held over the shoulder at its big size, its blade going back past your head and arcing up and over it, the pommel sticking out in front | This is the hold and size to keep, without the blade touching your face |
+| `yours_ruby_under_armpit.webp` | Your screen, 2026-11-03: the Ruby as built in session 12, with its guard low at the chest and under the right arm, the blade sweeping out and up round the left of the head, the hand out to the side | What was wrong, fixed 2026-11-04: "The sword is under the armpit not over the shoulder." Also "make sure none of the swords overlap, especially with armour" |
 | `ref_sword_lineup_elements.webp` | Ten straight longswords of one family: plain steel and gold, ice shards, fire, purple ribbon, vines, gold with rings, flowing water, red ribbon, pink hearts, purple lightning. Slim blade, compact guard, wrapped grip, diamond pommel | One shared shape with one bright theme wrapped round it |
 | `ref_armour_blocky_themes.webp` | Eight blocky coats that fit the body's boxes exactly: dark or white with one bold colour, thick outlines, and a big theme piece on each shoulder (flames, ice, lightning, roses, wings, spider legs) | Fit to the block body, bold flat colour, the shoulders as the showpiece |
 

@@ -26,11 +26,33 @@ Inspired by the Skybounds Warzone — see [[Skybounds (Minecraft)]].
 > - **Falling off:** you come back where you jumped from and take a little **ticking poison**.
 > - **After you die:** back to Town.
 > - **Health bar and hunger bar:** food is a Minecraft-style hunger bar, in the Warzone only. It drains as you run and fight, eating fills it, health only regrows while you're well fed, and at empty hunger you slowly lose health. You stock up on your island and bring food in.
-> - **Shield:** one kind for now, crafted at the Anvil from planks and iron. Hold right-click to block every hit from the front; you walk slowly while blocking. Tiers can come later. It's a generated model on the left arm, raised in front of the chest while blocking. An axe hit knocks it down for 5 s (Claude's pick, not confirmed), with no popup.
+> - **Shield:** one kind for now, crafted at the Anvil from planks and iron. Hold right-click to block every hit from the front; you walk slowly while blocking. Tiers can come later. It's a generated model on the left arm, raised in front of the chest while blocking. **Nothing knocks it down: you removed Claude's axe knockdown on 2026-11-04.**
 >
 > **2026-11-02, built:** the real map replaced the greybox (citadel, 26 islands, North/East/South/West landmarks, see [[Warzone Rebuild Plan]]). The monsters, raid bag, green pads and click-for-loot chests are gone. The safe zone, combat tag and hold-to-leave button work. The "Decided" and "Prototype" sections below are the old design, kept for reference.
 >
-> **2026-11-03, built:** chests. 24 are out at a time, on open ground on the islands, never in the citadel: all the same, shared slots, the traditional chest screen, and an emptied one vanishes and a new one appears elsewhere 20 seconds later. What they hold is Claude's pick, in `shared/WarzoneLoot.luau`. **Lootable bodies aren't in yet,** so for now dying doesn't drop what you carry.
+> **2026-11-03, built:** chests. 24 are out at a time, on open ground on the islands, never in the citadel: all the same, shared slots, the traditional chest screen, and an emptied one vanishes and a new one appears elsewhere 20 seconds later. What they hold is Claude's pick, in `shared/WarzoneLoot.luau`.
+>
+> **Your rules, third batch (2026-11-03):**
+> - **Pet:** an equipped pet drops with everything else. Coins aren't items and stay with you.
+> - **Quitting in the citadel is safe:** untagged, you keep everything, with no body and no timer. The 5 minutes only apply out in the PvP zone.
+> - **Going back for your body:** jump in the pit within its 15 minutes and you land on your body's server, if it has room; otherwise any server.
+> - **An emptied body vanishes at once,** like a chest.
+>
+> **2026-11-03, built:** lootable bodies (`Services/BodyService`). Your own avatar falls over and lies there, still wearing whatever nobody's taken, with the shield flat beside it and your name above it. Right-click: the chest screen, worn gear first, growing to 5 rows if it has to. **Claude's picks, say if you want any changed:** anyone can also put things into a body; with nothing on you, you still fall, but there's nothing to open and it's gone in 6 seconds; the pet is in the slots but not shown beside the body; 20 extra seconds after the 5 minutes for someone already on their way back; if the server closes first (nobody left on it) no body drops and you keep everything, since nobody could have looted it; resetting your character counts as dying.
+>
+> **Your rules, fourth batch (2026-11-04):**
+> - **Your own body has no marker.**
+> - **A Skydrop is a regular chest with sparkles.** A **Legendary Skydrop** is still a regular chest, with purple sparkles, and a **health bar: people have to mine it to open it.** You hold mine, it cracks and "breaks", but it stays there and the health goes down. "Make it tedious so there's competition."
+> - **The shield's axe knockdown is removed.**
+> - **Warzone challenges** are PvP things and looting things.
+> - **Server sizes:** Warzone 55, Town 40, each Grinding World 30, Island 25. Set on Roblox for the other five places; the Warzone's is set when it's published.
+>
+> **2026-11-04, built:** Skydrops (`Services/SkydropService`, `client/SkydropController`, numbers in `shared/Skydrops`, loot in `shared/WarzoneLoot`) and 20 Warzone challenges (`shared/Boards`). **Claude's picks, say if you want any changed:**
+> - **The bar:** 300 cracks, each as long as a very tough block. With one person mining that's about 30 minutes with a Wooden Pickaxe, 10 with Iron, 5 with Ruby. Everyone's cracks bring down the same bar, and it never grows back.
+> - **Only a pickaxe mines it,** so you've put your sword away while you do, and you've had to bring a pickaxe you can lose. Whoever lands the last crack gets no extra: at zero it's open to anyone in reach, and the challenge counts for them only.
+> - **What they hold:** a Skydrop has 8 to 12 stacks with its rare things about ten times likelier than a chest's, a Legendary 14 to 18 stacks with about one good node in each. Ruby and Starstone only ever come as nodes.
+> - **Where and when:** inner islands only, 8 seconds in the air, and at most 3 regular ones lying about, the oldest going when another falls. Only one Legendary at a time. All servers share one list of Legendary times, 4 to 8 hours apart, as a server rarely lives that long.
+> - **What you see:** a line on everyone's screen when one falls (the Legendary's doesn't say where), and the regular one's marker sits on your screen, moving to the edge when it's off screen. The Legendary's bar only shows within 70 studs, so that it isn't a marker. **Tokens that call one down aren't built:** they need loot crates and Robux, which come later.
 
 ## Decided
 - **Death drop (from Skybounds):** when you die, a **loot head** (your avatar's head) drops where you fell. Open it (right-click on PC) to take the loot. The loot stays in the head until someone takes it. See [[Decision Log]].
@@ -61,7 +83,7 @@ Greybox arena, one shared map. These are **prototype defaults Claude picked**; c
 | Farm | Gated by Farming level; Warzone-only crops/seeds? |
 | Find chests | Spawn points, respawn timer, rarity tiers — TBD |
 
-## Skydrops (your idea, 2026-10-29; not built)
+## Skydrops (your idea, 2026-10-29; built 2026-11-04 apart from tokens, see the top of this note)
 - On top of the regular chests that spawn round the Warzone, **Skydrops** fall from the sky: chests with better loot (ore nodes among it, see [[Late-game Proposal]]).
 - **Regular Skydrops** fall every 10 minutes and everyone gets a **marker** showing where. **Legendary Skydrops** fall at a random time every 4–8 hours, with **no marker**: you have to find it.
 - A **Skydrop token** calls one down. **Your call 2026-11-02:** tokens come from loot crates, from Robux **with a limit on how many you can buy a day**, and from other ways still to come up with. A Skydrop is up for grabs, so anyone can take it: calling one is a flex and a chance if you're strategic, not a guaranteed prize.

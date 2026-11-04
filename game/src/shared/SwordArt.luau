@@ -1,16 +1,23 @@
 --!strict
 -- The generated swords (Studio's generate_mesh), and how what's in your hand is held in third person
--- (your call, 2026-11-03). A sword rides over your right shoulder at its full size, going back behind your
--- head, as in your photo, and a swing strikes across in front of you (first person is Minecraft's: see
--- client/FirstPersonController). Anything else, like a tool or a block, is held Minecraft's way: the arm
--- hangs 18 degrees forward, swings half as far as a free arm while you walk, and a swing lifts it from
--- the shoulder and chops down.
+-- (your call, 2026-11-03). A sword rides over your right shoulder at its full size, as in your photo, and a
+-- swing strikes across in front of you (first person is Minecraft's: see client/FirstPersonController).
+-- Anything else, like a tool or a block, is held Minecraft's way: the arm hangs 18 degrees forward, swings half
+-- as far as a free arm while you walk, and a swing lifts it from the shoulder and chops down.
 -- Poses are from the shoulder: Hand in arm lengths, so they fit any avatar, Along the way the handle points
 -- toward the blade, Turn the way the blade's curve bends. X is your right, Y up, -Z ahead of you.
 -- Each sword's points (Grip, Embers, Trail) are shares of its size, from -0.5 to 0.5 each way.
+-- No sword may touch your body or armour, resting, sprinting or swinging (your call, 2026-11-04). The poses were
+-- measured for that on the real meshes, every sword against all three armour sets, with
+-- art/scripts/sword_fit: run it again after changing a pose, or adding a sword or armour.
 
 export type Pose = { Hand: Vector3, Along: Vector3, Turn: Vector3 }
 export type Hold = { Rest: Pose, Run: Pose }
+-- Home has no pose of its own: it's whichever rest you're in now
+export type SwingKey = { Time: number, Pose: Pose? }
+-- With bare shoulders a sword can lie on your shoulder. Chest armour's shoulder pieces rise as high as your head,
+-- with no way past them low down, so in armour it goes up in front of them and over.
+export type Carry = { Bare: Hold, Armoured: Hold, Swing: { SwingKey } }
 export type Glow = { Color: Color3, Shell: number, Light: number, Embers: number }
 export type Art = {
 	Mesh: string,
@@ -19,7 +26,7 @@ export type Art = {
 	Grip: Vector3,
 	Up: Vector3, -- in the mesh: the way the handle points
 	Spine: Vector3, -- in the mesh: away from the way the curve bends
-	Hold: Hold?, -- its own way of resting on your shoulder, if not the straight swords' one
+	Carry: Carry?, -- its own way of being carried and swung, if not the straight swords' one
 	Embers: { Vector3 },
 	TrailFrom: Vector3,
 	TrailTo: Vector3,
@@ -41,32 +48,142 @@ local HANDLE_UP = Vector3.new(0, -1, 0) -- some meshes come with the blade point
 local BLADE_UP = Vector3.new(0, 1, 0)
 local SIDE = Vector3.new(1, 0, 0)
 
--- Over the shoulder, as in your photo (02 Research/References/Gear/yours_ruby_hold_LOVED.webp). A straight blade
--- rises past your head leaning back, on edge so its guard stays off your head, and you can see it from behind.
-local STRAIGHT_HOLD: Hold = {
-	Rest = {
-		Hand = Vector3.new(0.62, -0.1, -0.25),
-		Along = Vector3.new(-0.2, 0.76, 0.58),
-		Turn = Vector3.new(0, -0.6, 0.8),
+-- A swing comes up, strikes down in front of you, follows through across your body, comes back up and goes home.
+-- The steps are blended about your hand, so it moves in a line and every sword moves alike. The blade stays well
+-- off the line of your arm, as a real one does: in line with it, the pommel goes into your forearm.
+local WIND_UP = 0.08
+local STRIKE = 0.06
+local FOLLOW_THROUGH = 0.08
+local RECOVER = 0.12
+local HOME = 0.16
+
+-- A straight blade rises past your head leaning back, on edge so its guard stays off your head, and you can see it
+-- from behind. In armour, your hand comes up in front of the shoulder piece and the blade leans back over it.
+local STRAIGHT: Carry = {
+	Bare = {
+		Rest = {
+			Hand = Vector3.new(0.63, -0.07, -0.21),
+			Along = Vector3.new(-0.1, 0.78, 0.62),
+			Turn = Vector3.new(-0.02, -0.61, 0.79),
+		},
+		Run = {
+			Hand = Vector3.new(0.6, -0.13, -0.18),
+			Along = Vector3.new(-0.1, 0.66, 0.74),
+			Turn = Vector3.new(-0.02, -0.74, 0.67),
+		},
 	},
-	Run = {
-		Hand = Vector3.new(0.53, -0.16, -0.2),
-		Along = Vector3.new(-0.3, 0.6, 0.74),
-		Turn = Vector3.new(0, -0.75, 0.65),
+	Armoured = {
+		Rest = {
+			Hand = Vector3.new(0.33, 0.59, -0.73),
+			Along = Vector3.new(0.2, 0.84, 0.5),
+			Turn = Vector3.new(0.92, -0.34, 0.21),
+		},
+		Run = {
+			Hand = Vector3.new(0.37, 0.6, -0.7),
+			Along = Vector3.new(0.17, 0.89, 0.43),
+			Turn = Vector3.new(0.96, -0.26, 0.18),
+		},
+	},
+	Swing = {
+		{
+			Time = WIND_UP,
+			Pose = {
+				Hand = Vector3.new(0.38, 0.66, -0.64),
+				Along = Vector3.new(0.16, 0.92, 0.38),
+				Turn = Vector3.new(0.92, -0.35, 0.2),
+			},
+		},
+		{
+			Time = STRIKE,
+			Pose = {
+				Hand = Vector3.new(0.35, 0.1, -0.92),
+				Along = Vector3.new(0.1, 0.72, -0.68),
+				Turn = Vector3.new(0, 0.7, 0.7),
+			},
+		},
+		{
+			Time = FOLLOW_THROUGH,
+			Pose = {
+				Hand = Vector3.new(-0.03, -0.22, -0.95),
+				Along = Vector3.new(-0.74, 0.2, -0.64),
+				Turn = Vector3.new(-0.3, 0.95, 0.15),
+			},
+		},
+		{
+			Time = RECOVER,
+			Pose = {
+				Hand = Vector3.new(0.5, 0.25, -0.74),
+				Along = Vector3.new(0.38, 0.8, -0.46),
+				Turn = Vector3.new(0.95, -0.2, 0.2),
+			},
+		},
+		{ Time = HOME },
 	},
 }
--- The crescent's curve faces back, as in your photo: your head sits inside it, its back behind you and its tip
--- up over you. The arm has to reach out to hold it there: any further in and, at this size, it hits your face.
-local CURVED_HOLD: Hold = {
-	Rest = {
-		Hand = Vector3.new(0.75, -0.2, -0.05),
-		Along = Vector3.new(-0.8, 0.05, 0.76),
-		Turn = Vector3.new(-0.3, 1, 0),
+
+-- The crescent, your photo's hold (02 Research/References/Gear/yours_ruby_hold_LOVED.webp): the guard on your
+-- shoulder, the pommel out in front, and the blade going back and curving up and over with your head inside it. In
+-- armour the shoulder piece is where the guard would be, so it's carried like a scythe: your hand comes up in front
+-- of the shoulder and the blade arcs over it and over your head, with the tip behind you on your left.
+local CRESCENT: Carry = {
+	Bare = {
+		Rest = {
+			Hand = Vector3.new(0.5, 0.16, -0.76),
+			Along = Vector3.new(-0.02, 0.4, 0.91),
+			Turn = Vector3.new(-0.42, 0.84, -0.35),
+		},
+		Run = {
+			Hand = Vector3.new(0.5, 0.1, -0.72),
+			Along = Vector3.new(-0.02, 0.23, 0.97),
+			Turn = Vector3.new(-0.42, 0.88, -0.2),
+		},
 	},
-	Run = {
-		Hand = Vector3.new(0.72, -0.26, 0),
-		Along = Vector3.new(-0.76, 0.14, 0.76),
-		Turn = Vector3.new(-0.3, 1, 0.1),
+	Armoured = {
+		Rest = {
+			Hand = Vector3.new(0.52, 0.68, -0.5),
+			Along = Vector3.new(0.07, 0.91, 0.41),
+			Turn = Vector3.new(-0.71, -0.24, 0.66),
+		},
+		Run = {
+			Hand = Vector3.new(0.44, 0.67, -0.58),
+			Along = Vector3.new(0.15, 0.86, 0.49),
+			Turn = Vector3.new(-0.67, -0.28, 0.68),
+		},
+	},
+	Swing = {
+		{
+			Time = WIND_UP,
+			Pose = {
+				Hand = Vector3.new(0.52, 0.7, -0.48),
+				Along = Vector3.new(0.1, 0.9, 0.42),
+				Turn = Vector3.new(-0.71, -0.3, 0.62),
+			},
+		},
+		{
+			Time = STRIKE,
+			Pose = {
+				Hand = Vector3.new(0.48, 0.1, -0.87),
+				Along = Vector3.new(0.1, 0.72, -0.68),
+				Turn = Vector3.new(-0.71, 0.46, 0.51),
+			},
+		},
+		{
+			Time = FOLLOW_THROUGH,
+			Pose = {
+				Hand = Vector3.new(0.02, -0.38, -0.88),
+				Along = Vector3.new(-0.6, 0.25, -0.76),
+				Turn = Vector3.new(-0.5, 0.8, 0.3),
+			},
+		},
+		{
+			Time = RECOVER,
+			Pose = {
+				Hand = Vector3.new(0.55, 0.3, -0.76),
+				Along = Vector3.new(0.15, 0.8, -0.55),
+				Turn = Vector3.new(-0.6, 0.2, 0.75),
+			},
+		},
+		{ Time = HOME },
 	},
 }
 
@@ -154,7 +271,7 @@ SwordArt.List = {
 		Grip = Vector3.new(0.039, -0.36, 0),
 		Up = Vector3.new(0.526, 0.85, 0),
 		Spine = Vector3.new(0.85, -0.526, 0),
-		Hold = CURVED_HOLD,
+		Carry = CRESCENT,
 		Embers = {
 			Vector3.new(0.197, -0.149, 0),
 			Vector3.new(0.341, 0.021, 0),
@@ -183,56 +300,26 @@ SwordArt.List = {
 	} :: Art,
 } :: { [string]: Art }
 
--- A sword's swing: how long each part takes to reach its pose. It comes up beside your head, strikes down in
--- front of you, follows through across your body, and comes back up and home.
-SwordArt.Swing = {
-	{
-		Time = 0.08,
-		Pose = {
-			Hand = Vector3.new(0.68, 0.3, -0.3),
-			Along = Vector3.new(-0.08, 0.85, 0.5),
-			Turn = Vector3.new(0, -0.5, 0.85),
-		} :: Pose,
-	},
-	{
-		Time = 0.06,
-		Pose = {
-			Hand = Vector3.new(0.35, -0.08, -0.88),
-			Along = Vector3.new(0.1, 0.45, -0.87),
-			Turn = Vector3.new(-1, 0.1, 0),
-		} :: Pose,
-	},
-	{
-		Time = 0.08,
-		Pose = {
-			Hand = Vector3.new(-0.05, -0.42, -0.85),
-			Along = Vector3.new(-0.55, -0.15, -0.8),
-			Turn = Vector3.new(0.1, -0.3, 1),
-		} :: Pose,
-	},
-	-- Back up beside your head, so it comes home past your shoulder and not through you
-	{
-		Time = 0.12,
-		Pose = {
-			Hand = Vector3.new(0.68, 0.1, -0.5),
-			Along = Vector3.new(0.1, 0.85, -0.3),
-			Turn = Vector3.new(-1, 0.1, 0),
-		} :: Pose,
-	},
-	-- Home, to whichever rest you're in now
-	{ Time = 0.16, Pose = STRAIGHT_HOLD.Rest },
-}
+-- Where the elbow bends toward while holding a sword, from the shoulder, in arm lengths
+SwordArt.SwordElbow = Vector3.new(1, -1.2, 1)
 
--- What a sword rests in, and when you're running: its own hold, or the straight one
-function SwordArt.HoldOf(art: Art): Hold
-	return art.Hold or STRAIGHT_HOLD
+-- How a sword is carried and swung: its own way, or the straight swords'
+function SwordArt.CarryOf(art: Art): Carry
+	return art.Carry or STRAIGHT
 end
 
--- A sword's offset from the chest for a pose
-function SwordArt.PoseMount(grip: CFrame, pose: Pose, shoulder: Vector3, reach: number): CFrame
+-- Is this body wearing anything a sword has to go round: a helmet or chest armour's big shoulder pieces? Only a bare
+-- head and shoulders can have it lying on the shoulder. (ArmorModels puts them in its Armor folder.)
+function SwordArt.WearsArmourUp(character: Model): boolean
+	local armor = character:FindFirstChild("Armor")
+	return armor ~= nil and (armor:FindFirstChild("PauldronRight") ~= nil or armor:FindFirstChild("Helmet") ~= nil)
+end
+
+-- Where the grip is for a pose, from the chest. Y runs up the handle, X away from the curve.
+function SwordArt.PoseFrame(pose: Pose, shoulder: Vector3, reach: number): CFrame
 	local along = pose.Along.Unit
 	local out = -(pose.Turn - along * along:Dot(pose.Turn)).Unit
-	return CFrame.fromMatrix(shoulder + pose.Hand * reach, out, along, out:Cross(along)) * grip:Inverse()
+	return CFrame.fromMatrix(shoulder + pose.Hand * reach, out, along, out:Cross(along))
 end
 
 -- A swing of anything else lasts as long as Minecraft's: 6 ticks

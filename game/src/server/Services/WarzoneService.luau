@@ -5,17 +5,19 @@
 --   Hitting someone or being hit tags you for 20 seconds, and while tagged you can't leave.
 --   Leaving is a button only this place has: hold it, and everyone nearby hears you going.
 --   Fall off and you're back where you left the ground, with a little ticking poison.
---   Die and you're back in Town.
+--   Die and your body stays where you fell with everything you had (BodyService), and you're back in
+--   Town. Jump back in within its 15 minutes and you land on this server (TravelService).
 --   Quit and you have 5 minutes: any place you rejoin sends you straight back to this server and
---   spot (TravelService). Quit while tagged and there's no coming back.
+--   spot (TravelService). Miss them and your body drops there. Quit while tagged and it drops at once.
+--   Quit in the citadel, untagged, and you're simply safe.
 --   A hunger bar drains as you run and fight, and only counts here. Health only regrows while
 --   you're well fed, and at empty hunger you slowly lose it. Food is a crop in your hand: click.
 --   Your shield (worn from the Bag) blocks every hit from the front while you hold right-click,
---   and you walk slowly while it's up. An axe knocks it down for a few seconds.
--- Chests are in LootChestService. Lootable bodies come next: then missing the 5 minutes, or quitting
--- while tagged, also drops your body.
+--   and you walk slowly while it's up.
+-- Chests are in LootChestService, Skydrops in SkydropService.
 -- The numbers not in your rules (how fast hunger drains, how much poison) are Claude's picks.
 
+local MessagingService = game:GetService("MessagingService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -24,6 +26,7 @@ local StarterPlayer = game:GetService("StarterPlayer")
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Combat = require(ReplicatedStorage.Shared.Combat)
 local Foods = require(ReplicatedStorage.Shared.Foods)
+local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
@@ -34,8 +37,11 @@ local ShieldModel = require(script.Parent.Parent.Util.ShieldModel)
 local Spawning = require(script.Parent.Parent.Util.Spawning)
 local Context = require(script.Parent.Parent.Worlds.Context)
 local Warzone = require(script.Parent.Parent.Worlds.Warzone)
+local BodyService = require(script.Parent.BodyService)
+local ChestService = require(script.Parent.ChestService)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
+local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 local TravelService = require(script.Parent.TravelService)
 
@@ -47,7 +53,9 @@ local LEAVE_HOLD = 7
 local LEAVE_SOUND = "rbxassetid://15675046931" -- Roblox_UI_Sweep
 local LEAVE_SOUND_RANGE = 220
 local STUDIO_BACK_IN = 3 -- seconds; Studio can't travel to Town, so a test goes straight back in
-local REJOIN_TIME = 5 * 60
+local GROUND_SEARCH = 120 -- studs below where you fell to look for ground for your body
+local SEND_TRIES = 3
+local BACK_TOPIC = "WarzoneBack"
 
 local TICK = 0.25
 -- Hunger, out of 100, per second: a full bar lasts about 10 minutes of running
@@ -66,19 +74,32 @@ local POISON_TIME = 8
 local POISON_PER_SECOND = 2 -- 16 health in all; it never kills
 
 local BLOCK_SPEED = 8
-local SHIELD_DOWN_TIME = 5
 local BLOCK_SOUND = "rbxassetid://9113447467" -- Blacksmith Anvil Hammer Hits
 
 local WarzoneService = {}
 
+-- Changed only by Studio tests
+local rejoinTime = 5 * 60
+local rejoinGrace = 20 -- seconds more, for someone already on their way back
+
+-- Someone who quit away from the citadel: what would drop if they don't come back in time, by user id
+type Quitter = {
+	Name: string,
+	Stacks: { Inventory.Stack },
+	Worn: { string },
+	Copy: Model?,
+	At: Vector3,
+	Facing: Vector3,
+}
+
 local arrival: CFrame
+local quitters: { [number]: Quitter } = {}
 local leaving: { [Player]: Sound } = {}
 local hunger: { [Player]: number } = {}
 local warned: { [Player]: boolean } = {}
 local poisonUntil: { [Player]: number } = {}
 local lastGround: { [Player]: Vector3 } = {}
 local blockingSpeed: { [Player]: boolean } = {}
-local shieldDownUntil: { [Player]: number } = {}
 local eating: { [Player]: {} } = {}
 -- Left through the button or by dying, so there's nothing to come back to
 local leftOnPurpose: { [Player]: boolean } = {}
@@ -99,13 +120,14 @@ local function humanoidOf(player: Player): Humanoid?
 	return character and character:FindFirstChildOfClass("Humanoid")
 end
 
+local function isSafeSpot(position: Vector3): boolean
+	local flat = Vector3.new(position.X - CENTER.X, 0, position.Z - CENTER.Z)
+	return flat.Magnitude <= Warzone.SafeRadius * SIZE
+end
+
 local function inSafeZone(player: Player): boolean
 	local root = rootOf(player)
-	if not root then
-		return true
-	end
-	local flat = Vector3.new(root.Position.X - CENTER.X, 0, root.Position.Z - CENTER.Z)
-	return flat.Magnitude <= Warzone.SafeRadius * SIZE
+	return root == nil or isSafeSpot(root.Position)
 end
 
 -- Can this player hurt that one? Both must be in the Warzone, outside the citadel
@@ -243,9 +265,6 @@ local function startBlocking(player: Player)
 	if blockingSpeed[player] or not WarzoneService.IsPlaying(player) then
 		return
 	end
-	if os.clock() < (shieldDownUntil[player] or 0) then
-		return
-	end
 	eating[player] = nil
 	blockingSpeed[player] = true
 	humanoid.WalkSpeed = BLOCK_SPEED
@@ -255,9 +274,8 @@ local function startBlocking(player: Player)
 	end
 end
 
--- A hit from `from` on someone who may be blocking: true if the shield stopped it. An axe still
--- knocks the shield down for a few seconds.
-function WarzoneService.Blocks(victim: Player, from: Vector3, toolKind: string?): boolean
+-- A hit from `from` on someone who may be blocking: true if the shield stopped it
+function WarzoneService.Blocks(victim: Player, from: Vector3): boolean
 	local root = rootOf(victim)
 	if not blockingSpeed[victim] or not root then
 		return false
@@ -267,10 +285,7 @@ function WarzoneService.Blocks(victim: Player, from: Vector3, toolKind: string?)
 		return false
 	end
 	playSound(root, BLOCK_SOUND, 0.6)
-	if toolKind == "Axe" then
-		stopBlocking(victim)
-		shieldDownUntil[victim] = os.clock() + SHIELD_DOWN_TIME
-	end
+	QuestService.Record(victim, "BlockHit")
 	return true
 end
 
@@ -358,7 +373,19 @@ local function enter(player: Player)
 		return
 	end
 	local back = data.Rejoin
-	local returning = back.Until > os.time()
+	local quitter = quitters[player.UserId]
+	local returning = quitter ~= nil or back.Until > os.time()
+	if quitter then
+		quitters[player.UserId] = nil
+		if quitter.Copy then
+			quitter.Copy:Destroy()
+		end
+	elseif returning then
+		-- Back in time, but on another server (that one's full now): it mustn't drop their body
+		task.spawn(pcall, function()
+			MessagingService:PublishAsync(BACK_TOPIC, player.UserId)
+		end)
+	end
 	if data.Level < Leveling.WarzoneLevel and not returning then
 		StateService.Notify(player, `The Warzone unlocks at level {Leveling.WarzoneLevel}`, "bad")
 		TravelService.Go(player, "Town")
@@ -408,49 +435,145 @@ local function endRun(player: Player)
 	end
 end
 
+-- The ground under where someone went down: straight below, or if that's the void, where they last stood
+local function groundFor(player: Player, position: Vector3?): Vector3
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { workspace:FindFirstChild("World") :: Instance }
+	local function below(from: Vector3?): Vector3?
+		local hit = from and workspace:Raycast(from, Vector3.new(0, -GROUND_SEARCH, 0), params)
+		return hit and hit.Position
+	end
+	return below(position) or below(lastGround[player]) or arrival.Position - Vector3.new(0, 4, 0)
+end
+
+-- Everything you had goes onto your body, here and now. It can't wait: this also runs as you leave.
+local function dropNow(player: Player, data: DataService.Data, character: Model?, position: Vector3?, facing: Vector3)
+	local stacks, worn = InventoryService.TakeEverything(data)
+	if #stacks > 0 then
+		data.Body.JobId = game.JobId
+		data.Body.Until = os.time() + BodyService.Lifetime()
+	end
+	DataService.MarkChanged(player)
+	task.spawn(BodyService.Drop, {
+		UserId = player.UserId,
+		Name = player.DisplayName,
+		Stacks = stacks,
+		Worn = worn,
+		Copy = BodyService.Copy(character),
+		At = groundFor(player, position),
+		Facing = facing,
+	})
+end
+
+local function facingOf(root: BasePart?): Vector3
+	return if root then root.CFrame.LookVector else Vector3.zAxis
+end
+
 local function onCharacterAdded(player: Player, character: Model)
 	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
+	-- Your body's laid down from a copy, so it needs its joints
+	humanoid.BreakJointsOnDeath = false
 	humanoid.Died:Connect(function()
 		if not WarzoneService.IsPlaying(player) then
 			return
 		end
+		local data = DataService.GetData(player)
+		local root = rootOf(player)
+		ChestService.CloseFor(player)
+		if data then
+			dropNow(player, data, character, root and root.Position, facingOf(root))
+		end
+		BodyService.Hide(character)
 		endRun(player)
-		StateService.Notify(player, "You died!", "bad")
+		StateService.Notify(player, "You died! Your body stays here for 15 minutes with everything you had", "bad")
 		local killerId = humanoid:GetAttribute("LastAttacker")
 		local killer = if typeof(killerId) == "number" then Players:GetPlayerByUserId(killerId) else nil
 		if killer and killer ~= player then
 			StateService.Notify(killer, `You took down {player.DisplayName}!`, "good")
+			QuestService.Record(killer, "PvPKill")
 		end
 	end)
 end
 
--- Quitting: writes down where you were, for when you come back. Runs before the save closes.
+-- Missed the 5 minutes: the body drops, and what's on it comes off them wherever they are, now or the
+-- next time they join. If this server closes first nothing happens, and they keep it all.
+local function dropForQuitter(userId: number, quitter: Quitter)
+	task.spawn(BodyService.Drop, {
+		UserId = userId,
+		Name = quitter.Name,
+		Stacks = quitter.Stacks,
+		Worn = quitter.Worn,
+		Copy = quitter.Copy,
+		At = quitter.At,
+		Facing = quitter.Facing,
+	})
+	local message = { Kind = "BodyDropped", JobId = game.JobId, Until = os.time() + BodyService.Lifetime() }
+	for try = 1, SEND_TRIES do
+		if DataService.SendMessage(userId, message) then
+			return
+		end
+		task.wait(try * 2)
+	end
+	warn(`[Warzone] couldn't tell user {userId} their body dropped`)
+end
+
+-- Quitting: runs before the save closes. Tagged, your body drops at once. In the citadel you're safe.
+-- Otherwise it writes down where you were, for when you come back, and starts your 5 minutes.
 local function onLeaving(player: Player, data: DataService.Data)
 	if leftOnPurpose[player] or not WarzoneService.IsPlaying(player) then
 		return
 	end
 	data.Raid.Active = false
 	data.Rejoin.Until = 0
+	local root = rootOf(player)
+	local position = (root and root.Position) or lastGround[player]
+	local facing = facingOf(root)
+	local character = player.Character
 	if tagLeft(player) > 0 then
+		dropNow(player, data, character, position, facing)
 		return
 	end
-	local root = rootOf(player)
-	local spot = lastGround[player] or (root and root.Position)
-	if spot then
-		data.Rejoin = {
-			JobId = game.JobId,
-			Until = os.time() + REJOIN_TIME,
-			X = spot.X,
-			Y = spot.Y + 4,
-			Z = spot.Z,
-			Hunger = hunger[player] or 100,
-		}
+	if not position or isSafeSpot(position) then
+		return
 	end
+	local spot = lastGround[player] or position
+	data.Rejoin = {
+		JobId = game.JobId,
+		Until = os.time() + rejoinTime,
+		X = spot.X,
+		Y = spot.Y + 4,
+		Z = spot.Z,
+		Hunger = hunger[player] or 100,
+	}
+	local stacks, worn = InventoryService.Everything(data)
+	local userId = player.UserId
+	local quitter: Quitter = {
+		Name = player.DisplayName,
+		Stacks = stacks,
+		Worn = worn,
+		Copy = BodyService.Copy(character),
+		At = groundFor(player, position),
+		Facing = facing,
+	}
+	quitters[userId] = quitter
+	task.delay(rejoinTime + rejoinGrace, function()
+		if quitters[userId] == quitter then
+			quitters[userId] = nil
+			dropForQuitter(userId, quitter)
+		end
+	end)
+end
+
+-- For Studio tests only: how long a quitter has, in seconds
+function WarzoneService.SetRejoinTime(seconds: number, grace: number)
+	rejoinTime = seconds
+	rejoinGrace = grace
 end
 
 -- For testing in Studio, where nobody can really quit and come back: goes through the same
--- steps as quitting here and rejoining this server a moment later
-function WarzoneService.TestQuit(player: Player)
+-- steps as quitting here and rejoining this server `away` seconds later (1 if not given)
+function WarzoneService.TestQuit(player: Player, away: number?)
 	local data = DataService.GetData(player)
 	if not data or not WarzoneService.IsPlaying(player) then
 		return
@@ -463,7 +586,7 @@ function WarzoneService.TestQuit(player: Player)
 	if character then
 		character:PivotTo(arrival)
 	end
-	task.delay(1, enter, player)
+	task.delay(away or 1, enter, player)
 end
 
 function WarzoneService.SetHunger(player: Player, value: number)
@@ -597,6 +720,17 @@ function WarzoneService.Start()
 	end)
 
 	DataService.OnLeaving(onLeaving)
+	task.spawn(pcall, function()
+		MessagingService:SubscribeAsync(BACK_TOPIC, function(message: any)
+			local quitter = quitters[message.Data]
+			if quitter then
+				quitters[message.Data] = nil
+				if quitter.Copy then
+					quitter.Copy:Destroy()
+				end
+			end
+		end)
+	end)
 	Players.PlayerRemoving:Connect(function(player: Player)
 		-- A moment later, so the save's last look at them sees them as they were
 		task.delay(1, function()
@@ -607,7 +741,6 @@ function WarzoneService.Start()
 			poisonUntil[player] = nil
 			lastGround[player] = nil
 			blockingSpeed[player] = nil
-			shieldDownUntil[player] = nil
 			eating[player] = nil
 			leftOnPurpose[player] = nil
 		end)

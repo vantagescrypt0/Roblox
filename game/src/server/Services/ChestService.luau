@@ -29,6 +29,9 @@ export type Chest = {
 	Viewers: { [Player]: boolean },
 	-- After its contents change (a storage chest saves, an emptied Warzone chest goes away)
 	OnChanged: ((chest: Chest) -> ())?,
+	-- Warzone chests: whether this player can open it now, and the first time each player does
+	CanOpen: ((player: Player) -> boolean)?,
+	OnFirstOpen: ((player: Player) -> ())?,
 }
 
 local ChestService = {}
@@ -40,10 +43,10 @@ local function isIndex(index: unknown, last: number): boolean
 	return type(index) == "number" and index == math.floor(index) and index >= 1 and index <= last
 end
 
--- A numbered place in either list: 1 to 36 is your inventory, over 100 the chest
-local function placeOf(index: unknown): boolean
+-- A numbered place in either list: 1 to 36 is your inventory, over 100 the chest (a body holds more)
+local function placeOf(index: unknown, chest: Chest): boolean
 	return isIndex(index, Inventory.Size)
-		or (type(index) == "number" and isIndex(index - Inventory.ChestOffset, Inventory.ChestSize))
+		or (type(index) == "number" and isIndex(index - Inventory.ChestOffset, #chest.Slots))
 end
 
 local function send(chest: Chest)
@@ -85,6 +88,11 @@ function ChestService.CloseAll(chest: Chest)
 	end
 end
 
+-- Shuts whatever chest this player has open (they died)
+function ChestService.CloseFor(player: Player)
+	closeFor(player, true)
+end
+
 -- Keeps what you carry in step with its totals as a stack leaves or arrives
 local function recount(data: any, before: Inventory.Stack, after: Inventory.Stack)
 	local items = data.Items :: { [string]: number }
@@ -109,7 +117,7 @@ end
 local function onMove(player: Player, from: unknown, to: unknown, amount: unknown)
 	local chest = openChest[player]
 	local data = DataService.GetData(player)
-	if not chest or not data or not placeOf(from) or not placeOf(to) or not isIndex(amount, 1e9) then
+	if not chest or not data or not placeOf(from, chest) or not placeOf(to, chest) or not isIndex(amount, 1e9) then
 		return
 	end
 	if from == to or not canReach(player, chest) then
@@ -140,7 +148,7 @@ end
 local function onQuick(player: Player, from: unknown)
 	local chest = openChest[player]
 	local data = DataService.GetData(player)
-	if not chest or not data or not placeOf(from) or not canReach(player, chest) then
+	if not chest or not data or not placeOf(from, chest) or not canReach(player, chest) then
 		return
 	end
 	local index = from :: number

@@ -23,7 +23,7 @@ local TOUCH_COOLDOWN = 4
 local TravelService = {}
 
 local traveling: { [Player]: boolean } = {}
--- On their way back to the Warzone server they quit, for 5 minutes after quitting
+-- On their way back to one particular Warzone server: the one they quit, or the one their body's on
 local returning: { [Player]: boolean } = {}
 local lastTouch: { [Player]: number } = {}
 
@@ -39,35 +39,9 @@ local function capitalized(destination: Places.Kind): string
 	return string.upper(string.sub(name, 1, 1)) .. string.sub(name, 2)
 end
 
-function TravelService.Go(player: Player, destination: Places.Kind)
-	if traveling[player] then
-		return
-	end
-	local placeId = Places.Ids[destination]
-	if placeId == 0 then
-		StateService.Notify(player, `{capitalized(destination)} isn't open yet`, "bad")
-		return
-	elseif RunService:IsStudio() then
-		StateService.Notify(player, `Traveling to {Places.Names[destination]} only works in the published game`, "bad")
-		return
-	end
-	traveling[player] = true
-	Remotes.Travel:FireClient(player, destination)
-	task.wait(FADE_TIME)
-	local options = Instance.new("TeleportOptions")
-	options:SetTeleportData({ From = Places.Current() })
-	local ok, err = pcall(function()
-		TeleportService:TeleportAsync(placeId, { player }, options)
-	end)
-	if not ok then
-		warn(`[TravelService] teleport to {destination} failed: {err}`)
-		failed(player, "Couldn't travel right now. Try again in a moment.")
-	end
-end
-
--- Quit the Warzone a moment ago and rejoined? Straight back to that server, wherever you landed.
--- WarzoneService puts you back on the spot. If that server has closed (it does once everyone's
--- left), any Warzone server will do.
+-- Back to one particular Warzone server, wherever you are: the one you quit a moment ago (WarzoneService
+-- puts you back on the spot), or the one your body's on. If that server has closed (it does once
+-- everyone's left) or is full, any Warzone server will do.
 local function sendBack(player: Player, jobId: string?)
 	local options = Instance.new("TeleportOptions")
 	options:SetTeleportData({ From = Places.Current() })
@@ -85,6 +59,40 @@ local function sendBack(player: Player, jobId: string?)
 			returning[player] = nil
 			failed(player, "Couldn't get you back to the Warzone.")
 		end
+	end
+end
+
+function TravelService.Go(player: Player, destination: Places.Kind)
+	if traveling[player] then
+		return
+	end
+	local placeId = Places.Ids[destination]
+	if placeId == 0 then
+		StateService.Notify(player, `{capitalized(destination)} isn't open yet`, "bad")
+		return
+	elseif RunService:IsStudio() then
+		StateService.Notify(player, `Traveling to {Places.Names[destination]} only works in the published game`, "bad")
+		return
+	end
+	traveling[player] = true
+	Remotes.Travel:FireClient(player, destination)
+	task.wait(FADE_TIME)
+	-- Your body's still lying in the Warzone: you land on its server, to go after it
+	local data = DataService.GetData(player)
+	if destination == "Warzone" and data and data.Body.Until > os.time() then
+		returning[player] = true
+		StateService.Notify(player, "Back to the server your body's on", "info")
+		sendBack(player, data.Body.JobId)
+		return
+	end
+	local options = Instance.new("TeleportOptions")
+	options:SetTeleportData({ From = Places.Current() })
+	local ok, err = pcall(function()
+		TeleportService:TeleportAsync(placeId, { player }, options)
+	end)
+	if not ok then
+		warn(`[TravelService] teleport to {destination} failed: {err}`)
+		failed(player, "Couldn't travel right now. Try again in a moment.")
 	end
 end
 
