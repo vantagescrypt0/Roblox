@@ -25,7 +25,7 @@ Places.Ids = table.freeze({
 	Woodcutting = 75392192647539,
 	Farming = 134413726720555,
 	Slaying = 0,
-	Warzone = 0,
+	Warzone = 111392079569314,
 })
 
 -- How messages and the travel screen name each place ("Traveling to the Mining World...")
