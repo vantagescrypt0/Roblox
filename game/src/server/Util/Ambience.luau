@@ -53,4 +53,37 @@ function Ambience.Apply(haze: number?, caves: boolean?)
 	end
 end
 
+-- The Warzone's air: our own night-blue sky with stars (art/scripts/warzone_sky.py) over a
+-- high sun, so the builds stand out bright against the dark. No atmosphere: it would paint
+-- over the sky below the horizon.
+function Ambience.Warzone()
+	local sky = ensure("Sky", "Sky") :: Sky
+	sky.SkyboxBk = "rbxassetid://112349489963986"
+	sky.SkyboxDn = "rbxassetid://84180900424871"
+	sky.SkyboxFt = "rbxassetid://110843358608868"
+	sky.SkyboxLf = "rbxassetid://112131268226863"
+	sky.SkyboxRt = "rbxassetid://125757012639863"
+	sky.SkyboxUp = "rbxassetid://77471883929634"
+	sky.CelestialBodiesShown = false
+	sky.StarCount = 0
+
+	local bloom = ensure("BloomEffect", "Bloom") :: BloomEffect
+	bloom.Intensity = 0.7
+	bloom.Size = 30
+	bloom.Threshold = 1.3
+
+	local grade = ensure("ColorCorrectionEffect", "Grade") :: ColorCorrectionEffect
+	grade.Saturation = 0.12
+	grade.Contrast = 0.08
+	grade.Brightness = 0.01
+
+	Lighting.ClockTime = 13.4
+	Lighting.GeographicLatitude = 20
+	Lighting.Brightness = 2.7
+	Lighting.Ambient = Color3.fromRGB(58, 60, 72)
+	Lighting.OutdoorAmbient = Color3.fromRGB(138, 142, 160)
+	Lighting.EnvironmentDiffuseScale = 0.4
+	Lighting.EnvironmentSpecularScale = 0.4
+end
+
 return Ambience

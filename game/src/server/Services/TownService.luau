@@ -19,14 +19,16 @@
 --                (Farming, Woodcutting, Mining) and Slaying (boarded up until PvE), each
 --                with a banner in its colour
 -- Nothing here can be broken, and anyone who falls off is put back at the spawn point.
--- (The Warzone's entrance will be a black void pit in town, like the Skybounds spawn: not
--- yet.)
+--                In the middle of it, the Warzone's entrance: a black void pit with stepped
+--                brick sides, like the Skybounds spawn. Jump in (player level 10).
 --
 -- Grid: x runs west to east, z south to north; y = 0 is the ground, things stand on y = 1.
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Ambience = require(script.Parent.Parent.Util.Ambience)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
@@ -46,6 +48,7 @@ local Context = require(script.Parent.Parent.Worlds.Context)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
 local TravelService = require(script.Parent.TravelService)
+local DataService = require(script.Parent.DataService)
 
 local CENTER = Vector3.new(0, 200, 0) -- top of the ground at the fountain
 local SIZE = Blocks.Size
@@ -65,6 +68,9 @@ local ARCH_HALF = 4 -- the arch through it is nine blocks wide
 local PORTAL_Z = 64 -- the row of world portals
 local PORTAL_PLAZA = { Z1 = 46, Z2 = 78, Half = 42 }
 local SQUARE = 26 -- half-width of the Market Square
+local PIT = { X = 0, Z = 55, R = 7 } -- the Warzone's entrance, in the Portal Plaza
+local PIT_BOTTOM = -3 -- the void's surface, just under the lowest step
+local PIT_DEEP = 8 -- how far the shaft goes on under it, for anyone falling through
 local STREET_HALF = 16 -- the market street, kerb to kerb
 local LANE_END = 84 -- how far the lanes run east and west
 
@@ -1157,6 +1163,113 @@ local function portals()
 	end
 end
 
+-- The Warzone's entrance: a round hole in the plaza, stepping down in brick to a shaft lined
+-- with obsidian. The void itself is a part (voidField)
+local function voidPit()
+	local r = PIT.R
+	local reach = math.ceil(r) + 2
+	for x = PIT.X - reach, PIT.X + reach do
+		for z = PIT.Z - reach, PIT.Z + reach do
+			local d = math.sqrt((x - PIT.X) ^ 2 + (z - PIT.Z) ^ 2)
+			if d > r and d <= r + 1.5 then
+				set(x, 0, z, "Bricks")
+			elseif d <= r then
+				ctx.Carve(x, 0, z)
+				if d > r - 1.5 then
+					set(x, -1, z, "Bricks")
+				else
+					ctx.Carve(x, -1, z)
+					if d > r - 3 then
+						set(x, -2, z, "StoneBricks")
+						for y = -3, -PIT_DEEP, -1 do
+							set(x, y, z, "Obsidian")
+						end
+					else
+						for y = -2, -PIT_DEEP, -1 do
+							ctx.Carve(x, y, z)
+						end
+					end
+				end
+			end
+		end
+	end
+	for _, side in { -1, 1 } do
+		Decor.LampPost(decor, top(PIT.X + side * 11, 0, PIT.Z - 7), 4, 18)
+		Decor.Banner(
+			decor,
+			top(PIT.X + side * 11, 4, PIT.Z - 7) - Vector3.new(0, 0.6, SIZE / 2 + 0.3),
+			-Vector3.zAxis,
+			Color3.fromRGB(120, 36, 40)
+		)
+	end
+	Signs.Rustic(
+		decor,
+		top(PIT.X + 5, 0, PIT.Z - 10),
+		-Vector3.zAxis,
+		`THE WARZONE\nLEVEL {Leveling.WarzoneLevel}`,
+		Signs.Woods.Dark
+	)
+end
+
+-- The void at the bottom of the pit: touching it takes you to the Warzone. Below level 10, or if
+-- the trip can't happen, you're put back at the rim.
+local function voidField()
+	-- A little wider than the opening, so its round edge hides under the blocky step
+	local across = (PIT.R - 3) * 2 * SIZE + 2 * SIZE
+	local void = Decor.Part(
+		decor,
+		"WarzoneVoid",
+		Vector3.new(0.4, across, across),
+		CFrame.new(top(PIT.X, PIT_BOTTOM, PIT.Z)) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(4, 3, 10)
+	)
+	void.Shape = Enum.PartType.Cylinder
+	void.CanCollide = false
+	void.CastShadow = false
+	local stars = Instance.new("ParticleEmitter")
+	stars.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	stars.Color = ColorSequence.new(Color3.fromRGB(200, 190, 255))
+	stars.LightEmission = 1
+	stars.Size = NumberSequence.new(0.35)
+	stars.Lifetime = NumberRange.new(2, 4)
+	stars.Rate = 14
+	stars.Speed = NumberRange.new(0)
+	stars.Parent = void
+
+	local busy: { [Player]: boolean } = {}
+	local rim = top(PIT.X, 0, PIT.Z - PIT.R - 3) + Vector3.new(0, 4, 0)
+	void.Touched:Connect(function(hit)
+		local character = hit:FindFirstAncestorOfClass("Model")
+		local player = character and Players:GetPlayerFromCharacter(character)
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		local data = player and DataService.GetData(player)
+		if not player or not character or not root or not root:IsA("BasePart") or not data or busy[player] then
+			return
+		end
+		busy[player] = true
+		if data.Level < Leveling.WarzoneLevel then
+			StateService.Notify(
+				player,
+				`The Warzone unlocks at level {Leveling.WarzoneLevel}. You're level {data.Level}`,
+				"bad"
+			)
+		else
+			-- Hold them in the void while the trip starts, so they don't fall through the island
+			root.Anchored = true
+			TravelService.Go(player, "Warzone")
+			task.wait(4)
+			root.Anchored = false
+		end
+		if player.Parent and root.Parent then
+			root.AssemblyLinearVelocity = Vector3.zero
+			character:PivotTo(CFrame.new(rim))
+		end
+		-- Every limb touches it, so stay busy for a moment or the message comes once for each
+		task.wait(1.5)
+		busy[player] = nil
+	end)
+end
+
 -- Portal fields are parts: made after the blocks are drawn
 local function portalFields()
 	for _, info in WORLD_PORTALS do
@@ -1257,6 +1370,7 @@ local function build()
 
 	-- The way in: spawn, the bridge, the plaza and the arch through the mountain
 	portals()
+	voidPit()
 	for _, x in { -8, -7, -6, 6, 7, 8 } do
 		for z = HOME_PORTAL_Z + 4, SPAWN_PLAZA.Z2 - 4 do
 			if rng:NextNumber() < 0.75 then
@@ -1376,6 +1490,7 @@ local function build()
 	BlockWorld.drawAll(world, true)
 	Pace.Finish()
 	portalFields()
+	voidField()
 	print(
 		`[Town] built in {string.format("%.1f", os.clock() - started)}s,`,
 		`{BlockWorld.partCount(world)} block parts, {#decor:GetDescendants()} decor instances`

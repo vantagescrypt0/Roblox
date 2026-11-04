@@ -4,7 +4,9 @@ and each resource's XP and price to the targets (Decision Log, 2026-10-27):
 
   a skill 1 -> 99 in ~25 hours of steady play, level 10 after ~1 hour
   player level 1 -> 50 in ~80 hours (5 after ~1 hour, 10 after ~4 hours)
-  coins: early ~2k an hour, mid ~50k, late ~1M (late needs late-game content)
+  coins, the billion scale (your call, 2026-11-02): early ~3k an hour, mid ~150k, the top of
+  the worlds ~2M+; a billion is hard but doable for a smart player, and the elite go far past
+  it by owning many late-game nodes
 
 How fast you gather: STEADY of your time is spent gathering (the rest is walking to shops,
 crafting, menus). Breaking a block takes its break time (shared/Mining.luau: hardness x 1.5
@@ -48,31 +50,59 @@ CRAFT_SHARE = 1.5
 # for crops, XP an hour at unlock as a multiple of BASE_XP_RATE, coins an hour at unlock)
 ACTIVITIES = {
     "Mining": [
-        ("Coal", 1, 1, 3, 1.0, 2000),
-        ("Iron", 1, 2, 3, 1.3, 6000),
-        ("Gold", 10, 3, 3, 2.2, 25000),
-        # The deep cave ([[Late-game Proposal]]): each about 2x the coins of the one before
-        ("Silver", 20, 3, 3.5, 2.6, 55000),
-        ("Amethyst", 35, 3, 4, 3.0, 120000),
-        ("Sapphire", 50, 4, 4.5, 3.4, 260000),
-        ("Ruby", 65, 5, 5, 3.8, 550000),
-        ("Starstone", 80, 6, 5.5, 4.2, 1200000),
+        ("Coal", 1, 1, 3, 1.0, 3000),
+        ("Iron", 1, 2, 3, 1.3, 10000),
+        ("Gold", 10, 3, 3, 2.2, 40000),
+        # The deep cave: each about 3x the coins of the one before
+        ("Silver", 20, 3, 3.5, 2.6, 120000),
+        ("Amethyst", 35, 3, 4, 3.0, 400000),
+        ("Sapphire", 50, 4, 4.5, 3.4, 2000000),
+        # Late game: priced by LATE_PRICE, not these
+        ("Ruby", 65, 5, 5, 3.8, 0),
+        ("Starstone", 80, 6, 5.5, 4.2, 0),
     ],
     "Woodcutting": [
-        ("Oak", 1, 0, 2, 1.2, 2000),
-        ("Birch", 10, 0, 2, 1.55, 9000),
-        ("Spruce", 20, 0, 2.5, 1.9, 22000),
-        ("Cherry", 30, 0, 3, 2.25, 45000),
+        ("Oak", 1, 0, 2, 1.2, 3000),
+        ("Birch", 10, 0, 2, 1.55, 15000),
+        ("Spruce", 20, 0, 2.5, 1.9, 50000),
+        ("Cherry", 30, 0, 3, 2.25, 140000),
+        ("Maple", 40, 0, 3.5, 2.6, 450000),
+        ("Redwood", 55, 0, 4, 3.0, 1800000),
+        ("Mangrove", 70, 0, 4.5, 3.4, 0),
+        ("Starwood", 85, 0, 5, 3.8, 0),
     ],
     "Farming": [
-        ("Wheat", 1, 0, None, 1.0, 2000),
-        ("Carrot", 5, 0, None, 1.3, 6000),
-        ("Potato", 10, 0, None, 1.55, 14000),
-        ("Pumpkin", 15, 0, None, 1.9, 26000),
-        ("Melon", 25, 0, None, 2.3, 45000),
+        ("Wheat", 1, 0, None, 1.0, 3000),
+        ("Carrot", 5, 0, None, 1.3, 9000),
+        ("Potato", 10, 0, None, 1.55, 25000),
+        ("Pumpkin", 15, 0, None, 1.9, 60000),
+        ("Melon", 25, 0, None, 2.3, 160000),
+        ("Sugarcane", 40, 0, None, 2.7, 1500000),
+        ("Strawberry", 50, 0, None, 3.2, 0),
+        ("Dragonfruit", 65, 0, None, 3.7, 0),
+        ("Starfruit", 80, 0, None, 4.2, 0),
     ],
 }
 
+
+# The late game: not in the Grinding Worlds, only from nodes on your own island (loot crates and
+# Warzone chests; your call, 2026-11-02). They keep an XP and a price, but nobody grinds them
+# at world pace, so they don't count toward how long a skill takes.
+ISLAND_ONLY = {"Ruby", "Starstone", "Mangrove", "Starwood", "Strawberry", "Dragonfruit", "Starfruit"}
+# What they sell for. Their supply is the limit, not the player's speed, so these are set by what
+# one node, plot or tree should earn, not by a coins-an-hour target:
+#   (units an hour from one, where they come from)
+LATE_PRICE = {
+    "Ruby": 5000,  # a node: 15 an hour
+    "Starstone": 20000,  # a node: 12 an hour
+    "Mangrove": 1500,  # a tree: ~30 logs, regrown in 30 minutes
+    "Starwood": 6000,  # a tree: ~14 logs, regrown in 30 minutes
+    "Strawberry": 4000,  # a plot: 10 an hour
+    "Dragonfruit": 8000,  # a plot: ~8.6 an hour
+    "Starfruit": 20000,  # a plot: 7.5 an hour
+}
+# Late tools need Ruby or Starstone, so someone working only in the worlds stops at Sapphire
+WORLD_TOP_TIER = 5
 
 # Resources that aren't a grind of their own, priced against the ones above:
 # (name, like resource, XP and price multiple of it)
@@ -101,9 +131,11 @@ def tool_tier(level, skill="Mining"):
     return 1
 
 
-def actions_per_hour(skill, activity, level):
+def actions_per_hour(skill, activity, level, top_tier=None):
     _, unlock, need, hardness, *_ = activity
     tier = tool_tier(level, skill)
+    if top_tier:
+        tier = min(tier, top_tier)
     if level < unlock or tier < need:
         return 0.0
     seconds = OVERHEAD[skill]
@@ -130,7 +162,7 @@ for _skill, _list in ACTIVITIES.items():
         _rate = actions_per_hour(_skill, _a, _at)
         XP[_a[0]] = max(1, round(BASE_XP_RATE * _a[4] / _rate / 5) * 5)
         PLAYER_XP[_a[0]] = max(1, round(XP[_a[0]] * PLAYER_SHARE))
-        PRICE[_a[0]] = max(1, round(_a[5] / (_rate * (1 + bonus(_at)))))
+        PRICE[_a[0]] = LATE_PRICE.get(_a[0]) or max(1, round(_a[5] / (_rate * (1 + bonus(_at)))))
 EXTRA_XP, EXTRA_PRICE = {}, {}
 for _name, _like, _xp_mult, _price_mult in EXTRAS:
     EXTRA_XP[_name] = round(XP[_like] * _xp_mult / 5) * 5
@@ -140,7 +172,9 @@ for _name, _like, _xp_mult, _price_mult in EXTRAS:
 def best(skill, level, table):
     top, top_rate = None, 0.0
     for activity in ACTIVITIES[skill]:
-        rate = actions_per_hour(skill, activity, level) * table[activity[0]]
+        if activity[0] in ISLAND_ONLY:
+            continue
+        rate = actions_per_hour(skill, activity, level, WORLD_TOP_TIER) * table[activity[0]]
         if table is PRICE:
             rate *= 1 + bonus(level)
         if rate > top_rate:
@@ -195,7 +229,7 @@ def player_timeline(skill_curve):
                 activity, rate = best(skill, level, XP)
                 dt = skill_curve(level) / rate
                 t += dt
-                xp += actions_per_hour(skill, activity, level) * PLAYER_XP[activity[0]] * dt
+                xp += actions_per_hour(skill, activity, level, WORLD_TOP_TIER) * PLAYER_XP[activity[0]] * dt
                 line.append((t, xp + QUEST_XP * min(t, 1.0)))
         lines.append(line)
     return lines
@@ -276,6 +310,17 @@ def main():
     craft_rate = ingots_per_hour * (XP["Iron"] + XP["Coal"]) * CRAFT_SHARE
     to99 = sum(skill_curve(n) for n in range(1, 99))
     print(f"  smelting everything you mine: {craft_rate:,.0f} Crafting XP an hour, 99 in ~{to99 / craft_rate:.0f} h")
+
+    print("\nGetting rich in the worlds alone (one skill, selling everything):")
+    for skill in ACTIVITIES:
+        coins, hours = 0.0, 0.0
+        for level in range(1, MAX_SKILL):
+            dt = skill_curve(level) / best(skill, level, XP)[1]
+            hours += dt
+            coins += best(skill, level, PRICE)[1] * dt
+        top = best(skill, MAX_SKILL, PRICE)[1]
+        print(f"  {skill:12} at 99: {coins:13,.0f} coins after {hours:4.0f} h, then {top:10,.0f} an hour;",
+              f"a billion after {hours + max(0, 1e9 - coins) / top:4.0f} h")
 
     print("\nXP and coins an hour at each level (best resource for each):")
     for skill in ACTIVITIES:

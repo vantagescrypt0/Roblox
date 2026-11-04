@@ -1,16 +1,28 @@
 # Art (Blender)
 
 ## Blocks (Minecraft-style) — what the game uses now
-`scripts/blocks.py` draws 16x16 pixel-art tiles into `textures/blocks.png` (scaled up 7x so they stay crisp) and builds one 3-stud cube per block type with each face mapped to the right tile → `export/Blocks.fbx`. The same file also holds **merged pieces** (`MERGED` in the script): boxes several blocks big, e.g. `Merged_Stone_8x4x8`, with one quad per block on every face mapped to that block's tile, so a piece looks exactly like the blocks it replaces. The shared worlds draw unbreakable scenery with them (`BlockWorld.drawAll(world, true)`), which keeps the big worlds at a fraction of the parts.
+`scripts/blocks.py` draws 16x16 pixel-art tiles into `textures/blocks.png` (scaled up 6x so they stay crisp) and builds one 3-stud cube per block type with each face mapped to the right tile → `export/Blocks.fbx`. The same file also holds **merged pieces** (`MERGED` in the script): boxes several blocks big, e.g. `Merged_Stone_8x4x8`, with one quad per block on every face mapped to that block's tile, so a piece looks exactly like the blocks it replaces. The shared worlds draw unbreakable scenery with them (`BlockWorld.drawAll(world, true)`), which keeps the big worlds at a fraction of the parts.
 
 Importing:
 1. Import 3D `export/Blocks.fbx` (Anchored on). **Wait until every block's `MeshContent.SourceType` is `Uri`** (uploaded) before saving.
 2. Move the MeshParts into a folder named `Blocks` (names without the `Block_` prefix, Material SmoothPlastic) and the `Merged_` ones into a subfolder `Blocks/Merged` (names without the prefix, e.g. `Stone_8x4x8`), add the plain parts (below), Save to File → `game/assets-replicated/Blocks.rbxm` (synced to `ReplicatedStorage.Blocks`). The 2026-10-26 import did all of this with one command bar script (the CollisionFidelity setting can't be changed from the command bar; Default is fine for boxes).
 3. **Rojo can't live-sync meshes.** Close the place (Don't Save), run `rojo build -o game.rbxlx`, reopen it, reconnect Rojo. Otherwise blocks show as grey checkered placeholders.
 
-To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_tiles()`, after the old ones, so the old tiles keep their random pattern) + an entry in `BLOCKS`, re-run, re-import, and add it to `game/src/shared/Blocks.luau`. The atlas is 9×9 tiles (1008 px, just under Roblox's 1024 limit); 71 are used. New blocks can be imported alone: `blocks.py -- EmptyOre` also writes `export/Blocks_new.fbx` with just that block; Import 3D it, rename the MeshPart (no `Block_` prefix, SmoothPlastic), move it into `ReplicatedStorage.Blocks` and Save to File over `Blocks.rbxm` (the 2026-10-27 Empty Ore import did this; its mesh carries its own copy of the atlas). To merge a new block type into pieces, add it to `MERGED` with the shape lists that fit how it's used (`SLABS` for one-deep ground, `THICK` for soil, `CUBES` for rock).
+To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_tiles()`, after the old ones, so the old tiles keep their random pattern) + an entry in `BLOCKS`, re-run, re-import, and add it to `game/src/shared/Blocks.luau`. The atlas is 10×10 tiles at 96 px (960 px, under Roblox's 1024 limit; it was 9×9 at 112 px until 2026-11-02, and blocks imported before then keep their own uploaded copy of that); all 100 are used, so more tiles need a second atlas. **The Warzone's blocks are in `game/assets-replicated/BlocksWarzone.rbxm`** (the whole Blocks folder plus the nine sci-fi blocks and their merged pieces; `warzone.project.json` uses it). `Blocks.rbxm` is unchanged and the other places keep using it, since they don't draw those blocks. New blocks can be imported alone: `blocks.py -- EmptyOre` also writes `export/Blocks_new.fbx` with just that block; Import 3D it, rename the MeshPart (no `Block_` prefix, SmoothPlastic), move it into `ReplicatedStorage.Blocks` and Save to File over `Blocks.rbxm` (the 2026-10-27 Empty Ore import did this; its mesh carries its own copy of the atlas). To merge a new block type into pieces, add it to `MERGED` with the shape lists that fit how it's used (`SLABS` for one-deep ground, `THICK` for soil, `CUBES` for rock).
 
 **Glass, Water and Ice aren't meshes:** they're plain 3-stud Parts in the same `Blocks` folder (Glass: Glass material, light blue, 0.6 transparency; Water: SmoothPlastic, blue, 0.3 transparency, 0.15 reflectance, CanCollide off; Ice: a Glass copy with Ice material, pale blue, 0.2 transparency). When re-importing, copy them from the old folder before Save to File (the 2026-10-26 import did this from the command bar).
+
+## The Warzone's sky
+`scripts/warzone_sky.py` paints six 1024 px cube faces into `textures/sky/`: a night-blue gradient by height with stars above the horizon. It only changes with height, so the faces meet with no seam whichever way Roblox turns them. Uploaded through Studio's MCP `upload_image` (serve the folder with `python -m http.server`, pass the `http://localhost` urls); the ids are in `Util/Ambience.luau`.
+
+```
+"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/warzone_sky.py
+```
+
+## The shield and the Bag's slot pictures
+- **Shield:** `game/assets-replicated/ShieldModels.rbxm` holds two generated MeshParts, `Shield` (in use) and `ShieldKite` (spare), both 3.7 studs tall with their front at -Z. They came from Roblox Studio's `generate_mesh`, as ForgeGUI 3D isn't on the current plan.
+- **Slot pictures:** `powershell -ExecutionPolicy Bypass -File art/scripts/slot_icons.ps1` writes `art/textures/ui/slot_*.png` and a check sheet, `art/renders/SlotIcons.png`. The helmet and chestplate start from ForgeGUI silhouettes in `art/textures/ui/source/`; the script draws the other four. They're mostly white so `ImageColor3` can tint them by armor tier. Upload through Studio's `upload_image` from a `http://localhost` server, then put the ids in `Config.SlotIcons`.
+- **Glow:** the same script draws `art/textures/ui/glow.png`, a soft white circle the Night Glass look tints (`Config.GlowImage`).
 
 ## Store art (the game icon and thumbnails)
 `scripts/store_art.py` builds each picture as a 3D scene from the game's own block and item meshes (`blend/Blocks.blend`, `blend/Items.blend`, so run `blocks.py` and `items3d.py` first if they changed), renders it with Cycles on the GPU, adds a soft glow in numpy, then stamps the logo and captions in the game's pixel lettering (the same letters as `Util/Logo.luau`). It writes `marketing/icon.png` (512) and `marketing/thumb1_world.png` to `thumb6_forest.png` (1920x1080).
@@ -69,6 +81,15 @@ Every model is built by a Python script in `scripts/`, so it can be rebuilt or t
 
 Props are built at the origin, front facing -Y (becomes -Z in Roblox), bottom at z=0.
 Islands carry invisible `Marker_*` cubes (Spawn, Workbench, Market, Portal, Plot_N) that the game reads to place things.
+
+## The armour on the body
+`scripts/armour.py` models each skill's set to fit the body's boxes, in the style of `02 Research/References/Gear/ref_armour_blocky_themes.webp`, and writes `export/Armour_<Skill>.fbx`, `export/Armour_<Skill>.json` (each piece's middle and size) and `textures/armour/tier_N.png` (one colour sheet per tier: the coat stays dark, the trim takes the tier's colour). Add `preview` after the skill for a quick render.
+
+1. `blender -b --python art/scripts/armour.py -- Mining`
+2. Import 3D the FBX with Anchored ticked. Ids go in `ArmorArt.Sets` in `game/src/shared/ArmorArt.luau`, with each piece's Centre and Size from the JSON.
+3. Only if the sheets changed: upload them with Studio's MCP `upload_image` from a `http://localhost` server, then update `ArmorArt.Palettes`.
+
+Import 3D stores the meshes in centimetres with their axes turned: `ArmorArt.MeshTurn` and `MeshScale` undo that.
 
 ## Import into Roblox Studio
 1. **Home** → **Import 3D** → pick the FBX. Tick **Anchored**; Scale Unit **Stud**. Import.

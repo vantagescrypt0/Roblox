@@ -179,7 +179,7 @@ local function render()
 	sellPage.Visible = currentTab == "Sell"
 	buyPage.Visible = currentTab == "Buy"
 	for name, button in tabButtons do
-		button.SetColor(if name == currentTab then C.Blue else C.Inset)
+		button.SetColor(if name == currentTab then C.Accent else C.Inset)
 	end
 	if currentTab == "Sell" then
 		renderSell()
@@ -205,12 +205,12 @@ function ShopWindow.Open(shopId: string)
 		shop = found
 		currentTab = "Sell"
 	end
-	window.Title.Text = shop.Name
+	Window.setTitle(window, shop.Name)
 	Window.open(window)
 end
 
 function ShopWindow.Start()
-	window = Window.new("ShopWindow", "Shop", Vector2.new(620, 490), C.Green)
+	window = Window.new("ShopWindow", "Shop", Vector2.new(640, 506))
 	window.OnOpen = render
 
 	tabs = Theme.make("Frame", {

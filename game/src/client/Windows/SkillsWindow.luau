@@ -154,8 +154,8 @@ local function renderChallenges()
 			BackgroundColor3 = C.Card,
 			Parent = challengeList,
 		})
-		Theme.corner(row, 6)
-		Theme.stroke(row, if open then C.Line else C.Disabled, 2)
+		Theme.corner(row, 10)
+		Theme.stroke(row, if open then C.Line else C.Disabled, 1.5)
 		local box = Theme.inset(row, UDim2.fromOffset(56, 56), UDim2.fromOffset(8, 12))
 		ItemIcon.create(box, resource.Icon, UDim2.fromScale(0.86, 0.86))
 		local name = Theme.title(row, resource.Name, 19)
@@ -210,7 +210,7 @@ local function renderChallenges()
 				ZIndex = 4,
 				Parent = row,
 			})
-			Theme.corner(shade, 6)
+			Theme.corner(shade, 10)
 		end
 	end
 end
@@ -240,7 +240,7 @@ local function renderDetail()
 	end
 
 	for name, button in tabButtons do
-		button.SetColor(if name == tab then C.Orange else C.Blue)
+		button.SetColor(if name == tab then C.Accent else C.Inset)
 	end
 	challengeList.Visible = tab == "Challenges"
 	unlockGrid.Visible = tab == "Unlocks"
@@ -262,8 +262,8 @@ local function renderDetail()
 			Text = "",
 			Parent = unlockGrid,
 		})
-		Theme.corner(tile, 6)
-		Theme.stroke(tile, if ready then C.Green elseif reached then C.Orange else C.Line, if ready then 2.5 else 2)
+		Theme.corner(tile, 10)
+		Theme.stroke(tile, if ready then C.Green elseif reached then C.Orange else C.Line, if ready then 2 else 1.5)
 		local icon = ItemIcon.create(tile, unlock.Item, UDim2.fromScale(0.74, 0.74))
 		icon.Position = UDim2.fromScale(0.5, 0.44)
 		-- Level tag along the bottom
@@ -274,7 +274,7 @@ local function renderDetail()
 			BackgroundColor3 = if reached then C.Leaf else C.Blue,
 			FontFace = Theme.Font.Bold,
 			TextSize = 11,
-			TextColor3 = C.White,
+			TextColor3 = C.Well,
 			Text = `Lv {unlock.Level}`,
 			ZIndex = 3,
 			Parent = tile,
@@ -288,7 +288,7 @@ local function renderDetail()
 				ZIndex = 2,
 				Parent = tile,
 			})
-			Theme.corner(shade, 6)
+			Theme.corner(shade, 10)
 		end
 
 		local needs = {}
@@ -323,8 +323,8 @@ local function render()
 		row.Level.Text = `Lv {current.Level}`
 		row.Bar.Set(xpText(current.Level, current.XP, current.XPToNext, Leveling.MaxSkillLevel))
 		local isSelected = skill.Id == selected
-		row.Stroke.Color = if isSelected then C.Orange else C.Line
-		row.Stroke.Thickness = if isSelected then 3 else 2
+		row.Stroke.Color = if isSelected then C.Accent else C.Line
+		row.Stroke.Thickness = if isSelected then 2.5 else 1.5
 		row.Button.BackgroundColor3 = if isSelected then C.Panel else C.Card
 	end
 	renderDetail()
@@ -340,12 +340,11 @@ local function buildPlayerCard(body: Frame)
 		Parent = card,
 	})
 	Theme.corner(badge, 999)
-	Theme.stroke(badge, C.Outline, 3)
-	local lv = Theme.text(badge, "LEVEL", 12, Theme.Font.Bold, C.White)
+	local lv = Theme.text(badge, "LEVEL", 12, Theme.Font.Bold, C.Well)
 	lv.Position = UDim2.fromOffset(0, 12)
 	lv.Size = UDim2.new(1, 0, 0, 14)
 	lv.TextXAlignment = Enum.TextXAlignment.Center
-	levelNumber = Theme.text(badge, "1", 34, Theme.Font.Bold, C.White)
+	levelNumber = Theme.text(badge, "1", 34, Theme.Font.Bold, C.Well)
 	levelNumber.Position = UDim2.fromOffset(0, 26)
 	levelNumber.Size = UDim2.new(1, 0, 0, 36)
 	levelNumber.TextXAlignment = Enum.TextXAlignment.Center
@@ -380,8 +379,8 @@ local function buildRows(body: Frame, top: number)
 			Text = "",
 			Parent = column,
 		})
-		Theme.corner(button, 6)
-		local stroke = Theme.stroke(button, C.Line, 2)
+		Theme.corner(button, 10)
+		local stroke = Theme.stroke(button, C.Line, 1.5)
 		local box = Theme.inset(button, UDim2.fromOffset(48, 48), UDim2.fromOffset(8, 8))
 		ItemIcon.create(box, skill.Icon, UDim2.fromScale(0.86, 0.86))
 		local name = Theme.title(button, skill.Name, 20)
@@ -476,7 +475,7 @@ function SkillsWindow.Toggle()
 end
 
 function SkillsWindow.Start()
-	window = Window.new("SkillsWindow", "Skills", Vector2.new(780, 600), C.Teal)
+	window = Window.new("SkillsWindow", "Skills", Vector2.new(800, 616))
 	window.OnOpen = function()
 		info.Text = "Point at a milestone or an unlock to see what it needs"
 		render()

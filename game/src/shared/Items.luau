@@ -13,6 +13,7 @@
 --              is the better deal
 --   BuyPrice   what the shops in Town charge, if one sells it. Crops regrow, so a seed is
 --              a one-off cost per plot.
+-- The scale is billions (your call, 2026-11-02): see "The billion scale" in that note.
 
 local Blocks = require(script.Parent.Blocks)
 local Gear = require(script.Parent.Gear)
@@ -29,22 +30,32 @@ export type Item = {
 	Empties: string?, -- placing it leaves this item instead (a full bucket leaves a Bucket)
 	Keep: boolean?, -- placing it doesn't use it up (the Bottomless buckets)
 	Node: boolean?, -- placed as a node: its block grows back after it's mined (islands only)
-	Equip: string?, -- "Pet" or "Armor": worn from the Bag (Gear.luau), never put on the hotbar
+	-- "Pet", "Helmet", "Chest", "Legs", "Boots" or "Shield": which slot it's worn in, from the Bag
+	-- (Gear.luau). Never put on the hotbar.
+	Equip: string?,
 	Model: string?, -- 3D model in ReplicatedStorage.ItemModels (icons and holding)
+	Tree: string?, -- a sapling: which tree it grows (IslandService)
+	Crate: boolean?, -- opened from the Bag (LootCrates.luau)
 }
 
 local Items: { [string]: Item } = {
 	-- Blocks
 	Grass = { Name = "Grass Block", Icon = "🟩", Value = 1, SellPrice = 0, BuyPrice = 3, Block = "Grass" },
 	Dirt = { Name = "Dirt", Icon = "🟫", Value = 1, SellPrice = 0, BuyPrice = 2, Block = "Dirt" },
-	Wood = { Name = "Wood", Icon = "🌲", Value = 2, SellPrice = 1, Block = "Wood" },
+	Wood = { Name = "Wood", Icon = "🌲", Value = 4, SellPrice = 2, Block = "Wood" },
 	-- Zone woods from the Woodcutting World (Woodcutting 10 / 20 / 30); the Lumberjack buys them
-	BirchWood = { Name = "Birch Wood", Icon = "🪵", Value = 12, SellPrice = 6, Block = "BirchWood" },
-	SpruceWood = { Name = "Spruce Wood", Icon = "🪵", Value = 28, SellPrice = 14, Block = "SpruceWood" },
-	CherryWood = { Name = "Cherry Wood", Icon = "🌸", Value = 54, SellPrice = 27, Block = "CherryWood" },
+	BirchWood = { Name = "Birch Wood", Icon = "🪵", Value = 20, SellPrice = 10, Block = "BirchWood" },
+	SpruceWood = { Name = "Spruce Wood", Icon = "🪵", Value = 62, SellPrice = 31, Block = "SpruceWood" },
+	CherryWood = { Name = "Cherry Wood", Icon = "🌸", Value = 170, SellPrice = 85, Block = "CherryWood" },
+	-- The second ring of zones (Woodcutting 40 / 55 / 70 / 85; tools/balance.py prices)
+	MapleWood = { Name = "Maple Wood", Icon = "🍁", Value = 534, SellPrice = 267, Block = "MapleWood" },
+	Redwood = { Name = "Redwood", Icon = "🌲", Value = 2030, SellPrice = 1015, Block = "Redwood" },
+	MangroveWood = { Name = "Mangrove Wood", Icon = "🪵", Value = 3000, SellPrice = 1500, Block = "MangroveWood" },
+	Starwood = { Name = "Starwood", Icon = "🌟", Value = 12000, SellPrice = 6000, Block = "Starwood" },
 	Planks = { Name = "Planks", Icon = "🟧", SellPrice = 0, Block = "Planks" },
-	Stone = { Name = "Stone", Icon = "⛰️", Value = 2, SellPrice = 1, BuyPrice = 4, Block = "Stone" },
+	Stone = { Name = "Stone", Icon = "⛰️", Value = 4, SellPrice = 2, BuyPrice = 4, Block = "Stone" },
 	Furnace = { Name = "Furnace", Icon = "🔥", SellPrice = 0, Block = "Furnace" },
+	Chest = { Name = "Chest", Icon = "📦", SellPrice = 0, Block = "Chest" },
 	-- Building blocks from the Builder in Town
 	Cobblestone = {
 		Name = "Cobblestone",
@@ -150,6 +161,8 @@ local Items: { [string]: Item } = {
 		BuyPrice = 5,
 		Block = "MushroomStem",
 	},
+	Mud = { Name = "Mud", Icon = "🟫", Value = 2, SellPrice = 0, BuyPrice = 3, Block = "Mud" },
+	DuskGrass = { Name = "Dusk Grass", Icon = "🟦", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "DuskGrass" },
 
 	-- Water and lava (Liquids.luau). Pour a full bucket on your island and it leaves an empty
 	-- Bucket; hold the empty Bucket and right-click a source to scoop it back up. The
@@ -178,9 +191,9 @@ local Items: { [string]: Item } = {
 	BottomlessWaterBucket = {
 		Name = "Bottomless Water Bucket",
 		Icon = "💧",
-		Value = 2500000,
+		Value = 25000000,
 		SellPrice = 0,
-		BuyPrice = 2500000,
+		BuyPrice = 25000000,
 		Block = "Water",
 		Keep = true,
 		Model = "BottomlessWaterBucket",
@@ -188,9 +201,9 @@ local Items: { [string]: Item } = {
 	BottomlessLavaBucket = {
 		Name = "Bottomless Lava Bucket",
 		Icon = "🔥",
-		Value = 5000000,
+		Value = 50000000,
 		SellPrice = 0,
-		BuyPrice = 5000000,
+		BuyPrice = 50000000,
 		Block = "Lava",
 		Keep = true,
 		Model = "BottomlessLavaBucket",
@@ -205,26 +218,36 @@ local Items: { [string]: Item } = {
 	SturdyHandle = { Name = "Sturdy Handle", Icon = "🦯", SellPrice = 0, Model = "SturdyHandle" },
 	-- The station for iron tools and their parts (its look: Util/StationModels)
 	Anvil = { Name = "Anvil", Icon = "⚒️", SellPrice = 0, Block = "Anvil" },
+	-- Blocks hits in the Warzone (WarzoneService); its look is built in code (Util/ShieldModel)
+	Shield = { Name = "Shield", Icon = "🛡️", SellPrice = 0, Equip = "Shield" },
 	-- The Miner sells coal too, for smelting when you've run out
-	Coal = { Name = "Coal", Icon = "⚫", Value = 2, SellPrice = 1, BuyPrice = 3, Model = "Coal" },
-	RawIron = { Name = "Raw Iron", Icon = "🔸", Value = 8, SellPrice = 4, Model = "RawIron" },
-	IronIngot = { Name = "Iron Ingot", Icon = "⬜", SellPrice = 6, Model = "IronIngot" },
+	Coal = { Name = "Coal", Icon = "⚫", Value = 4, SellPrice = 2, BuyPrice = 6, Model = "Coal" },
+	RawIron = { Name = "Raw Iron", Icon = "🔸", Value = 14, SellPrice = 7, Model = "RawIron" },
+	IronIngot = { Name = "Iron Ingot", Icon = "⬜", SellPrice = 11, Model = "IronIngot" },
 	-- Gold, from deep in the Mining World's cave
-	RawGold = { Name = "Raw Gold", Icon = "🟡", Value = 32, SellPrice = 16, Model = "RawGold" },
-	GoldIngot = { Name = "Gold Ingot", Icon = "🟨", SellPrice = 20, Model = "GoldIngot" },
+	RawGold = { Name = "Raw Gold", Icon = "🟡", Value = 50, SellPrice = 25, Model = "RawGold" },
+	GoldIngot = { Name = "Gold Ingot", Icon = "🟨", SellPrice = 32, Model = "GoldIngot" },
 	-- The deep cave's ores (tools/balance.py prices; the Miner buys them)
-	RawSilver = { Name = "Raw Silver", Icon = "⚪", Value = 66, SellPrice = 33, Model = "RawSilver" },
-	SilverIngot = { Name = "Silver Ingot", Icon = "⬜", SellPrice = 42, Model = "SilverIngot" },
-	Amethyst = { Name = "Amethyst", Icon = "🟣", Value = 122, SellPrice = 61, Model = "Amethyst" },
-	Sapphire = { Name = "Sapphire", Icon = "🔷", Value = 228, SellPrice = 114, Model = "Sapphire" },
-	Ruby = { Name = "Ruby", Icon = "🔴", Value = 426, SellPrice = 213, Model = "Ruby" },
-	Starstone = { Name = "Starstone", Icon = "⭐", Value = 852, SellPrice = 426, Model = "Starstone" },
+	RawSilver = { Name = "Raw Silver", Icon = "⚪", Value = 146, SellPrice = 73, Model = "RawSilver" },
+	SilverIngot = { Name = "Silver Ingot", Icon = "⬜", SellPrice = 90, Model = "SilverIngot" },
+	Amethyst = { Name = "Amethyst", Icon = "🟣", Value = 404, SellPrice = 202, Model = "Amethyst" },
+	Sapphire = { Name = "Sapphire", Icon = "🔷", Value = 1748, SellPrice = 874, Model = "Sapphire" },
+	Ruby = { Name = "Ruby", Icon = "🔴", Value = 10000, SellPrice = 5000, Model = "Ruby" },
+	Starstone = { Name = "Starstone", Icon = "⭐", Value = 40000, SellPrice = 20000, Model = "Starstone" },
 	-- Tool parts for the gem tiers: refined at the Gem Bench, handles and plates at the Anvil
 	SilverPlate = { Name = "Silver Plate", Icon = "⬜", SellPrice = 0, Model = "SilverPlate" },
 	RefinedAmethyst = { Name = "Refined Amethyst", Icon = "💜", SellPrice = 0, Model = "RefinedAmethyst" },
 	RefinedSapphire = { Name = "Refined Sapphire", Icon = "💙", SellPrice = 0, Model = "RefinedSapphire" },
 	BirchHandle = { Name = "Birch Handle", Icon = "🦯", SellPrice = 0, Model = "BirchHandle" },
 	SpruceHandle = { Name = "Spruce Handle", Icon = "🦯", SellPrice = 0, Model = "SpruceHandle" },
+	-- The top two tiers' parts
+	GoldPlate = { Name = "Gold Plate", Icon = "🟨", SellPrice = 0, Model = "GoldPlate" },
+	RefinedRuby = { Name = "Refined Ruby", Icon = "❤️", SellPrice = 0, Model = "RefinedRuby" },
+	CherryHandle = { Name = "Cherry Handle", Icon = "🦯", SellPrice = 0, Model = "CherryHandle" },
+	CaneRope = { Name = "Cane Rope", Icon = "🪢", SellPrice = 0, Model = "CaneRope" },
+	StarsteelIngot = { Name = "Starsteel Ingot", Icon = "⬜", SellPrice = 22000, Model = "StarsteelIngot" },
+	StarsteelPlate = { Name = "Starsteel Plate", Icon = "⬜", SellPrice = 0, Model = "StarsteelPlate" },
+	RedwoodHandle = { Name = "Redwood Handle", Icon = "🦯", SellPrice = 0, Model = "RedwoodHandle" },
 	-- The station that cuts and refines gems (its look: Util/StationModels)
 	GemBench = { Name = "Gem Bench", Icon = "💎", SellPrice = 0, Block = "GemBench" },
 
@@ -234,46 +257,114 @@ local Items: { [string]: Item } = {
 	CarrotSeeds = {
 		Name = "Carrot Seeds",
 		Icon = "🌱",
-		Value = 24,
+		Value = 48,
 		SellPrice = 0,
-		BuyPrice = 24,
+		BuyPrice = 48,
 		Model = "CarrotSeeds",
 	},
-	Carrot = { Name = "Carrot", Icon = "🥕", Value = 4, SellPrice = 2, Model = "Carrot" },
+	Carrot = { Name = "Carrot", Icon = "🥕", Value = 8, SellPrice = 4, Model = "Carrot" },
 	PotatoSeeds = {
 		Name = "Potato Seeds",
-		Icon = "🌱",
-		Value = 60,
-		SellPrice = 0,
-		BuyPrice = 60,
-		Model = "PotatoSeeds",
-	},
-	Potato = { Name = "Potato", Icon = "🥔", Value = 10, SellPrice = 5, Model = "Potato" },
-	PumpkinSeeds = {
-		Name = "Pumpkin Seeds",
 		Icon = "🌱",
 		Value = 120,
 		SellPrice = 0,
 		BuyPrice = 120,
+		Model = "PotatoSeeds",
+	},
+	Potato = { Name = "Potato", Icon = "🥔", Value = 20, SellPrice = 10, Model = "Potato" },
+	PumpkinSeeds = {
+		Name = "Pumpkin Seeds",
+		Icon = "🌱",
+		Value = 264,
+		SellPrice = 0,
+		BuyPrice = 264,
 		Model = "PumpkinSeeds",
 	},
-	Pumpkin = { Name = "Pumpkin", Icon = "🎃", Value = 20, SellPrice = 10, Model = "Pumpkin" },
+	Pumpkin = { Name = "Pumpkin", Icon = "🎃", Value = 44, SellPrice = 22, Model = "Pumpkin" },
 	MelonSeeds = {
 		Name = "Melon Seeds",
 		Icon = "🌱",
-		Value = 180,
+		Value = 648,
 		SellPrice = 0,
-		BuyPrice = 180,
+		BuyPrice = 648,
 		Model = "MelonSeeds",
 	},
-	Melon = { Name = "Melon", Icon = "🍉", Value = 30, SellPrice = 15, Model = "Melon" },
+	Melon = { Name = "Melon", Icon = "🍉", Value = 108, SellPrice = 54, Model = "Melon" },
+	-- Sugarcane is the last crop in the Farming World; slivers craft its seeds (Slivers.luau)
+	SugarcaneSeeds = { Name = "Sugarcane Seeds", Icon = "🌱", SellPrice = 0, Model = "SugarcaneSeeds" },
+	Sugarcane = { Name = "Sugarcane", Icon = "🎋", Value = 900, SellPrice = 450, Model = "Sugarcane" },
+	-- Late game, grown only on islands: seeds from loot crates and Warzone chests only
+	StrawberrySeeds = {
+		Name = "Strawberry Seeds",
+		Icon = "🌱",
+		Value = 3000000,
+		SellPrice = 0,
+		Model = "StrawberrySeeds",
+	},
+	Strawberry = { Name = "Strawberry", Icon = "🍓", Value = 8000, SellPrice = 4000, Model = "Strawberry" },
+	DragonfruitSeeds = {
+		Name = "Dragonfruit Seeds",
+		Icon = "🌱",
+		Value = 6000000,
+		SellPrice = 0,
+		Model = "DragonfruitSeeds",
+	},
+	Dragonfruit = { Name = "Dragonfruit", Icon = "🐉", Value = 16000, SellPrice = 8000, Model = "Dragonfruit" },
+	StarfruitSeeds = {
+		Name = "Starfruit Seeds",
+		Icon = "🌱",
+		Value = 15000000,
+		SellPrice = 0,
+		Model = "StarfruitSeeds",
+	},
+	Starfruit = { Name = "Starfruit", Icon = "⭐", Value = 40000, SellPrice = 20000, Model = "Starfruit" },
 	-- Warzone-only seeds (found in chests, never sold by the Merchant)
-	GlowberrySeeds = { Name = "Glowberry Seeds", Icon = "✨", Value = 250, SellPrice = 0, Model = "GlowberrySeeds" },
-	Glowberry = { Name = "Glowberry", Icon = "🍇", Value = 40, SellPrice = 20, Model = "Glowberry" },
+	GlowberrySeeds = { Name = "Glowberry Seeds", Icon = "✨", Value = 480, SellPrice = 0, Model = "GlowberrySeeds" },
+	Glowberry = { Name = "Glowberry", Icon = "🍇", Value = 80, SellPrice = 40, Model = "Glowberry" },
 
 	-- Drops from leaves (and the Lumberjack sells them); plant it on grass or dirt and it
 	-- grows into a tree. Trees don't grow back once felled, so saplings get used up.
-	Sapling = { Name = "Sapling", Icon = "🌳", Value = 8, SellPrice = 0, BuyPrice = 20, Model = "Sapling" },
+	Sapling = {
+		Name = "Sapling",
+		Icon = "🌳",
+		Value = 8,
+		SellPrice = 0,
+		BuyPrice = 20,
+		Model = "Sapling",
+		Tree = "Oak",
+	},
+	-- Zone trees: slivers craft the ones in the Woodcutting World (Slivers.luau)
+	BirchSapling = { Name = "Birch Sapling", Icon = "🌳", SellPrice = 0, Model = "BirchSapling", Tree = "Birch" },
+	SpruceSapling = { Name = "Spruce Sapling", Icon = "🌲", SellPrice = 0, Model = "SpruceSapling", Tree = "Spruce" },
+	CherrySapling = { Name = "Cherry Sapling", Icon = "🌸", SellPrice = 0, Model = "CherrySapling", Tree = "Cherry" },
+	MapleSapling = { Name = "Maple Sapling", Icon = "🍁", SellPrice = 0, Model = "MapleSapling", Tree = "Maple" },
+	RedwoodSapling = {
+		Name = "Redwood Sapling",
+		Icon = "🌲",
+		SellPrice = 0,
+		Model = "RedwoodSapling",
+		Tree = "Redwood",
+	},
+	-- Late game: from loot crates and Warzone chests only
+	MangroveSapling = {
+		Name = "Mangrove Sapling",
+		Icon = "🌳",
+		Value = 5000000,
+		SellPrice = 0,
+		Model = "MangroveSapling",
+		Tree = "Mangrove",
+	},
+	StarwoodSapling = {
+		Name = "Starwood Sapling",
+		Icon = "🌟",
+		Value = 15000000,
+		SellPrice = 0,
+		Model = "StarwoodSapling",
+		Tree = "Starwood",
+	},
+
+	-- A random prize when opened from the Bag (LootCrates.luau)
+	LootCrate = { Name = "Loot Crate", Icon = "🎁", Value = 500000, SellPrice = 0, Model = "LootCrate", Crate = true },
 
 	-- Nodes for your island: place one and it's ore that turns pale when mined and grows back,
 	-- like the worlds' ore. Once placed, it stays. Crafted from slivers (Slivers.luau), never
@@ -284,9 +375,16 @@ local Items: { [string]: Item } = {
 	SilverNode = { Name = "Silver Node", Icon = "⚪", SellPrice = 0, Block = "SilverOre", Node = true },
 	AmethystNode = { Name = "Amethyst Node", Icon = "🟣", SellPrice = 0, Block = "AmethystOre", Node = true },
 	SapphireNode = { Name = "Sapphire Node", Icon = "🔷", SellPrice = 0, Block = "SapphireOre", Node = true },
-	RubyNode = { Name = "Ruby Node", Icon = "🔴", SellPrice = 0, Block = "RubyOre", Node = true },
-	StarstoneNode = { Name = "Starstone Node", Icon = "⭐", SellPrice = 0, Block = "StarstoneOre", Node = true },
-
+	-- Late game: from loot crates and Warzone chests only, so no slivers to take their worth from
+	RubyNode = { Name = "Ruby Node", Icon = "🔴", Value = 5000000, SellPrice = 0, Block = "RubyOre", Node = true },
+	StarstoneNode = {
+		Name = "Starstone Node",
+		Icon = "⭐",
+		Value = 25000000,
+		SellPrice = 0,
+		Block = "StarstoneOre",
+		Node = true,
+	},
 	-- Warzone materials
 	Scrap = { Name = "Scrap", Icon = "⚙️", Value = 6, SellPrice = 0, Model = "Scrap" },
 	Crystal = { Name = "Crystal", Icon = "💎", Value = 60, SellPrice = 0, Model = "Crystal" },
@@ -294,21 +392,22 @@ local Items: { [string]: Item } = {
 -- The skill challenges' rewards (Gear.luau): pets, armor sets and trophies. They're earned,
 -- not bought, and the shops don't buy them; players can still trade them.
 for _, pet in Gear.PetList do
-	Items[pet.Item] = { Name = pet.Name, Icon = "🐾", Value = 1500 * pet.Tier, SellPrice = 0, Equip = "Pet" }
+	Items[pet.Item] = { Name = pet.Name, Icon = "🐾", Value = 7500 * pet.Tier, SellPrice = 0, Equip = "Pet" }
 end
 for _, armor in Gear.ArmorList do
 	Items[armor.Item] =
-		{ Name = armor.Name, Icon = "🛡️", Value = 4000 * armor.Tier, SellPrice = 0, Equip = "Armor" }
+		{ Name = armor.Name, Icon = "🛡️", Value = 5000 * armor.Tier, SellPrice = 0, Equip = armor.Slot }
 end
 for _, trophy in Gear.TrophyList do
 	Items[trophy.Item] =
-		{ Name = trophy.Name, Icon = "🏆", Value = 40000 * trophy.Tier, SellPrice = 0, Block = trophy.Block }
+		{ Name = trophy.Name, Icon = "🏆", Value = 400000 * trophy.Tier, SellPrice = 0, Block = trophy.Block }
 end
 -- Slivers (Slivers.luau): worth a quarter of the ore it takes to find one, so a node is
 -- worth more the rarer its ore
 for _, sliver in Slivers.List do
+	-- What it comes from: a block's drop, or the crop itself
 	local ore = Blocks.Types[sliver.Ore]
-	local drop = ore and ore.Drop
+	local drop = if ore then ore.Drop else sliver.Ore
 	local oreValue = drop and Items[drop] and Items[drop].Value or 2
 	Items[sliver.Item] = {
 		Name = sliver.Name,

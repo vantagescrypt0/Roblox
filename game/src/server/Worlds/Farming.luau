@@ -1,5 +1,5 @@
 --!strict
--- The Farming World: four big floating islands of farms joined by plank bridges, each zone
+-- The Farming World: five big floating islands of farms joined by plank bridges, each zone
 -- with its own crop (wild crops: click a ripe one to harvest it and it grows back; each crop
 -- needs its Farming level, see Crops.luau). Crops grow in huge open fields, not fenced
 -- plots, like the Skybounds farms (02 Research/References/Skybounds/farming):
@@ -18,6 +18,11 @@
 --   Melon Oasis (east, Farming 25)      a sandy island: melon patches over the dunes, an
 --                                       oasis pool ringed with palms, cacti, market stalls,
 --                                       a striped terracotta mesa
+-- And beyond the Veggie Gardens ([[Farming Phase Plan]]):
+--   Sugarcane Mesa (Farming 40)         cane along water channels on the sand, under striped
+--                                       mesas with twisted trees, a sugar mill
+-- That's all the crops here: Strawberry, Dragonfruit and Starfruit are late-game, grown only
+-- on your own island from seeds (loot crates and Warzone chests).
 -- A signpost at the crossroads points the way; each zone has a rough sign where it begins.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -71,7 +76,14 @@ local HARVEST_BARN = { 30, 116 } -- door; it extends east
 local OASIS_POOL = { 184, -46 }
 local OASIS_MESA = { X = 198, Z = -110, R = 14 }
 local STALLS = { { 148, -52 }, { 204, -88 } }
-
+-- The second ring
+local SUGAR = { X = -184, Z = 104, R = 74 }
+local SUGAR_ROAD = -166 -- the road north through the Veggie Gardens and across the Mesa
+local SUGAR_MESAS = {
+	{ X = -226, Z = 78, R = 17, Top = 26 },
+	{ X = -216, Z = 146, R = 19, Top = 30 },
+	{ X = -138, Z = 136, R = 15, Top = 22 },
+}
 local function near(x: number, z: number, spot: { number }, r: number): boolean
 	return (x - spot[1]) ^ 2 + (z - spot[2]) ^ 2 <= r * r
 end
@@ -189,6 +201,26 @@ local function oasisColumn(ctx: Context.Context, x: number, z: number): (string,
 	end
 	local h = math.clamp(math.round(1 + 4 * ctx.Noise(x, z, 14, 12)), 0, 5)
 	return "Sand", h
+end
+
+local function sugarMesa(ctx: Context.Context, x: number, z: number): number
+	for _, mesa in SUGAR_MESAS do
+		local h = mesaHeight(ctx, x, z, mesa, mesa.Top)
+		if h > 0 then
+			return h
+		end
+	end
+	return 0
+end
+
+-- Flat sand for the cane, low dunes elsewhere, and the mesas over it all
+local function sugarColumn(ctx: Context.Context, x: number, z: number): (string, number)
+	local mesa = sugarMesa(ctx, x, z)
+	if mesa > 0 then
+		return "Sand", mesa
+	end
+	local dune = ctx.Noise(x, z, 22, 62)
+	return "Sand", if dune > 0.3 then 2 elseif dune > 0.18 then 1 else 0
 end
 
 -- Fields ------------------------------------------------------------------------------------
@@ -723,6 +755,7 @@ local function veggieGardens(ctx: Context.Context, island: Context.Island)
 			local off = math.abs(z - pathZ)
 			if
 				off >= 4
+				and math.abs(x - SUGAR_ROAD) > 2
 				and ctx.IslandAt(x, z) == island
 				and ctx.Inside(x, z, 3)
 				and ctx.HeightAt(x, z) == 0
@@ -961,6 +994,84 @@ local function melonOasis(ctx: Context.Context, island: Context.Island)
 	Common.Scatter(ctx, island, 0.05, 0.03, FLOWERS)
 end
 
+-- Sugarcane Mesa --------------------------------------------------------------------------
+
+-- A water channel in flat ground along z, from z1 to z2 at x: one sheet of water, not one per
+-- block
+local function channelRun(ctx: Context.Context, x: number, z1: number, z2: number)
+	for z = z1, z2 do
+		ctx.Set(x, 0, z, nil)
+		ctx.Set(x, -1, z, "Sand")
+	end
+	Decor.Water(
+		ctx.Decor,
+		ctx.Top(x, -1, (z1 + z2) / 2) + Vector3.new(0, SIZE * 0.75, 0),
+		Vector2.new(SIZE, (z2 - z1 + 1) * SIZE),
+		SIZE * 0.8
+	)
+end
+
+local function sugarcaneMesa(ctx: Context.Context, island: Context.Island)
+	Common.Path(ctx, SUGAR_ROAD, 44, SUGAR_ROAD, 172, 5, "Gravel")
+	-- The sugar mill by the road, and a stall of hay across from it
+	barn(ctx, SUGAR_ROAD - 4, 66, E, 6, 10, 6)
+	Common.Path(ctx, SUGAR_ROAD - 3, 66, SUGAR_ROAD - 3, 66, 1, "Gravel")
+	stall(ctx, SUGAR_ROAD + 8, 58, "HayBale", { Color3.fromRGB(230, 170, 60), Color3.fromRGB(240, 234, 222) })
+	for z = 50, 168, 14 do
+		Common.Lamp(ctx, SUGAR_ROAD + (if z % 28 == 8 then 4 else -4), z)
+	end
+	-- Fields of cane: patches of parallel water channels, the cane in the rows either side
+	local function field(x: number, z: number): boolean
+		return ctx.IslandAt(x, z) == island
+			and ctx.Inside(x, z, 4)
+			and ctx.HeightAt(x, z) == 0
+			and not ctx.Flat(x, z, 2)
+			and math.abs(x - SUGAR_ROAD) > 4
+			and ctx.Noise(x, z, 16, 61) > 0.02
+	end
+	local r = math.ceil(SUGAR.R * 1.3)
+	for x = SUGAR.X - r, SUGAR.X + r do
+		local column = x % 6
+		if column == 0 then
+			-- Each unbroken stretch of this column is one channel
+			local from: number? = nil
+			for z = SUGAR.Z - r, SUGAR.Z + r + 1 do
+				if field(x, z) then
+					from = from or z
+				elseif from then
+					channelRun(ctx, x, from, z - 1)
+					from = nil
+				end
+			end
+		elseif column == 1 or column == 5 then
+			for z = SUGAR.Z - r, SUGAR.Z + r do
+				if field(x, z) then
+					sow(ctx, x, z, "Sugarcane")
+				end
+			end
+		end
+	end
+	-- Twisted trees on the sand and up on the mesas, and cacti
+	for i = 1, 240 do
+		local x = SUGAR.X + ctx.Rng:NextInteger(-SUGAR.R, SUGAR.R)
+		local z = SUGAR.Z + ctx.Rng:NextInteger(-SUGAR.R, SUGAR.R)
+		local h = ctx.HeightAt(x, z)
+		if
+			ctx.IslandAt(x, z) == island
+			and ctx.Inside(x, z, 3)
+			and ctx.World.Cells[key(x, h, z)] == "Sand"
+			and not ctx.World.Cells[key(x, h + 1, z)]
+			and not ctx.Flat(x, z, 3)
+		then
+			if i % 5 == 0 then
+				Trees.Oak(x, h, z, 4 + i % 3, ctx.SetFree, "SpruceWood", "Leaves")
+			elseif i % 2 == 0 and sugarMesa(ctx, x, z) == 0 then
+				Decor.Cactus(ctx.Decor, ctx.Top(x, h, z), 3 + (i % 4) * 1.2, i % 3)
+			end
+		end
+	end
+end
+
 -- The world ----------------------------------------------------------------------------------
 
 function Farming.Build(ctx: Context.Context)
@@ -976,6 +1087,11 @@ function Farming.Build(ctx: Context.Context)
 	ctx.Flatten(OASIS_POOL[1] - 18, OASIS_POOL[2] - 18, OASIS_POOL[1] + 18, OASIS_POOL[2] + 18)
 	ctx.Flatten(-14, HOLLOW.Z - 34, -6, HOLLOW.Z - 26)
 	ctx.Flatten(HARVEST_BARN[1] - 3, HARVEST_BARN[2] - 9, HARVEST_BARN[1] + 13, HARVEST_BARN[2] + 9)
+	-- The second ring: roads up to its bridges and on through each zone
+	ctx.Flatten(SUGAR_ROAD - 3, CROSS_Z, SUGAR_ROAD + 3, 4)
+	ctx.Flatten(SUGAR_ROAD - 3, 30, SUGAR_ROAD + 3, 176)
+	ctx.Flatten(SUGAR_ROAD - 20, 56, SUGAR_ROAD - 3, 76)
+	ctx.Flatten(SUGAR_ROAD + 3, 54, SUGAR_ROAD + 14, 66)
 
 	local plains = ctx.Island({
 		Name = "Wheat Plains",
@@ -1037,6 +1153,26 @@ function Farming.Build(ctx: Context.Context)
 			return nil
 		end,
 	})
+	local sugar = ctx.Island({
+		Name = "Sugarcane Mesa",
+		X = SUGAR.X,
+		Z = SUGAR.Z,
+		Radius = SUGAR.R,
+		Column = function(x, z)
+			return sugarColumn(ctx, x, z)
+		end,
+		Soil = "Sand",
+		Rock = function(_x, y, _z)
+			return if y % 4 == 0 then "RedTerracotta" else "Terracotta"
+		end,
+		Fill = function(x, y, z, _depth)
+			if sugarMesa(ctx, x, z) > 0 then
+				return BANDS[y % #BANDS + 1]
+			end
+			return nil
+		end,
+		Step = 8,
+	})
 	for _, spot in
 		{
 			{ -80, 8, -180, 4 },
@@ -1049,6 +1185,8 @@ function Farming.Build(ctx: Context.Context)
 			{ -76, -8, 156, 4 },
 			{ -258, 12, -140, 3 },
 			{ 258, 2, -10, 3 },
+			{ -96, 10, 190, 4 },
+			{ -270, 8, 60, 4 },
 		}
 	do
 		-- The ones off the Melon Oasis are sandy
@@ -1069,6 +1207,12 @@ function Farming.Build(ctx: Context.Context)
 	Common.ZoneSign(ctx, VEGGIE.X + 58, CROSS_Z - 5, E, "VEGGIE GARDENS", "FARMING 5 + 10", Signs.Woods.Oak)
 	Common.ZoneSign(ctx, OASIS.X - 58, CROSS_Z - 5, W, "MELON OASIS", "FARMING 25", Signs.Woods.Sand)
 	Common.ZoneSign(ctx, HOLLOW.X + 5, HOLLOW.Z - 60, S, "PUMPKIN HOLLOW", "FARMING 15", Signs.Woods.Spruce)
+	-- The road and bridge out to the Mesa, laid before the zones are dressed so no crop or tree
+	-- ends up on them
+	Common.Path(ctx, SUGAR_ROAD, CROSS_Z + 3, SUGAR_ROAD, -22, 3)
+	ctx.Bridge(SUGAR_ROAD, -22, SUGAR_ROAD, 52)
+	Common.Arrows(ctx, SUGAR_ROAD + 4, CROSS_Z + 6, E, { { Text = "SUGARCANE MESA", Toward = N } }, Signs.Woods.Sand)
+	Common.ZoneSign(ctx, SUGAR_ROAD + 5, 56, S, "SUGARCANE MESA", "FARMING 40", Signs.Woods.Sand)
 	for z = -146, -26, 14 do
 		Common.Lamp(ctx, mainPathX(z) + (if z % 28 == 0 then 4 else -4), z)
 	end
@@ -1081,6 +1225,8 @@ function Farming.Build(ctx: Context.Context)
 	pumpkinHollow(ctx, hollow)
 	melonOasis(ctx, oasis)
 	Common.CliffVines(ctx, oasis, 0.2)
+	sugarcaneMesa(ctx, sugar)
+	Common.CliffVines(ctx, sugar, 0.15)
 end
 
 return Farming

@@ -11,6 +11,8 @@ local Window = require(script.Parent.Parent.UI.Window)
 
 local C = Theme.Color
 
+local MARKER_GAP = 66 -- between the level markers; 7 of them fit the window
+
 local IslandWindow = {}
 
 local window: Window.Window
@@ -57,7 +59,7 @@ local function render()
 	Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
-		Size = UDim2.fromOffset((count - 1) * 76, 4),
+		Size = UDim2.fromOffset((count - 1) * MARKER_GAP, 4),
 		BackgroundColor3 = C.Line,
 		BorderSizePixel = 0,
 		Parent = track,
@@ -66,15 +68,16 @@ local function render()
 		local reached = i <= tierIndex
 		local marker = Theme.make("Frame", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
-			Position = UDim2.new(0.5, (i - (count + 1) / 2) * 76, 0.5, 0),
+			Position = UDim2.new(0.5, (i - (count + 1) / 2) * MARKER_GAP, 0.5, 0),
 			Size = UDim2.fromOffset(38, 38),
 			BackgroundColor3 = if reached then C.Green else C.Card,
 			ZIndex = 2,
 			Parent = track,
 		})
 		Theme.corner(marker, 999)
-		Theme.stroke(marker, if reached then Theme.darken(C.Green, 0.4) else C.Line, 2.5)
-		local number = Theme.text(marker, tostring(i), 18, Theme.Font.Bold, if reached then C.White else C.InkMuted)
+		Theme.stroke(marker, if reached then C.Green else C.Line, 1.5)
+		local number =
+			Theme.text(marker, tostring(i), 18, Theme.Font.Bold, if reached then Theme.textOn(C.Green) else C.InkMuted)
 		number.Size = UDim2.fromScale(1, 1)
 		number.TextXAlignment = Enum.TextXAlignment.Center
 		number.ZIndex = 2
@@ -129,7 +132,7 @@ function IslandWindow.Close()
 end
 
 function IslandWindow.Start()
-	window = Window.new("IslandWindow", "My Island", Vector2.new(500, 400), C.Green)
+	window = Window.new("IslandWindow", "My Island", Vector2.new(520, 416))
 	window.OnOpen = render
 	content = Theme.make("Frame", {
 		Size = UDim2.fromScale(1, 1),

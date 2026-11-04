@@ -5,7 +5,10 @@
 -- you aim at and stand on) with its pieces welded to it:
 --   Anvil      an oak stump, a dark iron anvil with its horn, a hammer resting on top
 --   GemBench   a plank workbench with a stone grinding wheel and gems waiting to be cut
+--   Chest      generated (Studio's generate_mesh): an oak storage chest, its lid separate so it opens
+--   LootChest  generated: the Warzone's sci-fi chest, the same way
 
+local AssetService = game:GetService("AssetService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
@@ -177,6 +180,74 @@ local function gemBench(): Part
 	return root
 end
 
+type ChestPiece = { Mesh: string, Texture: string, Size: Vector3, At: Vector3 }
+type ChestArt = { Base: ChestPiece, Lid: ChestPiece, Hinge: Vector3 }
+
+-- Offsets from the middle of the cell, as generated. The hinge runs along the back, at the lid's foot.
+local CHESTS: { [string]: ChestArt } = {
+	Chest = {
+		Base = {
+			Mesh = "rbxassetid://130939609728031",
+			Texture = "rbxassetid://129267064432182",
+			Size = Vector3.new(2.934, 2.542, 2.92),
+			At = Vector3.new(0, -0.229, 0),
+		},
+		Lid = {
+			Mesh = "rbxassetid://97752188601654",
+			Texture = "rbxassetid://107379563725023",
+			Size = Vector3.new(2.894, 1.531, 2.831),
+			At = Vector3.new(0.015, 0.735, 0.013),
+		},
+		Hinge = Vector3.new(0, 0.1, -1.4),
+	},
+	LootChest = {
+		Base = {
+			Mesh = "rbxassetid://78910393943472",
+			Texture = "rbxassetid://94980271503088",
+			Size = Vector3.new(2.804, 1.696, 2.672),
+			At = Vector3.new(0, -0.652, 0),
+		},
+		Lid = {
+			Mesh = "rbxassetid://118128519894614",
+			Texture = "rbxassetid://108696612329748",
+			Size = Vector3.new(3, 1.487, 2.829),
+			At = Vector3.new(0.005, 0.526, 0),
+		},
+		Hinge = Vector3.new(0, -0.1, -1.35),
+	},
+}
+
+local function meshPiece(root: BasePart, name: string, art: ChestPiece): MeshPart?
+	local ok, part = pcall(function()
+		return AssetService:CreateMeshPartAsync(art.Mesh)
+	end)
+	if not ok then
+		warn(`[StationModels] {root.Name} {name} didn't load: {part}`)
+		return nil
+	end
+	local mesh = part :: MeshPart
+	mesh.TextureID = art.Texture
+	mesh.Size = art.Size
+	mesh.CFrame = root.CFrame * CFrame.new(art.At)
+	settle(root, mesh, name)
+	return mesh
+end
+
+local function chest(name: string): Part
+	local art = CHESTS[name]
+	local root = rootPart(name)
+	meshPiece(root, "Base", art.Base)
+	local lid = meshPiece(root, "Lid", art.Lid)
+	local hinge = lid and lid:FindFirstChildOfClass("Weld")
+	if hinge then
+		-- The chest screen swings the lid on the opener's screen (client/Windows/ChestWindow)
+		hinge.Name = "LidHinge"
+		hinge:SetAttribute("Rest", hinge.C0)
+		hinge:SetAttribute("Hinge", CFrame.new(art.Hinge))
+	end
+	return root
+end
+
 -- Puts each station's look in ReplicatedStorage.Blocks (once per server)
 function StationModels.Make()
 	local blocks = ReplicatedStorage:FindFirstChild("Blocks")
@@ -187,6 +258,11 @@ function StationModels.Make()
 	for name, build in builders do
 		if not blocks:FindFirstChild(name) then
 			build().Parent = blocks
+		end
+	end
+	for name in CHESTS do
+		if not blocks:FindFirstChild(name) then
+			chest(name).Parent = blocks
 		end
 	end
 end

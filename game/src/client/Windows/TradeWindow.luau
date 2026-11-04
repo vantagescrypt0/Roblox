@@ -117,8 +117,8 @@ local function slot(parent: Instance, itemId: string, count: number, order: numb
 		Text = "",
 		Parent = parent,
 	})
-	Theme.corner(button, 5)
-	Theme.stroke(button, if isSelected then C.Orange else C.Line, if isSelected then 3 else 2)
+	Theme.corner(button, 10)
+	Theme.stroke(button, if isSelected then C.Accent else C.Line, if isSelected then 2.5 else 1.5)
 	ItemIcon.create(button, itemId, UDim2.fromScale(0.8, 0.8))
 	if count ~= 1 then
 		local label = Theme.text(button, tostring(count), 15, Theme.Font.Bold)
@@ -180,7 +180,7 @@ local function renderBag()
 				ZIndex = 5,
 				Parent = button,
 			})
-			Theme.corner(shade, 5)
+			Theme.corner(shade, 10)
 		end
 		button.Activated:Connect(function()
 			info.Text = hover
@@ -331,7 +331,7 @@ local function onUpdate(newView: View?)
 	if newView.Countdown then
 		countdownEnds = os.clock() + newView.Countdown
 	end
-	window.Title.Text = `Trade with {newView.Partner}`
+	Window.setTitle(window, `Trade with {newView.Partner}`)
 	theirSide.Title.Text = `{newView.Partner} gives`
 	if opening then
 		hideInvite()
@@ -412,7 +412,7 @@ local function sidePanel(parent: Instance, x: number, title: string, emptyText: 
 end
 
 local function buildWindow()
-	window = Window.new("TradeWindow", "Trade", Vector2.new(800, 600), C.Blue)
+	window = Window.new("TradeWindow", "Trade", Vector2.new(820, 616))
 	window.OnOpen = function()
 		setPromptsEnabled(false)
 		TradeWindow.Render()
@@ -585,7 +585,7 @@ local function buildInvite()
 		AnchorPoint = Vector2.new(0, 1),
 		Position = UDim2.new(0, 10, 1, -5),
 		Size = UDim2.new(1, -20, 0, 4),
-		BackgroundColor3 = C.Orange,
+		BackgroundColor3 = C.Accent,
 		BorderSizePixel = 0,
 		Parent = inviteCard,
 	})

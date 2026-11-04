@@ -1,31 +1,31 @@
 --!strict
--- The 5-slot hotbar: which item is in each slot, which slot is selected, and showing the
--- selected item in your hand (tools, blocks and crops all show, like Minecraft).
+-- The hotbar is the inventory's first 9 slots: this keeps track of which one is selected and
+-- shows its item in your hand (tools, blocks and crops all show, like Minecraft). It also
+-- moves stacks around the inventory for the Bag.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Items = require(ReplicatedStorage.Shared.Items)
+local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local CombatService = require(script.Parent.CombatService)
 local DataService = require(script.Parent.DataService)
-
-local HOTBAR_SIZE = 5
+local InventoryService = require(script.Parent.InventoryService)
 
 local HotbarService = {}
 
 local selected: { [Player]: number } = {}
 
-local function isSlot(slot: unknown): boolean
-	return type(slot) == "number" and slot == math.floor(slot) and slot >= 1 and slot <= HOTBAR_SIZE
+local function isIndex(index: unknown, last: number): boolean
+	return type(index) == "number" and index == math.floor(index) and index >= 1 and index <= last
 end
 
 -- The item in the player's selected hotbar slot, if they still have one
 function HotbarService.GetHeldItem(player: Player): string?
 	local data = DataService.GetData(player)
-	local itemId = data and data.Hotbar[selected[player] or 1]
-	if data and itemId and itemId ~= "" and (data.Items[itemId] or 0) > 0 then
-		return itemId
+	local stack = data and data.Slots[selected[player] or 1]
+	if stack and stack.Count > 0 then
+		return stack.Item
 	end
 	return nil
 end
@@ -34,38 +34,39 @@ local function refreshHeld(player: Player)
 	CombatService.Equip(player, HotbarService.GetHeldItem(player))
 end
 
-local function onSetHotbar(player: Player, slot: unknown, itemId: unknown)
-	local data = DataService.GetData(player)
-	if not data or not isSlot(slot) or type(itemId) ~= "string" then
-		return
-	end
-	if itemId ~= "" and (not Items[itemId] or (data.Items[itemId] or 0) <= 0) then
-		return
-	end
-	-- An item lives in one slot at a time: moving it clears its old slot
-	if itemId ~= "" then
-		for other = 1, HOTBAR_SIZE do
-			if data.Hotbar[other] == itemId then
-				data.Hotbar[other] = ""
-			end
-		end
-	end
-	data.Hotbar[slot :: number] = itemId
-	DataService.MarkChanged(player)
-	refreshHeld(player)
-end
-
 local function onSelectSlot(player: Player, slot: unknown)
-	if not isSlot(slot) then
+	if not isIndex(slot, Inventory.Hotbar) then
 		return
 	end
 	selected[player] = slot :: number
+	InventoryService.SetHeld(player, slot :: number)
 	refreshHeld(player)
 end
 
+local function onMoveStack(player: Player, from: unknown, to: unknown, amount: unknown)
+	local data = DataService.GetData(player)
+	if not data or not isIndex(from, Inventory.Size) or not isIndex(to, Inventory.Size) then
+		return
+	end
+	if not isIndex(amount, 1e9) then
+		return
+	end
+	if Inventory.Move(data.Slots, from :: number, to :: number, amount :: number) then
+		DataService.MarkChanged(player)
+	end
+end
+
+local function onQuickMove(player: Player, from: unknown)
+	local data = DataService.GetData(player)
+	if data and isIndex(from, Inventory.Size) and Inventory.QuickMove(data.Slots, from :: number) then
+		DataService.MarkChanged(player)
+	end
+end
+
 function HotbarService.Start()
-	Remotes.SetHotbar.OnServerEvent:Connect(onSetHotbar)
 	Remotes.SelectSlot.OnServerEvent:Connect(onSelectSlot)
+	Remotes.MoveStack.OnServerEvent:Connect(onMoveStack)
+	Remotes.QuickMove.OnServerEvent:Connect(onQuickMove)
 	-- Re-hold the item after respawning, and drop it if it was used up
 	DataService.OnChanged(function(player)
 		refreshHeld(player)

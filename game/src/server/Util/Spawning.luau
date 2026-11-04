@@ -20,9 +20,14 @@ local function spawnCharacter(player: Player, spawnPoint: SpawnLocation)
 	end
 end
 
--- `fallY`: anyone below this height is put back. `onArrived` runs once per player, after
--- their first character spawns.
-function Spawning.Start(spawnPoint: SpawnLocation, fallY: number, onArrived: ((Player) -> ())?)
+-- `fallY`: anyone below this height is put back (or `onFell` decides what happens to them).
+-- `onArrived` runs once per player, after their first character spawns.
+function Spawning.Start(
+	spawnPoint: SpawnLocation,
+	fallY: number,
+	onArrived: ((Player) -> ())?,
+	onFell: ((Player, Model) -> ())?
+)
 	Players.CharacterAutoLoads = false
 
 	DataService.OnDataLoaded(function(player)
@@ -52,8 +57,12 @@ function Spawning.Start(spawnPoint: SpawnLocation, fallY: number, onArrived: ((P
 			local character = player.Character
 			local root = character and character:FindFirstChild("HumanoidRootPart")
 			if character and root and root:IsA("BasePart") and root.Position.Y < fallY then
-				root.AssemblyLinearVelocity = Vector3.zero
-				character:PivotTo(spawnPoint.CFrame + Vector3.new(0, 4, 0))
+				if onFell then
+					onFell(player, character)
+				else
+					root.AssemblyLinearVelocity = Vector3.zero
+					character:PivotTo(spawnPoint.CFrame + Vector3.new(0, 4, 0))
+				end
 			end
 		end
 	end)

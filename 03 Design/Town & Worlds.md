@@ -39,6 +39,7 @@ Rebuilt 2026-10-26 after your Skybounds spawn screenshots. A big floating island
   | **MINER** (east) | stone bricks with mossy footings, slate roof, forge chimney with smoke | rails with a cart of iron ore, barrels | **Miner**: hard hat with a working headlamp, grey beard, pickaxe on his back | Stone, Coal, Raw Iron, Iron Ingot, Raw Gold, Gold Ingot | Coal (10) |
   Click / tap a shopkeeper or use their **Trade** prompt (E). Their heads turn to watch you; name tags show through the door (not through walls).
 - **Lanes**: west to a **garden** with a roofed stone well, flower beds and benches; east to a **park** with a sandy pond, lily pads and benches. **Four cottages** (plaster and timber, thatch or red tiles, chimneys with smoke, bed/table/bookshelf inside, fenced flower yards, paths to the street).
+- **The void pit** (in the middle of the Portal Plaza, 2026-11-02): the Warzone's entrance, a round hole with stepped brick sides going down to a black, starry void, with a sign and two red banners. Jump in at player level 10; below that it puts you back at the rim.
 - **Portal Plaza** (north), past an **arrow signpost** ("THE WORLDS" one way, "HOME" the other; it replaced the old gate, which crowded the middle arches): the runestone arches with their signs, themed blocks beside each, and **one tall banner pole behind each arch** flying the portal's colour above it:
   | Portal | Field | Beside it | Status |
   |---|---|---|---|
@@ -69,10 +70,13 @@ Each world is **its own place** with its own servers (like Town), about **230 bl
 | | **Birch Grove** (west) | Birch → Birch Wood (Woodcutting 10) | slim white birches in a flower meadow, a lily pond with a dock and benches, fallen birch logs |
 | | **Snowy Pines** (north) | Spruce → Spruce Wood (Woodcutting 20) | snowy hills, tall slim spruces, a frozen lake (ice you can walk on), a trapper's cabin of spruce logs with a smoking chimney, snowy boulders, falling snow |
 | | **Cherry Hills** (east) | Cherry → Cherry Wood (Woodcutting 30) | pink cherry trees with forked trunks, a koi pond with a red-railed bridge and lily flowers, stone lanterns, an open pavilion with a red roof, drifting petals |
+| | **Maple Ridge** (north of Birch) | Maple (Woodcutting 40) | red and orange hills, a sugar shack with sap buckets on the trunks, a pond with a dock, stone spires, falling leaves |
+| | **Redwood Giants** (north of Cherry) | Redwood (Woodcutting 55) | trees 28-46 blocks tall, a fallen giant the trail runs through, a ranger's cabin, and a plank stair round the oldest tree up to a railed lookout |
 | **Farming** | **Wheat Plains** (arrival) | Wheat (anyone) | **one huge open wheat field** over the whole plain (your reference), cut by winding dirt paths with water running along their edges, hay bales in the wheat, a tall red **silo**, the windmill, red barn, thatched farmhouse, farmyard well and hay cart, a pond, a striped **terracotta mesa** |
 | | **Veggie Gardens** (west) | Carrots (Farming 5), Potatoes (Farming 10) | long rows of carrots south of the path and potatoes north of it, water every fifth row, a glasshouse at the far end |
 | | **Pumpkin Hollow** (north) | Pumpkins (Farming 15) | pumpkin patches over the rolling ground between orange autumn trees, jack-o'-lanterns along the path, hay bales, leaf piles, falling leaves |
 | | **Melon Oasis** (east) | Melons (Farming 25) | a sandy island: melon patches over the dunes, an oasis pool ringed with palms, cacti, a market stall |
+| | **Sugarcane Mesa** (north of Veggie) | Sugarcane (Farming 40) | cane along water channels on the sand, under striped terracotta mesas with twisted trees, a sugar mill |
 | **Mining** | **The Quarry** (arrival) | stone, coal, iron outcrops | gravel yards, the miner's hut, a tent and campfire, ore carts on rails; a **stone bridge** with walls and lamps leads to the mountain |
 | | **The Mountain** (north) | everything below | jagged **sandstone peaks** with dark cracks and vines (your reference), grassy terraces with boulders and oaks; two wooden **pavilions** either side of the path; a big **timber arch** with "THE MINE" hanging on chains leads inside. The mine is now **a section per ore** (your note: "I actually do want sections for ores"), joined by tunnels: |
 

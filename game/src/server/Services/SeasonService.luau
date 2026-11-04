@@ -11,6 +11,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Gear = require(ReplicatedStorage.Shared.Gear)
+local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Seasons = require(ReplicatedStorage.Shared.Seasons)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local DataService = require(script.Parent.DataService)
@@ -54,14 +55,13 @@ local function reset(data: DataService.Data, season: number): { string }
 
 	for itemId in rewardItems do
 		data.Items[itemId] = nil
+		Inventory.Clear(data.Slots, itemId)
 	end
-	for slot, itemId in data.Hotbar do
-		if rewardItems[itemId] then
-			data.Hotbar[slot] = ""
-		end
+	local equipped = data.Equipped :: { [string]: string }
+	equipped.Pet = ""
+	for _, slot in Gear.ArmorSlots do
+		equipped[slot] = ""
 	end
-	data.Equipped.Pet = ""
-	data.Equipped.Armor = ""
 
 	local cleared = {}
 	for cellKey, blockType in data.Island.Blocks do

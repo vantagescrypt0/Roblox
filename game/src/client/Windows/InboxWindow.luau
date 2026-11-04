@@ -137,7 +137,7 @@ local function render()
 	end
 	claimAll.SetEnabled(#mail > 0)
 	claimAll.SetText(if anyGifts or #mail == 0 then "Claim all" else "Clear all")
-	window.Title.Text = if #mail > 0 then `Inbox ({#mail})` else "Inbox"
+	Window.setTitle(window, if #mail > 0 then `Inbox ({#mail})` else "Inbox")
 end
 
 function InboxWindow.SetState(newState: any)
@@ -152,7 +152,7 @@ function InboxWindow.Toggle()
 end
 
 function InboxWindow.Start()
-	window = Window.new("InboxWindow", "Inbox", Vector2.new(620, 520), C.Purple)
+	window = Window.new("InboxWindow", "Inbox", Vector2.new(640, 536))
 	window.OnOpen = render
 
 	list = Window.scrollList(window.Body, UDim2.new(1, 0, 1, -58))

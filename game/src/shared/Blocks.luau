@@ -131,6 +131,15 @@ local Blocks: { [string]: Block } = {
 		Breakable = true,
 		SeeThrough = true,
 	},
+	-- A storage chest you place on your island (ChestService); a generated model (Util/StationModels)
+	Chest = {
+		Name = "Chest",
+		Drop = "Chest",
+		Hardness = 2.5,
+		Tool = "Axe",
+		Breakable = true,
+		SeeThrough = true,
+	},
 	Wood = { Name = "Wood", Drop = "Wood", Hardness = 2, Tool = "Axe", Breakable = true, NodeRespawn = 20 },
 	Planks = { Name = "Planks", Drop = "Planks", Hardness = 2, Tool = "Axe", Breakable = true },
 	Leaves = leaves("Leaves"),
@@ -159,9 +168,32 @@ local Blocks: { [string]: Block } = {
 		Breakable = true,
 		NodeRespawn = 35,
 	},
+	-- The second ring of zones ([[Woodcutting Phase Plan]])
+	MapleWood = {
+		Name = "Maple Wood",
+		Drop = "MapleWood",
+		Hardness = 3.5,
+		Tool = "Axe",
+		Breakable = true,
+		NodeRespawn = 40,
+	},
+	Redwood = { Name = "Redwood", Drop = "Redwood", Hardness = 4, Tool = "Axe", Breakable = true, NodeRespawn = 45 },
+	MangroveWood = {
+		Name = "Mangrove Wood",
+		Drop = "MangroveWood",
+		Hardness = 4.5,
+		Tool = "Axe",
+		Breakable = true,
+		NodeRespawn = 50,
+	},
+	Starwood = { Name = "Starwood", Drop = "Starwood", Hardness = 5, Tool = "Axe", Breakable = true, NodeRespawn = 60 },
 	BirchLeaves = leaves("Birch Leaves"),
 	SpruceLeaves = leaves("Spruce Leaves"),
 	CherryLeaves = leaves("Cherry Blossom"),
+	MapleLeaves = leaves("Maple Leaves"),
+	RedwoodLeaves = leaves("Redwood Needles"),
+	MangroveLeaves = leaves("Mangrove Leaves"),
+	StarwoodLeaves = leaves("Starwood Leaves"),
 	-- Gold: deep in the Mining World's cave, needs an Iron pickaxe (and Mining 10)
 	GoldOre = {
 		Name = "Gold Ore",
@@ -280,6 +312,19 @@ local Blocks: { [string]: Block } = {
 	MushroomCap = { Name = "Mushroom Cap", Drop = "MushroomCap", Hardness = 0.2, Tool = "Axe", Breakable = true },
 	MushroomStem = { Name = "Mushroom Stem", Drop = "MushroomStem", Hardness = 0.2, Tool = "Axe", Breakable = true },
 	CrackedStoneBricks = stone("Cracked Stone Bricks", "CrackedStoneBricks"),
+	-- Ground for the Woodcutting World's far zones: the marsh and the dusky hollow
+	Mud = { Name = "Mud", Drop = "Mud", Hardness = 0.5, Tool = "Shovel", Breakable = true },
+	DuskGrass = { Name = "Dusk Grass", Drop = "DuskGrass", Hardness = 0.6, Tool = "Shovel", Breakable = true },
+	-- The Warzone's Robot map: scenery only, nobody breaks it or carries it
+	HullWhite = stone("White Hull"),
+	HullGrey = stone("Grey Hull"),
+	HullDark = stone("Dark Hull"),
+	HullOrange = stone("Orange Hull"),
+	HullGlow = stone("Glow Panel"),
+	Hazard = stone("Hazard Stripes"),
+	Rubber = stone("Rubber"),
+	PurpleCrystal = stone("Purple Crystal"),
+	RustGround = stone("Rusty Ground"),
 }
 
 -- Water and lava: sources, flowing levels and falling blocks (Liquids.luau). Their look is

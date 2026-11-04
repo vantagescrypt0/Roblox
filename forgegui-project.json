@@ -1,0 +1,108 @@
+{
+  "version": 2,
+  "project": "Skycore",
+  "updated": "2026-11-03T03:30:00Z",
+  "game_style": "roblox",
+  "art_direction": "chunky block-world sky islands with bold readable shapes; held gear and icons read cleanly at small sizes",
+  "palette": ["#2A3B5E", "#1C2B4A", "#3B8EE8", "#F5B822", "#F78D20", "#4CB648"],
+  "material_language": "painted steel and white armour plating with orange trim and glowing cyan details",
+  "style_refs": ["mcp-artifact:695c6b71-23e9-4480-8222-7620118e5f72:0"],
+  "reference": { "supplied": true, "capture_path": "02 Research/References/Skybounds" },
+  "decisions": [
+    { "asked": "2026-11-02", "topic": "spend", "answer": "use ForgeGUI and Figma where needed; tell the user when credits are needed", "by": "user" },
+    { "asked": "2026-11-02", "topic": "armour", "answer": "four pieces worn separately: helmet, chestplate, leggings, boots", "by": "user" },
+    { "asked": "2026-11-02", "topic": "shield", "answer": "one crafted shield; generated model, not built from parts; no knockdown popup", "by": "user" },
+    { "asked": "2026-11-03", "topic": "interface_tone", "answer": "Night Glass: dark glass panels, thin edges, one cyan accent, gold for what's special; Sarpanch titles, Titillium Web text. Inventory and HUD first, other windows after they're checked", "by": "user" }
+  ],
+  "run": null,
+  "assets": [
+    {
+      "key": "ui.slot.helmet",
+      "kind": "gui_icon",
+      "prompt_summary": "flat white knight's helmet silhouette, transparent background",
+      "request_id": "skycore-slot-icons-v1",
+      "job_id": "695c6b71-23e9-4480-8222-7620118e5f72",
+      "artifact_ref": "mcp-artifact:695c6b71-23e9-4480-8222-7620118e5f72:0",
+      "roblox_asset_id": "125219234840382",
+      "studio_path": "Config.SlotIcons.Helmet",
+      "verified": "Bag in a Warzone playtest 2026-11-03",
+      "status": "verified"
+    },
+    {
+      "key": "ui.slot.chest",
+      "kind": "gui_icon",
+      "prompt_summary": "flat white armour chestplate silhouette, same style as the helmet",
+      "request_id": "skycore-slot-chest-v1",
+      "job_id": "5d119a7f-e001-46e2-a4cc-c880af7a1e83",
+      "artifact_ref": "mcp-artifact:5d119a7f-e001-46e2-a4cc-c880af7a1e83:0",
+      "roblox_asset_id": "86188456567729",
+      "studio_path": "Config.SlotIcons.Chest",
+      "verified": "Bag in a Warzone playtest 2026-11-03",
+      "status": "verified"
+    },
+    {
+      "key": "ui.slot.legs",
+      "kind": "gui_icon",
+      "prompt_summary": "leggings silhouette; the ForgeGUI job failed (insufficient_credits), so art/scripts/slot_icons.ps1 draws it",
+      "request_id": "skycore-slot-legs-v1",
+      "job_id": "58c13743-c11c-41e1-9724-afe7fd9c2ac9",
+      "roblox_asset_id": "98708952373456",
+      "studio_path": "Config.SlotIcons.Legs",
+      "status": "failed"
+    },
+    {
+      "key": "ui.slot.boots",
+      "kind": "gui_icon",
+      "prompt_summary": "boots silhouette; the ForgeGUI job failed (insufficient_credits), so art/scripts/slot_icons.ps1 draws it",
+      "request_id": "skycore-slot-boots-v1",
+      "job_id": "71c7beb3-8b72-42e1-b0e9-b1b20f8cb95f",
+      "roblox_asset_id": "95410567961432",
+      "studio_path": "Config.SlotIcons.Boots",
+      "status": "failed"
+    },
+    {
+      "key": "ui.slot.shield",
+      "kind": "gui_icon",
+      "prompt_summary": "shield silhouette; the ForgeGUI job failed (insufficient_credits), so art/scripts/slot_icons.ps1 draws it",
+      "request_id": "skycore-slot-shield-v1",
+      "job_id": "80122c1f-8ad7-42d8-961d-d05c4c9a74a7",
+      "roblox_asset_id": "91212786041472",
+      "studio_path": "Config.SlotIcons.Shield",
+      "status": "failed"
+    },
+    {
+      "key": "ui.slot.pet",
+      "kind": "gui_icon",
+      "prompt_summary": "paw silhouette; the ForgeGUI job failed (insufficient_credits), so art/scripts/slot_icons.ps1 draws it",
+      "request_id": "skycore-slot-pet-v1",
+      "job_id": "eca71d6f-daac-4630-b0c7-7a13a653e0e7",
+      "roblox_asset_id": "112965300672337",
+      "studio_path": "Config.SlotIcons.Pet",
+      "status": "failed"
+    },
+    {
+      "key": "prop.shield",
+      "kind": "model_3d",
+      "prompt_summary": "sci-fi tower shield in white, orange and cyan. Made with Roblox Studio's generate_mesh: ForgeGUI 3D returned paid_generation_required",
+      "roblox_asset_id": "114553993390330",
+      "studio_path": "ReplicatedStorage.ShieldModels.Shield",
+      "verified": "rest and raised poses in a Warzone playtest 2026-11-03",
+      "status": "verified"
+    },
+    {
+      "key": "prop.shield.kite",
+      "kind": "model_3d",
+      "prompt_summary": "horned oak kite shield, spare design. Made with Roblox Studio's generate_mesh",
+      "roblox_asset_id": "89874064430957",
+      "studio_path": "ReplicatedStorage.ShieldModels.ShieldKite",
+      "status": "inserted"
+    },
+    {
+      "key": "gear.armour.plates",
+      "kind": "model_3d",
+      "prompt_summary": "the four armour pieces are still plain plates from game/src/server/Util/ArmorModels.luau; no generated models yet",
+      "studio_path": "ArmorModels.Apply",
+      "status": "blockout"
+    }
+  ]
+}

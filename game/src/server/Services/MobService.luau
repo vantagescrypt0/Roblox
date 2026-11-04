@@ -1,13 +1,14 @@
 --!strict
--- Warzone monsters. Each type needs a minimum Combat level to damage, and drops
--- Combat XP, player XP and loot into the killer's raid bag.
+-- Monsters, for the Slaying World when it's built (none in the Warzone: it's PvP, your call
+-- 2026-11-02). Not started anywhere yet. Each type needs a minimum Combat level to damage, and
+-- drops Combat XP, player XP and loot straight into the killer's Bag.
 
 local Players = game:GetService("Players")
 
+local InventoryService = require(script.Parent.InventoryService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
-local WarzoneService = require(script.Parent.WarzoneService)
 
 type LootEntry = { Item: string, Min: number, Max: number, Chance: number }
 
@@ -140,7 +141,7 @@ local function spawnMob(mobType: MobType, home: Vector3)
 			ProgressionService.AddPlayerXP(killer, mobType.PlayerXP)
 			for _, entry in mobType.Loot do
 				if rng:NextNumber() < entry.Chance then
-					WarzoneService.AddToBag(killer, entry.Item, rng:NextInteger(entry.Min, entry.Max))
+					InventoryService.Add(killer, entry.Item, rng:NextInteger(entry.Min, entry.Max))
 				end
 			end
 			StateService.Notify(killer, `Defeated a {mobType.Name}!`, "good")
@@ -179,9 +180,6 @@ end
 local function nearestTarget(mob: Mob): (Humanoid?, BasePart?, number)
 	local best, bestRoot, bestDistance = nil, nil, AGGRO_RANGE
 	for _, player in Players:GetPlayers() do
-		if not WarzoneService.IsInRaid(player) then
-			continue
-		end
 		local character = player.Character
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 		local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -214,12 +212,13 @@ local function think(mob: Mob, now: number)
 	end
 end
 
-function MobService.Start()
+-- Spawns each type at the spots marked for its zone
+function MobService.Start(spots: { { Position: Vector3, Zone: string } })
 	folder = Instance.new("Folder")
 	folder.Name = "Mobs"
 	folder.Parent = workspace
 
-	for _, spot in WarzoneService.GetMobSpawns() do
+	for _, spot in spots do
 		for _, mobType in MOB_TYPES do
 			if mobType.Zone == spot.Zone then
 				spawnMob(mobType, spot.Position)

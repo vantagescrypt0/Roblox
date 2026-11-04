@@ -1,104 +1,352 @@
 --!strict
--- The Warzone: a shared arena unlocked at player level 10. Everything you pick up goes
--- into a raid bag. Reach an extraction pad to bring it home; die and it drops as a
--- loot head anyone can open. Greybox layout for the prototype.
+-- The Warzone: its own place, PvP across a net of floating islands (Worlds/Warzone), reached by
+-- jumping into the void pit in Town (player level 10). The rules are yours ([[Warzone]]):
+--   You arrive in the citadel, where nobody can hurt you; anywhere else, anyone can.
+--   Hitting someone or being hit tags you for 20 seconds, and while tagged you can't leave.
+--   Leaving is a button only this place has: hold it, and everyone nearby hears you going.
+--   Fall off and you're back where you left the ground, with a little ticking poison.
+--   Die and you're back in Town.
+--   Quit and you have 5 minutes: any place you rejoin sends you straight back to this server and
+--   spot (TravelService). Quit while tagged and there's no coming back.
+--   A hunger bar drains as you run and fight, and only counts here. Health only regrows while
+--   you're well fed, and at empty hunger you slowly lose it. Food is a crop in your hand: click.
+--   Your shield (worn from the Bag) blocks every hit from the front while you hold right-click,
+--   and you walk slowly while it's up. An axe knocks it down for a few seconds.
+-- Chests are in LootChestService. Lootable bodies come next: then missing the 5 minutes, or quitting
+-- while tagged, also drops your body.
+-- The numbers not in your rules (how fast hunger drains, how much poison) are Claude's picks.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local StarterPlayer = game:GetService("StarterPlayer")
 
+local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Combat = require(ReplicatedStorage.Shared.Combat)
+local Foods = require(ReplicatedStorage.Shared.Foods)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
-local Prompts = require(script.Parent.Parent.Util.Prompts)
-local Props = require(script.Parent.Parent.Util.Props)
+local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Ambience = require(script.Parent.Parent.Util.Ambience)
+local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local Pace = require(script.Parent.Parent.Util.Pace)
+local ShieldModel = require(script.Parent.Parent.Util.ShieldModel)
+local Spawning = require(script.Parent.Parent.Util.Spawning)
+local Context = require(script.Parent.Parent.Worlds.Context)
+local Warzone = require(script.Parent.Parent.Worlds.Warzone)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
-local IslandService = require(script.Parent.IslandService)
-local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
+local TravelService = require(script.Parent.TravelService)
 
--- Well clear of the islands (they start at z = 0 and go back in rows of Config.Island.Spacing)
-local ARENA_CENTER = Vector3.new(0, 200, -6000)
-local ARENA_SIZE = 300
-local CENTER_ZONE_RADIUS = 55
-local PORTAL_OFFSET = Vector3.new(-1, 0, -14)
-local CHEST_RESPAWN = 60
-local LOOT_HEAD_LIFETIME = 120
-local EXTRACT_HOLD = 3
+local SIZE = Blocks.Size
+local CENTER = Vector3.new(0, 200, 0) -- top of the citadel's ground
+local FALL_LIMIT = 230 -- below every island's rock
+local COMBAT_TAG = 20
+local LEAVE_HOLD = 7
+local LEAVE_SOUND = "rbxassetid://15675046931" -- Roblox_UI_Sweep
+local LEAVE_SOUND_RANGE = 220
+local STUDIO_BACK_IN = 3 -- seconds; Studio can't travel to Town, so a test goes straight back in
+local REJOIN_TIME = 5 * 60
 
-type LootEntry = { Item: string, Min: number, Max: number, Chance: number }
+local TICK = 0.25
+-- Hunger, out of 100, per second: a full bar lasts about 10 minutes of running
+local HUNGER_MOVING = 0.16
+local HUNGER_STILL = 0.04
+local HUNGER_PER_SWING = 0.5
+local WELL_FED = 60 -- health regrows at or above this
+local REGEN_PER_SECOND = 1
+local HUNGER_PER_HEALTH = 0.25 -- what regrowing one health costs
+local STARVE_PER_SECOND = 0.5
+local STARVE_FLOOR = 10 -- starving alone won't take you below this
+local HUNGRY_WARNING = 25
+local EAT_TIME = 1.2
 
-local CHEST_LOOT: { [string]: { LootEntry } } = {
-	Outer = {
-		{ Item = "Scrap", Min = 1, Max = 3, Chance = 1 },
-		{ Item = "Crystal", Min = 1, Max = 1, Chance = 0.25 },
-		{ Item = "GlowberrySeeds", Min = 1, Max = 1, Chance = 0.1 },
-	},
-	Center = {
-		{ Item = "Scrap", Min = 3, Max = 6, Chance = 1 },
-		{ Item = "Crystal", Min = 1, Max = 2, Chance = 0.7 },
-		{ Item = "GlowberrySeeds", Min = 1, Max = 2, Chance = 0.35 },
-	},
-}
+local POISON_TIME = 8
+local POISON_PER_SECOND = 2 -- 16 health in all; it never kills
 
-export type MobSpawn = { Position: Vector3, Zone: string }
+local BLOCK_SPEED = 8
+local SHIELD_DOWN_TIME = 5
+local BLOCK_SOUND = "rbxassetid://9113447467" -- Blacksmith Anvil Hammer Hits
 
 local WarzoneService = {}
 
-local rng = Random.new()
-local arena: Model
-local spawnPoints: { Vector3 } = {}
-local mobSpawns: { MobSpawn } = {}
+local arrival: CFrame
+local leaving: { [Player]: Sound } = {}
+local hunger: { [Player]: number } = {}
+local warned: { [Player]: boolean } = {}
+local poisonUntil: { [Player]: number } = {}
+local lastGround: { [Player]: Vector3 } = {}
+local blockingSpeed: { [Player]: boolean } = {}
+local shieldDownUntil: { [Player]: number } = {}
+local eating: { [Player]: {} } = {}
+-- Left through the button or by dying, so there's nothing to come back to
+local leftOnPurpose: { [Player]: boolean } = {}
 
-local function isInRaid(player: Player): boolean
+function WarzoneService.IsPlaying(player: Player): boolean
 	local data = DataService.GetData(player)
 	return player:GetAttribute("InWarzone") == true and data ~= nil and data.Raid.Active
 end
 
-function WarzoneService.IsInRaid(player: Player): boolean
-	return isInRaid(player)
+local function rootOf(player: Player): BasePart?
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	return if root and root:IsA("BasePart") then root else nil
 end
 
-function WarzoneService.GetMobSpawns(): { MobSpawn }
-	return mobSpawns
+local function humanoidOf(player: Player): Humanoid?
+	local character = player.Character
+	return character and character:FindFirstChildOfClass("Humanoid")
 end
 
-function WarzoneService.AddToBag(player: Player, itemId: string, amount: number)
-	local data = DataService.GetData(player)
-	assert(Items[itemId], `Unknown item {itemId}`)
-	if not data or not isInRaid(player) or amount <= 0 then
+local function inSafeZone(player: Player): boolean
+	local root = rootOf(player)
+	if not root then
+		return true
+	end
+	local flat = Vector3.new(root.Position.X - CENTER.X, 0, root.Position.Z - CENTER.Z)
+	return flat.Magnitude <= Warzone.SafeRadius * SIZE
+end
+
+-- Can this player hurt that one? Both must be in the Warzone, outside the citadel
+function WarzoneService.CanHit(attacker: Player, victim: Player): boolean
+	return WarzoneService.IsPlaying(attacker)
+		and WarzoneService.IsPlaying(victim)
+		and not inSafeZone(attacker)
+		and not inSafeZone(victim)
+end
+
+local function playSound(parent: Instance, soundId: string, volume: number)
+	local sound = Instance.new("Sound")
+	sound.SoundId = soundId
+	sound.Volume = volume
+	sound.RollOffMaxDistance = 120
+	sound.Parent = parent
+	sound.Ended:Once(function()
+		sound:Destroy()
+	end)
+	sound:Play()
+end
+
+-- Hunger ------------------------------------------------------------------------------
+
+local function setHunger(player: Player, value: number)
+	local amount = math.clamp(value, 0, 100)
+	hunger[player] = amount
+	-- Only whole numbers go to the client
+	local shown = math.ceil(amount)
+	if player:GetAttribute("Hunger") ~= shown then
+		player:SetAttribute("Hunger", shown)
+	end
+	if amount >= HUNGRY_WARNING then
+		warned[player] = nil
+	elseif not warned[player] then
+		warned[player] = true
+		StateService.Notify(player, "You're getting hungry! Hold food and click to eat", "bad")
+	end
+end
+
+-- Swinging a sword makes you hungrier
+function WarzoneService.Exert(player: Player)
+	if hunger[player] then
+		setHunger(player, hunger[player] - HUNGER_PER_SWING)
+	end
+end
+
+-- Burning hunger on anything else that tires you, like sprinting
+function WarzoneService.Burn(player: Player, amount: number)
+	if hunger[player] then
+		setHunger(player, hunger[player] - amount)
+	end
+end
+
+-- Clicking with food in your hand: a moment later it's eaten, if nothing interrupted you
+function WarzoneService.Eat(player: Player, itemId: string)
+	local value = Foods[itemId]
+	if not value or eating[player] or blockingSpeed[player] or not WarzoneService.IsPlaying(player) then
 		return
 	end
-	data.Raid.Bag[itemId] = (data.Raid.Bag[itemId] or 0) + amount
-	DataService.MarkChanged(player)
-end
-
-local function rollLoot(table_: { LootEntry }): { [string]: number }
-	local loot = {}
-	for _, entry in table_ do
-		if rng:NextNumber() < entry.Chance then
-			loot[entry.Item] = (loot[entry.Item] or 0) + rng:NextInteger(entry.Min, entry.Max)
+	if (hunger[player] or 0) >= 99 then
+		StateService.Notify(player, "You're full", "info")
+		return
+	end
+	local token = {}
+	eating[player] = token
+	task.delay(EAT_TIME, function()
+		if eating[player] ~= token then
+			return
 		end
-	end
-	return loot
+		eating[player] = nil
+		local character = player.Character
+		local tool = character and character:FindFirstChildOfClass("Tool")
+		if tool and tool:GetAttribute("Held") == itemId and InventoryService.Remove(player, itemId, 1) then
+			setHunger(player, (hunger[player] or 0) + value)
+			StateService.Notify(player, `Ate {Items[itemId].Name}: +{value} hunger`, "good")
+		end
+	end)
 end
 
-local function describe(loot: { [string]: number }): string
-	local parts = {}
-	for itemId, count in loot do
-		table.insert(parts, `{count} {Items[itemId].Name}`)
-	end
-	return table.concat(parts, ", ")
+-- Poison ------------------------------------------------------------------------------
+
+local function poison(player: Player)
+	poisonUntil[player] = os.clock() + POISON_TIME
+	player:SetAttribute("PoisonUntil", workspace:GetServerTimeNow() + POISON_TIME)
 end
 
-local function part(props: { [string]: any }): Part
-	local p = Instance.new("Part")
-	p.Anchored = true
-	p.TopSurface = Enum.SurfaceType.Smooth
-	p.BottomSurface = Enum.SurfaceType.Smooth
-	for key, value in props do
-		(p :: any)[key] = value
+-- Falling: back where you left the ground, poisoned
+local function onFell(player: Player, character: Model)
+	local root = rootOf(player)
+	if root then
+		root.AssemblyLinearVelocity = Vector3.zero
 	end
-	return p
+	local spot = lastGround[player]
+	if not spot or not WarzoneService.IsPlaying(player) then
+		character:PivotTo(arrival)
+		return
+	end
+	local facing = if root then root.CFrame.LookVector * Vector3.new(1, 0, 1) else Vector3.zAxis
+	if facing.Magnitude < 0.1 then
+		facing = Vector3.zAxis
+	end
+	character:PivotTo(CFrame.lookAt(spot + Vector3.new(0, 1, 0), spot + Vector3.new(0, 1, 0) + facing))
+	poison(player)
+	StateService.Notify(player, "You fell! Poison ticks away your health for a few seconds", "bad")
+end
+
+-- Blocking ----------------------------------------------------------------------------
+
+function WarzoneService.IsBlocking(player: Player): boolean
+	return blockingSpeed[player] ~= nil
+end
+
+local function stopBlocking(player: Player)
+	if not blockingSpeed[player] then
+		return
+	end
+	blockingSpeed[player] = nil
+	player:SetAttribute("Blocking", nil)
+	local humanoid = humanoidOf(player)
+	if humanoid then
+		humanoid.WalkSpeed = Combat.WalkSpeed
+	end
+	if player.Character then
+		ShieldModel.SetRaised(player.Character, false)
+	end
+end
+
+local function startBlocking(player: Player)
+	local data = DataService.GetData(player)
+	local humanoid = humanoidOf(player)
+	if not data or data.Equipped.Shield == "" or not humanoid or humanoid.Health <= 0 then
+		return
+	end
+	if blockingSpeed[player] or not WarzoneService.IsPlaying(player) then
+		return
+	end
+	if os.clock() < (shieldDownUntil[player] or 0) then
+		return
+	end
+	eating[player] = nil
+	blockingSpeed[player] = true
+	humanoid.WalkSpeed = BLOCK_SPEED
+	player:SetAttribute("Blocking", true)
+	if player.Character then
+		ShieldModel.SetRaised(player.Character, true)
+	end
+end
+
+-- A hit from `from` on someone who may be blocking: true if the shield stopped it. An axe still
+-- knocks the shield down for a few seconds.
+function WarzoneService.Blocks(victim: Player, from: Vector3, toolKind: string?): boolean
+	local root = rootOf(victim)
+	if not blockingSpeed[victim] or not root then
+		return false
+	end
+	local toAttacker = (from - root.Position) * Vector3.new(1, 0, 1)
+	if toAttacker.Magnitude < 0.01 or root.CFrame.LookVector:Dot(toAttacker.Unit) <= 0 then
+		return false
+	end
+	playSound(root, BLOCK_SOUND, 0.6)
+	if toolKind == "Axe" then
+		stopBlocking(victim)
+		shieldDownUntil[victim] = os.clock() + SHIELD_DOWN_TIME
+	end
+	return true
+end
+
+-- Leaving -----------------------------------------------------------------------------
+
+local function stopLeaving(player: Player)
+	local sound = leaving[player]
+	if sound then
+		leaving[player] = nil
+		sound:Destroy()
+		player:SetAttribute("LeavingUntil", nil)
+	end
+end
+
+local function tagLeft(player: Player): number
+	local untilTime = player:GetAttribute("CombatTag")
+	if typeof(untilTime) ~= "number" then
+		return 0
+	end
+	return math.max(0, untilTime - workspace:GetServerTimeNow())
+end
+
+-- A hit tags whoever gave or took it, stops them leaving and interrupts eating
+function WarzoneService.Tag(player: Player)
+	player:SetAttribute("CombatTag", workspace:GetServerTimeNow() + COMBAT_TAG)
+	stopLeaving(player)
+	eating[player] = nil
+end
+
+local function finishLeaving(player: Player)
+	stopLeaving(player)
+	if RunService:IsStudio() then
+		StateService.Notify(player, "You'd be back in Town now (Studio can't travel)", "info")
+		local character = player.Character
+		if character then
+			character:PivotTo(arrival)
+		end
+	else
+		leftOnPurpose[player] = true
+		TravelService.Go(player, "Town")
+		-- If the teleport failed they're still here, and quitting counts again
+		task.delay(15, function()
+			leftOnPurpose[player] = nil
+		end)
+	end
+end
+
+local function startLeaving(player: Player)
+	if leaving[player] or not WarzoneService.IsPlaying(player) then
+		return
+	end
+	local left = tagLeft(player)
+	if left > 0 then
+		StateService.Notify(player, `You're in combat! You can leave in {math.ceil(left)}s`, "bad")
+		return
+	end
+	local root = rootOf(player)
+	if not root then
+		return
+	end
+	-- Played on the character, so everyone nearby hears it
+	local sound = Instance.new("Sound")
+	sound.Name = "Leaving"
+	sound.SoundId = LEAVE_SOUND
+	sound.Looped = true
+	sound.Volume = 1
+	sound.RollOffMaxDistance = LEAVE_SOUND_RANGE
+	sound.Parent = root
+	sound:Play()
+	leaving[player] = sound
+	player:SetAttribute("LeavingUntil", workspace:GetServerTimeNow() + LEAVE_HOLD)
+	task.delay(LEAVE_HOLD, function()
+		if leaving[player] == sound then
+			finishLeaving(player)
+		end
+	end)
 end
 
 -- Taking players in and out --------------------------------------------------------
@@ -106,385 +354,266 @@ end
 local function enter(player: Player)
 	local data = DataService.GetData(player)
 	local character = player.Character
-	if not data or not character or isInRaid(player) then
+	if not data or not character or WarzoneService.IsPlaying(player) then
 		return
 	end
-	if data.Level < Leveling.WarzoneLevel then
+	local back = data.Rejoin
+	local returning = back.Until > os.time()
+	if data.Level < Leveling.WarzoneLevel and not returning then
 		StateService.Notify(player, `The Warzone unlocks at level {Leveling.WarzoneLevel}`, "bad")
+		TravelService.Go(player, "Town")
 		return
 	end
 	data.Raid.Active = true
 	data.Raid.Bag = {}
 	player:SetAttribute("InWarzone", true)
+	if returning then
+		local spot = Vector3.new(back.X, back.Y, back.Z)
+		character:PivotTo(CFrame.new(spot))
+		lastGround[player] = spot
+		setHunger(player, back.Hunger)
+		StateService.Notify(player, "You're back where you left off", "level")
+	else
+		character:PivotTo(arrival)
+		setHunger(player, 100)
+		StateService.Notify(player, "Welcome to the Warzone! The citadel is safe. Everywhere else isn't.", "level")
+	end
+	back.Until = 0
 	DataService.MarkChanged(player)
-
-	local spot = spawnPoints[rng:NextInteger(1, #spawnPoints)]
-	character:PivotTo(
-		CFrame.lookAt(spot + Vector3.new(0, 4, 0), Vector3.new(ARENA_CENTER.X, spot.Y + 4, ARENA_CENTER.Z))
-	)
-	StateService.Notify(player, "Welcome to the Warzone! Loot, survive, extract.", "level")
 end
 
-local function endRaid(player: Player)
+-- Back to Town after you die
+local function goHome(player: Player)
+	if RunService:IsStudio() then
+		task.delay(STUDIO_BACK_IN, enter, player)
+	else
+		TravelService.Go(player, "Town")
+	end
+end
+
+local function endRun(player: Player)
 	local data = DataService.GetData(player)
+	stopLeaving(player)
+	stopBlocking(player)
 	player:SetAttribute("InWarzone", false)
+	player:SetAttribute("CombatTag", nil)
+	player:SetAttribute("PoisonUntil", nil)
+	eating[player] = nil
+	poisonUntil[player] = nil
+	hunger[player] = nil
 	if data then
 		data.Raid.Active = false
-		data.Raid.Bag = {}
+		data.Rejoin.Until = 0
 		DataService.MarkChanged(player)
-	end
-end
-
-local function extract(player: Player)
-	local data = DataService.GetData(player)
-	if not data or not isInRaid(player) then
-		return
-	end
-	local bag = data.Raid.Bag
-	local total = 0
-	for itemId, count in bag do
-		if count > 0 then
-			InventoryService.Add(player, itemId, count)
-			total += count
-		end
-	end
-	endRaid(player)
-
-	local island = IslandService.GetIsland(player)
-	local character = player.Character
-	if island and character then
-		character:PivotTo(island.Spawn.CFrame + Vector3.new(0, 4, 0))
-	end
-	StateService.Notify(
-		player,
-		if total > 0 then `Extracted! Brought home {total} items` else "Extracted (empty bag)",
-		"good"
-	)
-	QuestService.Record(player, "Extract")
-end
-
--- Loot heads -----------------------------------------------------------------------
-
-local function dropLootHead(victim: Player, position: Vector3, loot: { [string]: number })
-	if next(loot) == nil then
-		return
-	end
-
-	local head = part({
-		Name = "LootHead",
-		Shape = Enum.PartType.Ball,
-		Size = Vector3.new(2.6, 2.6, 2.6),
-		Color = Color3.fromRGB(255, 204, 153),
-		Material = Enum.Material.SmoothPlastic,
-		CFrame = CFrame.new(position.X, ARENA_CENTER.Y + 1.3, position.Z),
-		CanCollide = false,
-	})
-	local face = Instance.new("Decal")
-	face.Texture = "rbxasset://textures/face.png"
-	face.Face = Enum.NormalId.Front
-	face.Parent = head
-
-	local tag = Instance.new("BillboardGui")
-	tag.Size = UDim2.fromOffset(160, 26)
-	tag.StudsOffset = Vector3.new(0, 2.6, 0)
-	tag.MaxDistance = 70
-	tag.Parent = head
-	local text = Instance.new("TextLabel")
-	text.Size = UDim2.fromScale(1, 1)
-	text.BackgroundTransparency = 1
-	text.Text = `{victim.DisplayName}'s loot`
-	text.TextColor3 = Color3.fromRGB(255, 220, 120)
-	text.TextStrokeTransparency = 0.3
-	text.Font = Enum.Font.GothamBold
-	text.TextScaled = true
-	text.Parent = tag
-
-	head.Parent = arena
-
-	local claimed = false
-	local prompt = Prompts.Create(head, { Action = "Open loot", Object = `{victim.DisplayName}'s head`, Hold = 1 })
-	prompt.Triggered:Connect(function(opener)
-		-- First opener takes everything; the flag makes the transfer happen only once
-		if claimed or not isInRaid(opener) then
-			return
-		end
-		claimed = true
-		for itemId, count in loot do
-			WarzoneService.AddToBag(opener, itemId, count)
-		end
-		StateService.Notify(opener, `Looted {describe(loot)}`, "good")
-		head:Destroy()
-	end)
-
-	task.delay(LOOT_HEAD_LIFETIME, function()
-		claimed = true
-		if head.Parent then
-			head:Destroy()
-		end
-	end)
-end
-
--- Drops the raid bag where the player is and ends their raid
-local function dropBag(player: Player, position: Vector3?)
-	local data = DataService.GetData(player)
-	if not data or not isInRaid(player) then
-		return
-	end
-	local loot = table.clone(data.Raid.Bag)
-	endRaid(player)
-	if position then
-		dropLootHead(player, position, loot)
 	end
 end
 
 local function onCharacterAdded(player: Player, character: Model)
 	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
 	humanoid.Died:Connect(function()
-		if not isInRaid(player) then
+		if not WarzoneService.IsPlaying(player) then
 			return
 		end
-		local root = character:FindFirstChild("HumanoidRootPart")
-		local position = if root and root:IsA("BasePart") then root.Position else nil
-		dropBag(player, position)
-		StateService.Notify(player, "You died! Your raid bag dropped as a loot head.", "bad")
-
+		endRun(player)
+		StateService.Notify(player, "You died!", "bad")
 		local killerId = humanoid:GetAttribute("LastAttacker")
 		local killer = if typeof(killerId) == "number" then Players:GetPlayerByUserId(killerId) else nil
 		if killer and killer ~= player then
-			StateService.Notify(killer, `You took down {player.DisplayName}! Grab their loot head.`, "good")
+			StateService.Notify(killer, `You took down {player.DisplayName}!`, "good")
 		end
 	end)
 end
 
--- Building the arena ---------------------------------------------------------------
-
-local function buildArena()
-	arena = Instance.new("Model")
-	arena.Name = "Warzone"
-
-	local floor = part({
-		Name = "Floor",
-		Size = Vector3.new(ARENA_SIZE, 4, ARENA_SIZE),
-		CFrame = CFrame.new(ARENA_CENTER - Vector3.new(0, 2, 0)),
-		Color = Color3.fromRGB(96, 88, 78),
-		Material = Enum.Material.Ground,
-	})
-	floor.Parent = arena
-
-	local danger = part({
-		Name = "CenterZone",
-		Shape = Enum.PartType.Cylinder,
-		Size = Vector3.new(0.2, CENTER_ZONE_RADIUS * 2, CENTER_ZONE_RADIUS * 2),
-		CFrame = CFrame.new(ARENA_CENTER + Vector3.new(0, 0.05, 0)) * CFrame.Angles(0, 0, math.rad(90)),
-		Color = Color3.fromRGB(120, 50, 50),
-		Material = Enum.Material.Slate,
-		CanCollide = false,
-	})
-	danger.Parent = arena
-
-	-- Invisible walls so nobody falls off the edge
-	local half = ARENA_SIZE / 2
-	for _, side in { Vector3.new(1, 0, 0), Vector3.new(-1, 0, 0), Vector3.new(0, 0, 1), Vector3.new(0, 0, -1) } do
-		local size = if side.X ~= 0 then Vector3.new(2, 40, ARENA_SIZE) else Vector3.new(ARENA_SIZE, 40, 2)
-		local wall = part({
-			Name = "Wall",
-			Size = size,
-			CFrame = CFrame.new(ARENA_CENTER + side * (half + 1) + Vector3.new(0, 20, 0)),
-			Transparency = 1,
-		})
-		wall.Parent = arena
+-- Quitting: writes down where you were, for when you come back. Runs before the save closes.
+local function onLeaving(player: Player, data: DataService.Data)
+	if leftOnPurpose[player] or not WarzoneService.IsPlaying(player) then
+		return
 	end
-
-	-- Cover: the same layout every time
-	local layout = Random.new(2026)
-	for i = 1, 36 do
-		local angle = layout:NextNumber() * math.pi * 2
-		local radius = layout:NextNumber(25, half - 20)
-		local size = Vector3.new(layout:NextNumber(5, 14), layout:NextNumber(4, 10), layout:NextNumber(5, 14))
-		local position = ARENA_CENTER + Vector3.new(math.cos(angle) * radius, size.Y / 2, math.sin(angle) * radius)
-		local block = part({
-			Name = `Cover{i}`,
-			Size = size,
-			CFrame = CFrame.new(position) * CFrame.Angles(0, layout:NextNumber() * math.pi, 0),
-			Color = Color3.fromRGB(110, 110, 115),
-			Material = Enum.Material.Concrete,
-		})
-		block.Parent = arena
+	data.Raid.Active = false
+	data.Rejoin.Until = 0
+	if tagLeft(player) > 0 then
+		return
 	end
-
-	-- Spawn points around the edge, extraction pads at the corners. Spawns sit halfway
-	-- between pads so nobody can extract the moment they arrive.
-	for i = 1, 8 do
-		local angle = (i / 8) * math.pi * 2 + math.pi / 8
-		table.insert(spawnPoints, ARENA_CENTER + Vector3.new(math.cos(angle) * 130, 0, math.sin(angle) * 130))
+	local root = rootOf(player)
+	local spot = lastGround[player] or (root and root.Position)
+	if spot then
+		data.Rejoin = {
+			JobId = game.JobId,
+			Until = os.time() + REJOIN_TIME,
+			X = spot.X,
+			Y = spot.Y + 4,
+			Z = spot.Z,
+			Hunger = hunger[player] or 100,
+		}
 	end
-
-	for i = 1, 4 do
-		local angle = (i / 4) * math.pi * 2 + math.pi / 4
-		local position = ARENA_CENTER + Vector3.new(math.cos(angle) * 125, 0.3, math.sin(angle) * 125)
-		local pad = part({
-			Name = "ExtractPad",
-			Shape = Enum.PartType.Cylinder,
-			Size = Vector3.new(0.6, 10, 10),
-			CFrame = CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90)),
-			Color = Color3.fromRGB(70, 230, 120),
-			Material = Enum.Material.Neon,
-			CanCollide = false,
-		})
-		pad.Parent = arena
-		local prompt = Prompts.Create(pad, { Action = "Extract", Object = "Extraction", Hold = EXTRACT_HOLD })
-		prompt.Triggered:Connect(extract)
-	end
-
-	-- Chests: more in the outer ring, better ones in the center
-	local chestSpots: { MobSpawn } = {}
-	for i = 1, 10 do
-		local angle = (i / 10) * math.pi * 2 + 0.3
-		table.insert(chestSpots, {
-			Position = ARENA_CENTER + Vector3.new(math.cos(angle) * 95, 0, math.sin(angle) * 95),
-			Zone = "Outer",
-		})
-	end
-	for i = 1, 5 do
-		local angle = (i / 5) * math.pi * 2
-		table.insert(chestSpots, {
-			Position = ARENA_CENTER + Vector3.new(math.cos(angle) * 25, 0, math.sin(angle) * 25),
-			Zone = "Center",
-		})
-	end
-	for _, spot in chestSpots do
-		local rare = spot.Zone == "Center"
-		local chest = part({
-			Name = `{spot.Zone}Chest`,
-			Size = Vector3.new(3, 2.4, 2),
-			CFrame = CFrame.new(spot.Position + Vector3.new(0, 1.2, 0)),
-			Color = if rare then Color3.fromRGB(80, 60, 140) else Color3.fromRGB(130, 85, 45),
-			Material = Enum.Material.WoodPlanks,
-		})
-		chest.Parent = arena
-		local prompt =
-			Prompts.Create(chest, { Action = "Open", Object = if rare then "Rare chest" else "Chest", Hold = 1.2 })
-		prompt.Triggered:Connect(function(player)
-			if not isInRaid(player) or not prompt.Enabled then
-				return
-			end
-			prompt.Enabled = false
-			chest.Transparency = 0.8
-			local loot = rollLoot(CHEST_LOOT[spot.Zone])
-			for itemId, count in loot do
-				WarzoneService.AddToBag(player, itemId, count)
-			end
-			StateService.Notify(player, `Found {describe(loot)}`, "good")
-			QuestService.Record(player, "OpenChest")
-			task.delay(CHEST_RESPAWN, function()
-				chest.Transparency = 0
-				prompt.Enabled = true
-			end)
-		end)
-	end
-
-	-- Mob spawns: slimes in the outer ring, brutes in the center
-	for i = 1, 10 do
-		local angle = (i / 10) * math.pi * 2
-		table.insert(mobSpawns, {
-			Position = ARENA_CENTER + Vector3.new(math.cos(angle) * 80, 0, math.sin(angle) * 80),
-			Zone = "Outer",
-		})
-	end
-	for i = 1, 4 do
-		local angle = (i / 4) * math.pi * 2 + 0.4
-		table.insert(mobSpawns, {
-			Position = ARENA_CENTER + Vector3.new(math.cos(angle) * 35, 0, math.sin(angle) * 35),
-			Zone = "Center",
-		})
-	end
-
-	arena.Parent = workspace
 end
 
--- Sparkles drifting up through the portal plus a purple glow
-local function addPortalEffects(surface: BasePart)
-	surface.Material = Enum.Material.Neon
-	surface.Color = Color3.fromRGB(140, 80, 255)
-	surface.Transparency = 0.3
-	local light = Instance.new("PointLight")
-	light.Color = Color3.fromRGB(170, 110, 255)
-	light.Range = 18
-	light.Brightness = 2
-	light.Parent = surface
-
-	local sparkles = Instance.new("ParticleEmitter")
-	sparkles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
-	sparkles.Color = ColorSequence.new(Color3.fromRGB(200, 160, 255), Color3.fromRGB(120, 80, 255))
-	sparkles.LightEmission = 1
-	sparkles.Size = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.5),
-		NumberSequenceKeypoint.new(1, 0),
-	})
-	sparkles.Transparency = NumberSequence.new(0.2)
-	sparkles.Lifetime = NumberRange.new(1.2, 2)
-	sparkles.Rate = 18
-	sparkles.Speed = NumberRange.new(1, 2.5)
-	sparkles.SpreadAngle = Vector2.new(25, 25)
-	sparkles.EmissionDirection = Enum.NormalId.Top
-	sparkles.Parent = surface
+-- For testing in Studio, where nobody can really quit and come back: goes through the same
+-- steps as quitting here and rejoining this server a moment later
+function WarzoneService.TestQuit(player: Player)
+	local data = DataService.GetData(player)
+	if not data or not WarzoneService.IsPlaying(player) then
+		return
+	end
+	onLeaving(player, data)
+	local saved = table.clone(data.Rejoin)
+	endRun(player)
+	data.Rejoin = saved
+	local character = player.Character
+	if character then
+		character:PivotTo(arrival)
+	end
+	task.delay(1, enter, player)
 end
 
-local function buildPortal(player: Player, island: IslandService.Island)
-	local position = island.Center + PORTAL_OFFSET
-	local model = Props.Place("Portal", position, island.Spawn.Position, island.Model)
-	local portal: BasePart
-	if model then
-		model.Name = "WarzonePortal"
-		portal = Props.Part(model, "PortalSurface") :: BasePart
-		addPortalEffects(portal)
-	else
-		portal = part({
-			Name = "WarzonePortal",
-			Size = Vector3.new(6, 8, 1),
-			CFrame = CFrame.new(position + Vector3.new(0, 4, 0)),
-			Color = Color3.fromRGB(150, 70, 255),
-			Material = Enum.Material.Neon,
-			Transparency = 0.25,
-			CanCollide = false,
-		})
-		portal.Parent = island.Model
+function WarzoneService.SetHunger(player: Player, value: number)
+	setHunger(player, value)
+end
+
+-- The clock: hunger, health, poison and remembering the last ground under your feet ----
+
+local function tick(player: Player, params: RaycastParams)
+	local humanoid = humanoidOf(player)
+	local root = rootOf(player)
+	if not humanoid or not root or humanoid.Health <= 0 then
+		return
 	end
-	local prompt = Prompts.Create(portal, {
-		Action = "Enter Warzone",
-		Object = `Warzone (level {Leveling.WarzoneLevel}+)`,
-		Hold = 0.5,
-		Distance = 12,
-	})
-	Prompts.OnTriggeredBy(prompt, player, function()
-		enter(player)
-	end)
+	params.FilterDescendantsInstances = { player.Character :: Model }
+	local below = workspace:Raycast(root.Position, Vector3.new(0, -7, 0), params)
+	if below then
+		lastGround[player] = below.Position + Vector3.new(0, 3, 0)
+	end
+
+	local moving = (root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)).Magnitude > 2
+	local food = (hunger[player] or 100) - (if moving then HUNGER_MOVING else HUNGER_STILL) * TICK
+	local health = humanoid.Health
+	local poisoned = os.clock() < (poisonUntil[player] or 0)
+	if poisoned then
+		health = math.max(1, health - POISON_PER_SECOND * TICK)
+	elseif food >= WELL_FED and health < humanoid.MaxHealth then
+		local gain = math.min(REGEN_PER_SECOND * TICK, humanoid.MaxHealth - health)
+		health += gain
+		food -= gain * HUNGER_PER_HEALTH
+	elseif food <= 0 and health > STARVE_FLOOR then
+		health = math.max(STARVE_FLOOR, health - STARVE_PER_SECOND * TICK)
+	end
+	if health ~= humanoid.Health then
+		humanoid.Health = health
+	end
+	setHunger(player, food)
+	if not poisoned and poisonUntil[player] then
+		poisonUntil[player] = nil
+		player:SetAttribute("PoisonUntil", nil)
+	end
+end
+
+local function runClock()
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	while true do
+		task.wait(TICK)
+		for _, player in Players:GetPlayers() do
+			if WarzoneService.IsPlaying(player) then
+				tick(player, params)
+			end
+		end
+	end
+end
+
+-- The map ---------------------------------------------------------------------------
+
+local function buildMap(): SpawnLocation
+	local world = BlockWorld.new(CENTER - Vector3.new(0, SIZE / 2, 0), "World", workspace)
+	world.Model:SetAttribute("Kind", "Warzone")
+	local decor = Instance.new("Folder")
+	decor.Name = "WorldDecor"
+	decor.Parent = workspace
+
+	local started = os.clock()
+	Pace.Begin()
+	local ctx = Context.new(world, decor, Warzone.Seed, Warzone.SouthZ)
+	Warzone.Build(ctx)
+	BlockWorld.drawAll(world, true)
+	Pace.Finish()
+	print(
+		`[World] Warzone: built in {string.format("%.1f", os.clock() - started)}s,`,
+		`{BlockWorld.partCount(world)} block parts, {#decor:GetDescendants()} decor instances`
+	)
+
+	-- The client shows which zone you're in from these
+	workspace:SetAttribute("WarzoneCenter", CENTER)
+	workspace:SetAttribute("WarzoneSafeRadius", Warzone.SafeRadius * SIZE)
+
+	local spot = Warzone.Arrival
+	local feet = ctx.Top(spot.X, spot.Y, spot.Z)
+	arrival = CFrame.lookAt(feet + Vector3.new(0, 4, 0), feet + Vector3.new(0, 4, -10))
+	return Spawning.MakeSpawn(feet, -Vector3.zAxis, world.Model)
 end
 
 function WarzoneService.Start()
-	buildArena()
-	IslandService.OnIslandCreated(buildPortal)
+	Ambience.Warzone()
+	-- Roblox's own script regrows everyone's health all the time. Here hunger decides: an empty
+	-- script of the same name takes its place.
+	local noRegen = Instance.new("Script")
+	noRegen.Name = "Health"
+	noRegen.Parent = StarterPlayer:WaitForChild("StarterCharacterScripts")
+
+	local spawnPoint = buildMap()
+
+	local arrived: { [Player]: boolean } = {}
+	Spawning.Start(spawnPoint, CENTER.Y - FALL_LIMIT, function(player)
+		arrived[player] = true
+		enter(player)
+	end, onFell)
 
 	local function track(player: Player)
 		player:SetAttribute("InWarzone", false)
 		player.CharacterAdded:Connect(function(character)
 			onCharacterAdded(player, character)
+			-- Back on your feet after dying: that's your run over
+			if arrived[player] then
+				goHome(player)
+			end
 		end)
-		if player.Character then
-			onCharacterAdded(player, player.Character)
-		end
 	end
 	for _, player in Players:GetPlayers() do
 		track(player)
 	end
 	Players.PlayerAdded:Connect(track)
 
-	-- Leaving the game mid-raid drops your bag for others, so logging out can't save it
-	Players.PlayerRemoving:Connect(function(player: Player)
-		local character = player.Character
-		local root = character and character:FindFirstChild("HumanoidRootPart")
-		dropBag(player, if root and root:IsA("BasePart") then root.Position else nil)
+	Remotes.LeaveWarzone.OnServerEvent:Connect(function(player: Player, holding: unknown)
+		if holding == true then
+			startLeaving(player)
+		else
+			stopLeaving(player)
+		end
 	end)
+	Remotes.Block.OnServerEvent:Connect(function(player: Player, holding: unknown)
+		if holding == true then
+			startBlocking(player)
+		else
+			stopBlocking(player)
+		end
+	end)
+
+	DataService.OnLeaving(onLeaving)
+	Players.PlayerRemoving:Connect(function(player: Player)
+		-- A moment later, so the save's last look at them sees them as they were
+		task.delay(1, function()
+			leaving[player] = nil
+			arrived[player] = nil
+			hunger[player] = nil
+			warned[player] = nil
+			poisonUntil[player] = nil
+			lastGround[player] = nil
+			blockingSpeed[player] = nil
+			shieldDownUntil[player] = nil
+			eating[player] = nil
+			leftOnPurpose[player] = nil
+		end)
+	end)
+
+	task.spawn(runClock)
 end
 
 return WarzoneService

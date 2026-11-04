@@ -41,6 +41,8 @@ local SIZE = Blocks.Size
 local COAL_CHANCE, IRON_CHANCE, IRON_MIN_DEPTH = 0.07, 0.04, 4
 -- Seconds a planted sapling takes to become a tree
 local SAPLING_GROW_TIME = 180
+-- The late-game trees' logs sell high, so one tree mustn't pay like a hundred nodes
+local LATE_TREE_GROW_TIME = 1800
 -- A sapling's model is scaled to about this tall (studs)
 local SAPLING_HEIGHT = 2.4
 -- A felled tree's leaves drop over this many seconds
@@ -49,9 +51,47 @@ local LEAF_FALL_TIME = 1.6
 type Cell = { X: number, Y: number, Z: number }
 -- A resource node block: what grows there, and when it grows back if it's been mined
 export type Node = { X: number, Y: number, Z: number, Block: string, RespawnAt: number? }
-type PlantedTrees = { [string]: { PlantedAt: number, Height: number } }
+type PlantedTrees = { [string]: { PlantedAt: number, Height: number, Kind: string? } }
 -- A standing tree (one of the island's own, or one the player planted): its cells
-type Tree = { Logs: { string }, Leaves: { string }, Planted: boolean }
+type Tree = { Logs: { string }, Leaves: { string }, Planted: boolean, Kind: string }
+
+-- Each kind of tree a sapling grows (Items' Tree field): its shape, its log, how tall its trunk
+-- grows, how many seconds it takes (default SAPLING_GROW_TIME) and the sapling you get back when
+-- you fell it
+type TreeShape = (
+	x: number,
+	baseY: number,
+	z: number,
+	height: number,
+	put: (number, number, number, string) -> ()
+) -> ()
+local TREE_KINDS: {
+	[string]: { Grow: TreeShape, Log: string, Min: number, Max: number, Sapling: string, Seconds: number? },
+} =
+	{
+		Oak = { Grow = Trees.Oak, Log = "Wood", Min = 4, Max = 5, Sapling = "Sapling" },
+		Birch = { Grow = Trees.Birch, Log = "BirchWood", Min = 5, Max = 8, Sapling = "BirchSapling" },
+		Spruce = { Grow = Trees.Spruce, Log = "SpruceWood", Min = 8, Max = 12, Sapling = "SpruceSapling" },
+		Cherry = { Grow = Trees.Cherry, Log = "CherryWood", Min = 4, Max = 5, Sapling = "CherrySapling" },
+		Maple = { Grow = Trees.Maple, Log = "MapleWood", Min = 5, Max = 7, Sapling = "MapleSapling" },
+		Redwood = { Grow = Trees.Redwood, Log = "Redwood", Min = 24, Max = 30, Sapling = "RedwoodSapling" },
+		Mangrove = {
+			Grow = Trees.Mangrove,
+			Log = "MangroveWood",
+			Min = 6,
+			Max = 8,
+			Sapling = "MangroveSapling",
+			Seconds = LATE_TREE_GROW_TIME,
+		},
+		Starwood = {
+			Grow = Trees.Starwood,
+			Log = "Starwood",
+			Min = 7,
+			Max = 10,
+			Sapling = "StarwoodSapling",
+			Seconds = LATE_TREE_GROW_TIME,
+		},
+	}
 
 export type Island = {
 	World: BlockWorld.World,
@@ -164,8 +204,9 @@ local function addNode(
 	nodes[k] = { X = x, Y = y, Z = z, Block = block }
 end
 
--- Adds an oak tree standing on the cell (x, baseY, z) to `cells`. Cells that are already
--- taken (or that `blocked` says are) are skipped. Returns the tree's cells.
+-- Adds a tree of `kind` (an oak if not given) standing on the cell (x, baseY, z) to `cells`.
+-- Cells that are already taken (or that `blocked` says are) are skipped. Returns the tree's
+-- cells.
 local function addTree(
 	cells: { [string]: string },
 	x: number,
@@ -173,21 +214,24 @@ local function addTree(
 	z: number,
 	height: number,
 	planted: boolean,
-	blocked: ((cellKey: string) -> boolean)?
+	blocked: ((cellKey: string) -> boolean)?,
+	kind: string?
 ): Tree
-	local tree: Tree = { Logs = {}, Leaves = {}, Planted = planted }
-	Trees.Oak(x, baseY, z, height, function(px, py, pz, block)
+	local treeKind = kind or "Oak"
+	local shape = TREE_KINDS[treeKind]
+	local tree: Tree = { Logs = {}, Leaves = {}, Planted = planted, Kind = treeKind }
+	shape.Grow(x, baseY, z, height, function(px, py, pz, block)
 		local k = key(px, py, pz)
 		if not cells[k] and not (blocked and blocked(k)) then
 			cells[k] = block
-			table.insert(if block == "Wood" then tree.Logs else tree.Leaves, k)
+			table.insert(if block == shape.Log then tree.Logs else tree.Leaves, k)
 		end
 	end)
 	return tree
 end
 
-local function grown(tree: { PlantedAt: number }): boolean
-	return os.time() >= tree.PlantedAt + SAPLING_GROW_TIME
+local function grown(tree: { PlantedAt: number, Kind: string? }): boolean
+	return os.time() >= tree.PlantedAt + (TREE_KINDS[tree.Kind or "Oak"].Seconds or SAPLING_GROW_TIME)
 end
 
 type Generated = {
@@ -289,7 +333,7 @@ local function generate(island: DataService.IslandData): Generated
 	for groundKey, tree in island.Trees do
 		if grown(tree) then
 			local x, y, z = BlockWorld.unkey(groundKey)
-			trees[groundKey] = addTree(cells, x, y, z, tree.Height, true, blocked)
+			trees[groundKey] = addTree(cells, x, y, z, tree.Height, true, blocked, tree.Kind)
 		end
 	end
 
@@ -382,8 +426,9 @@ end
 
 -- Does the tree still have a log standing (one it grew, not one the player put back)?
 local function standing(island: Island, data: DataService.Data, tree: Tree): boolean
+	local log = TREE_KINDS[tree.Kind].Log
 	for _, cellKey in tree.Logs do
-		if island.World.Cells[cellKey] == "Wood" and isNatural(island, data, cellKey, "Wood") then
+		if island.World.Cells[cellKey] == log and isNatural(island, data, cellKey, log) then
 			return true
 		end
 	end
@@ -406,10 +451,12 @@ local function fell(island: Island, data: DataService.Data, groundKey: string, i
 	end
 
 	local world = island.World
+	local log = TREE_KINDS[tree.Kind].Log
 	local fallen = 0
 	for _, cells in { tree.Logs, tree.Leaves } do
 		for _, cellKey in cells do
-			local leaf = world.Cells[cellKey] == "Leaves" and isNatural(island, data, cellKey, "Leaves")
+			local block = world.Cells[cellKey]
+			local leaf = block ~= nil and block ~= log and isNatural(island, data, cellKey, block)
 			island.TreeCells[cellKey] = nil
 			island.Base[cellKey] = nil
 			-- A hole where the tree was is just air now; anything built there stays
@@ -424,11 +471,7 @@ local function fell(island: Island, data: DataService.Data, groundKey: string, i
 				else
 					task.delay(rng:NextNumber(0.1, LEAF_FALL_TIME), function()
 						-- (unless the island was rebuilt meanwhile)
-						if
-							island.Model.Parent
-							and world.Cells[cellKey] == "Leaves"
-							and not island.TreeCells[cellKey]
-						then
+						if island.Model.Parent and world.Cells[cellKey] == block and not island.TreeCells[cellKey] then
 							BlockWorld.set(world, x, y, z, nil)
 						end
 					end)
@@ -649,8 +692,8 @@ end
 
 -- After a block on the island was broken: a node starts growing back, anything else is
 -- saved as changed. Chopping a tree's last log fells it; then this returns how many of
--- its leaves fell (for the woodcutter's saplings).
-function IslandService.Broken(player: Player, x: number, y: number, z: number): number?
+-- its leaves fell and which sapling it grew from (for the woodcutter's saplings).
+function IslandService.Broken(player: Player, x: number, y: number, z: number): (number?, string?)
 	local island = islands[player]
 	local data = DataService.GetData(player)
 	if not island or not data then
@@ -668,7 +711,7 @@ function IslandService.Broken(player: Player, x: number, y: number, z: number): 
 	if groundKey and tree and table.find(tree.Logs, cellKey) and not standing(island, data, tree) then
 		local fallen = fell(island, data, groundKey, false)
 		DataService.MarkChanged(player)
-		return fallen
+		return fallen, TREE_KINDS[tree.Kind].Sapling
 	end
 	return nil
 end
@@ -689,7 +732,17 @@ end
 
 -- Plants a sapling on the grass or dirt block at (x, y, z) if there's room above it for
 -- a tree. Returns whether it worked, and a reason to show the player if not.
-function IslandService.PlantSapling(player: Player, x: number, y: number, z: number): (boolean, string?)
+-- The log a kind of tree grows (for its Woodcutting level)
+function IslandService.TreeLog(kind: string): string
+	return TREE_KINDS[kind].Log
+end
+
+-- How many minutes a kind of tree takes to grow from a sapling
+function IslandService.TreeMinutes(kind: string): number
+	return math.round((TREE_KINDS[kind].Seconds or SAPLING_GROW_TIME) / 60)
+end
+
+function IslandService.PlantSapling(player: Player, x: number, y: number, z: number, kind: string): (boolean, string?)
 	local island = islands[player]
 	local data = DataService.GetData(player)
 	if not island or not data then
@@ -704,40 +757,47 @@ function IslandService.PlantSapling(player: Player, x: number, y: number, z: num
 	if data.Island.Trees[groundKey] or island.Trees[groundKey] then
 		return false, "Something's already growing here"
 	end
-	local height = 4 + rng:NextInteger(0, 1)
+	local shape = TREE_KINDS[kind]
+	local height = rng:NextInteger(shape.Min, shape.Max)
 	for dy = 1, height + 2 do
 		local k = key(x, y + dy, z)
 		if world.Cells[k] or world.Protected[k] or island.Nodes[k] then
 			return false, "There's no room for a tree to grow here"
 		end
 	end
-	data.Island.Trees[groundKey] = { PlantedAt = os.time(), Height = height }
+	data.Island.Trees[groundKey] = { PlantedAt = os.time(), Height = height, Kind = kind }
 	protectTrunk(world, x, y, z, height, true)
 	makeSapling(island, groundKey)
 	DataService.MarkChanged(player)
 	return true, nil
 end
 
--- Digs up the growing sapling at the cell above (x, y - 1, z). Returns whether there was one.
-function IslandService.Uproot(player: Player, x: number, y: number, z: number): boolean
+-- Digs up the growing sapling at the cell above (x, y - 1, z). Returns its item, if there was
+-- one.
+function IslandService.Uproot(player: Player, x: number, y: number, z: number): string?
 	local island = islands[player]
 	local data = DataService.GetData(player)
 	local groundKey = key(x, y - 1, z)
 	local sapling = island and island.Saplings[groundKey]
 	local tree = data and data.Island.Trees[groundKey]
 	if not island or not data or not sapling or not tree then
-		return false
+		return nil
 	end
 	data.Island.Trees[groundKey] = nil
 	sapling:Destroy()
 	island.Saplings[groundKey] = nil
 	protectTrunk(island.World, x, y - 1, z, tree.Height, false)
 	DataService.MarkChanged(player)
-	return true
+	return TREE_KINDS[tree.Kind or "Oak"].Sapling
 end
 
 -- A sapling whose time is up becomes a tree (waiting if someone stands in it)
-local function growTree(island: Island, data: DataService.Data, groundKey: string, planted: { Height: number })
+local function growTree(
+	island: Island,
+	data: DataService.Data,
+	groundKey: string,
+	planted: { Height: number, Kind: string? }
+)
 	local world = island.World
 	local x, y, z = BlockWorld.unkey(groundKey)
 	for dy = 1, planted.Height do
@@ -754,7 +814,7 @@ local function growTree(island: Island, data: DataService.Data, groundKey: strin
 	local cells: { [string]: string } = {}
 	local tree = addTree(cells, x, y, z, planted.Height, true, function(cellKey)
 		return world.Cells[cellKey] ~= nil or world.Protected[cellKey] == true or island.Nodes[cellKey] ~= nil
-	end)
+	end, planted.Kind)
 	for cellKey, block in cells do
 		island.Base[cellKey] = block
 		data.Island.Blocks[cellKey] = nil

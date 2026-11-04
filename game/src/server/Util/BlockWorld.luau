@@ -41,6 +41,8 @@ export type World = {
 	Protected: { [string]: boolean },
 	-- Cells drawn as part of a merged piece
 	Merged: { [string]: Piece },
+	-- Quarter turns of cells that aren't square to the world (a chest faces whoever placed it)
+	Turns: { [string]: number },
 	-- Empty cells that count as solid rock: the hollow inside of a world's islands, which
 	-- nobody can see into, so it isn't stored block by block
 	Inner: ((x: number, y: number, z: number) -> boolean)?,
@@ -83,6 +85,7 @@ function BlockWorld.new(origin: Vector3, name: string, parent: Instance): World
 		Parts = {},
 		Protected = {},
 		Merged = {},
+		Turns = {},
 	}
 end
 
@@ -180,7 +183,10 @@ local function makePart(world: World, blockType: string, x: number, y: number, z
 		-- Shorter than a block (water, lava): stand it on the cell's floor
 		position -= Vector3.new(0, SIZE * (1 - height) / 2, 0)
 	end
-	part.CFrame = CFrame.new(position) * (rotation :: CFrame)
+	local turns = world.Turns[BlockWorld.key(x, y, z)]
+	part.CFrame = CFrame.new(position)
+		* (if turns then CFrame.Angles(0, turns * math.pi / 2, 0) else CFrame.identity)
+		* rotation :: CFrame
 	part:SetAttribute("X", x)
 	part:SetAttribute("Y", y)
 	part:SetAttribute("Z", z)
@@ -190,6 +196,16 @@ local function makePart(world: World, blockType: string, x: number, y: number, z
 	end
 	part.Parent = world.Model
 	return part
+end
+
+-- Turns a cell by quarter turns, now and whenever it's drawn again
+function BlockWorld.setTurn(world: World, x: number, y: number, z: number, turns: number)
+	local key = BlockWorld.key(x, y, z)
+	world.Turns[key] = turns
+	local part = world.Parts[key]
+	if part then
+		part:PivotTo(CFrame.new(part.Position) * CFrame.Angles(0, turns * math.pi / 2, 0))
+	end
 end
 
 -- Creates or removes the Part for one cell to match its data and visibility

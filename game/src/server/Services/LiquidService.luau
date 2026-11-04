@@ -8,20 +8,26 @@
 -- back and turns to stone again: a stone generator.
 -- Lava burns whoever stands in it. Also builds the liquids' look (LiquidModels) on every
 -- server, for icons.
+-- A stream that falls off the island is cells down to BOTTOM, past where anyone can follow it
+-- (Config.Island.FallLimit), then one long part on down into the void.
 
+local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Liquids = require(ReplicatedStorage.Shared.Liquids)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local LiquidModels = require(script.Parent.Parent.Util.LiquidModels)
 local IslandService = require(script.Parent.IslandService)
 
--- How far liquid may flow from the island's middle (blocks), and the lowest and highest
--- cells it may fill (a waterfall off the edge stops a little below the island)
-local REACH, BOTTOM, TOP = 40, -45, 60
+-- How far liquid may flow from the island's middle (blocks: the biggest build border), and
+-- the lowest and highest cells it may fill
+local REACH, BOTTOM, TOP = IslandTiers[#IslandTiers].Border, -45, 96
+-- How far a stream carries on below BOTTOM (studs): out of sight, not out of the world
+local TAIL_LENGTH = 900
 local SIDES = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }
 local NEIGHBOURS = { { 1, 0, 0 }, { -1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, 1 }, { 0, 0, -1 } }
 -- Seconds at least before stone forms where water and lava meet
@@ -38,6 +44,8 @@ type State = {
 	Sources: { [string]: boolean },
 	-- The flowing blocks drawn now: cell -> block type
 	Flows: { [string]: string },
+	-- Streams pouring on into the void: their lowest cell -> the long part below it
+	Tails: { [string]: BasePart },
 	-- Goes up with every new plan, so an older one stops filling
 	Version: number,
 	Queued: boolean,
@@ -153,6 +161,8 @@ local function plan(state: State): Plan
 			if free(x, y - 1, z) and liquidAt(key(x, y - 1, z)) ~= other then
 				-- Nothing underneath: it pours straight down, and doesn't spread
 				enter(x, y - 1, z, 0, true, step)
+			elseif y == BOTTOM and cells[key(x, y - 1, z)] == nil then
+				continue -- it pours on into the void (see updateTail), and doesn't spread
 			elseif level < kind.Spread then
 				for _, d in SIDES do
 					local nx, nz = x + d[1], z + d[2]
@@ -168,6 +178,34 @@ local function plan(state: State): Plan
 	spread(Liquids.Kinds.Water)
 	spread(Liquids.Kinds.Lava)
 	return { Flows = flows, Delays = delays, Stone = stone }
+end
+
+-- Draws or removes the long part under cell `k`, to match what flows there now
+local function updateTail(state: State, k: string)
+	local x, y, z = unkey(k)
+	if y ~= BOTTOM then
+		return
+	end
+	local world = state.Island.World
+	local blockType = state.Flows[k]
+	local cell = blockType and Liquids.ByBlock[blockType]
+	local pouring = cell ~= nil and cell.Falling and world.Cells[key(x, y - 1, z)] == nil
+	local tail = state.Tails[k]
+	if pouring and not tail then
+		local template = ReplicatedStorage.Blocks:FindFirstChild(blockType :: string) :: BasePart
+		local part = template:Clone()
+		-- Only a look: nobody gets this far down, and it's nothing to aim at or swim in
+		CollectionService:RemoveTag(part, "Water")
+		part.CanQuery = false
+		part.Size = Vector3.new(template.Size.X, TAIL_LENGTH, template.Size.Z)
+		local floor = BlockWorld.position(world, x, y, z) - Vector3.new(0, Blocks.Size / 2, 0)
+		part.Position = floor - Vector3.new(0, TAIL_LENGTH / 2, 0)
+		part.Parent = world.Model
+		state.Tails[k] = part
+	elseif tail and not pouring then
+		tail:Destroy()
+		state.Tails[k] = nil
+	end
 end
 
 -- Works out the flows again and changes the island to match: dried-up cells go at once,
@@ -196,6 +234,7 @@ local function apply(state: State, instant: boolean?)
 				local x, y, z = unkey(k)
 				BlockWorld.set(world, x, y, z, nil)
 			end
+			updateTail(state, k)
 		end
 	end
 	applying = false
@@ -240,6 +279,7 @@ local function apply(state: State, instant: boolean?)
 					BlockWorld.set(world, x, y, z, step.Block)
 					applying = false
 					state.Flows[step.Key] = step.Block
+					updateTail(state, step.Key)
 				end
 			end
 		end
@@ -284,6 +324,7 @@ local function onIsland(player: Player, island: IslandService.Island)
 		Island = island,
 		Sources = {},
 		Flows = {},
+		Tails = {},
 		Version = 0,
 		Queued = false,
 	}

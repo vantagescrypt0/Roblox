@@ -10,6 +10,9 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local Inventory = require(ReplicatedStorage.Shared.Inventory)
+local ItemOrder = require(ReplicatedStorage.Shared.ItemOrder)
+local Items = require(ReplicatedStorage.Shared.Items)
 local Seasons = require(ReplicatedStorage.Shared.Seasons)
 local ProfileStore = require(script.Parent.Parent.Packages.ProfileStore)
 
@@ -36,16 +39,18 @@ local TEMPLATE = {
 		-- Blocks the player changed: "x,y,z" -> block type, or "Air" where they broke one
 		Blocks = {} :: { [string]: string },
 		-- Trees the player planted, by the cell they stand on, until they're felled (see IslandService)
-		Trees = {} :: { [string]: { PlantedAt: number, Height: number } },
+		Trees = {} :: { [string]: { PlantedAt: number, Height: number, Kind: string? } },
 		-- The island's own trees the player has felled (they don't grow back), by the cell they stood on
 		Felled = {} :: { [string]: boolean },
 		-- Nodes the player placed (rewards like a Coal Node): cell -> the block that grows back
 		Nodes = {} :: { [string]: string },
+		-- Storage chests: cell -> which way it faces and what's in it (ChestService)
+		Chests = {} :: { [string]: { Turn: number, Items: { { Slot: number, Item: string, Count: number } } } },
 	},
-	-- item id -> count
+	-- item id -> count: what's in Slots plus what's worn (InventoryService keeps them in step)
 	Items = {} :: { [string]: number },
-	-- The 5 hotbar slots: item ids ("" = empty)
-	Hotbar = { "", "", "", "", "" },
+	-- The 36 inventory slots, the first 9 the hotbar (Inventory.luau). Filled in as the save loads.
+	Slots = {} :: { Inventory.Stack },
 	-- See Skills.luau; new skills reach old saves through Reconcile
 	Skills = {
 		Farming = { Level = 1, XP = 0 },
@@ -68,6 +73,10 @@ local TEMPLATE = {
 		OwnFarmland = false,
 		-- The beginner chain got a "Craft Twine" step; saves past that point skip it (QuestService)
 		TwineStep = false,
+		-- Armor sets have become four pieces each (GearService)
+		ArmorPieces = false,
+		-- Items moved into the 36 slots
+		Slots = false,
 	},
 	-- Mail waiting to be claimed, oldest first (InboxService). Count is how many letters
 	-- the player has ever had (each letter's id).
@@ -81,10 +90,14 @@ local TEMPLATE = {
 		Counts = {} :: { [string]: number },
 		Reached = {} :: { [string]: boolean },
 	},
-	-- The pet and armor set the player wears (item ids, "" = none; see Gear.luau)
+	-- The pet, armor pieces and shield the player wears (item ids, "" = none; see Gear.luau)
 	Equipped = {
 		Pet = "",
-		Armor = "",
+		Helmet = "",
+		Chest = "",
+		Legs = "",
+		Boots = "",
+		Shield = "",
 	},
 	-- Beginner quest chain: which quest you're on and how far along it is
 	Quest = {
@@ -97,11 +110,20 @@ local TEMPLATE = {
 	Boards = {} :: { [string]: { Done: { [string]: boolean }, Current: string, Progress: number } },
 	-- The group the quest tracker shows
 	Tracked = "Beginner",
-	-- Warzone run in progress. The bag only becomes yours when you extract; leaving
-	-- the game mid-raid loses it.
+	-- Active: in the Warzone right now. (The bag is left from the prototype, and unused.)
 	Raid = {
 		Active = false,
 		Bag = {} :: { [string]: number },
+	},
+	-- You quit the Warzone: until this time (os.time) rejoining sends you back to that server
+	-- and spot, with your hunger as it was (WarzoneService, TravelService)
+	Rejoin = {
+		JobId = "",
+		Until = 0,
+		X = 0,
+		Y = 0,
+		Z = 0,
+		Hunger = 100,
 	},
 	-- Your last trades with other players, newest last, so scams and duplication bugs can
 	-- be looked into
@@ -117,11 +139,63 @@ local DataService = {}
 
 local store = ProfileStore.New(STORE_NAME, TEMPLATE)
 local profiles: { [Player]: any } = {}
+local leavingCallbacks: { PlayerCallback } = {}
 local loadingCallbacks: { PlayerCallback } = {}
 local loadedCallbacks: { PlayerCallback } = {}
 local changedCallbacks: { PlayerCallback } = {}
 local messageHandlers: { [string]: MessageHandler } = {}
 local pendingChanges: { [Player]: boolean } = {}
+
+-- Saves from before the 36 slots: what was on the hotbar stays where it was, the rest fills up in
+-- the Bag's old order, and what doesn't fit waits in a letter to claim when there's room
+local function moveToSlots(data: Data)
+	if data.Flags.Slots then
+		return
+	end
+	data.Flags.Slots = true
+	local hotbar = (data :: any).Hotbar or {}
+	(data :: any).Hotbar = nil
+
+	local left = table.clone(data.Items)
+	for _, worn in data.Equipped :: { [string]: string } do
+		if worn ~= "" and (left[worn] or 0) > 0 then
+			left[worn] -= 1
+		end
+	end
+
+	local slots = Inventory.Empty()
+	for index, itemId in hotbar do
+		local item = Items[itemId]
+		if item and not item.Equip and (left[itemId] or 0) > 0 and slots[index] then
+			local count = math.min(left[itemId], Inventory.MaxStack(itemId))
+			slots[index] = { Item = itemId, Count = count }
+			left[itemId] -= count
+		end
+	end
+	local waiting: { [string]: number } = {}
+	for _, itemId in ItemOrder do
+		if (left[itemId] or 0) > 0 then
+			local over = Inventory.Insert(slots, itemId, left[itemId])
+			if over > 0 then
+				waiting[itemId] = over
+				data.Items[itemId] -= over
+			end
+		end
+	end
+	data.Slots = slots
+
+	if next(waiting) then
+		data.Inbox.Count += 1
+		table.insert(data.Inbox.Mail, {
+			Id = data.Inbox.Count,
+			From = "Skycore",
+			Text = "Your Bag now holds 36 stacks. These didn't fit, so they're waiting here. Make room, then claim them.",
+			Items = waiting,
+			Coins = 0,
+			At = os.time(),
+		})
+	end
+end
 
 local function profileKey(userId: number): string
 	return `Player_{userId}`
@@ -219,12 +293,12 @@ local function onPlayerAdded(player: Player)
 		data.Flags.StarterBuckets = true
 		data.Flags.OwnFarmland = true
 		data.Flags.TwineStep = true
+		data.Flags.ArmorPieces = true
 		data.Items.WheatSeeds = (data.Items.WheatSeeds or 0) + 6
 		data.Items.WoodenHoe = (data.Items.WoodenHoe or 0) + 1
 		data.Items.WaterBucket = (data.Items.WaterBucket or 0) + 1
 		data.Items.LavaBucket = (data.Items.LavaBucket or 0) + 1
-		data.Hotbar[1] = "WheatSeeds"
-		data.Hotbar[2] = "WoodenHoe"
+		(data :: any).Hotbar = { "WheatSeeds", "WoodenHoe" }
 		-- New players start on the current season (no reset for them)
 		data.Season = Seasons.At(os.time())
 	end
@@ -236,6 +310,7 @@ local function onPlayerAdded(player: Player)
 	for _, callback in loadingCallbacks do
 		callback(player, data)
 	end
+	moveToSlots(data)
 
 	profiles[player] = profile
 	for _, callback in loadedCallbacks do
@@ -257,6 +332,11 @@ local function onPlayerAdded(player: Player)
 	end)
 end
 
+-- Runs just before a player's save closes, as they leave, so it can still be changed
+function DataService.OnLeaving(callback: PlayerCallback)
+	table.insert(leavingCallbacks, callback)
+end
+
 function DataService.Start()
 	for _, player in Players:GetPlayers() do
 		task.spawn(onPlayerAdded, player)
@@ -267,6 +347,9 @@ function DataService.Start()
 		pendingChanges[player] = nil
 		local profile = profiles[player]
 		if profile then
+			for _, callback in leavingCallbacks do
+				callback(player, profile.Data)
+			end
 			profile:EndSession()
 		end
 	end)

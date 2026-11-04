@@ -1,23 +1,23 @@
 --!strict
--- The always-on HUD: coins, the level badge and XP bar in the bottom-left corner (click
--- them for the Skills window), the season's countdown (when it has an end date), Warzone
--- status, a Menu button in the corner that pops up the Bag/Island/Skills/Challenges/Inbox
--- buttons (badges count the mail waiting), the raid banner, pop-up messages and big
--- celebrations.
+-- The always-on HUD, in the Night Glass look (Glass.luau): coins and a card with your level, name
+-- and XP in the bottom-left corner (click it for the Skills window), the season's countdown
+-- (when it has an end date), Warzone status, a Menu button in the corner that pops up the
+-- Bag/Island/Skills/Challenges/Inbox buttons (badges count the mail waiting), pop-up messages
+-- and big celebrations.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
-local Items = require(ReplicatedStorage.Shared.Items)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Seasons = require(ReplicatedStorage.Shared.Seasons)
+local Glass = require(script.Parent.UI.Glass)
 local ItemIcon = require(script.Parent.UI.ItemIcon)
 local Sfx = require(script.Parent.UI.Sfx)
 local Theme = require(script.Parent.UI.Theme)
 
-local C = Theme.Color
+local C = Glass.Color
 local localPlayer = Players.LocalPlayer :: Player
 
 local Hud = {}
@@ -32,13 +32,12 @@ export type Callbacks = {
 
 local levelNumber: TextLabel
 local xpBar: Theme.Bar
+local xpText: TextLabel
 local coinsText: TextLabel
 local coinsRow: Frame
 local warzoneChip: TextLabel
 local seasonChip: TextLabel
 local season: number? = nil
-local raidBanner: Frame
-local raidBag: TextLabel
 local toastHolder: Frame
 local celebration: Frame
 local celebrationTitle: TextLabel
@@ -47,7 +46,8 @@ local fadeFrame: Frame
 local fadeTitle: TextLabel
 local inboxBadge: TextLabel
 local menuBadge: TextLabel
-local menuButton: Theme.Button
+local menuFace: TextButton
+local menuStroke: UIStroke
 local menuPanel: Frame
 local menuOpen = false
 local lastCoins: number? = nil
@@ -68,108 +68,95 @@ local TOAST_SOUNDS: { [string]: string } = {
 
 -- The colored edge on each kind of message
 local TOAST_COLORS: { [string]: Color3 } = {
-	info = C.Blue,
-	good = C.Leaf,
-	coins = C.Orange,
+	info = C.Accent,
+	good = C.Green,
+	coins = C.Gold,
 	bad = C.Red,
 	level = C.Purple,
 	levelup = C.Gold,
-	harvest = C.Leaf,
-	craft = C.Leaf,
-	smelt = C.Orange,
-	timber = C.Leaf,
+	harvest = C.Green,
+	craft = C.Green,
+	smelt = C.Hunger,
+	timber = C.Green,
 }
 
-local BUTTON = 64 -- the menu's buttons are square
-local STATUS_WIDTH = 300
-local STATUS_HEIGHT = 126
+local BUTTON = 62 -- the Menu button and the buttons in its panel are square
+local CARD_WIDTH = 270
+local STATUS_HEIGHT = 98 -- the coins over the card
 
--- Coins, level and XP at the bottom of the left-hand group, right of the Menu. No card
--- behind them: outlined numbers straight over the world.
+-- Coins over a card with your level, name and XP, right of the Menu
 local function buildStatus(group: Frame, onSkills: () -> ())
 	local holder = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.new(0, BUTTON + 14, 1, 0),
-		Size = UDim2.fromOffset(STATUS_WIDTH, STATUS_HEIGHT),
+		Position = UDim2.new(0, BUTTON + 10, 1, 0),
+		Size = UDim2.fromOffset(CARD_WIDTH, STATUS_HEIGHT),
 		BackgroundTransparency = 1,
 		Parent = group,
 	})
 
-	-- Coins: a coin and a big outlined number
+	-- Coins: a coin and an outlined number straight over the world
 	coinsRow = Theme.make("Frame", {
-		Size = UDim2.fromOffset(300, 38),
+		Size = UDim2.fromOffset(CARD_WIDTH, 30),
 		BackgroundTransparency = 1,
 		Parent = holder,
 	})
 	Theme.list(coinsRow, Enum.FillDirection.Horizontal, 6)
 	local coinIcon = Theme.make("Frame", {
-		Size = UDim2.fromOffset(38, 38),
+		Size = UDim2.fromOffset(28, 28),
 		BackgroundTransparency = 1,
 		LayoutOrder = 1,
 		Parent = coinsRow,
 	})
 	Theme.coin(coinIcon)
-	coinsText = Theme.text(coinsRow, "0", 30, Theme.Font.Bold, C.White)
+	coinsText = Glass.worldText(coinsRow, "0", 22, Glass.Font.Bold)
 	coinsText.AutomaticSize = Enum.AutomaticSize.X
-	coinsText.Size = UDim2.fromOffset(0, 38)
+	coinsText.Size = UDim2.fromOffset(0, 30)
 	coinsText.TextTruncate = Enum.TextTruncate.None
 	coinsText.LayoutOrder = 2
 
-	-- Level badge: a gold circle with the level in big outlined numbers
+	-- The card opens the Skills window
+	local card = Glass.card(holder, UDim2.fromOffset(CARD_WIDTH, BUTTON), UDim2.new(0, 0, 1, -BUTTON))
 	local badge = Theme.make("Frame", {
-		Position = UDim2.fromOffset(0, 46),
-		Size = UDim2.fromOffset(80, 80),
+		Position = UDim2.fromOffset(9, 9),
+		Size = UDim2.fromOffset(44, 44),
 		BackgroundColor3 = C.Gold,
-		Parent = holder,
+		Parent = card,
 	})
 	Theme.corner(badge, 999)
-	Theme.stroke(badge, C.Outline, 3)
-	local ring = Theme.make("Frame", {
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.fromScale(0.5, 0.5),
-		Size = UDim2.new(1, -12, 1, -12),
-		BackgroundTransparency = 1,
-		Parent = badge,
-	})
-	Theme.corner(ring, 999)
-	Theme.stroke(ring, Theme.lighten(C.Gold, 0.45), 2)
-	local lv = Theme.text(badge, "LEVEL", 12, Theme.Font.Bold, C.White)
-	lv.Position = UDim2.fromOffset(0, 12)
-	lv.Size = UDim2.new(1, 0, 0, 14)
-	lv.TextXAlignment = Enum.TextXAlignment.Center
-	levelNumber = Theme.text(badge, "1", 34, Theme.Font.Bold, C.White)
-	levelNumber.Position = UDim2.fromOffset(0, 26)
-	levelNumber.Size = UDim2.new(1, 0, 0, 40)
+	levelNumber = Glass.text(badge, "1", 21, Glass.Font.Bold, C.Well)
+	levelNumber.Size = UDim2.fromScale(1, 1)
 	levelNumber.TextXAlignment = Enum.TextXAlignment.Center
 
-	local name = Theme.title(holder, localPlayer.DisplayName, 22, C.White)
-	name.Position = UDim2.fromOffset(90, 54)
-	name.Size = UDim2.fromOffset(210, 26)
+	local name = Glass.text(card, localPlayer.DisplayName, 16, Glass.Font.Bold)
+	name.Position = UDim2.fromOffset(62, 8)
+	name.Size = UDim2.fromOffset(100, 20)
+	xpText = Glass.text(card, "", 12, Glass.Font.Body, C.Muted)
+	xpText.AnchorPoint = Vector2.new(1, 0)
+	xpText.Position = UDim2.new(1, -12, 0, 10)
+	xpText.Size = UDim2.fromOffset(110, 16)
+	xpText.TextXAlignment = Enum.TextXAlignment.Right
 
-	xpBar = Theme.bar(holder, C.Leaf, UDim2.fromOffset(208, 24))
-	xpBar.Track.Position = UDim2.fromOffset(90, 86)
-	xpBar.Label.TextSize = 14
+	xpBar = Glass.bar(card, C.Accent, UDim2.fromOffset(CARD_WIDTH - 74, 12), false)
+	xpBar.Track.Position = UDim2.fromOffset(62, 35)
 
-	-- The badge, name and bar open the Skills window
 	local open = Theme.make("TextButton", {
-		Position = UDim2.fromOffset(0, 46),
-		Size = UDim2.new(1, 0, 0, 80),
+		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		Text = "",
 		ZIndex = 5,
-		Parent = holder,
+		Parent = card,
 	})
 	open.Activated:Connect(onSkills)
 
 	-- Warzone status sits just above the coins
-	warzoneChip = Theme.chip(holder, "Warzone at level 10", C.Purple)
+	warzoneChip = Glass.chip(holder, "Warzone at level 10", C.Purple)
 	-- Hidden until the Warzone opens in Town
 	warzoneChip.Visible = false
 	warzoneChip.AnchorPoint = Vector2.new(0, 1)
 	warzoneChip.Position = UDim2.fromOffset(0, -8)
 
 	-- The season's countdown, above the right end (hidden while it has no end date)
-	seasonChip = Theme.chip(holder, "", C.Orange)
+	seasonChip = Glass.chip(holder, "", C.Hunger)
 	seasonChip.Visible = false
 	seasonChip.AnchorPoint = Vector2.new(1, 1)
 	seasonChip.Position = UDim2.new(1, 0, 0, -8)
@@ -183,48 +170,50 @@ local function renderSeason()
 	end
 end
 
--- Square colored button: a picture with a one-word label under it. Returns the button and
--- the frame to put its picture in.
-local function squareButton(parent: Instance, label: string, color: Color3, onClick: () -> ()): (Theme.Button, Frame)
-	local button = Theme.button(parent, "", color, UDim2.fromOffset(BUTTON, BUTTON + 4), onClick)
+-- A square glass button: a picture with a one-word label under it. Returns the button and the
+-- frame to put its picture in.
+local function squareButton(parent: Instance, label: string, onClick: () -> ()): (Glass.Button, Frame)
+	local button = Glass.button(parent, "", UDim2.fromOffset(BUTTON, BUTTON), onClick)
+	button.Stroke.Color = C.Edge
+	button.Stroke.Transparency = 0.84
 	local picture = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 4),
-		Size = UDim2.fromOffset(BUTTON - 24, BUTTON - 24),
+		Position = UDim2.new(0.5, 0, 0, 6),
+		Size = UDim2.fromOffset(BUTTON - 28, BUTTON - 28),
 		BackgroundTransparency = 1,
 		Parent = button.Face,
 	})
-	local text = Theme.text(button.Face, label, 15, Theme.Font.Bold, C.White)
+	local text = Glass.text(button.Face, label, 13, Glass.Font.Bold)
 	text.AnchorPoint = Vector2.new(0.5, 1)
 	text.Position = UDim2.new(0.5, 0, 1, -3)
-	text.Size = UDim2.new(1, -6, 0, 17)
+	text.Size = UDim2.new(1, -4, 0, 16)
 	text.TextXAlignment = Enum.TextXAlignment.Center
 	text.TextTruncate = Enum.TextTruncate.None
 	text.TextScaled = true
 	text.ZIndex = 2
-	Theme.make("UITextSizeConstraint", { MaxTextSize = 15, Parent = text })
+	Theme.make("UITextSizeConstraint", { MaxTextSize = 13, Parent = text })
 	return button, picture
 end
 
--- Three white bars with navy edges
+-- Three bars
 local function drawMenuBars(picture: Frame)
 	for row = 0, 2 do
 		local bar = Theme.make("Frame", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
-			Position = UDim2.new(0.5, 0, 0.5, (row - 1) * 10),
-			Size = UDim2.new(0.8, 0, 0, 6),
-			BackgroundColor3 = C.White,
+			Position = UDim2.new(0.5, 0, 0.5, (row - 1) * 9),
+			Size = UDim2.new(0.8, 0, 0, 4),
+			BackgroundColor3 = C.Ink,
 			Parent = picture,
 		})
-		Theme.corner(bar, 3)
-		Theme.stroke(bar, C.Outline, 2)
+		Theme.corner(bar, 2)
 	end
 end
 
 local function setMenu(open: boolean)
 	menuOpen = open
 	menuPanel.Visible = open
-	menuButton.SetColor(if open then C.Orange else C.Navy)
+	menuStroke.Color = if open then C.Accent else C.Edge
+	menuStroke.Transparency = if open then 0 else 0.84
 	if open then
 		Theme.pop(menuPanel, 0.85)
 	end
@@ -233,53 +222,51 @@ end
 -- The Menu button in the bottom-left corner. It pops up a small panel above it with the
 -- Bag, Island, Skills, Challenges and Inbox buttons, so they're only on screen when wanted.
 local function buildMenu(group: Frame, callbacks: Callbacks)
-	local picture
-	menuButton, picture = squareButton(group, "Menu", C.Navy, function()
+	local menu, picture = squareButton(group, "Menu", function()
 		setMenu(not menuOpen)
 	end)
-	menuButton.Holder.AnchorPoint = Vector2.new(0, 1)
-	menuButton.Holder.Position = UDim2.fromScale(0, 1)
+	menuFace = menu.Face
+	menuStroke = menu.Stroke
+	menuFace.AnchorPoint = Vector2.new(0, 1)
+	menuFace.Position = UDim2.fromScale(0, 1)
 	drawMenuBars(picture)
 	-- The menu's own badge counts the mail waiting too, so it shows while the menu is shut
-	menuBadge = Theme.badge(menuButton.Holder)
+	menuBadge = Theme.badge(menuFace)
 
 	local columns, rows, gap, pad = 3, 2, 8, 12
-	menuPanel = Theme.panel(
+	menuPanel = Glass.panel(
 		group,
-		UDim2.fromOffset(
-			columns * BUTTON + (columns - 1) * gap + pad * 2,
-			rows * (BUTTON + 4) + (rows - 1) * gap + pad * 2
-		)
+		UDim2.fromOffset(columns * BUTTON + (columns - 1) * gap + pad * 2, rows * BUTTON + (rows - 1) * gap + pad * 2)
 	)
 	menuPanel.AnchorPoint = Vector2.new(0, 1)
 	-- Above the coins, so they stay in sight while the menu is open
-	menuPanel.Position = UDim2.new(0, 0, 1, -STATUS_HEIGHT - 6)
+	menuPanel.Position = UDim2.new(0, 0, 1, -STATUS_HEIGHT - 8)
 	menuPanel.Visible = false
 	menuPanel.ZIndex = 4
 	Theme.padding(menuPanel, pad)
 	Theme.make("UIGridLayout", {
-		CellSize = UDim2.fromOffset(BUTTON, BUTTON + 4),
+		CellSize = UDim2.fromOffset(BUTTON, BUTTON),
 		CellPadding = UDim2.fromOffset(gap, gap),
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		Parent = menuPanel,
 	})
 
-	local function entry(order: number, label: string, color: Color3, icon: string, onClick: () -> ()): Theme.Button
-		local button, slot = squareButton(menuPanel, label, color, function()
+	local function entry(order: number, label: string, icon: string, onClick: () -> ()): TextButton
+		local button, slot = squareButton(menuPanel, label, function()
 			setMenu(false)
 			onClick()
 		end)
-		button.Holder.LayoutOrder = order
+		button.Face.LayoutOrder = order
 		ItemIcon.create(slot, icon, UDim2.fromScale(1, 1))
-		return button
+		return button.Face
 	end
-	entry(1, "Bag", C.Blue, "IconBag", callbacks.OnBag)
-	entry(2, "Island", C.Green, "Grass", callbacks.OnIsland)
-	entry(3, "Skills", C.Teal, "IronPickaxe", callbacks.OnSkills)
-	entry(4, "Challenges", C.Gold, "IconTrophy", callbacks.OnChallenges)
-	local inbox = entry(5, "Inbox", C.Purple, "IconMail", callbacks.OnInbox)
+	entry(1, "Bag", "IconBag", callbacks.OnBag)
+	entry(2, "Island", "Grass", callbacks.OnIsland)
+	entry(3, "Skills", "IronPickaxe", callbacks.OnSkills)
+	entry(4, "Challenges", "IconTrophy", callbacks.OnChallenges)
+	local inbox = entry(5, "Inbox", "IconMail", callbacks.OnInbox)
 	-- Red badge on the corner: how many letters are waiting
-	inboxBadge = Theme.badge(inbox.Holder)
+	inboxBadge = Theme.badge(inbox)
 
 	-- A click or tap on the game itself (not on a button) shuts the menu
 	UserInputService.InputBegan:Connect(function(input, processed)
@@ -289,35 +276,6 @@ local function buildMenu(group: Frame, callbacks: Callbacks)
 			setMenu(false)
 		end
 	end)
-end
-
-local function buildRaidBanner(gui: ScreenGui)
-	raidBanner = Theme.make("Frame", {
-		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 10),
-		Size = UDim2.fromOffset(440, 0),
-		AutomaticSize = Enum.AutomaticSize.Y,
-		BackgroundColor3 = Theme.darken(C.Red, 0.3),
-		Visible = false,
-		Parent = gui,
-	})
-	Theme.corner(raidBanner, 12)
-	Theme.stroke(raidBanner, C.Outline, 3)
-	Theme.padding(raidBanner, 12, 12, 8, 10)
-	Theme.list(raidBanner, Enum.FillDirection.Vertical, 2)
-	Theme.autoScale(raidBanner)
-	local title = Theme.worldTitle(raidBanner, "Warzone", 30, C.Gold)
-	title.TextXAlignment = Enum.TextXAlignment.Center
-	title.LayoutOrder = 1
-	local hint = Theme.text(raidBanner, "Reach a green pad to extract your loot", 14, Theme.Font.Medium, C.White)
-	hint.TextXAlignment = Enum.TextXAlignment.Center
-	hint.LayoutOrder = 2
-	raidBag = Theme.text(raidBanner, "", 16, Theme.Font.Bold, C.White)
-	raidBag.TextXAlignment = Enum.TextXAlignment.Center
-	raidBag.TextWrapped = true
-	raidBag.AutomaticSize = Enum.AutomaticSize.Y
-	raidBag.TextTruncate = Enum.TextTruncate.None
-	raidBag.LayoutOrder = 3
 end
 
 local function buildToasts(gui: ScreenGui)
@@ -343,10 +301,10 @@ local function buildCelebration(gui: ScreenGui)
 		Visible = false,
 		Parent = gui,
 	})
-	celebrationTitle = Theme.worldTitle(celebration, "Level Up!", 76, C.Gold)
+	celebrationTitle = Glass.worldText(celebration, "Level Up!", 68, Glass.Font.Title, C.Gold)
 	celebrationTitle.Size = UDim2.new(1, 0, 0, 86)
 	celebrationTitle.TextXAlignment = Enum.TextXAlignment.Center
-	celebrationSub = Theme.worldTitle(celebration, "", 34)
+	celebrationSub = Glass.worldText(celebration, "", 32, Glass.Font.Bold)
 	celebrationSub.Position = UDim2.fromOffset(0, 88)
 	celebrationSub.Size = UDim2.new(1, 0, 0, 40)
 	celebrationSub.TextXAlignment = Enum.TextXAlignment.Center
@@ -407,9 +365,11 @@ function Hud.Render(state: any)
 	lastLevel = state.Level
 
 	if state.Level >= state.MaxLevel then
-		xpBar.Set(1, "Max level")
+		xpBar.Set(1)
+		xpText.Text = "Max level"
 	else
-		xpBar.Set(state.XP / state.XPToNext, `{Theme.formatNumber(state.XP)} / {Theme.formatNumber(state.XPToNext)} XP`)
+		xpBar.Set(state.XP / state.XPToNext)
+		xpText.Text = `{Theme.formatNumber(state.XP)} / {Theme.formatNumber(state.XPToNext)} XP`
 	end
 
 	coinsText.Text = Theme.formatNumber(state.Coins)
@@ -437,14 +397,6 @@ function Hud.Render(state: any)
 		Theme.pop(menuBadge, 1.5)
 	end
 	lastMail = mail
-
-	raidBanner.Visible = state.Raid.Active
-	local bag = {}
-	for id, count in state.Raid.Bag do
-		local item = Items[id]
-		table.insert(bag, `{item and item.Name or id} x{count}`)
-	end
-	raidBag.Text = if #bag > 0 then table.concat(bag, "   ") else "Bag empty - open chests, beat monsters"
 end
 
 local toastCount = 0
@@ -461,28 +413,28 @@ function Hud.Toast(text: string, kind: string)
 	if sound then
 		Sfx.play(sound)
 	end
-	local color = TOAST_COLORS[kind] or C.Blue
-	-- A white tag with a navy outline and a colored dot in front
+	local color = TOAST_COLORS[kind] or C.Accent
+	-- A dark glass tag with an edge and a dot in the message's colour
 	local toast = Theme.make("Frame", {
 		LayoutOrder = toastCount,
 		AutomaticSize = Enum.AutomaticSize.X,
-		Size = UDim2.fromOffset(0, 40),
-		BackgroundColor3 = C.Panel,
+		Size = UDim2.fromOffset(0, 38),
+		BackgroundColor3 = C.Well,
+		BackgroundTransparency = 0.06,
 		Parent = toastHolder,
 	})
-	Theme.corner(toast, 12)
-	local stroke = Theme.stroke(toast, C.Outline, 3)
+	Theme.corner(toast, 11)
+	local stroke = Theme.stroke(toast, color, 1, 0.45)
 	Theme.padding(toast, 12, 16, 0, 0)
 	Theme.list(toast, Enum.FillDirection.Horizontal, 10)
 	local edge = Theme.make("Frame", {
-		Size = UDim2.fromOffset(16, 16),
+		Size = UDim2.fromOffset(12, 12),
 		BackgroundColor3 = color,
 		LayoutOrder = 1,
 		Parent = toast,
 	})
 	Theme.corner(edge, 999)
-	local edgeStroke = Theme.stroke(edge, C.Outline, 2)
-	local label = Theme.text(toast, text, 18, Theme.Font.Bold)
+	local label = Glass.text(toast, text, 17, Glass.Font.Bold)
 	label.AutomaticSize = Enum.AutomaticSize.X
 	label.Size = UDim2.fromOffset(0, 30)
 	label.LayoutOrder = 2
@@ -493,7 +445,6 @@ function Hud.Toast(text: string, kind: string)
 		local fade = TweenInfo.new(0.35)
 		TweenService:Create(toast, fade, { BackgroundTransparency = 1 }):Play()
 		TweenService:Create(edge, fade, { BackgroundTransparency = 1 }):Play()
-		TweenService:Create(edgeStroke, fade, { Transparency = 1 }):Play()
 		TweenService:Create(stroke, fade, { Transparency = 1 }):Play()
 		TweenService:Create(label, fade, { TextTransparency = 1 }):Play()
 		task.wait(0.35)
@@ -537,14 +488,13 @@ function Hud.Start(callbacks: Callbacks)
 	local group = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 1),
 		Position = UDim2.new(0, 14, 1, -14),
-		Size = UDim2.fromOffset(BUTTON + 14 + STATUS_WIDTH, STATUS_HEIGHT),
+		Size = UDim2.fromOffset(BUTTON + 10 + CARD_WIDTH, STATUS_HEIGHT),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	})
 	Theme.autoScale(group)
 	buildMenu(group, callbacks)
 	buildStatus(group, callbacks.OnSkills)
-	buildRaidBanner(gui)
 	buildToasts(gui)
 	buildCelebration(gui)
 	task.spawn(function()
@@ -559,11 +509,11 @@ function Hud.Start(callbacks: Callbacks)
 	fadeGui.IgnoreGuiInset = true
 	fadeFrame = Theme.make("Frame", {
 		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = C.Outline,
+		BackgroundColor3 = C.Well,
 		BackgroundTransparency = 1,
 		Parent = fadeGui,
 	})
-	fadeTitle = Theme.worldTitle(fadeFrame, "", 56)
+	fadeTitle = Glass.worldText(fadeFrame, "", 48, Glass.Font.Title)
 	fadeTitle.Size = UDim2.new(1, 0, 0, 70)
 	fadeTitle.Position = UDim2.fromScale(0, 0.42)
 	fadeTitle.TextXAlignment = Enum.TextXAlignment.Center

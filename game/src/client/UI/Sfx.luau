@@ -53,6 +53,9 @@ local DEFS: { [string]: Def } = {
 	Splash = { Ids = { 9125703162, 9125702803 }, Volume = 0.35, Gap = 0.1 }, -- Mud Puddle Splash
 	Sizzle = { Ids = { 9119165650 }, Volume = 0.35, Pitch = { 0.9, 1.1 }, Gap = 0.3 }, -- Sizzle Short
 	TreeFall = { Ids = { 9120258937 }, Volume = 0.55 }, -- Tree Branches Breaking Snapping Cracking
+	Swing = { Ids = { 15675012262 }, Volume = 0.35, Pitch = { 1.1, 1.3 }, Gap = 0.1 }, -- Roblox_UI_Whoosh_04
+	Hit = { Ids = { 9119330371 }, Volume = 0.6, Pitch = { 0.95, 1.1 }, Gap = 0.05 }, -- Soccer Ball Tackle 4
+	Crit = { Ids = { 9118270242 }, Volume = 0.5, Pitch = { 1, 1.1 }, Gap = 0.05 }, -- Robot Impact Hollow Metal Hits
 }
 
 -- How hitting and breaking a block sounds, by the tool that breaks it

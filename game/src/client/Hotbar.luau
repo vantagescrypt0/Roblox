@@ -1,36 +1,39 @@
 --!strict
--- The hotbar: 5 white slots on a navy bar along the bottom of the screen. Keys 1-5
--- or tapping a slot selects it; the selected item's name shows above the bar for a moment.
+-- The hotbar: the inventory's first 9 slots along the bottom of the screen. Keys 1-9 or tapping a
+-- slot selects it; the selected item's name shows above the bar for a moment.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
-local ItemIcon = require(script.Parent.UI.ItemIcon)
+local Glass = require(script.Parent.UI.Glass)
 local Theme = require(script.Parent.UI.Theme)
 
-local C = Theme.Color
+local C = Glass.Color
 
-local SLOTS = 5
-local SLOT = 60
-local GAP = 6
-local EDGE = 8
-local KEYS = { Enum.KeyCode.One, Enum.KeyCode.Two, Enum.KeyCode.Three, Enum.KeyCode.Four, Enum.KeyCode.Five }
+local SLOTS = Inventory.Hotbar
+local SLOT = 56
+local GAP = 5
+local KEYS = {
+	Enum.KeyCode.One,
+	Enum.KeyCode.Two,
+	Enum.KeyCode.Three,
+	Enum.KeyCode.Four,
+	Enum.KeyCode.Five,
+	Enum.KeyCode.Six,
+	Enum.KeyCode.Seven,
+	Enum.KeyCode.Eight,
+	Enum.KeyCode.Nine,
+}
 
 local Hotbar = {}
 
-type Slot = {
-	Frame: TextButton,
-	Stroke: UIStroke,
-	Icon: Frame,
-	Count: TextLabel,
-	ItemId: string,
-}
-
-local slots: { Slot } = {}
-local selector: Frame
+local slots: { Glass.Slot } = {}
+local bar: Frame
+local shine: ImageLabel
 local nameLabel: TextLabel
 local selected = 1
 local state: any = nil
@@ -43,11 +46,16 @@ end
 
 -- Item id in the selected slot (nil if empty)
 function Hotbar.SelectedItem(): string?
-	local itemId = state and state.Hotbar[selected]
-	if itemId and itemId ~= "" and (state.Items[itemId] or 0) > 0 then
-		return itemId
+	local stack = state and state.Slots[selected]
+	if stack and stack.Count > 0 then
+		return stack.Item
 	end
 	return nil
+end
+
+-- The bar itself, for what sits on top of it (your hearts)
+function Hotbar.Bar(): Frame
+	return bar
 end
 
 function Hotbar.OnChanged(listener: () -> ())
@@ -61,7 +69,7 @@ local function showName()
 	nameLabel.Text = if itemId then Items[itemId].Name else ""
 	nameLabel.TextTransparency = 0
 	local stroke = nameLabel:FindFirstChildOfClass("UIStroke") :: UIStroke
-	stroke.Transparency = 0
+	stroke.Transparency = 0.35
 	task.delay(1.6, function()
 		if token == nameToken then
 			local fade = TweenInfo.new(0.4)
@@ -71,16 +79,16 @@ local function showName()
 	end)
 end
 
-local function slotX(index: number): number
-	return EDGE + (index - 1) * (SLOT + GAP)
+local function slotCenter(index: number): UDim2
+	return UDim2.fromOffset((index - 1) * (SLOT + GAP) + SLOT / 2, SLOT / 2)
 end
 
 function Hotbar.Select(slot: number)
 	selected = math.clamp(slot, 1, SLOTS)
-	selector.Position = UDim2.fromOffset(slotX(selected) - 4, EDGE - 4)
 	for index, entry in slots do
-		entry.Stroke.Color = if index == selected then C.Gold else C.NavyLight
+		Glass.setSelected(entry, index == selected)
 	end
+	shine.Position = slotCenter(selected)
 	Remotes.SelectSlot:FireServer(selected)
 	showName()
 	for _, listener in listeners do
@@ -93,21 +101,8 @@ local function render()
 		return
 	end
 	for index, slot in slots do
-		local itemId = state.Hotbar[index] or ""
-		local count = if itemId ~= "" then state.Items[itemId] or 0 else 0
-		if count <= 0 then
-			itemId = ""
-		end
-		if slot.ItemId ~= itemId then
-			slot.ItemId = itemId
-			for _, child in slot.Icon:GetChildren() do
-				child:Destroy()
-			end
-			if itemId ~= "" then
-				ItemIcon.create(slot.Icon, itemId, UDim2.fromScale(0.8, 0.8))
-			end
-		end
-		slot.Count.Text = if count > 1 then tostring(count) else ""
+		local stack = state.Slots[index]
+		Glass.setSlot(slot, if stack then stack.Item else "", if stack then stack.Count else 0)
 	end
 	for _, listener in listeners do
 		task.spawn(listener)
@@ -121,69 +116,36 @@ end
 
 function Hotbar.Start()
 	local gui = Theme.screen("Hotbar", 3)
-	local width = SLOTS * SLOT + (SLOTS - 1) * GAP + EDGE * 2
-	local bar = Theme.make("Frame", {
+	local width = SLOTS * SLOT + (SLOTS - 1) * GAP
+	bar = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 1, -10),
-		Size = UDim2.fromOffset(width, SLOT + EDGE * 2),
-		BackgroundColor3 = C.Navy,
+		Position = UDim2.new(0.5, 0, 1, -14),
+		Size = UDim2.fromOffset(width, SLOT),
+		BackgroundTransparency = 1,
 		Parent = gui,
 	})
-	Theme.corner(bar, 14)
-	Theme.stroke(bar, C.Outline, 3)
 	Theme.autoScale(bar)
 
+	shine = Glass.glow(bar, C.Accent, UDim2.fromOffset(SLOT + 34, SLOT + 34), slotCenter(1), 0.45)
+
 	for index = 1, SLOTS do
-		local frame = Theme.make("TextButton", {
-			Position = UDim2.fromOffset(slotX(index), EDGE),
-			Size = UDim2.fromOffset(SLOT, SLOT),
-			BackgroundColor3 = C.Panel,
-			AutoButtonColor = false,
-			Text = "",
-			Parent = bar,
-		})
-		Theme.corner(frame, 10)
-		local stroke = Theme.stroke(frame, C.NavyLight, 3)
-		local number = Theme.text(frame, tostring(index), 11, Theme.Font.Bold, C.InkMuted)
+		local slot = Glass.slot(bar, SLOT, UDim2.fromOffset((index - 1) * (SLOT + GAP), 0))
+		-- A little more solid than in the Bag: it's over the world
+		slot.Button.BackgroundTransparency = 0.05
+		local number = Glass.worldText(slot.Button, tostring(index), 11, Glass.Font.Bold, C.Muted)
 		number.Position = UDim2.fromOffset(5, 2)
 		number.Size = UDim2.fromOffset(12, 13)
-		local icon = Theme.make("Frame", {
-			Size = UDim2.fromScale(1, 1),
-			BackgroundTransparency = 1,
-			Parent = frame,
-		})
-		local count = Theme.text(frame, "", 16, Theme.Font.Bold, C.Ink)
-		count.AnchorPoint = Vector2.new(1, 1)
-		count.Position = UDim2.new(1, -5, 1, -1)
-		count.Size = UDim2.fromOffset(40, 18)
-		count.TextXAlignment = Enum.TextXAlignment.Right
-		count.ZIndex = 3
-		frame.Activated:Connect(function()
+		number.ZIndex = 3
+		slot.Button.Activated:Connect(function()
 			Hotbar.Select(index)
 		end)
-		slots[index] = {
-			Frame = frame,
-			Stroke = stroke,
-			Icon = icon,
-			Count = count,
-			ItemId = "",
-		}
+		slots[index] = slot
 	end
 
-	-- Gold glow around the selected slot (its own outline turns gold too)
-	selector = Theme.make("Frame", {
-		Size = UDim2.fromOffset(SLOT + 8, SLOT + 8),
-		BackgroundColor3 = C.Gold,
-		ZIndex = 0,
-		Parent = bar,
-	})
-	Theme.corner(selector, 13)
-	Theme.stroke(selector, C.Outline, 2)
-
-	nameLabel = Theme.worldTitle(bar, "", 24)
+	nameLabel = Glass.worldText(bar, "", 22, Glass.Font.Bold)
 	nameLabel.AnchorPoint = Vector2.new(0.5, 1)
-	nameLabel.Position = UDim2.new(0.5, 0, 0, -8)
-	nameLabel.Size = UDim2.fromOffset(width, 28)
+	nameLabel.Position = UDim2.new(0.5, 0, 0, -66)
+	nameLabel.Size = UDim2.fromOffset(width, 26)
 	nameLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 	UserInputService.InputBegan:Connect(function(input, processed)

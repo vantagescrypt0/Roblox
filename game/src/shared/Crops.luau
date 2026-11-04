@@ -2,7 +2,7 @@
 -- Crops, ordered from first to last unlocked. Each needs a minimum Farming level
 -- (see "Skills & Levels" in the vault). Grow times are in seconds and keep counting
 -- while the player is offline. Harvesting needs the right tool in your hand: a hoe, or an
--- axe for pumpkins and melons.
+-- axe for pumpkins, melons and dragonfruit.
 
 export type Crop = {
 	Id: string,
@@ -14,6 +14,7 @@ export type Crop = {
 	FarmingXP: number,
 	PlayerXP: number,
 	Color: Color3, -- ripe crop color
+	Rare: boolean?, -- its seeds aren't sold and it never gives a spare seed, so they stay rare
 }
 
 local Crops: { Crop } = {
@@ -72,6 +73,56 @@ local Crops: { Crop } = {
 		FarmingXP = 60,
 		PlayerXP = 20,
 		Color = Color3.fromRGB(96, 160, 52),
+	},
+	-- Sugarcane Mesa, the Farming World's last zone: slivers craft its seeds (Slivers.luau)
+	{
+		Id = "Sugarcane",
+		Seed = "SugarcaneSeeds",
+		Product = "Sugarcane",
+		Tool = "Hoe",
+		FarmingLevel = 40,
+		GrowTime = 300,
+		FarmingXP = 70,
+		PlayerXP = 23,
+		Color = Color3.fromRGB(120, 190, 90),
+		Rare = true,
+	},
+	-- Late game, on your own island only: seeds from loot crates and Warzone chests
+	{
+		Id = "Strawberry",
+		Seed = "StrawberrySeeds",
+		Product = "Strawberry",
+		Tool = "Hoe",
+		FarmingLevel = 50,
+		GrowTime = 360,
+		FarmingXP = 80,
+		PlayerXP = 27,
+		Color = Color3.fromRGB(224, 50, 64),
+		Rare = true,
+	},
+	{
+		Id = "Dragonfruit",
+		Seed = "DragonfruitSeeds",
+		Product = "Dragonfruit",
+		Tool = "Axe",
+		FarmingLevel = 65,
+		GrowTime = 420,
+		FarmingXP = 90,
+		PlayerXP = 30,
+		Color = Color3.fromRGB(236, 70, 160),
+		Rare = true,
+	},
+	{
+		Id = "Starfruit",
+		Seed = "StarfruitSeeds",
+		Product = "Starfruit",
+		Tool = "Hoe",
+		FarmingLevel = 80,
+		GrowTime = 480,
+		FarmingXP = 105,
+		PlayerXP = 35,
+		Color = Color3.fromRGB(255, 226, 110),
+		Rare = true,
 	},
 	-- Seeds only come from Warzone chests
 	{

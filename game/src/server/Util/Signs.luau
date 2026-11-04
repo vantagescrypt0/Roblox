@@ -30,6 +30,10 @@ Signs.Woods = table.freeze({
 	Birch = Color3.fromRGB(214, 200, 168),
 	Spruce = Color3.fromRGB(110, 78, 48),
 	Cherry = Color3.fromRGB(160, 92, 86),
+	Maple = Color3.fromRGB(150, 104, 76),
+	Redwood = Color3.fromRGB(150, 74, 52),
+	Mangrove = Color3.fromRGB(108, 84, 58),
+	Starwood = Color3.fromRGB(196, 208, 232),
 	Dark = Color3.fromRGB(78, 54, 34),
 	Sand = Color3.fromRGB(196, 160, 104),
 })

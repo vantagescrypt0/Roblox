@@ -1,6 +1,8 @@
 --!strict
--- Planting trees on your island. Leaves sometimes drop a Sapling, felling a tree always
--- gives at least one (BlockService), and the Lumberjack in Town sells them. Hold one and
+-- Planting trees on your island. Oak leaves sometimes drop a Sapling, felling a tree always
+-- gives at least one back (BlockService), and the Lumberjack in Town sells them; other trees'
+-- saplings come from slivers, loot crates and Warzone chests, and need that tree's Woodcutting
+-- level. Hold one and
 -- right-click (or tap) grass or dirt with room above it to plant it. It grows into a tree
 -- after a few minutes (IslandService); chop it down for its wood and it's gone, so plant
 -- the saplings it gives you. How many planted trees you can have at once grows with
@@ -10,6 +12,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Gathering = require(ReplicatedStorage.Shared.Gathering)
+local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
@@ -53,10 +57,17 @@ end
 
 local function onPlant(player: Player, x: unknown, y: unknown, z: unknown)
 	local ok, cx, cy, cz = checkCell(player, x, y, z)
-	if not ok or HotbarService.GetHeldItem(player) ~= "Sapling" then
+	local held = HotbarService.GetHeldItem(player)
+	local tree = held and Items[held] and Items[held].Tree
+	if not ok or not held or not tree then
 		return
 	end
 	local level = ProgressionService.GetSkillLevel(player, "Woodcutting")
+	local need = Gathering[IslandService.TreeLog(tree)]
+	if need and need.Level and level < need.Level then
+		StateService.Notify(player, `{Items[held].Name} needs Woodcutting level {need.Level}`, "bad")
+		return
+	end
 	local limit = Leveling.PlantedTrees(level)
 	if IslandService.PlantedCount(player) >= limit then
 		StateService.Notify(
@@ -66,22 +77,23 @@ local function onPlant(player: Player, x: unknown, y: unknown, z: unknown)
 		)
 		return
 	end
-	local planted, reason = IslandService.PlantSapling(player, cx, cy, cz)
+	local planted, reason = IslandService.PlantSapling(player, cx, cy, cz, tree)
 	if not planted then
 		if reason then
 			StateService.Notify(player, reason, "bad")
 		end
 		return
 	end
-	InventoryService.Remove(player, "Sapling", 1)
-	StateService.Notify(player, "Planted! It grows into a tree in a few minutes", "good")
+	InventoryService.Remove(player, held, 1)
+	StateService.Notify(player, `Planted! It grows into a tree in {IslandService.TreeMinutes(tree)} minutes`, "good")
 	QuestService.Record(player, "PlantSapling")
 end
 
 local function onUproot(player: Player, x: unknown, y: unknown, z: unknown)
 	local ok, cx, cy, cz = checkCell(player, x, y, z)
-	if ok and IslandService.Uproot(player, cx, cy, cz) then
-		InventoryService.Add(player, "Sapling", 1)
+	local sapling = if ok then IslandService.Uproot(player, cx, cy, cz) else nil
+	if sapling then
+		InventoryService.AddGathered(player, sapling, 1)
 		StateService.Notify(player, "Dug it up. You got the sapling back", "info")
 	end
 end

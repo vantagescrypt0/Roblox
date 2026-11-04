@@ -1,5 +1,5 @@
 --!strict
--- The Woodcutting World: four big floating islands of forest joined by plank bridges, each
+-- The Woodcutting World: six big floating islands of forest joined by plank bridges, each
 -- zone with its own tree (every log and leaf a node that grows back; chopping a zone's
 -- trees needs its Woodcutting level, see BlockService):
 --   Oak Woods (arrival, south)            oaks and big old oaks on rolling hills, a river
@@ -14,6 +14,14 @@
 --   Cherry Hills (east, Woodcutting 30)   pink cherry trees on soft hills, a koi pond with a
 --                                         red bridge, stone lanterns, two pavilions,
 --                                         drifting petals
+-- The second ring, each beyond a zone of the first ([[Woodcutting Phase Plan]]):
+--   Maple Ridge (north of Birch, 40)      red and orange hills, a sugar shack with sap buckets
+--                                         on the trunks, a pond, stone spires, falling leaves
+--   Redwood Giants (north of Cherry, 55)  trees 4-5x taller than oak, a fallen giant the trail
+--                                         runs through, a ranger's cabin, and a stair round the
+--                                         oldest tree up to a lookout
+-- That's all the trees here: Mangrove and Starwood are late-game, grown only on your own
+-- island from saplings (loot crates and Warzone chests).
 -- Stone paths run north from the arrival square to the Snowy Pines bridge and across the
 -- Oak Woods to the Birch and Cherry bridges; a signpost at the crossroads points the way
 -- and each zone has a rough sign in its own wood where it begins. Patches of coarse dirt,
@@ -44,7 +52,12 @@ local OAK = { X = 0, Z = -88, R = 80 }
 local BIRCH = { X = -168, Z = -72, R = 64 }
 local PINES = { X = 0, Z = 88, R = 68 }
 local CHERRY = { X = 168, Z = -72, R = 64 }
+local MAPLE = { X = -184, Z = 104, R = 74 }
+local REDWOOD = { X = 192, Z = 116, R = 88 }
 local CROSS_Z = -72 -- the path across the Oak Woods to the Birch and Cherry bridges
+local MAPLE_ROAD = -160 -- the road north through Birch Grove and up Maple Ridge
+local REDWOOD_ROAD = 160 -- the road north through Cherry Hills and among the Giants
+local REDWOOD_TRAIL = 116 -- the trail east from it to the lookout
 -- Rocky hills in the Oak Woods: centre, radius, height
 local HILLS =
 	{ { X = -36, Z = -44, R = 13, H = 16 }, { X = 42, Z = -40, R = 11, H = 13 }, { X = -52, Z = -132, R = 9, H = 10 } }
@@ -54,6 +67,9 @@ local PINES_LAKE = { X = 22, Z = 108, R = 13 }
 local PINES_CABINS = { { X = -26, Z = 92 }, { X = -34, Z = 128 } } -- doors; they extend north
 local CHERRY_POND = { X = 190, Z = -98, R = 12 }
 local PAVILIONS = { { 148, -42 }, { 210, -48 } }
+local MAPLE_POND = { X = -216, Z = 96, R = 11 }
+local MAPLE_LAKE_Z = 96 -- the path from the road to the pond
+local LOOKOUT = { X = 232, Z = 115 } -- the oldest redwood, with the stair round it
 
 local MEADOW = {
 	Color3.fromRGB(222, 62, 52),
@@ -180,6 +196,18 @@ end
 local function cherryColumn(ctx: Context.Context, x: number, z: number): (string, number)
 	local h = math.clamp(math.round(2 + 5 * ctx.Noise(x, z, 18, 6)), 0, 6)
 	return if ctx.Noise(x, z, 7, 32) > 0.32 then "FlowerGrass" else "Grass", h
+end
+
+local function mapleColumn(ctx: Context.Context, x: number, z: number): (string, number)
+	local h = 5 + 10 * ctx.Noise(x, z, 26, 8) + 3 * ctx.Noise(x, z, 9, 9)
+	-- The hills rise away from the road
+	h *= math.clamp(math.abs(x - MAPLE_ROAD) / 28, 0.3, 1)
+	return floor(ctx, x, z, 0.45, 2), math.clamp(math.round(h), 0, 13)
+end
+
+local function redwoodColumn(ctx: Context.Context, x: number, z: number): (string, number)
+	local h = math.clamp(math.round(1.5 + 3 * ctx.Noise(x, z, 30, 11) + ctx.Noise(x, z, 9, 12)), 0, 4)
+	return floor(ctx, x, z, 0.5, 3), h
 end
 
 -- Pieces --------------------------------------------------------------------------------
@@ -646,6 +674,176 @@ local function cherryHills(ctx: Context.Context, island: Context.Island)
 	)
 end
 
+-- Maple Ridge --------------------------------------------------------------------------------
+
+local function mapleRidge(ctx: Context.Context, island: Context.Island)
+	lilyPond(ctx, MAPLE_POND, { Color3.fromRGB(240, 150, 60), Color3.fromRGB(226, 70, 50) })
+	Common.Path(ctx, MAPLE_ROAD, 44, MAPLE_ROAD, 160, 5, Common.StonePath)
+	Common.Path(ctx, MAPLE_ROAD - 3, MAPLE_LAKE_Z, MAPLE_POND.X + 14, MAPLE_LAKE_Z, 3)
+	-- The sugar shack, its door on the road, with a campfire and sap barrels beside it
+	cabin(ctx, MAPLE_ROAD - 6, 76, "MapleWood", Vector3.xAxis)
+	Common.Path(ctx, MAPLE_ROAD - 5, 76, MAPLE_ROAD - 3, 76, 1)
+	campfire(ctx, MAPLE_ROAD - 10, 86)
+	for _, spot in { { -6, 70 }, { -7, 70 }, { -6, 69 } } do
+		ctx.Set(MAPLE_ROAD + spot[1], 1, spot[2], "Barrel")
+	end
+	for z = 50, 156, 14 do
+		Common.Lamp(ctx, MAPLE_ROAD + (if z % 28 == 8 then 4 else -4), z)
+	end
+	local function open(x: number, z: number): boolean
+		return not ctx.Flat(x, z, 3) and not near(x, z, MAPLE_POND, MAPLE_POND.R + 5)
+	end
+	for _, spot in spots(ctx, island, 5, 6, 26, open) do
+		spire(ctx, spot.X, spot.Y, ctx.Rng:NextInteger(12, 20), ctx.Rng:NextNumber(2, 3.2), "Grass")
+	end
+	Common.Forest(ctx, island, 13, 4, function(x, z)
+		return not open(x, z)
+	end, function(x, h, z)
+		Trees.Maple(x, h, z, ctx.Rng:NextInteger(5, 7), ctx.Node)
+		-- Now and then a sap bucket hung on the trunk
+		if ctx.Rng:NextNumber() < 0.15 then
+			local bucket = Decor.Part(
+				ctx.Decor,
+				"SapBucket",
+				Vector3.new(0.8, 0.9, 0.8),
+				CFrame.new(ctx.Top(x, h + 1, z) + Vector3.new(0, -SIZE / 3, -SIZE / 2 - 0.4)),
+				Color3.fromRGB(150, 156, 164),
+				Enum.Material.Metal
+			)
+			bucket.CanCollide = false
+		end
+	end)
+	for i, spot in spots(ctx, island, 8, 4, 12, open) do
+		fallenLog(ctx, spot.X, spot.Y, "MapleWood", i % 2 == 0)
+	end
+	for _, spot in spots(ctx, island, 8, 5, 14, open) do
+		Common.Boulder(ctx, spot.X, spot.Y, ctx.Rng:NextInteger(3, 4), { "Stone", "MossyCobblestone", "Cobblestone" })
+	end
+	-- Fallen leaves stand in for the meadow flowers
+	Common.Scatter(ctx, island, 0.04, 0.05, {
+		Color3.fromRGB(226, 70, 50),
+		Color3.fromRGB(240, 140, 50),
+		Color3.fromRGB(244, 196, 70),
+	})
+	Decor.Falling(
+		ctx.Decor,
+		ctx.Top(MAPLE.X, 26, MAPLE.Z),
+		Vector2.new(MAPLE.R * 2 * SIZE, MAPLE.R * 2 * SIZE),
+		"Leaves"
+	)
+end
+
+-- Redwood Giants ------------------------------------------------------------------------------
+
+-- The oldest tree: a stair of planks winds round the trunk up to a railed lookout below the
+-- boughs. It's scenery, so nobody can chop the stair out from under anyone.
+local function lookout(ctx: Context.Context, x: number, z: number)
+	local h = ctx.HeightAt(x, z)
+	local ring: { { number } } = {}
+	for i = -1, 2 do
+		table.insert(ring, { x + i, z - 1 })
+	end
+	for i = -1, 2 do
+		table.insert(ring, { x + 3, z + i })
+	end
+	for i = 3, 0, -1 do
+		table.insert(ring, { x + i, z + 3 })
+	end
+	for i = 3, 0, -1 do
+		table.insert(ring, { x - 1, z + i })
+	end
+	local steps = 28
+	for i = 0, steps - 1 do
+		local cell = ring[i % #ring + 1]
+		ctx.Set(cell[1], h + 1 + i, cell[2], "DarkPlanks")
+	end
+	-- The deck goes all round, one block out from the top of the stair
+	local deck = h + steps
+	for dx = -4, 6 do
+		for dz = -4, 6 do
+			local inside = dx >= -1 and dx <= 3 and dz >= -1 and dz <= 3
+			if not inside then
+				ctx.Set(x + dx, deck, z + dz, "DarkPlanks")
+			end
+		end
+	end
+	local corners = { { -4, -4 }, { 6, -4 }, { 6, 6 }, { -4, 6 } }
+	for i, corner in corners do
+		local nextCorner = corners[i % #corners + 1]
+		Decor.Fence(
+			ctx.Decor,
+			ctx.Top(x + corner[1], deck, z + corner[2]),
+			ctx.Top(x + nextCorner[1], deck, z + nextCorner[2]),
+			"DarkPlanks"
+		)
+		Decor.Lantern(ctx.Decor, ctx.Top(x + corner[1], deck, z + corner[2]), false, 20)
+	end
+	Trees.Redwood(x, h, z, 46, ctx.SetFree, 3)
+end
+
+-- A fallen giant lying along the trail, hollow, so the trail runs through it
+local function fallenGiant(ctx: Context.Context, x1: number, x2: number, z: number)
+	for x = x1, x2 do
+		-- Moss along the top (a log's top face shows its rings, which looks wrong lying down)
+		for dz = -3, 3 do
+			ctx.Set(x, 5, z + dz, "Grass")
+		end
+		for y = 1, 4 do
+			ctx.Set(x, y, z - 3, "Redwood")
+			ctx.Set(x, y, z + 3, "Redwood")
+		end
+	end
+	for x = x1 + 2, x2 - 2, 3 do
+		Decor.Mushroom(ctx.Decor, ctx.Top(x, 5, z + ctx.Rng:NextInteger(-2, 2)), ctx.Rng:NextNumber() < 0.5)
+	end
+	Decor.Lantern(ctx.Decor, ctx.Top(math.floor((x1 + x2) / 2), 5, z) - Vector3.new(0, SIZE + 2.7, 0), true, 22)
+end
+
+local function redwoodGiants(ctx: Context.Context, island: Context.Island)
+	Common.Path(ctx, REDWOOD_ROAD, 44, REDWOOD_ROAD, 190, 5, Common.StonePath)
+	Common.Path(ctx, REDWOOD_ROAD, REDWOOD_TRAIL, LOOKOUT.X - 2, REDWOOD_TRAIL, 5, Common.StonePath)
+	fallenGiant(ctx, 196, 208, REDWOOD_TRAIL)
+	lookout(ctx, LOOKOUT.X, LOOKOUT.Z)
+	-- The ranger's cabin, its door on the road, with a campfire beside it
+	cabin(ctx, REDWOOD_ROAD + 6, 76, "Redwood", -Vector3.xAxis)
+	Common.Path(ctx, REDWOOD_ROAD + 3, 76, REDWOOD_ROAD + 5, 76, 1)
+	campfire(ctx, REDWOOD_ROAD + 10, 64)
+	for z = 50, 186, 14 do
+		Common.Lamp(ctx, REDWOOD_ROAD + (if z % 28 == 8 then 4 else -4), z)
+	end
+	for x = REDWOOD_ROAD + 12, 190, 14 do
+		Common.Lamp(ctx, x, REDWOOD_TRAIL + 4)
+	end
+	local function open(x: number, z: number): boolean
+		return not ctx.Flat(x, z, 4)
+	end
+	Common.Forest(ctx, island, 22, 6, function(x, z)
+		return not open(x, z)
+	end, function(x, h, z)
+		if ctx.Rng:NextNumber() < 0.12 then
+			Trees.Redwood(x, h, z, ctx.Rng:NextInteger(38, 46), ctx.Node, 3)
+		else
+			Trees.Redwood(x, h, z, ctx.Rng:NextInteger(28, 36), ctx.Node, 2)
+		end
+	end)
+	for i, spot in spots(ctx, island, 10, 4, 14, open) do
+		fallenLog(ctx, spot.X, spot.Y, "Redwood", i % 2 == 0)
+	end
+	for _, spot in spots(ctx, island, 12, 5, 16, open) do
+		Common.Boulder(
+			ctx,
+			spot.X,
+			spot.Y,
+			ctx.Rng:NextInteger(3, 5),
+			{ "Stone", "MossyCobblestone", "MossyCobblestone", "Cobblestone" }
+		)
+	end
+	for _, spot in spots(ctx, island, 5, 6, 24, open) do
+		Common.GiantMushroom(ctx, spot.X, spot.Y, ctx.Rng:NextInteger(5, 7), ctx.Rng:NextInteger(2, 3))
+	end
+	Common.Scatter(ctx, island, 0.12, 0.01, MEADOW)
+end
+
 -- The world -----------------------------------------------------------------------------
 
 function Woodcutting.Build(ctx: Context.Context)
@@ -659,6 +857,22 @@ function Woodcutting.Build(ctx: Context.Context)
 	ctx.Flatten(-3, -26, 3, 34)
 	ctx.Flatten(CAMP.X1, CAMP.Z1, CAMP.X2, CAMP.Z2)
 	ctx.Flatten(-3, 20, 3, PINES.Z + 56)
+	-- The second ring: roads up to its bridges and on through each zone
+	ctx.Flatten(MAPLE_ROAD - 3, CROSS_Z, MAPLE_ROAD + 3, 4)
+	ctx.Flatten(MAPLE_ROAD - 3, 30, MAPLE_ROAD + 3, 160)
+	ctx.Flatten(MAPLE_POND.X + 10, MAPLE_LAKE_Z - 2, MAPLE_ROAD - 3, MAPLE_LAKE_Z + 2)
+	ctx.Flatten(
+		MAPLE_POND.X - MAPLE_POND.R - 4,
+		MAPLE_POND.Z - MAPLE_POND.R - 4,
+		MAPLE_POND.X + MAPLE_POND.R + 4,
+		MAPLE_POND.Z + MAPLE_POND.R + 4
+	)
+	ctx.Flatten(MAPLE_ROAD - 15, 66, MAPLE_ROAD - 3, 92)
+	ctx.Flatten(REDWOOD_ROAD - 3, CROSS_Z, REDWOOD_ROAD + 3, 4)
+	ctx.Flatten(REDWOOD_ROAD - 3, 30, REDWOOD_ROAD + 3, 192)
+	ctx.Flatten(REDWOOD_ROAD, REDWOOD_TRAIL - 3, LOOKOUT.X, REDWOOD_TRAIL + 3)
+	ctx.Flatten(LOOKOUT.X - 6, LOOKOUT.Z - 6, LOOKOUT.X + 8, LOOKOUT.Z + 8)
+	ctx.Flatten(REDWOOD_ROAD + 3, 58, REDWOOD_ROAD + 16, 84)
 	ctx.Flatten(BIRCH.X - 40, CROSS_Z - 3, BIRCH.X + 58, CROSS_Z + 3)
 	ctx.Flatten(CHERRY.X - 58, CROSS_Z - 3, CHERRY.X + 52, CROSS_Z + 3)
 	for _, pond in BIRCH_PONDS do
@@ -729,6 +943,27 @@ function Woodcutting.Build(ctx: Context.Context)
 			return cherryColumn(ctx, x, z)
 		end,
 	})
+	local maple = ctx.Island({
+		Name = "Maple Ridge",
+		X = MAPLE.X,
+		Z = MAPLE.Z,
+		Radius = MAPLE.R,
+		Column = function(x, z)
+			return mapleColumn(ctx, x, z)
+		end,
+		Step = 8,
+	})
+	local redwood = ctx.Island({
+		Name = "Redwood Giants",
+		X = REDWOOD.X,
+		Z = REDWOOD.Z,
+		Radius = REDWOOD.R,
+		Column = function(x, z)
+			return redwoodColumn(ctx, x, z)
+		end,
+		Depth = 44,
+		Step = 8,
+	})
 	-- Little rocks floating round the islands
 	for _, spot in
 		{
@@ -742,6 +977,9 @@ function Woodcutting.Build(ctx: Context.Context)
 			{ -76, -8, 156, 4 },
 			{ -258, 12, -140, 3 },
 			{ 258, 2, -10, 3 },
+			{ -96, 10, 190, 4 },
+			{ -270, 8, 60, 4 },
+			{ 294, 4, 60, 4 },
 		}
 	do
 		ctx.Islet(spot[1], spot[2], spot[3], spot[4])
@@ -773,6 +1011,31 @@ function Woodcutting.Build(ctx: Context.Context)
 	)
 	Common.ZoneSign(ctx, PINES.X + 5, PINES.Z - 60, -Vector3.zAxis, "SNOWY PINES", "WOODCUTTING 20", Signs.Woods.Spruce)
 
+	-- The roads and bridges out to the second ring, laid before the zones are dressed so no
+	-- flower or tree ends up on them
+	Common.Path(ctx, MAPLE_ROAD, CROSS_Z, MAPLE_ROAD, -22, 3)
+	Common.Path(ctx, REDWOOD_ROAD, CROSS_Z, REDWOOD_ROAD, -22, 3)
+	ctx.Bridge(MAPLE_ROAD, -22, MAPLE_ROAD, 52)
+	ctx.Bridge(REDWOOD_ROAD, -22, REDWOOD_ROAD, 52)
+	Common.Arrows(
+		ctx,
+		MAPLE_ROAD + 4,
+		CROSS_Z + 5,
+		Vector3.xAxis,
+		{ { Text = "MAPLE RIDGE", Toward = Vector3.zAxis } },
+		Signs.Woods.Maple
+	)
+	Common.Arrows(
+		ctx,
+		REDWOOD_ROAD - 4,
+		CROSS_Z + 5,
+		-Vector3.xAxis,
+		{ { Text = "REDWOOD GIANTS", Toward = Vector3.zAxis } },
+		Signs.Woods.Redwood
+	)
+	Common.ZoneSign(ctx, MAPLE_ROAD + 5, 56, -Vector3.zAxis, "MAPLE RIDGE", "WOODCUTTING 40", Signs.Woods.Maple)
+	Common.ZoneSign(ctx, REDWOOD_ROAD + 5, 56, -Vector3.zAxis, "REDWOOD GIANTS", "WOODCUTTING 55", Signs.Woods.Redwood)
+
 	oakWoods(ctx, oak)
 	birchGrove(ctx, birch)
 	snowyPines(ctx, pines)
@@ -802,6 +1065,12 @@ function Woodcutting.Build(ctx: Context.Context)
 	end
 	for _, island in { oak, birch, pines, cherry } do
 		Common.CliffVines(ctx, island, 0.35)
+	end
+
+	mapleRidge(ctx, maple)
+	redwoodGiants(ctx, redwood)
+	for _, island in { maple, redwood } do
+		Common.CliffVines(ctx, island, 0.25)
 	end
 end
 

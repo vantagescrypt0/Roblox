@@ -16,16 +16,16 @@ Leveling.WarzoneLevel = 10
 -- play, so brand-new players (and throwaway accounts) can't be talked into bad trades
 Leveling.TradeLevel = 5
 
--- XP a skill needs to go from `level` to `level + 1`: 2,855 at first, ~54,000 at 98
--- (3.3M from 1 to 99)
+-- XP a skill needs to go from `level` to `level + 1`: 2,460 at first, ~72,000 at 98
+-- (4.1M from 1 to 99)
 function Leveling.SkillXPToNext(level: number): number
-	return math.round(2856 * level ^ 0.645 / 5) * 5
+	return math.round(2458.1 * level ^ 0.738 / 5) * 5
 end
 
--- XP the player level needs to go from `level` to `level + 1`: 3,645 at first, ~126,000
--- at 49 (3.3M from 1 to 50)
+-- XP the player level needs to go from `level` to `level + 1`: 3,115 at first, ~165,000
+-- at 49 (4.1M from 1 to 50)
 function Leveling.PlayerXPToNext(level: number): number
-	return math.round(3647 * level ^ 0.91 / 5) * 5
+	return math.round(3112.6 * level ^ 1.02 / 5) * 5
 end
 
 -- Chance of a double harvest from a gathering skill (Farming, Mining, Woodcutting):

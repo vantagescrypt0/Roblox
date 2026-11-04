@@ -14,7 +14,7 @@
 -- Mining natural stone and ore trains Mining, chopping natural trees trains Woodcutting,
 -- and those skills give a growing chance of a double drop. Blocks you placed give no XP
 -- and no bonus, so placing and re-mining can't farm XP or copy items. Ore in the shared
--- worlds now and then drops a sliver too (Slivers.luau).
+-- worlds now and then drops a sliver too, and so does a log (Slivers.luau).
 -- Buckets pour water and lava the way blocks are placed (LiquidService makes them flow), and
 -- a block can be placed into flowing liquid or over a source. An empty Bucket scoops a
 -- source back up.
@@ -35,6 +35,7 @@ local Slivers = require(ReplicatedStorage.Shared.Slivers)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local ChallengeService = require(script.Parent.ChallengeService)
+local ChestService = require(script.Parent.ChestService)
 local GearService = require(script.Parent.GearService)
 local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -62,8 +63,8 @@ export type Area = {
 	-- What takes its place when it's mined (nil = air): Empty Ore for an ore node
 	Remains: (x: number, y: number, z: number) -> string?,
 	-- After it's broken: nodes start growing back, other changes are saved. Returns how
-	-- many leaves fell if this felled a tree.
-	Broken: (x: number, y: number, z: number) -> number?,
+	-- many leaves fell and the tree's sapling if this felled a tree.
+	Broken: (x: number, y: number, z: number) -> (number?, string?),
 	-- A shared world: blocks only break with the tool that collects them
 	Public: boolean?,
 }
@@ -123,19 +124,23 @@ local function toolNeeded(def: Blocks.Block): string
 	return `{if string.find(name, "^[AEIOUaeiou]") then "an" else "a"} {name}`
 end
 
--- Saplings for a felled tree: a roll for each leaf that fell, and always at least one
-local function treeFell(player: Player, leaves: number)
+-- Saplings for a felled tree: its own sapling back, so it can be replanted. An oak also rolls
+-- for more on each leaf that fell; rarer trees never multiply.
+local function treeFell(player: Player, leaves: number, sapling: string)
 	local saplings = 0
-	for _ = 1, leaves do
-		if rng:NextNumber() < SAPLING_CHANCE then
-			saplings += 1
+	if sapling == "Sapling" then
+		for _ = 1, leaves do
+			if rng:NextNumber() < SAPLING_CHANCE then
+				saplings += 1
+			end
 		end
 	end
 	saplings = math.max(saplings, 1)
-	InventoryService.Add(player, "Sapling", saplings)
+	InventoryService.AddGathered(player, sapling, saplings)
+	local name = Items[sapling].Name
 	StateService.Notify(
 		player,
-		`Timber! The tree fell. +{saplings} Sapling{if saplings > 1 then "s" else ""} to replant`,
+		`Timber! The tree fell. +{saplings} {name}{if saplings > 1 then "s" else ""} to replant`,
 		"timber"
 	)
 end
@@ -179,8 +184,16 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		StateService.Notify(player, `{def.Name} needs {need.Skill} level {need.Level}`, "bad")
 		return
 	end
+	-- With a full Bag the block stays where it is, rather than lose what it drops
+	if def.Drop and canHarvest and not InventoryService.HasRoom(player, def.Drop, 1) then
+		InventoryService.NotifyFull(player)
+		return
+	end
 	BlockWorld.set(world, cx, cy, cz, area.Remains(cx, cy, cz))
-	local fellLeaves = area.Broken(cx, cy, cz)
+	local fellLeaves, fellSapling = area.Broken(cx, cy, cz)
+	if blockType == "Chest" then
+		ChestService.Broken(player, cx, cy, cz)
+	end
 
 	local gather = if natural and canHarvest then Gathering[blockType] else nil
 	if def.Drop and canHarvest then
@@ -192,7 +205,7 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 				StateService.Notify(player, `Double drop! +2 {Items[def.Drop].Name}`, "good")
 			end
 		end
-		InventoryService.Add(player, def.Drop, amount)
+		InventoryService.AddGathered(player, def.Drop, amount)
 	elseif not canHarvest then
 		StateService.Notify(player, `You need {toolNeeded(def)} to collect {def.Name}`, "bad")
 	end
@@ -202,17 +215,17 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		ChallengeService.Count(player, blockType)
 	end
 	if natural and blockType == "Leaves" and rng:NextNumber() < SAPLING_CHANCE then
-		InventoryService.Add(player, "Sapling", 1)
+		InventoryService.AddGathered(player, "Sapling", 1)
 		StateService.Notify(player, "Found a Sapling! Plant it on grass or dirt", "good")
 	end
 	-- Now and then a sliver of the ore, in the shared worlds only (Slivers.luau)
 	local sliver = Slivers.ByOre[blockType]
 	if area.Public and gather and sliver and rng:NextNumber() < sliver.Chance then
-		InventoryService.Add(player, sliver.Item, 1)
+		InventoryService.AddGathered(player, sliver.Item, 1)
 		StateService.Notify(player, `Found a {sliver.Name}! {sliver.Need} craft a {Items[sliver.Node].Name}`, "level")
 	end
 	if fellLeaves then
-		treeFell(player, fellLeaves)
+		treeFell(player, fellLeaves, fellSapling or "Sapling")
 	end
 	if canHarvest and need and need.Skill == "Woodcutting" then
 		QuestService.Record(player, "Chop")
@@ -295,6 +308,9 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	else
 		BlockWorld.set(world, cx, cy, cz, item.Block)
 		IslandService.RecordChange(player, cx, cy, cz, item.Block)
+		if item.Block == "Chest" then
+			ChestService.Placed(player, world, cx, cy, cz)
+		end
 		if Gear.Trophies[itemId] then
 			QuestService.Record(player, "PlaceTrophy")
 		end

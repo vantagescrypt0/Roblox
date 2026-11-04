@@ -10,6 +10,9 @@
 --
 -- Players from before the starter hoe (or the starter buckets) were in the starter kit get
 -- theirs by mail, once.
+--
+-- What doesn't fit in your Bag waits here too (InventoryService.Add), and claiming takes as much
+-- as there's room for, leaving the rest in the letter.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -23,6 +26,7 @@ local StateService = require(script.Parent.StateService)
 -- A full inbox opens its oldest letter by itself, so a save can't grow without end
 local MAX_MAIL = 100
 local CLAIM_COOLDOWN = 0.2
+local BAG_LETTER = "Your Bag"
 
 -- What a sender writes (InboxService.Send)
 export type Mail = { From: string, Text: string, Items: { [string]: number }?, Coins: number? }
@@ -123,19 +127,67 @@ local function onClaim(player: Player, id: unknown)
 	if not data then
 		return
 	end
-	local taken: { DataService.Letter } = {}
+	local got: { [string]: number } = {}
+	local coins = 0
+	local stillWaiting = false
 	for index = #data.Inbox.Mail, 1, -1 do
 		local letter = data.Inbox.Mail[index]
 		if id == "*" or letter.Id == id then
-			table.insert(taken, table.remove(data.Inbox.Mail, index) :: DataService.Letter)
+			for itemId, count in letter.Items do
+				local give = if Items[itemId] then math.min(count, InventoryService.RoomFor(player, itemId)) else count
+				if give > 0 and Items[itemId] then
+					InventoryService.Add(player, itemId, give)
+					got[itemId] = (got[itemId] or 0) + give
+				end
+				letter.Items[itemId] = (if count > give then count - give else nil) :: any
+			end
+			coins += letter.Coins
+			letter.Coins = 0
+			if next(letter.Items) then
+				stillWaiting = true
+			else
+				table.remove(data.Inbox.Mail, index)
+			end
 		end
 	end
-	if #taken > 0 then
-		open(player, taken)
+	local lines = {}
+	for itemId, count in got do
+		table.insert(lines, `+{count} {Items[itemId].Name}`)
+	end
+	if coins > 0 then
+		InventoryService.AddCoins(player, coins)
+		table.insert(lines, `+{coins} {if coins == 1 then "coin" else "coins"}`)
+	end
+	DataService.MarkChanged(player)
+	if #lines > 0 then
+		StateService.Notify(player, table.concat(lines, ", "), "good")
+	end
+	if stillWaiting then
+		StateService.Notify(player, "Your Bag is full: the rest is still in your Inbox", "bad")
+	end
+end
+
+-- What didn't fit in the Bag: one letter that keeps growing until it's claimed
+local function onOverflow(player: Player, itemId: string, amount: number)
+	local data = DataService.GetData(player)
+	if not data then
+		return
+	end
+	local last = data.Inbox.Mail[#data.Inbox.Mail]
+	if last and last.From == BAG_LETTER then
+		last.Items[itemId] = (last.Items[itemId] or 0) + amount
+		DataService.MarkChanged(player)
+	else
+		deliver(player, data, {
+			From = BAG_LETTER,
+			Text = "Your Bag was full, so this is waiting here. Make room, then claim it.",
+			Items = { [itemId] = amount },
+		})
 	end
 end
 
 function InboxService.Start()
+	InventoryService.OnOverflow(onOverflow)
 	DataService.OnMessage("Mail", function(player, data, message)
 		if type(message.Mail) == "table" then
 			deliver(player, data, message.Mail)

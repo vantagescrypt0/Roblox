@@ -1,5 +1,7 @@
 # Mining phase: build plan (2026-10-31)
 
+**Update 2026-11-02:** the XP refit and the Ruby and Starsteel tools noted below are done; see [[Farming Phase Plan]]. Under the [[Late-game Rule]], Ruby and Starstone left the world: the Magma Depths and Star Vault are gone, and those two nodes come only from loot crates and Warzone chests.
+
 Phase 1 of the approved [[Late-game Proposal]], with the approved [[Crafting Proposal]] parts that come with the new ores. Nothing here is new content beyond those two approvals; numbers come from `tools/balance.py`.
 
 ## The ores (the deep cave, under the Gold Chamber)

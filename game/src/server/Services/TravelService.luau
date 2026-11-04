@@ -13,6 +13,7 @@ local TeleportService = game:GetService("TeleportService")
 local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
+local DataService = require(script.Parent.DataService)
 local IslandService = require(script.Parent.IslandService)
 local StateService = require(script.Parent.StateService)
 
@@ -22,6 +23,8 @@ local TOUCH_COOLDOWN = 4
 local TravelService = {}
 
 local traveling: { [Player]: boolean } = {}
+-- On their way back to the Warzone server they quit, for 5 minutes after quitting
+local returning: { [Player]: boolean } = {}
 local lastTouch: { [Player]: number } = {}
 
 local function failed(player: Player, message: string)
@@ -62,6 +65,41 @@ function TravelService.Go(player: Player, destination: Places.Kind)
 	end
 end
 
+-- Quit the Warzone a moment ago and rejoined? Straight back to that server, wherever you landed.
+-- WarzoneService puts you back on the spot. If that server has closed (it does once everyone's
+-- left), any Warzone server will do.
+local function sendBack(player: Player, jobId: string?)
+	local options = Instance.new("TeleportOptions")
+	options:SetTeleportData({ From = Places.Current() })
+	if jobId then
+		options.ServerInstanceId = jobId
+	end
+	local ok, err = pcall(function()
+		TeleportService:TeleportAsync(Places.Ids.Warzone, { player }, options)
+	end)
+	if not ok then
+		warn(`[TravelService] going back to the Warzone failed: {err}`)
+		if jobId then
+			sendBack(player, nil)
+		else
+			returning[player] = nil
+			failed(player, "Couldn't get you back to the Warzone.")
+		end
+	end
+end
+
+local function checkRejoin(player: Player, data: DataService.Data)
+	local back = data.Rejoin
+	if back.Until <= os.time() or Places.Current() == "Warzone" or Places.Ids.Warzone == 0 or RunService:IsStudio() then
+		return
+	end
+	traveling[player] = true
+	returning[player] = true
+	Remotes.Travel:FireClient(player, "Warzone")
+	task.wait(FADE_TIME)
+	sendBack(player, back.JobId)
+end
+
 -- Lets a portal field send players somewhere: walking into it or using its prompt
 -- (`action` on `object`, e.g. "Travel" / "Mining World"). `allowed` decides who may use
 -- it (the island portal is only for the island's owner).
@@ -96,12 +134,20 @@ end
 function TravelService.Start()
 	TeleportService.TeleportInitFailed:Connect(function(player, _result, message)
 		warn(`[TravelService] teleport failed for {player.Name}: {message}`)
+		if returning[player] then
+			-- That server's gone: try any Warzone server, once
+			returning[player] = nil
+			sendBack(player, nil)
+			return
+		end
 		failed(player, "Couldn't travel right now. Try again in a moment.")
 	end)
 	Players.PlayerRemoving:Connect(function(player)
 		traveling[player] = nil
+		returning[player] = nil
 		lastTouch[player] = nil
 	end)
+	DataService.OnDataLoaded(checkRejoin)
 
 	-- Island servers: each island's portal leads to the Town
 	if Places.Current() == "Island" then

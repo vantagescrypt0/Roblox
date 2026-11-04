@@ -57,7 +57,7 @@ local function craft(player: Player, recipeId: unknown)
 	if not recipe or not data or not root or not root:IsA("BasePart") then
 		return
 	end
-	if not nearStation(player, root.Position, recipe.Station) then
+	if not recipe.Hand and not nearStation(player, root.Position, recipe.Station) then
 		StateService.Notify(player, `Get closer to your {STATION_NAMES[recipe.Station]}`, "bad")
 		return
 	end

@@ -292,7 +292,7 @@ local function onFarmClick(player: Player, x: unknown, y: unknown, z: unknown)
 	field.ReadyAt = now + crop.GrowTime
 	growing[field] = true
 	FarmService.ShowCrop(field, crop, 0)
-	FarmService.Harvest(player, crop, tool)
+	FarmService.Harvest(player, crop, tool, true)
 end
 
 function WorldService.Start()

@@ -52,6 +52,8 @@ That's 4 tiers past Iron. If that's too many, Sapphire and Ruby can share one ti
 | Sapphire Node | 25M | Same, Sapphire |
 | Bottomless Water / Lava Bucket | 2.5M / 5M | Already in |
 
+**Status 2026-11-02:** partly replaced. The [[Late-game Rule]] takes each skill's last resources out of the worlds, so where this page puts them no longer holds. Its names, levels, prices, tool tiers and island levels still stand.
+
 ## 4. The order to build it in
 1. **Mining depths + the new tool tiers** (Mining is furthest behind; the tools are needed for everything after).
 2. **Woodcutting zones**.

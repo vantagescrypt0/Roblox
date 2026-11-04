@@ -1,11 +1,10 @@
 --!strict
--- Shared look for every screen, the "Sky" style (2026-10-30, from the UI study in
--- 02 Research/UI Study.md): white panels with thick navy outlines, colored header bands,
--- chunky buttons with a darker lip, a bold rounded font (Fredoka One) and white text with
--- a navy outline over color and the world. Color means something: green buy / confirm /
--- done, red close / danger, orange sell and "selected", gold rewards, blue neutral, grey
--- not yet. No emoji. Small builders for panels, cards, text, buttons, progress bars and
--- chips keep every screen consistent.
+-- Shared look for every screen, Night Glass (Figma file "Skycore UI", Look A; your pick,
+-- 2026-11-03): dark glass panels with thin light edges, one bright cyan accent and gold for
+-- what's special. Color means something: green buy / confirm / done, red close / danger, orange
+-- selling, gold rewards, cyan neutral and "picked", grey not yet. No emoji. Small builders for
+-- panels, cards, text, buttons, progress bars and chips keep every screen consistent; Glass.luau
+-- adds the inventory's parts on top of these.
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -13,40 +12,55 @@ local Workspace = game:GetService("Workspace")
 
 local Sfx = require(script.Parent.Sfx)
 
+local rgb = Color3.fromRGB
+
 local Theme = {}
 
 Theme.Color = {
 	-- Surfaces
-	Panel = Color3.fromRGB(255, 255, 255), -- windows
-	Card = Color3.fromRGB(238, 246, 255), -- rows and boxes on a panel
-	Inset = Color3.fromRGB(219, 231, 245), -- sunken boxes, empty slots
-	Line = Color3.fromRGB(160, 184, 214), -- soft outlines on a panel
-	Chip = Color3.fromRGB(230, 240, 252),
-	Navy = Color3.fromRGB(42, 59, 94), -- the hotbar, bar tracks, locked things
-	NavyLight = Color3.fromRGB(78, 100, 145),
-	Outline = Color3.fromRGB(28, 43, 74), -- every thick outline, and text outlines
+	PanelTop = rgb(24, 40, 72), -- a window's gradient
+	PanelBottom = rgb(11, 20, 39),
+	StageTop = rgb(39, 66, 122), -- the lit stage your character stands on
+	StageBottom = rgb(10, 18, 36),
+	SlotTop = rgb(34, 54, 95),
+	SlotBottom = rgb(22, 35, 63),
+	Well = rgb(11, 20, 40), -- sunken boxes, bar tracks, dark text on bright colors
+	Panel = rgb(44, 68, 118), -- a row or tile that's picked or pointed at
+	Card = rgb(22, 35, 63), -- rows and boxes on a panel
+	Inset = rgb(11, 20, 40), -- sunken boxes, a button or tab that's off
+	Line = rgb(58, 78, 118), -- soft outlines on a panel
+	Chip = rgb(11, 20, 40),
+	Navy = rgb(66, 92, 150),
+	NavyLight = rgb(78, 100, 145), -- scrollbars
+	Outline = rgb(16, 26, 50), -- the dim behind a window, dark outlines
+	Edge = rgb(255, 255, 255), -- thin light edges, always mostly see-through
+	Black = rgb(0, 0, 0),
 	-- Text
-	Ink = Color3.fromRGB(28, 43, 74), -- text on white
-	InkMuted = Color3.fromRGB(94, 112, 145),
-	White = Color3.fromRGB(255, 255, 255), -- text on color and over the world (outlined)
+	Ink = rgb(238, 244, 255),
+	Muted = rgb(144, 164, 200),
+	InkMuted = rgb(144, 164, 200),
+	White = rgb(255, 255, 255),
 	-- Colors with a meaning
-	Gold = Color3.fromRGB(245, 184, 34), -- rewards, levels
-	Orange = Color3.fromRGB(247, 141, 32), -- selling, the selected thing
-	Green = Color3.fromRGB(76, 182, 72), -- buy, confirm, done
-	Leaf = Color3.fromRGB(110, 214, 84), -- bar fills
-	Red = Color3.fromRGB(232, 65, 60), -- close, danger
-	Blue = Color3.fromRGB(59, 142, 232), -- neutral buttons, info
-	Teal = Color3.fromRGB(31, 179, 166),
-	Purple = Color3.fromRGB(138, 92, 246),
-	Disabled = Color3.fromRGB(178, 189, 205),
+	Accent = rgb(79, 227, 245), -- what's picked, neutral buttons
+	Blue = rgb(79, 227, 245),
+	Gold = rgb(255, 194, 75), -- rewards, levels
+	Orange = rgb(255, 165, 61), -- selling, warnings
+	Hunger = rgb(255, 165, 61),
+	Green = rgb(91, 227, 138), -- buy, confirm, done
+	Leaf = rgb(91, 227, 138), -- bar fills
+	Red = rgb(255, 93, 102), -- close, danger
+	Health = rgb(255, 93, 102),
+	Teal = rgb(64, 214, 190),
+	Purple = rgb(176, 140, 255),
+	Disabled = rgb(84, 98, 128),
 }
 
-local NUNITO = "rbxasset://fonts/families/Nunito.json"
+local TITILLIUM = "rbxasset://fonts/families/TitilliumWeb.json"
 
 Theme.Font = {
-	Title = Font.fromEnum(Enum.Font.FredokaOne),
-	Bold = Font.fromEnum(Enum.Font.FredokaOne),
-	Medium = Font.new(NUNITO, Enum.FontWeight.Bold),
+	Title = Font.new(TITILLIUM, Enum.FontWeight.Bold),
+	Bold = Font.new(TITILLIUM, Enum.FontWeight.Bold),
+	Medium = Font.new(TITILLIUM, Enum.FontWeight.SemiBold),
 }
 
 local C = Theme.Color
@@ -61,10 +75,13 @@ function Theme.lighten(color: Color3, amount: number): Color3
 	return color:Lerp(WHITE, amount)
 end
 
--- White (outlined) text on colors, navy ink on very light ones
+local function luminance(color: Color3): number
+	return 0.299 * color.R + 0.587 * color.G + 0.114 * color.B
+end
+
+-- For text on a solid color: dark on the bright ones, white on the rest
 function Theme.textOn(color: Color3): Color3
-	local luminance = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B
-	return if luminance > 0.8 then C.Ink else C.White
+	return if luminance(color) > 0.6 then C.Well else C.White
 end
 
 -- Creates an instance from a property table (Parent is set last)
@@ -95,6 +112,15 @@ function Theme.stroke(parent: Instance, color: Color3?, thickness: number?, tran
 	})
 end
 
+-- A top-to-bottom fade. Give the frame a white background so the colors come through.
+function Theme.gradient(parent: Instance, top: Color3, bottom: Color3): UIGradient
+	return Theme.make("UIGradient", {
+		Color = ColorSequence.new(top, bottom),
+		Rotation = 90,
+		Parent = parent,
+	})
+end
+
 function Theme.padding(parent: Instance, left: number, right: number?, top: number?, bottom: number?): UIPadding
 	return Theme.make("UIPadding", {
 		PaddingLeft = UDim.new(0, left),
@@ -115,44 +141,48 @@ function Theme.list(parent: Instance, direction: Enum.FillDirection?, gap: numbe
 	})
 end
 
--- Navy outline round a label's letters, so white text reads on any color or over the world
+-- A soft dark edge round a label's letters, so it reads over the world or a color
 function Theme.outline(label: TextLabel, thickness: number?): UIStroke
 	local stroke = label:FindFirstChildOfClass("UIStroke")
 	if stroke then
 		return stroke
 	end
 	return Theme.make("UIStroke", {
-		Color = C.Outline,
-		Thickness = thickness or math.clamp(label.TextSize / 11, 1.5, 4),
+		Color = BLACK,
+		Thickness = thickness or math.clamp(label.TextSize / 14, 1, 3),
+		Transparency = 0.35,
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
 		LineJoinMode = Enum.LineJoinMode.Round,
 		Parent = label,
 	})
 end
 
--- White window with a thick navy outline
+-- A window or anything else that floats on its own
 function Theme.panel(parent: Instance, size: UDim2, position: UDim2?): Frame
 	local frame = Theme.make("Frame", {
 		Size = size,
 		Position = position or UDim2.new(),
-		BackgroundColor3 = C.Panel,
+		BackgroundColor3 = C.Edge,
+		BackgroundTransparency = 0.03,
 		Parent = parent,
 	})
-	Theme.corner(frame, 14)
-	Theme.stroke(frame, C.Outline, 3)
+	Theme.gradient(frame, C.PanelTop, C.PanelBottom)
+	Theme.corner(frame, 20)
+	Theme.stroke(frame, C.Edge, 1.5, 0.82)
 	return frame
 end
 
--- Pale blue card that sits on a panel (list rows, detail boxes)
+-- A card that sits on a panel (list rows, detail boxes)
 function Theme.card(parent: Instance, size: UDim2?, position: UDim2?): Frame
 	local frame = Theme.make("Frame", {
 		Size = size or UDim2.fromScale(1, 1),
 		Position = position or UDim2.new(),
 		BackgroundColor3 = C.Card,
+		BackgroundTransparency = 0.1,
 		Parent = parent,
 	})
-	Theme.corner(frame, 10)
-	Theme.stroke(frame, C.Outline, 2)
+	Theme.corner(frame, 12)
+	Theme.stroke(frame, C.Edge, 1, 0.88)
 	return frame
 end
 
@@ -162,14 +192,15 @@ function Theme.inset(parent: Instance, size: UDim2?, position: UDim2?): Frame
 		Size = size or UDim2.fromScale(1, 1),
 		Position = position or UDim2.new(),
 		BackgroundColor3 = C.Inset,
+		BackgroundTransparency = 0.15,
 		Parent = parent,
 	})
-	Theme.corner(frame, 8)
-	Theme.stroke(frame, C.Line, 2)
+	Theme.corner(frame, 10)
+	Theme.stroke(frame, C.Edge, 1, 0.9)
 	return frame
 end
 
--- A label. White text gets a navy outline by itself (it's always on color or the world).
+-- A label. White text gets a soft outline by itself (it's on a color or the world).
 function Theme.text(parent: Instance, text: string, size: number, font: Font?, color: Color3?): TextLabel
 	local label = Theme.make("TextLabel", {
 		Text = text,
@@ -188,53 +219,9 @@ function Theme.text(parent: Instance, text: string, size: number, font: Font?, c
 	return label
 end
 
--- Big rounded title (navy on white unless a color is given)
+-- Heading text
 function Theme.title(parent: Instance, text: string, size: number, color: Color3?): TextLabel
 	return Theme.text(parent, text, size, Theme.Font.Title, color or C.Ink)
-end
-
--- Title drawn straight over the game (no panel behind it), outlined
-function Theme.worldTitle(parent: Instance, text: string, size: number, color: Color3?): TextLabel
-	local label = Theme.title(parent, text, size, color or C.White)
-	Theme.outline(label)
-	return label
-end
-
--- Colored band across the top of a panel, with the title in big outlined letters that
--- poke above the panel's edge like a sticker. Returns the title label.
-function Theme.header(panel: Instance, text: string, height: number?, color: Color3?): TextLabel
-	local h = height or 46
-	local band = color or C.Blue
-	local bar = Theme.make("Frame", {
-		Name = "Header",
-		Size = UDim2.new(1, 0, 0, h),
-		BackgroundColor3 = band,
-		Parent = panel,
-	})
-	Theme.corner(bar, 12)
-	-- Square off the bottom corners, with a navy line under the band
-	Theme.make("Frame", {
-		Name = "Fill",
-		Position = UDim2.fromScale(0, 0.5),
-		Size = UDim2.fromScale(1, 0.5),
-		BackgroundColor3 = band,
-		BorderSizePixel = 0,
-		Parent = bar,
-	})
-	Theme.make("Frame", {
-		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.fromScale(0, 1),
-		Size = UDim2.new(1, 0, 0, 3),
-		BackgroundColor3 = C.Outline,
-		BorderSizePixel = 0,
-		ZIndex = 2,
-		Parent = bar,
-	})
-	local label = Theme.title(bar, text, math.floor(h * 0.78), C.White)
-	label.Position = UDim2.fromOffset(16, -math.floor(h * 0.3))
-	label.Size = UDim2.new(1, -72, 1, 0)
-	label.ZIndex = 3
-	return label
 end
 
 export type Button = {
@@ -246,25 +233,20 @@ export type Button = {
 	SetText: (text: string) -> (),
 }
 
--- Chunky button: a colored face with a navy outline over a darker lip; the face presses down
--- onto the lip when clicked
+-- A button: glass tinted with its color, with an edge of the same color. A color as dark as the
+-- glass (C.Inset, a tab that's off) stays plain with a faint edge.
 function Theme.button(parent: Instance, text: string, color: Color3, size: UDim2, onClick: () -> ()): Button
 	local holder = Theme.make("Frame", { Size = size, BackgroundTransparency = 1, Parent = parent })
-	local lip = Theme.make("Frame", {
-		Size = UDim2.new(1, 0, 1, -4),
-		Position = UDim2.fromOffset(0, 4),
-		Parent = holder,
-	})
-	Theme.corner(lip, 10)
-	Theme.stroke(lip, C.Outline, 2.5)
 	local face = Theme.make("TextButton", {
-		Size = UDim2.new(1, 0, 1, -4),
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = C.Edge,
 		AutoButtonColor = false,
 		Text = "",
 		Parent = holder,
 	})
-	Theme.corner(face, 10)
-	Theme.stroke(face, C.Outline, 2.5)
+	Theme.corner(face, 12)
+	local fill = Theme.gradient(face, C.SlotTop, C.SlotBottom)
+	local stroke = Theme.stroke(face, C.Edge, 1.5)
 	local label = Theme.make("TextLabel", {
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
@@ -273,19 +255,19 @@ function Theme.button(parent: Instance, text: string, color: Color3, size: UDim2
 		FontFace = Theme.Font.Bold,
 		Parent = face,
 	})
-	local outline = Theme.outline(label, 1.6)
+	Theme.outline(label, 1.2)
 
 	local enabled = true
 	local current = color
 	local hovering = false
 	local function paint()
 		local shown = if enabled then current else C.Disabled
-		face.BackgroundColor3 = if hovering and enabled then Theme.lighten(shown, 0.12) else shown
-		lip.BackgroundColor3 = Theme.darken(shown, 0.35)
-		local ink = Theme.textOn(shown)
-		label.TextColor3 = ink
-		outline.Enabled = ink == C.White
-		label.TextTransparency = if enabled then 0 else 0.2
+		local lift = if hovering and enabled then 0.14 else 0
+		fill.Color = ColorSequence.new(C.SlotBottom:Lerp(shown, 0.62 + lift), C.SlotBottom:Lerp(shown, 0.34 + lift))
+		local faint = luminance(shown) < 0.2
+		stroke.Color = if faint then C.Edge else shown
+		stroke.Transparency = if faint then 0.84 elseif hovering and enabled then 0 else 0.25
+		label.TextColor3 = if enabled then C.Ink else C.Muted
 	end
 	paint()
 
@@ -300,7 +282,7 @@ function Theme.button(parent: Instance, text: string, color: Color3, size: UDim2
 	end)
 	face.MouseButton1Down:Connect(function()
 		if enabled then
-			face.Position = UDim2.fromOffset(0, 3)
+			face.Position = UDim2.fromOffset(0, 2)
 		end
 	end)
 	face.MouseButton1Up:Connect(function()
@@ -331,20 +313,18 @@ function Theme.button(parent: Instance, text: string, color: Color3, size: UDim2
 	}
 end
 
--- Red rounded "X" for a window's corner
-function Theme.closeButton(parent: Instance, onClick: () -> ()): Button
-	local button = Theme.button(parent, "X", C.Red, UDim2.fromOffset(42, 42), onClick)
-	button.Label.TextSize = 24
-	return button
-end
-
 export type Bar = { Track: Frame, Fill: Frame, Label: TextLabel, Set: (ratio: number, text: string?) -> () }
 
--- Progress bar: a navy track with a bright fill and white outlined text on top
-function Theme.bar(parent: Instance, color: Color3, size: UDim2): Bar
-	local track = Theme.make("Frame", { Size = size, BackgroundColor3 = C.Navy, Parent = parent })
-	Theme.corner(track, 8)
-	Theme.stroke(track, C.Outline, 2.5)
+-- Slim progress bar with text on top (`showText` false leaves the text out)
+function Theme.bar(parent: Instance, color: Color3, size: UDim2, showText: boolean?): Bar
+	local track = Theme.make("Frame", {
+		Size = size,
+		BackgroundColor3 = C.Well,
+		BackgroundTransparency = 0.1,
+		Parent = parent,
+	})
+	Theme.corner(track, 7)
+	Theme.stroke(track, C.Edge, 1, 0.84)
 	local fill = Theme.make("Frame", {
 		Size = UDim2.fromScale(0, 1),
 		BackgroundColor3 = color,
@@ -356,12 +336,13 @@ function Theme.bar(parent: Instance, color: Color3, size: UDim2): Bar
 		BackgroundTransparency = 1,
 		FontFace = Theme.Font.Bold,
 		TextSize = 13,
-		TextColor3 = C.White,
+		TextColor3 = C.Ink,
 		Text = "",
 		ZIndex = 3,
+		Visible = showText ~= false,
 		Parent = track,
 	})
-	Theme.outline(label, 1.4)
+	Theme.outline(label)
 	return {
 		Track = track,
 		Fill = fill,
@@ -377,38 +358,39 @@ function Theme.bar(parent: Instance, color: Color3, size: UDim2): Bar
 	}
 end
 
--- Small tag, e.g. "6 plots". With a color it's a filled pill with white text; without one,
--- a pale tag with navy text.
+-- Small tag, e.g. "6 plots". A color goes on its letters and edge; without one it's plain.
 function Theme.chip(parent: Instance, text: string, color: Color3?): TextLabel
 	local chip = Theme.make("TextLabel", {
 		AutomaticSize = Enum.AutomaticSize.X,
 		Size = UDim2.fromOffset(0, 28),
-		BackgroundColor3 = color or C.Chip,
+		BackgroundColor3 = C.Well,
+		BackgroundTransparency = 0.1,
 		Text = text,
 		TextSize = 15,
 		FontFace = Theme.Font.Bold,
-		TextColor3 = if color then Theme.textOn(color) else C.Ink,
+		TextColor3 = color or C.Ink,
 		Parent = parent,
 	})
-	Theme.corner(chip, 8)
-	Theme.stroke(chip, C.Outline, 2)
-	Theme.padding(chip, 10, 10, 0, 0)
+	Theme.corner(chip, 9)
+	Theme.stroke(chip, color or C.Edge, 1.5, if color then 0.2 else 0.84)
+	Theme.padding(chip, 12, 12, 0, 0)
 	return chip
 end
 
 export type IconChip = { Frame: Frame, Icon: Frame, Label: TextLabel }
 
--- Pale tag with a picture in front of the text; put an icon in .Icon
+-- A tag with a picture in front of the text; put an icon in .Icon
 function Theme.iconChip(parent: Instance, text: string, height: number?): IconChip
 	local h = height or 30
 	local chip = Theme.make("Frame", {
 		AutomaticSize = Enum.AutomaticSize.X,
 		Size = UDim2.fromOffset(0, h),
-		BackgroundColor3 = C.Chip,
+		BackgroundColor3 = C.Well,
+		BackgroundTransparency = 0.1,
 		Parent = parent,
 	})
-	Theme.corner(chip, 8)
-	Theme.stroke(chip, C.Outline, 2)
+	Theme.corner(chip, 9)
+	Theme.stroke(chip, C.Edge, 1, 0.84)
 	Theme.padding(chip, 3, 10, 0, 0)
 	Theme.list(chip, Enum.FillDirection.Horizontal, 4)
 	local icon = Theme.make("Frame", {

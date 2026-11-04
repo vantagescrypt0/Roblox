@@ -53,6 +53,8 @@ TIERS = {
     # The deep cave's gem tiers (the palette is full, so they borrow its purples and blues)
     "Amethyst": {"head": "rune", "dark": "rune_dark", "accent": "steel", "binding": "steel", "rough": 0.0},
     "Sapphire": {"head": "blue", "dark": "crystal_dark", "accent": "gold", "binding": "steel", "rough": 0.0},
+    "Ruby": {"head": "red", "dark": "red_dark", "accent": "gold", "binding": "gold_dark", "rough": 0.0},
+    "Starsteel": {"head": "crystal_light", "dark": "stone_blue", "accent": "glow", "binding": "gold", "rough": 0.0},
 }
 KINDS = ["Pickaxe", "Axe", "Shovel", "Hoe", "Sword"]
 
@@ -211,15 +213,15 @@ def twine(b):
     b.cylinder(0.035, 0.55, location=(0.45, -0.2, 0.1), rotation=(0, 75, 20), color="wheat_dark", segments=5)
 
 
-def rope(b):
+def rope(b, main="sign", other="wood_alt"):
     """A coil of hemp rope standing up: two loops wound round, tied at the bottom, the two
     ends hanging down."""
-    for radius, y, color in ((0.5, 0.08, "sign"), (0.43, -0.08, "wood_alt")):
+    for radius, y, color in ((0.5, 0.08, main), (0.43, -0.08, other)):
         for v in new_verts(b, lambda radius=radius, color=color: arc(b, 0, 0.66, radius, 0, 360, 0.15, color, steps=18)):
             v.co.y += y
     b.cylinder(0.17, 0.24, location=(0, 0, 0.16), rotation=(0, 90, 0), color="wood_dark", segments=8)
-    b.cylinder(0.06, 0.4, location=(-0.09, -0.04, -0.12), rotation=(0, 14, 0), color="sign", segments=6)
-    b.cylinder(0.06, 0.34, location=(0.09, 0.04, -0.1), rotation=(0, -18, 0), color="wood_alt", segments=6)
+    b.cylinder(0.06, 0.4, location=(-0.09, -0.04, -0.12), rotation=(0, 14, 0), color=main, segments=6)
+    b.cylinder(0.06, 0.34, location=(0.09, 0.04, -0.1), rotation=(0, -18, 0), color=other, segments=6)
 
 
 def iron_plate(b, rim="iron_dark", face="iron", rivet="metal_dark"):
@@ -256,6 +258,20 @@ def anvil(b):
     b.box((0.3, 0.16, 0.16), location=(0.025, -0.353, 1.6), rotation=(0, 0, 30), color="steel")
 
 
+def shield(b):
+    """The shield's icon, matching its look in the game (Util/ShieldModel.luau): planks in an
+    iron rim with an orange band and a boss."""
+    b.box((1.3, 0.12, 1.6), location=(0, 0, 0.8), color="wood")
+    for x in (-0.39, -0.13, 0.13, 0.39):
+        b.box((0.03, 0.14, 1.55), location=(x, 0, 0.8), color="wood_dark")
+    b.box((1.3, 0.15, 0.23), location=(0, 0, 1.08), color="carrot")
+    for z in (0.0, 1.6):
+        b.box((1.44, 0.18, 0.1), location=(0, 0, z), color="steel")
+    for x in (-0.67, 0.67):
+        b.box((0.1, 0.18, 1.7), location=(x, 0, 0.8), color="steel")
+    b.blob(0.2, location=(0, -0.1, 0.8), color="metal", squash=(1.0, 0.7, 1.0), jitter=0.0)
+
+
 def wheat(b):
     for i, angle in enumerate((-14, -7, 0, 7, 14)):
         a = math.radians(angle)
@@ -273,18 +289,27 @@ def seed_pouch(b, accent):
     b.box((0.26, 0.06, 0.26), location=(0, -0.42, 0.45), rotation=(0, 45, 0), color=accent)
 
 
-def sapling(b):
+def sapling(b, leaf="leaf", light="leaf_light"):
     """A young tree: a thin trunk with a side twig, leafy tufts, a clump of soil at its roots."""
     b.cylinder(0.24, 0.14, location=(0, 0, 0.07), color="soil", segments=8, radius2=0.18)
     b.cylinder(0.075, 1.05, location=(0, 0, 0.6), color="wood_alt", segments=6, radius2=0.055)
     b.cylinder(0.04, 0.45, location=(0.14, 0, 0.82), rotation=(0, 35, 0), color="wood_alt", segments=5)
     for x, y, z, radius, color in (
-        (0.0, 0.0, 1.22, 0.34, "leaf"),
-        (0.32, 0.04, 1.02, 0.25, "leaf_light"),
-        (-0.27, -0.06, 0.98, 0.23, "leaf"),
-        (0.06, 0.18, 1.46, 0.21, "leaf_light"),
+        (0.0, 0.0, 1.22, 0.34, leaf),
+        (0.32, 0.04, 1.02, 0.25, light),
+        (-0.27, -0.06, 0.98, 0.23, leaf),
+        (0.06, 0.18, 1.46, 0.21, light),
     ):
         b.blob(radius, location=(x, y, z), color=color, jitter=0.12, subdivisions=1)
+
+
+def loot_crate(b):
+    """A wooden crate with iron bands and a gold lock."""
+    b.box((1.1, 1.0, 0.82), location=(0, 0, 0.41), color="wood", bevel=0.03)
+    b.box((1.16, 1.06, 0.14), location=(0, 0, 0.6), color="wood_dark", bevel=0.02)
+    for x in (-0.34, 0.34):
+        b.box((0.13, 1.06, 0.86), location=(x, 0, 0.41), color="iron_dark", bevel=0.01)
+    b.box((0.24, 0.1, 0.28), location=(0, -0.53, 0.52), color="gold", bevel=0.02)
 
 
 def carrot(b):
@@ -401,6 +426,47 @@ def melon(b):
     for y in (-0.3, 0.0, 0.3):
         b.blob(0.1, location=(0, y, 0.86), color="melon_light", squash=(5.5, 0.6, 0.5), jitter=0.02)
     b.cylinder(0.04, 0.16, location=(0.66, 0, 0.5), rotation=(0, 90, 0), color="stalk", segments=5)
+
+
+def sugarcane(b):
+    """Three jointed stalks of cane, with a leaf or two at the top."""
+    for x, y, height in ((-0.2, 0.05, 1.5), (0.14, -0.1, 1.75), (0.1, 0.18, 1.25)):
+        b.cylinder(0.075, height, location=(x, y, height / 2), color="stalk", segments=6)
+        for z in (height * 0.3, height * 0.6, height * 0.9):
+            b.cylinder(0.092, 0.05, location=(x, y, z), color="grass_dark", segments=6)
+        b.cone(0.08, 0.55, location=(x + 0.14, y, height + 0.1), rotation=(0, 40, 0), color="leaf_light", segments=4)
+    b.cone(0.08, 0.6, location=(-0.32, 0.05, 1.5), rotation=(0, -40, 0), color="leaf", segments=4)
+
+
+def strawberry(b):
+    """A plump strawberry, point down, seeds on its skin and a leafy cap."""
+    b.blob(0.42, location=(0, 0, 0.42), color="red", squash=(1.0, 1.0, 1.1), jitter=0.03, subdivisions=2)
+    b.cone(0.3, 0.34, location=(0, 0, 0.1), rotation=(180, 0, 0), color="red", segments=8)
+    for i in range(9):
+        a = math.radians(i * 40)
+        z = 0.24 + (i % 3) * 0.17
+        b.box((0.05, 0.05, 0.07), location=(math.cos(a) * 0.37, math.sin(a) * 0.37, z), color="flower_yellow")
+    for i in range(5):
+        a = math.radians(i * 72)
+        b.cone(0.1, 0.34, location=(math.cos(a) * 0.15, math.sin(a) * 0.15, 0.86), rotation=(math.sin(a) * -60, math.cos(a) * 60, 0), color="leaf", segments=4)
+
+
+def dragonfruit(b):
+    """A hot pink oval fruit with green-tipped scales."""
+    b.blob(0.42, location=(0, 0, 0.52), color="flower_pink", squash=(1.0, 1.0, 1.3), jitter=0.03, subdivisions=2)
+    for ring, z, reach in ((0, 0.3, 0.38), (1, 0.55, 0.42), (0, 0.8, 0.32)):
+        for i in range(6):
+            a = math.radians(i * 60 + ring * 30)
+            b.cone(0.09, 0.3, location=(math.cos(a) * reach, math.sin(a) * reach, z), rotation=(math.sin(a) * -55, math.cos(a) * 55, 0), color="leaf_light", segments=4)
+    b.cone(0.1, 0.3, location=(0, 0, 1.05), color="leaf", segments=4)
+
+
+def starfruit(b):
+    """A golden five-pointed star of a fruit, standing on one point."""
+    b.blob(0.22, location=(0, 0, 0.62), color="glow", squash=(1.0, 0.8, 1.0), jitter=0.0, subdivisions=2)
+    for i in range(5):
+        a = math.radians(i * 72)
+        b.cone(0.18, 0.5, location=(math.sin(a) * 0.34, 0, 0.62 + math.cos(a) * 0.34), rotation=(0, i * 72, 0), color="flower_yellow" if i % 2 else "glow", segments=4)
 
 
 def glowberry(b):
@@ -558,8 +624,39 @@ ITEMS.update(
         "SilverSliver": (lambda b: sliver(b, "steel", "iron_dark"), False),
         "AmethystSliver": (lambda b: sliver(b, "rune", "flower_purple"), False),
         "SapphireSliver": (lambda b: sliver(b, "blue", "berry"), False),
-        "RubySliver": (lambda b: sliver(b, "red", "flower_pink"), False),
-        "StarstoneSliver": (lambda b: sliver(b, "glow", "gold"), False),
+        # The Farming World's second ring (2026-11-02)
+        "Sugarcane": (sugarcane, False),
+        "SugarcaneSeeds": (lambda b: seed_pouch(b, "stalk"), False),
+        "Strawberry": (strawberry, False),
+        "StrawberrySeeds": (lambda b: seed_pouch(b, "red"), False),
+        "Dragonfruit": (dragonfruit, False),
+        "DragonfruitSeeds": (lambda b: seed_pouch(b, "flower_pink"), False),
+        "Starfruit": (starfruit, False),
+        "StarfruitSeeds": (lambda b: seed_pouch(b, "flower_yellow"), False),
+        "SugarcaneSliver": (lambda b: sliver(b, "stalk", "grass_light"), False),
+        # The top two tiers' parts
+        "GoldPlate": (lambda b: iron_plate(b, "gold_dark", "gold", "cream"), False),
+        "RefinedRuby": (lambda b: cut_gem(b, "red", "flower_pink"), False),
+        "CherryHandle": (lambda b: wood_handle(b, "red_dark", "gold"), True),
+        "CaneRope": (lambda b: rope(b, "stalk", "sign"), False),
+        "StarsteelIngot": (lambda b: ingot(b, "crystal_light"), False),
+        "StarsteelPlate": (lambda b: iron_plate(b, "stone_blue", "crystal_light", "glow"), False),
+        "RedwoodHandle": (lambda b: wood_handle(b, "dirt_light", "crystal_light"), True),
+        # Tree saplings and the Loot Crate (2026-11-02)
+        "BirchSapling": (lambda b: sapling(b, "leaf_light", "sprout"), False),
+        "SpruceSapling": (lambda b: sapling(b, "leaf_dark", "leaf"), False),
+        "CherrySapling": (lambda b: sapling(b, "flower_pink", "flower_white"), False),
+        "MapleSapling": (lambda b: sapling(b, "red", "gold"), False),
+        "RedwoodSapling": (lambda b: sapling(b, "leaf_dark", "red_dark"), False),
+        "MangroveSapling": (lambda b: sapling(b, "leaf", "leaf_dark"), False),
+        "StarwoodSapling": (lambda b: sapling(b, "crystal", "crystal_light"), False),
+        "LootCrate": (loot_crate, False),
+        # Slivers of wood, from chopping (2026-11-02)
+        "BirchSliver": (lambda b: sliver(b, "cream", "wood_alt"), False),
+        "SpruceSliver": (lambda b: sliver(b, "wood_darker", "wood_dark"), False),
+        "CherrySliver": (lambda b: sliver(b, "flower_pink", "red_dark"), False),
+        "MapleSliver": (lambda b: sliver(b, "red", "gold"), False),
+        "RedwoodSliver": (lambda b: sliver(b, "red_dark", "wood_darker"), False),
     }
 )
 # Block items show their block, rendered from art/blend/Blocks.blend
@@ -573,12 +670,17 @@ BLOCK_ICONS = {
     "BirchWood": "BirchWood",
     "SpruceWood": "SpruceWood",
     "CherryWood": "CherryWood",
+    "MapleWood": "MapleWood",
+    "Redwood": "Redwood",
+    "MangroveWood": "MangroveWood",
+    "Starwood": "Starwood",
 }
 # Items whose look in the world is built in code (game/src/server/Util/AnvilModel.luau):
 # only an icon cell, no model is exported. name -> (build, azimuth, elevation)
 ICON_ONLY = {
     "Anvil": (anvil, -30, 22),
     "GemBench": (gem_bench, -30, 22),
+    "Shield": (shield, -24, 12),
 }
 # Pictures for the HUD menu buttons. Not items: no model is exported, only an icon cell,
 # after every item and block so their cells never move. name -> (build, azimuth, elevation)

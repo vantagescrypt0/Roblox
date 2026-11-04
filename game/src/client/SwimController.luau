@@ -103,8 +103,9 @@ local function columnSurface(point: Vector3, margin: number, params: RaycastPara
 	local i = 1
 	while i <= #column do
 		local low, high, part = column[i].Low, column[i].High, column[i].Part
-		-- Join the parts that stack on top of this one
-		while column[i + 1] and column[i + 1].Low <= high + 0.05 do
+		-- Join the parts that stack on top of this one. A liquid block stands on its cell's floor
+		-- and doesn't fill it, so there's a gap under the next one up (under a block's height)
+		while column[i + 1] and column[i + 1].Low < high + Blocks.Size do
 			i += 1
 			high = math.max(high, column[i].High)
 		end

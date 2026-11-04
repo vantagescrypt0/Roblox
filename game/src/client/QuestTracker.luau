@@ -5,12 +5,11 @@
 
 local Players = game:GetService("Players")
 
+local Glass = require(script.Parent.UI.Glass)
 local Theme = require(script.Parent.UI.Theme)
 
-local C = Theme.Color
+local C = Glass.Color
 local localPlayer = Players.LocalPlayer :: Player
-
-local HEADER = 34
 
 local QuestTracker = {}
 
@@ -26,51 +25,50 @@ local lastQuest: number? = nil
 local function build(onOpen: () -> ())
 	local gui = Theme.screen("Quests", 1)
 
-	card = Theme.panel(gui, UDim2.fromOffset(270, 0))
+	card = Glass.card(gui, UDim2.fromOffset(270, 0))
 	-- Right side, below Roblox's player list
 	card.AnchorPoint = Vector2.new(1, 0.5)
 	card.Position = UDim2.new(1, -14, 0.5, 0)
 	card.AutomaticSize = Enum.AutomaticSize.Y
 	card.Visible = false
 	Theme.autoScale(card)
+	Theme.padding(card, 14, 14, 10, 12)
+	Theme.list(card, Enum.FillDirection.Vertical, 6)
 
-	title = Theme.header(card, "Quest", HEADER, C.Gold)
-	-- The whole card opens the Challenges board
-	local open = Theme.make("TextButton", {
-		Size = UDim2.fromScale(1, 1),
+	local top = Theme.make("Frame", {
+		LayoutOrder = 1,
+		Size = UDim2.new(1, 0, 0, 20),
 		BackgroundTransparency = 1,
-		Text = "",
-		ZIndex = 5,
 		Parent = card,
 	})
-	open.Activated:Connect(onOpen)
-	-- Quest number on the right of the title bar
-	header = Theme.text(card, "", 16, Theme.Font.Bold, C.White)
+	title = Glass.text(top, "Quest", 16, Glass.Font.Bold, C.Gold)
+	title.Size = UDim2.new(1, -70, 1, 0)
+	-- Quest number on the right of the title
+	header = Glass.text(top, "", 14, Glass.Font.Bold, C.Muted)
 	header.AnchorPoint = Vector2.new(1, 0)
-	header.Position = UDim2.new(1, -14, 0, 0)
-	header.Size = UDim2.fromOffset(80, HEADER - 3)
+	header.Position = UDim2.fromScale(1, 0)
+	header.Size = UDim2.new(0, 70, 1, 0)
 	header.TextXAlignment = Enum.TextXAlignment.Right
-	header.ZIndex = 3
 
-	local body = Theme.make("Frame", {
-		Position = UDim2.fromOffset(0, HEADER),
-		Size = UDim2.fromScale(1, 0),
-		AutomaticSize = Enum.AutomaticSize.Y,
-		BackgroundTransparency = 1,
-		Parent = card,
-	})
-	Theme.padding(body, 12, 12, 10, 12)
-	Theme.list(body, Enum.FillDirection.Vertical, 8)
-
-	questText = Theme.text(body, "", 17, Theme.Font.Bold)
-	questText.LayoutOrder = 1
+	questText = Glass.text(card, "", 16, Glass.Font.Body)
+	questText.LayoutOrder = 2
 	questText.TextWrapped = true
 	questText.TextTruncate = Enum.TextTruncate.None
 	questText.AutomaticSize = Enum.AutomaticSize.Y
 	questText.Size = UDim2.new(1, 0, 0, 20)
 
-	bar = Theme.bar(body, C.Orange, UDim2.new(1, 0, 0, 18))
-	bar.Track.LayoutOrder = 2
+	bar = Glass.bar(card, C.Gold, UDim2.new(1, 0, 0, 16))
+	bar.Track.LayoutOrder = 3
+	bar.Label.TextSize = 12
+
+	-- The whole card opens the Challenges board
+	card.Active = true
+	card.InputBegan:Connect(function(input)
+		local kind = input.UserInputType
+		if kind == Enum.UserInputType.MouseButton1 or kind == Enum.UserInputType.Touch then
+			onOpen()
+		end
+	end)
 
 	highlight = Theme.make("Highlight", {
 		FillColor = C.Gold,

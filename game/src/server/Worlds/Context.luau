@@ -38,6 +38,8 @@ export type IslandSpec = {
 	-- under it); return nil for the usual soil and rock
 	Fill: ((x: number, y: number, z: number, depth: number) -> string?)?,
 	Depth: number?, -- how far the rock hangs below the middle (default 60% of the radius)
+	Step: number?, -- its underside goes in steps this deep (default 4); bigger means fewer parts
+	Base: number?, -- the height its ground stands at, so islands sit at different levels (default 0)
 }
 
 export type Island = {
@@ -287,6 +289,7 @@ function Context.new(world: BlockWorld.World, decor: Folder, seed: number, south
 		local soil = spec.Soil or "Dirt"
 		local rock = spec.Rock
 		local depthMax = spec.Depth or math.floor(spec.Radius * 0.6)
+		local base = spec.Base or 0
 		local reach = math.ceil(spec.Radius * 1.4)
 		local bottoms: { [string]: number } = {}
 		local tops: { [string]: string } = {}
@@ -329,16 +332,17 @@ function Context.new(world: BlockWorld.World, decor: Folder, seed: number, south
 						if ctx.Hash(sx, salt + 1, sz) < 0.1 * (1 - t) then
 							hang += if ctx.Hash(sx, salt + 2, sz) < 0.5 then 4 else 8
 						end
-						-- In steps of four blocks deep (fewer, bigger rock pieces)
+						-- In steps of a few blocks deep (fewer, bigger rock pieces)
 						local depth = math.max(2, math.floor(hang))
-						if depth > 4 then
-							depth = 4 * math.round(depth / 4)
+						local step = spec.Step or 4
+						if depth > step then
+							depth = step * math.round(depth / step)
 						end
 						bottom = math.min(height - 2, -depth)
 					end
-					heights[col] = height
-					bottoms[col] = bottom
-					depths[col] = bottom
+					heights[col] = height + base
+					bottoms[col] = bottom + base
+					depths[col] = bottom + base
 					tops[col] = block
 					owner[col] = island
 					table.insert(ground, { x, z })

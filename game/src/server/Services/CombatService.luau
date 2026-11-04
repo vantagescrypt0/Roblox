@@ -1,17 +1,26 @@
 --!strict
--- Whatever is in your selected hotbar slot shows in your hand: pixel-art tool and crop
--- models (ReplicatedStorage.ItemModels) or a small block. Swinging a tool hits what's in
--- front of you using that tool's Damage, Range and Cooldown (Tools.luau) and wears it
--- down. Hits are worked out on the server: mobs anywhere, other players only when both
--- of you are in the Warzone.
+-- Whatever is in your selected hotbar slot shows in your hand (HeldModel): a generated sword, a
+-- pixel-art tool or crop model (ReplicatedStorage.ItemModels) or a small block.
+-- Swinging follows Minecraft 1.9+ (Combat.luau): the client says who's under its aim and whether
+-- it's falling, the server checks them and works out everything else. Mobs can be hit anywhere; other players only when both
+-- of you are in the Warzone and outside its citadel.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
+local Combat = require(ReplicatedStorage.Shared.Combat)
+local Foods = require(ReplicatedStorage.Shared.Foods)
 local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
 local Items = require(ReplicatedStorage.Shared.Items)
+local Knockback = require(ReplicatedStorage.Shared.Knockback)
+local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local SwordArt = require(ReplicatedStorage.Shared.SwordArt)
 local Tools = require(ReplicatedStorage.Shared.Tools)
+local HeldModel = require(script.Parent.Parent.Util.HeldModel)
+local DataService = require(script.Parent.DataService)
 local MobService = require(script.Parent.MobService)
+local SprintService = require(script.Parent.SprintService)
 local WarzoneService = require(script.Parent.WarzoneService)
 
 -- Where the hand holds each item model and which way its head points come from
@@ -20,54 +29,221 @@ local WarzoneService = require(script.Parent.WarzoneService)
 local HOLD_POINT = Vector3.new(1.0, -1.0, 0)
 local HANDLE_TO_HEAD = Vector3.new(-1, 1, 0).Unit
 local MODEL_GRIPS = ItemArt.Models :: { [string]: { Grip: Vector3, Up: Vector3 } }
-local BLOCK_IN_HAND = 1.1 -- studs
+local BLOCK_IN_HAND = 0.9 -- studs
+local QUICKEST_SWING = 0.05 -- faster clicks than this aren't real
+local GROUND_BELOW = 3.6 -- from the middle of a character to just under their feet
+local FRONT = -0.2 -- how far round a target can be and still count as in front of you
+
+type Swing = { Damage: number, Kind: string, Charge: number, Sprinting: boolean, Falling: boolean }
+type Hurt = { At: number, Amount: number }
 
 local CombatService = {}
 
 local lastSwing: { [Player]: number } = {}
+local lastHurt: { [Model]: Hurt } = {}
 
-local function targetsInFront(character: Model, root: BasePart, range: number): { Model }
-	local params = OverlapParams.new()
-	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { character }
-
-	local box = root.CFrame * CFrame.new(0, 0, -range / 2)
-	local found: { Model } = {}
-	local seen: { [Model]: boolean } = {}
-	for _, hit in workspace:GetPartBoundsInBox(box, Vector3.new(5, 6, range), params) do
-		local model = hit:FindFirstAncestorOfClass("Model")
-		if model and not seen[model] and model:FindFirstChildOfClass("Humanoid") then
-			seen[model] = true
-			table.insert(found, model)
-		end
-	end
-	return found
+local function heldItem(player: Player): string?
+	local character = player.Character
+	local tool = character and character:FindFirstChildOfClass("Tool")
+	local item = tool and tool:GetAttribute("Held")
+	return if type(item) == "string" then item else nil
 end
 
-local function swing(player: Player, tool: Tools.Tool)
-	local now = os.clock()
-	if now - (lastSwing[player] or 0) < tool.Cooldown then
-		return
+-- Coming down with nothing under you. The server sees a jump a moment after the client does, so near
+-- the top of one it would still see you going up: it takes the client's word that you're falling and
+-- checks that you really are in the air.
+local function isFalling(character: Model, root: BasePart, clientSays: unknown): boolean
+	if clientSays ~= true then
+		return false
 	end
-	lastSwing[player] = now
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { character }
+	return workspace:Raycast(root.Position, Vector3.new(0, -GROUND_BELOW, 0), params) == nil
+end
 
+-- Half a second after a hit, only a harder one counts, and only for the difference
+local function throughHurtTime(model: Model, damage: number): number
+	local now = os.clock()
+	local last = lastHurt[model]
+	local left = damage
+	if last and now - last.At < Combat.HurtTime then
+		left = damage - last.Amount
+		if left <= 0 then
+			return 0
+		end
+		lastHurt[model] = { At = last.At, Amount = damage }
+	else
+		lastHurt[model] = { At = now, Amount = damage }
+	end
+	return left
+end
+
+local function protection(victim: Player): (number, number)
+	local data = DataService.GetData(victim)
+	if not data then
+		return 0, 0
+	end
+	return Combat.Armor(data.Equipped :: any)
+end
+
+local function knockbackFrom(root: BasePart, targetRoot: BasePart, speed: number): Vector3
+	local flat = (targetRoot.Position - root.Position) * Vector3.new(1, 0, 1)
+	local away = if flat.Magnitude > 0.01 then flat.Unit else root.CFrame.LookVector
+	return away * speed + Vector3.new(0, Combat.KnockUp, 0)
+end
+
+-- One hit on one character. Returns true if it landed.
+local function hit(
+	player: Player,
+	root: BasePart,
+	model: Model,
+	damage: number,
+	speed: number,
+	effect: string,
+	kind: string
+): boolean
+	local humanoid = model:FindFirstChildOfClass("Humanoid")
+	local targetRoot = model:FindFirstChild("HumanoidRootPart")
+	if not humanoid or humanoid.Health <= 0 or not targetRoot or not targetRoot:IsA("BasePart") then
+		return false
+	end
+
+	if model:GetAttribute("Mob") then
+		MobService.Damage(model, player, damage)
+		Remotes.HitEffect:FireAllClients(model, effect)
+		return true
+	end
+
+	-- A dummy to practise on, only in Studio (Dev "Dummy")
+	if model:GetAttribute("Dummy") and RunService:IsStudio() then
+		local left = throughHurtTime(model, damage)
+		if left > 0 then
+			humanoid:TakeDamage(left)
+			Knockback.Apply(targetRoot, knockbackFrom(root, targetRoot, speed))
+			Remotes.HitEffect:FireAllClients(model, effect)
+		end
+		print(
+			`[Combat] dummy: {effect}, {string.format("%.1f", damage)} damage, {string.format("%.1f", left)} landed, health {string.format(
+				"%.1f",
+				humanoid.Health
+			)}`
+		)
+		return left > 0
+	end
+
+	local victim = Players:GetPlayerFromCharacter(model)
+	if not victim or not WarzoneService.CanHit(player, victim) then
+		return false
+	end
+	WarzoneService.Tag(player)
+	WarzoneService.Tag(victim)
+	if WarzoneService.Blocks(victim, root.Position, kind) then
+		-- Bouncing off a shield pushes you back a little
+		Remotes.Knockback:FireClient(player, knockbackFrom(targetRoot, root, Combat.BlockedPush))
+		Remotes.HitEffect:FireAllClients(model, "block")
+		return false
+	end
+	local points, toughness = protection(victim)
+	local left = throughHurtTime(model, Combat.Reduce(damage, points, toughness))
+	if left <= 0 then
+		return false
+	end
+	humanoid:SetAttribute("LastAttacker", player.UserId)
+	humanoid:TakeDamage(left)
+	Remotes.Knockback:FireClient(victim, knockbackFrom(root, targetRoot, speed))
+	Remotes.HitEffect:FireAllClients(model, effect)
+	return true
+end
+
+-- Everyone else right next to who you hit, with a fully charged sword on the ground
+local function sweep(player: Player, root: BasePart, target: Model, targetRoot: BasePart, kind: string)
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { player.Character :: Model, target }
+	local seen: { [Model]: boolean } = {}
+	for _, part in workspace:GetPartBoundsInRadius(targetRoot.Position, Combat.SweepRadius, params) do
+		local model = part:FindFirstAncestorOfClass("Model")
+		if model and not seen[model] and model:FindFirstChildOfClass("Humanoid") then
+			seen[model] = true
+			hit(player, root, model, Combat.SweepDamage, Combat.Knockback, "sweep", kind)
+		end
+	end
+end
+
+-- Can this swing reach that character? Near enough, in front of you, nothing solid between you
+local function reachable(character: Model, root: BasePart, target: Model): BasePart?
+	local targetRoot = target:FindFirstChild("HumanoidRootPart")
+	if not targetRoot or not targetRoot:IsA("BasePart") or target == character then
+		return nil
+	end
+	local between = targetRoot.Position - root.Position
+	if between.Magnitude > Combat.Reach + Combat.ReachSlack then
+		return nil
+	end
+	local flat = between * Vector3.new(1, 0, 1)
+	if flat.Magnitude > 1 and root.CFrame.LookVector:Dot(flat.Unit) < FRONT then
+		return nil
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { character, target }
+	if workspace:Raycast(root.Position, between, params) then
+		return nil
+	end
+	return targetRoot
+end
+
+local function strike(player: Player, root: BasePart, target: Model, targetRoot: BasePart, swing: Swing)
+	local full = swing.Charge >= Combat.FullCharge
+	local crit = full and swing.Falling and not swing.Sprinting
+	local damage = Combat.HitDamage(swing.Damage, swing.Charge) * (if crit then Combat.CritScale else 1)
+	local sprintHit = full and swing.Sprinting
+	local speed = if sprintHit then Combat.SprintKnockback else Combat.Knockback
+	local landed = hit(player, root, target, damage, speed, if crit then "crit" else "hit", swing.Kind)
+	if landed and sprintHit then
+		SprintService.Stop(player)
+	end
+	if landed and full and swing.Kind == "Sword" and not swing.Sprinting and not swing.Falling then
+		sweep(player, root, target, targetRoot, swing.Kind)
+	end
+end
+
+local function onAttack(player: Player, target: unknown, falling: unknown)
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 	if not character or not root or not root:IsA("BasePart") or not humanoid or humanoid.Health <= 0 then
 		return
 	end
+	local held = heldItem(player)
+	if WarzoneService.IsBlocking(player) or (held and Foods[held]) then
+		return
+	end
+	local tool = held and Tools.ByItem[held]
+	local cooldown = if tool then tool.Cooldown else Combat.FistCooldown
 
-	for _, model in targetsInFront(character, root, tool.Range) do
-		if model:GetAttribute("Mob") then
-			MobService.Damage(model, player, tool.Damage)
-		else
-			local victim = Players:GetPlayerFromCharacter(model)
-			local victimHumanoid = model:FindFirstChildOfClass("Humanoid")
-			if victim and victimHumanoid and WarzoneService.IsInRaid(player) and WarzoneService.IsInRaid(victim) then
-				victimHumanoid:SetAttribute("LastAttacker", player.UserId)
-				victimHumanoid:TakeDamage(tool.Damage)
-			end
+	local now = os.clock()
+	local elapsed = now - (lastSwing[player] or 0)
+	if elapsed < QUICKEST_SWING then
+		return
+	end
+	lastSwing[player] = now
+	if tool and tool.Kind == "Sword" then
+		WarzoneService.Exert(player)
+	end
+	HeldModel.Swung(character)
+
+	if typeof(target) == "Instance" and target:IsA("Model") then
+		local targetRoot = reachable(character, root, target)
+		if targetRoot then
+			strike(player, root, target, targetRoot, {
+				Damage = if tool then tool.Damage else Combat.FistDamage,
+				Kind = if tool then tool.Kind else "Fist",
+				Charge = Combat.Charge(elapsed, cooldown),
+				Sprinting = player:GetAttribute("Sprinting") == true,
+				Falling = isFalling(character, root, falling),
+			})
 		end
 	end
 end
@@ -104,32 +280,23 @@ local function makeHandle(itemId: string): (BasePart, CFrame)
 	return stick, CFrame.new(0, 0, -0.6)
 end
 
+-- The tool only says what you're holding. What shows is on the character (HeldModel): a Tool with a
+-- Handle would make Roblox hold your arm straight out, which Minecraft doesn't.
 local function makeTool(player: Player, itemId: string): Tool
 	local tool = Instance.new("Tool")
 	tool.Name = Items[itemId].Name
 	tool.CanBeDropped = false
+	tool.RequiresHandle = false
 	tool:SetAttribute("Held", itemId)
 
-	local handle, grip = makeHandle(itemId)
-	handle.Name = "Handle"
-	handle.Anchored = false
-	handle.CanCollide = false
-	handle.CanQuery = false
-	handle.Massless = true
-	handle.Parent = tool
-	tool.Grip = grip
-
-	local stats = Tools.ByItem[itemId]
-	tool.Activated:Connect(function()
-		-- The default animation script plays a slash when it sees this value
-		local anim = Instance.new("StringValue")
-		anim.Name = "toolanim"
-		anim.Value = "Slash"
-		anim.Parent = tool
-		if stats then
-			swing(player, stats)
-		end
-	end)
+	if Foods[itemId] then
+		-- Food in the Warzone: click to eat
+		tool.Activated:Connect(function()
+			if WarzoneService.IsPlaying(player) then
+				WarzoneService.Eat(player, itemId)
+			end
+		end)
+	end
 	return tool
 end
 
@@ -160,14 +327,29 @@ function CombatService.Equip(player: Player, itemId: string?)
 	if tool then
 		tool:Destroy()
 	end
+	HeldModel.Remove(character)
+	-- Switching items starts the swing's charge over
+	lastSwing[player] = os.clock()
 	if itemId and Items[itemId] then
 		makeTool(player, itemId).Parent = character
+		if SwordArt.List[itemId] then
+			task.spawn(HeldModel.ApplySword, character, itemId)
+		else
+			local part, grip = makeHandle(itemId)
+			part:SetAttribute("IsBlock", Items[itemId].Model == nil and Items[itemId].Block ~= nil)
+			HeldModel.ApplyItem(character, itemId, part, grip)
+		end
 	end
 end
 
 function CombatService.Start()
+	HeldModel.Start()
+	Remotes.Attack.OnServerEvent:Connect(onAttack)
 	Players.PlayerRemoving:Connect(function(player)
 		lastSwing[player] = nil
+		if player.Character then
+			lastHurt[player.Character] = nil
+		end
 	end)
 end
 

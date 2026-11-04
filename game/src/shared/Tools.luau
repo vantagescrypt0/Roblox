@@ -3,16 +3,15 @@
 --   Kind       what it's best at: Sword (fighting), Pickaxe (stone), Axe (wood), Shovel
 --              (dirt/grass), Hoe (turns grass and dirt into farmland)
 --   Tier       its power: 1 = Wooden, 2 = Stone, 3 = Iron, 4 = Amethyst (and Crystal, the
---              Warzone's side tier), 5 = Sapphire; some blocks need a minimum tier to drop.
---              Ruby (6) and Starsteel (7) come with Sugarcane and Redwood, their parts
+--              Warzone's side tier), 5 = Sapphire, 6 = Ruby, 7 = Starsteel; some blocks need a
+--              minimum tier to drop
 --   TierName   the tier's own name ("Amethyst"), which item ids and names start with
 --   Efficiency how much faster it breaks the blocks it's made for (hand = 1)
---   Damage     hit damage against monsters (and players in the Warzone)
---   Cooldown   seconds between swings
---   Range      reach of a swing, in studs
+--   Damage     a fully charged hit's damage, against monsters and players in the Warzone
+--   Cooldown   seconds a swing takes to charge fully (Combat.luau)
 --   Harvest    extra chance of a double crop while you hold it to harvest (hoes only)
 -- Numbers follow Minecraft's ratios (wood 2x, stone 4x, iron 6x, diamond 8x mining speed),
--- then +2x a tier past it.
+-- then +2x a tier past it. Damage and swing times are Minecraft's too, with its damage x5.
 -- Tools never wear out from use (later, a failed enchant or gem can break one).
 
 export type Kind = "Sword" | "Pickaxe" | "Axe" | "Shovel" | "Hoe"
@@ -25,7 +24,6 @@ export type Tool = {
 	Efficiency: number,
 	Damage: number,
 	Cooldown: number,
-	Range: number,
 	Harvest: number,
 }
 
@@ -36,18 +34,20 @@ local TIERS = {
 	{ Name = "Iron", Tier = 3, Efficiency = 6, DamageBonus = 2, Harvest = 0.07 },
 	{ Name = "Amethyst", Tier = 4, Efficiency = 8, DamageBonus = 3, Harvest = 0.12 },
 	{ Name = "Sapphire", Tier = 5, Efficiency = 10, DamageBonus = 4, Harvest = 0.16 },
+	{ Name = "Ruby", Tier = 6, Efficiency = 12, DamageBonus = 5, Harvest = 0.2 },
+	{ Name = "Starsteel", Tier = 7, Efficiency = 14, DamageBonus = 6, Harvest = 0.25 },
 	{ Name = "Crystal", Tier = 4, Efficiency = 8, DamageBonus = 3, Harvest = 0.12 },
 }
 -- The name for each power, for "a Sapphire Pickaxe or better"
 local TIER_NAMES = { "Wooden", "Stone", "Iron", "Amethyst", "Sapphire", "Ruby", "Starsteel" }
 
 -- Base damage per kind at tier 1, and how much each tier above adds
-local KINDS: { [Kind]: { Damage: number, PerTier: number, Cooldown: number, Range: number } } = {
-	Sword = { Damage = 12, PerTier = 9, Cooldown = 0.6, Range = 6 },
-	Axe = { Damage = 10, PerTier = 7, Cooldown = 1.0, Range = 5.5 },
-	Pickaxe = { Damage = 5, PerTier = 3, Cooldown = 0.8, Range = 5 },
-	Shovel = { Damage = 4, PerTier = 2, Cooldown = 0.8, Range = 5 },
-	Hoe = { Damage = 3, PerTier = 1, Cooldown = 0.8, Range = 5 },
+local KINDS: { [Kind]: { Damage: number, PerTier: number, Cooldown: number } } = {
+	Sword = { Damage = 20, PerTier = 3.5, Cooldown = 0.625 },
+	Axe = { Damage = 35, PerTier = 2.5, Cooldown = 1.0 },
+	Pickaxe = { Damage = 10, PerTier = 3.5, Cooldown = 0.83 },
+	Shovel = { Damage = 12, PerTier = 3.5, Cooldown = 1.0 },
+	Hoe = { Damage = 5, PerTier = 0, Cooldown = 0.5 },
 }
 
 -- Order tools are listed in (crafting window, inventory)
@@ -66,9 +66,8 @@ for _, tier in TIERS do
 			TierName = tier.Name,
 			-- Swords and hoes don't mine faster
 			Efficiency = if kind == "Sword" or kind == "Hoe" then 1 else tier.Efficiency,
-			Damage = stats.Damage + stats.PerTier * tier.DamageBonus,
+			Damage = math.round(stats.Damage + stats.PerTier * tier.DamageBonus),
 			Cooldown = stats.Cooldown,
-			Range = stats.Range,
 			Harvest = if kind == "Hoe" then tier.Harvest else 0,
 		}
 		table.insert(list, tool)

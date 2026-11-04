@@ -38,6 +38,10 @@ local PLAYLISTS: { [string]: { number } } = {
 		1848354561, -- Quietness Sustained
 		1848354536, -- Relaxed Scene
 	},
+	Warzone = {
+		1848354561, -- Quietness Sustained
+		1848354536, -- Relaxed Scene
+	},
 }
 
 -- Pro Sound Effects loops under the music
@@ -49,6 +53,7 @@ local AMBIENCE: { [string]: number } = {
 	Farming = BIRDS,
 	Woodcutting = BIRDS,
 	Mining = CAVE,
+	Warzone = CAVE,
 }
 
 local group = Instance.new("SoundGroup")

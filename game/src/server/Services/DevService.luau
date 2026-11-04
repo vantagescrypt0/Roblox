@@ -17,6 +17,12 @@
 --                                                           reset as your save loads when you rejoin
 --   game.ServerStorage.Dev:Invoke("Fill", Vector3.new(2, -3, 2), Vector3.new(4, -1, 4), "Water")
 --                                                           fill a box of island cells (or "Air")
+--   game.ServerStorage.Dev:Invoke("Hunger", 20)             set your hunger (Warzone)
+--   game.ServerStorage.Dev:Invoke("TestQuit")               quit the Warzone and rejoin it (Warzone)
+--   game.ServerStorage.Dev:Invoke("TestBlock", position, "Sword")  would your shield stop a hit from
+--                                                           there? Prints the answer (Warzone)
+--   game.ServerStorage.Dev:Invoke("Dummy")                  a dummy to hit, just in front of you; hits
+--                                                           on it print what they did
 --   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
 -- Acts on the first player in the server unless "As" picked another (for local tests with
 -- several players). Does nothing in live servers.
@@ -31,6 +37,7 @@ local DataService = require(script.Parent.DataService)
 local InboxService = require(script.Parent.InboxService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
+local WarzoneService = require(script.Parent.WarzoneService)
 
 local DevService = {}
 
@@ -54,10 +61,33 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	Coins = function(player, _data, amount)
 		InventoryService.AddCoins(player, amount)
 	end,
+	Hunger = function(player, _data, amount)
+		WarzoneService.SetHunger(player, amount)
+	end,
+	TestQuit = function(player)
+		WarzoneService.TestQuit(player)
+	end,
+	TestBlock = function(player, _data, from, toolKind)
+		print("[Dev] blocked:", WarzoneService.Blocks(player, from, toolKind))
+	end,
 	-- Print your last trades to the Output
 	Trades = function(_player, data)
 		for _, trade in data.Trades do
 			print(trade.At, trade.WithName, "gave", trade.Gave, "got", trade.Got)
+		end
+	end,
+	-- Something to practise on: CombatService treats it like a player with no armour
+	Dummy = function(player)
+		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if root and root:IsA("BasePart") then
+			local dummy = Players:CreateHumanoidModelFromDescription(
+				Instance.new("HumanoidDescription"),
+				Enum.HumanoidRigType.R15
+			)
+			dummy.Name = "Dummy"
+			dummy:SetAttribute("Dummy", true)
+			dummy:PivotTo(root.CFrame * CFrame.new(0, 0, -6) * CFrame.Angles(0, math.pi, 0))
+			dummy.Parent = workspace
 		end
 	end,
 	-- Send yourself a letter

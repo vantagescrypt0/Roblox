@@ -19,11 +19,29 @@ Config.Island = table.freeze({
 
 -- Uploaded copies of the icon sheets, art/textures/item_icons.png then item_icons_2.png and on
 -- (64 icons to a sheet, see ItemArt.luau). An icon whose sheet isn't listed falls back to a
--- live 3D preview. Uploaded as the texture of a plane imported with Import 3D (see
--- art/README.md); every re-render of the sheets needs a new upload, since cells move.
+-- live 3D preview. Uploaded with Studio's MCP upload_image (see art/README.md); every
+-- re-render of the sheets needs a new upload, since cells move.
+-- The Bag's equipment slot pictures (art/scripts/slot_icons.ps1); armor pieces use them as their
+-- item icons too, tinted by tier
+Config.SlotIcons = table.freeze({
+	Helmet = "rbxassetid://125219234840382",
+	Chest = "rbxassetid://86188456567729",
+	Legs = "rbxassetid://98708952373456",
+	Boots = "rbxassetid://95410567961432",
+	Shield = "rbxassetid://91212786041472",
+	Pet = "rbxassetid://112965300672337",
+})
+
+-- The hearts, hunger and armour over the hotbar (art/scripts/vitals_icons.py)
+Config.VitalsSheet = "rbxassetid://95020115199214"
+
+-- A soft round light, white so it can be tinted (art/scripts/slot_icons.ps1)
+Config.GlowImage = "rbxassetid://72340108615521"
+
 Config.ItemIconSheets = table.freeze({
-	"rbxassetid://105422127167243",
-	"rbxassetid://137178541756025",
+	"rbxassetid://93743291124490",
+	"rbxassetid://91893650663343",
+	"rbxassetid://137024573167107",
 })
 
 -- Who can fly (double-tap Space, see client/FlightController): user ids. Only the game's

@@ -1,5 +1,5 @@
 --!strict
--- Draws our custom-style ProximityPrompts: a white card with the key to press, what it
+-- Draws our custom-style ProximityPrompts: a dark glass card with the key to press, what it
 -- does, and a fill bar while holding. On phones the whole card is a tap/hold button.
 
 local Players = game:GetService("Players")
@@ -7,9 +7,10 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+local Glass = require(script.Parent.UI.Glass)
 local Theme = require(script.Parent.UI.Theme)
 
-local C = Theme.Color
+local C = Glass.Color
 
 local PromptUI = {}
 
@@ -53,35 +54,35 @@ local function show(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInpu
 	local card = Theme.make("TextButton", {
 		Size = UDim2.new(1, -8, 1, -8),
 		Position = UDim2.fromOffset(4, 4),
-		BackgroundColor3 = C.Panel,
+		BackgroundColor3 = C.Well,
+		BackgroundTransparency = 0.08,
 		AutoButtonColor = false,
 		Text = "",
 		Parent = billboard,
 	})
 	Theme.corner(card, 12)
-	Theme.stroke(card, C.Outline, 3)
+	Theme.stroke(card, C.Edge, 1, 0.82)
 	local scale = Theme.make("UIScale", { Scale = 0.7, Parent = card })
 	TweenService:Create(scale, TweenInfo.new(0.18, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
 
-	-- The key to press, on a blue key cap
+	-- The key to press, on a key cap with the accent's edge
 	local key = Theme.make("TextLabel", {
 		Size = UDim2.fromOffset(44, 44),
 		Position = UDim2.fromOffset(9, 9),
-		BackgroundColor3 = C.Blue,
+		BackgroundColor3 = C.SlotBottom,
 		Text = keyLabel(prompt, inputType),
-		FontFace = Theme.Font.Bold,
+		FontFace = Glass.Font.Bold,
 		TextSize = 24,
-		TextColor3 = C.White,
+		TextColor3 = C.Ink,
 		Parent = card,
 	})
 	Theme.corner(key, 10)
-	Theme.stroke(key, C.Outline, 2.5)
-	Theme.outline(key, 1.6)
+	Theme.stroke(key, C.Accent, 1.5, 0.2)
 
-	local action = Theme.title(card, prompt.ActionText, 22)
+	local action = Glass.text(card, prompt.ActionText, 21, Glass.Font.Bold)
 	action.Position = UDim2.fromOffset(64, 6)
 	action.Size = UDim2.new(1, -72, 0, 28)
-	local object = Theme.text(card, prompt.ObjectText, 14, Theme.Font.Medium, C.InkMuted)
+	local object = Glass.text(card, prompt.ObjectText, 14, Glass.Font.Body, C.Muted)
 	object.Position = UDim2.fromOffset(64, 34)
 	object.Size = UDim2.new(1, -72, 0, 18)
 
@@ -90,7 +91,7 @@ local function show(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInpu
 		AnchorPoint = Vector2.new(0, 1),
 		Position = UDim2.new(0, 9, 1, -4),
 		Size = UDim2.fromOffset(0, 4),
-		BackgroundColor3 = C.Green,
+		BackgroundColor3 = C.Accent,
 		BorderSizePixel = 0,
 		Parent = card,
 	})

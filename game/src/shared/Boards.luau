@@ -35,6 +35,15 @@ export type Board = {
 	Challenges: { Challenge },
 }
 
+-- A challenge's coins: as written up to 1,000, growing to 8x for the biggest ones, so rewards
+-- keep up with the billion scale ([[Economy & Values]])
+local function rewardCoins(coins: number): number
+	if coins <= 1000 then
+		return coins
+	end
+	return math.round(coins * math.clamp(1 + coins / 25000, 1, 8) / 100) * 100
+end
+
 -- One challenge: Id, text, event, target, coins, player XP and any items
 local function c(
 	id: string,
@@ -45,7 +54,13 @@ local function c(
 	xp: number,
 	items: { [string]: number }?
 ): Challenge
-	return { Id = id, Text = text, Event = event, Target = target, Reward = { Coins = coins, XP = xp, Items = items } }
+	return {
+		Id = id,
+		Text = text,
+		Event = event,
+		Target = target,
+		Reward = { Coins = rewardCoins(coins), XP = xp, Items = items },
+	}
 end
 
 local List: { Board } = {
@@ -83,9 +98,24 @@ local List: { Board } = {
 			c("Mining:Sapphire250", "Mine 250 Sapphire Ore by the lake", "Mine:SapphireOre", 250, 70000, 14000),
 			c("Mining:SapphirePickaxe", "Forge a Sapphire Pickaxe", "Craft:SapphirePickaxe", 1, 80000, 15000),
 			c("Mining:Ore10000", "Mine 10,000 ore of any kind", "MineOre", 10000, 100000, 16000),
-			c("Mining:Ruby500", "Mine 500 Ruby Ore in the Magma Depths", "Mine:RubyOre", 500, 120000, 18000),
 			c("Mining:Lv80", "Reach Mining level 80", "Reach:Mining", 80, 150000, 20000),
 			c("Mining:Lv99", "Reach Mining level 99", "Reach:Mining", 99, 300000, 25000),
+			c(
+				"Mining:RubyPickaxe",
+				"Forge a Ruby Pickaxe (Ruby from a node on your island)",
+				"Craft:RubyPickaxe",
+				1,
+				400000,
+				26000
+			),
+			c(
+				"Mining:StarsteelPickaxe",
+				"Forge a Starsteel Pickaxe (Starstone from a node on your island)",
+				"Craft:StarsteelPickaxe",
+				1,
+				600000,
+				28000
+			),
 		},
 	},
 	{
@@ -107,7 +137,9 @@ local List: { Board } = {
 			c("Woodcutting:Cherry250", "Chop 250 Cherry logs", "Chop:CherryWood", 250, 12000, 5500),
 			c("Woodcutting:Logs2500", "Chop 2,500 logs", "Chop", 2500, 15000, 7000),
 			c("Woodcutting:Lv40", "Reach Woodcutting level 40", "Reach:Woodcutting", 40, 25000, 9000),
+			c("Woodcutting:Maple250", "Chop 250 Maple logs on Maple Ridge", "Chop:MapleWood", 250, 30000, 10000),
 			c("Woodcutting:Cherry2500", "Chop 2,500 Cherry logs", "Chop:CherryWood", 2500, 40000, 11000),
+			c("Woodcutting:Redwood250", "Chop 250 Redwood logs among the Giants", "Chop:Redwood", 250, 50000, 12000),
 			c("Woodcutting:Lv60", "Reach Woodcutting level 60", "Reach:Woodcutting", 60, 60000, 13000),
 			c("Woodcutting:Logs10000", "Chop 10,000 logs", "Chop", 10000, 100000, 16000),
 			c("Woodcutting:Lv80", "Reach Woodcutting level 80", "Reach:Woodcutting", 80, 150000, 20000),
@@ -134,6 +166,7 @@ local List: { Board } = {
 			c("Farming:Lv25", "Reach Farming level 25", "Reach:Farming", 25, 12000, 5500, { MelonSeeds = 5 }),
 			c("Farming:Melon500", "Harvest 500 Melons", "Harvest:Melon", 500, 15000, 7000),
 			c("Farming:Lv40", "Reach Farming level 40", "Reach:Farming", 40, 25000, 9000),
+			c("Farming:Sugarcane500", "Harvest 500 Sugarcane on the Mesa", "Harvest:Sugarcane", 500, 30000, 10000),
 			c("Farming:Crops5000", "Harvest 5,000 crops", "Harvest", 5000, 40000, 11000),
 			c("Farming:Lv60", "Reach Farming level 60", "Reach:Farming", 60, 60000, 13000),
 			c("Farming:Crops25000", "Harvest 25,000 crops", "Harvest", 25000, 100000, 16000),
@@ -173,6 +206,8 @@ local List: { Board } = {
 			c("Crafting:Craft5000", "Craft or smelt 5,000 times", "Craft", 5000, 60000, 13000),
 			c("Crafting:Lv75", "Reach Crafting level 75", "Reach:Crafting", 75, 150000, 20000),
 			c("Crafting:Lv99", "Reach Crafting level 99", "Reach:Crafting", 99, 300000, 25000),
+			c("Crafting:RubyTool", "Forge a Ruby tool", "CraftTool:Ruby", 1, 400000, 26000),
+			c("Crafting:StarsteelTool", "Forge a Starsteel tool", "CraftTool:Starsteel", 1, 600000, 28000),
 		},
 	},
 	{
@@ -192,6 +227,9 @@ local List: { Board } = {
 			c("Island:Grand", "Upgrade your island to level 4", "ReachIsland", 4, 25000, 9000, { IronNode = 1 }),
 			c("Island:Trophies5", "Place 5 trophies", "PlaceTrophy", 5, 40000, 11000),
 			c("Island:Place10000", "Place 10,000 blocks", "Place", 10000, 60000, 13000),
+			c("Island:Level5", "Upgrade your island to level 5", "ReachIsland", 5, 100000, 15000),
+			c("Island:Level6", "Upgrade your island to level 6", "ReachIsland", 6, 300000, 20000),
+			c("Island:Level7", "Upgrade your island to level 7", "ReachIsland", 7, 1000000, 25000),
 		},
 	},
 	{

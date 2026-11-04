@@ -1,13 +1,15 @@
 --!strict
 -- Item icons. Normally a pre-rendered picture cut from an icon sheet (Config.ItemIconSheets,
 -- cells listed in ItemArt.luau, rendered by art/scripts/items3d.py; cell numbers run on from
--- one sheet to the next, PerSheet to a sheet). Without one, block items
--- show a live 3D block, items with a model show that model, and anything else its emoji.
+-- one sheet to the next, PerSheet to a sheet). The shield and generated swords show their model
+-- and armor pieces their slot's picture in their tier's colour. Without one, block items show a live 3D
+-- block, items with a model show that model, and anything else its emoji.
 -- A block type that isn't an item (e.g. "CraftingTable") also works.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local Gear = require(ReplicatedStorage.Shared.Gear)
 local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
 local Items = require(ReplicatedStorage.Shared.Items)
 
@@ -53,8 +55,52 @@ local function halfExtents(part: BasePart): Vector3
 	)
 end
 
+-- A model seen from the front, centered, turned toward the camera and filling the icon
+local function modelIcon(parent: Instance, model: BasePart, size: UDim2): ViewportFrame
+	local frame = viewport(parent, size)
+	-- Light from the camera side (upper left), so the faces we see are lit
+	frame.Ambient = Color3.fromRGB(200, 200, 200)
+	frame.LightDirection = Vector3.new(-0.5, -0.7, 1)
+	local clone = model:Clone()
+	-- Keep the mesh's own rotation
+	clone.CFrame = MODEL_TURN:Inverse() * model.CFrame.Rotation
+	clone.Parent = frame
+	local extents = halfExtents(clone)
+	local radius = math.max(extents.X, extents.Y) * 1.08
+	local distance = radius / math.tan(math.rad(FIELD_OF_VIEW / 2)) + extents.Z
+	addCamera(frame, CFrame.lookAt(Vector3.new(0, 0, -distance), Vector3.zero))
+	return frame
+end
+
 function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObject
 	local item = Items[itemId]
+
+	local shields = ReplicatedStorage:FindFirstChild("ShieldModels")
+	local shield = shields and shields:FindFirstChild(itemId)
+	if shield and shield:IsA("BasePart") then
+		return modelIcon(parent, shield, size)
+	end
+
+	local swords = ReplicatedStorage:FindFirstChild("SwordModels")
+	local sword = swords and swords:FindFirstChild(itemId)
+	if sword and sword:IsA("BasePart") then
+		return modelIcon(parent, sword, size)
+	end
+
+	local armor = Gear.Armors[itemId]
+	local slotIcon = armor and Config.SlotIcons[armor.Slot]
+	if armor and slotIcon then
+		local image = Instance.new("ImageLabel")
+		image.Size = size
+		image.AnchorPoint = Vector2.new(0.5, 0.5)
+		image.Position = UDim2.fromScale(0.5, 0.5)
+		image.BackgroundTransparency = 1
+		image.Image = slotIcon
+		image.ImageColor3 = Gear.TierColors[armor.Tier]
+		image.ScaleType = Enum.ScaleType.Fit
+		image.Parent = parent
+		return image
+	end
 
 	-- Pre-rendered picture from the icon sheet
 	local cell = ICON_CELLS[itemId]
@@ -79,19 +125,7 @@ function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObje
 	local models = ReplicatedStorage:FindFirstChild("ItemModels")
 	local model = item and item.Model and models and models:FindFirstChild(item.Model)
 	if model and model:IsA("BasePart") then
-		local frame = viewport(parent, size)
-		-- Light from the camera side (upper left), so the pixel faces we see are lit
-		frame.Ambient = Color3.fromRGB(200, 200, 200)
-		frame.LightDirection = Vector3.new(-0.5, -0.7, 1)
-		local clone = model:Clone()
-		-- Keep the mesh's own rotation, centered and turned toward the camera
-		clone.CFrame = MODEL_TURN:Inverse() * model.CFrame.Rotation
-		clone.Parent = frame
-		local extents = halfExtents(clone)
-		local radius = math.max(extents.X, extents.Y) * 1.08
-		local distance = radius / math.tan(math.rad(FIELD_OF_VIEW / 2)) + extents.Z
-		addCamera(frame, CFrame.lookAt(Vector3.new(0, 0, -distance), Vector3.zero))
-		return frame
+		return modelIcon(parent, model, size)
 	end
 
 	-- Blocks: a small isometric cube (for a block item, or a block type by name, such as

@@ -7,7 +7,7 @@ boxes several blocks big ("Merged_Stone_8x4x8": 8 blocks along x, 4 up, 8 along 
 every face is cut into one quad per block, each mapped to that block's tile, so a piece
 looks exactly like the blocks it stands in for. They share the atlas, so they batch.
 
-Tiles are drawn procedurally (seeded noise) and scaled up 7x with nearest-neighbour so
+Tiles are drawn procedurally (seeded noise) and scaled up 6x with nearest-neighbour so
 they stay crisp in Roblox (which filters textures smoothly).
 
 Output: art/textures/blocks.png, art/export/Blocks.fbx, art/blend/Blocks.blend,
@@ -27,9 +27,9 @@ import common  # noqa: E402
 
 BLOCK = 3.0  # studs
 TILE = 16
-SCALE = 7
-GRID = 9  # 9x9 tiles
-ATLAS = TILE * SCALE * GRID  # 1008 px (Roblox's limit is 1024)
+SCALE = 6
+GRID = 10  # 10x10 tiles
+ATLAS = TILE * SCALE * GRID  # 960 px (Roblox's limit is 1024)
 
 TILES = [
     "grass_top", "grass_side", "dirt", "stone",
@@ -60,6 +60,15 @@ TILES = [
     "empty_ore",
     # The Mining World's deep cave (2026-10-31): silver, gems in dark stone, starstone
     "silver_ore", "amethyst_ore", "sapphire_ore", "ruby_ore", "starstone_ore",
+    # The Woodcutting World's second ring (2026-11-02): four trees, marsh mud, dusk grass
+    "maple_log_side", "maple_log_top", "maple_leaves",
+    "redwood_log_side", "redwood_log_top", "redwood_leaves",
+    "mangrove_log_side", "mangrove_log_top", "mangrove_leaves",
+    "starwood_log_side", "starwood_log_top", "starwood_leaves",
+    "mud", "dusk_grass_top", "dusk_grass_side",
+    # The Warzone's Robot map. That fills the 10x10 atlas: more tiles need a second atlas
+    "hull_white", "hull_grey", "hull_dark", "hull_orange", "hull_glow",
+    "hazard", "rubber", "purple_crystal", "rust_ground",
 ]  # fmt: skip
 
 # Which tile each face uses: (top, bottom, sides) or (top, bottom, front, other sides)
@@ -125,6 +134,25 @@ BLOCKS = {
     "SapphireOre": ("sapphire_ore", "sapphire_ore", "sapphire_ore"),
     "RubyOre": ("ruby_ore", "ruby_ore", "ruby_ore"),
     "StarstoneOre": ("starstone_ore", "starstone_ore", "starstone_ore"),
+    "MapleWood": ("maple_log_top", "maple_log_top", "maple_log_side"),
+    "Redwood": ("redwood_log_top", "redwood_log_top", "redwood_log_side"),
+    "MangroveWood": ("mangrove_log_top", "mangrove_log_top", "mangrove_log_side"),
+    "Starwood": ("starwood_log_top", "starwood_log_top", "starwood_log_side"),
+    "MapleLeaves": ("maple_leaves", "maple_leaves", "maple_leaves"),
+    "RedwoodLeaves": ("redwood_leaves", "redwood_leaves", "redwood_leaves"),
+    "MangroveLeaves": ("mangrove_leaves", "mangrove_leaves", "mangrove_leaves"),
+    "StarwoodLeaves": ("starwood_leaves", "starwood_leaves", "starwood_leaves"),
+    "Mud": ("mud", "mud", "mud"),
+    "DuskGrass": ("dusk_grass_top", "dark_stone", "dusk_grass_side"),
+    "HullWhite": ("hull_white", "hull_white", "hull_white"),
+    "HullGrey": ("hull_grey", "hull_grey", "hull_grey"),
+    "HullDark": ("hull_dark", "hull_dark", "hull_dark"),
+    "HullOrange": ("hull_orange", "hull_orange", "hull_orange"),
+    "HullGlow": ("hull_glow", "hull_glow", "hull_glow"),
+    "Hazard": ("hazard", "hazard", "hazard"),
+    "Rubber": ("rubber", "rubber", "rubber"),
+    "PurpleCrystal": ("purple_crystal", "purple_crystal", "purple_crystal"),
+    "RustGround": ("rust_ground", "rust_ground", "rust_ground"),
 }
 
 # Merged pieces (x, y, z in blocks; each also fills z, y, x turned a quarter turn).
@@ -148,6 +176,17 @@ MERGED = {
     "RedTerracotta": SLABS + THICK + CUBES,
     "Sandstone": SLABS + THICK + CUBES,
     "CoarseDirt": SLABS + THICK,
+    "Mud": SLABS + THICK,
+    "DuskGrass": SLABS,
+    "HullWhite": SLABS + THICK,
+    "HullGrey": SLABS + THICK,
+    "HullDark": SLABS + THICK,
+    "HullOrange": SLABS + THICK,
+    "HullGlow": SLABS,
+    "Hazard": SLABS,
+    "Rubber": THICK,
+    "PurpleCrystal": THICK,
+    "RustGround": SLABS + THICK,
     # The worlds' open fields (the client works out which block of a piece you click)
     "Farmland": SLABS,
 }
@@ -582,6 +621,8 @@ def draw_building_tiles(tiles):
     draw_reference_tiles(tiles)
     draw_node_tiles(tiles)
     draw_deep_ore_tiles(tiles)
+    draw_second_ring_tiles(tiles)
+    draw_robot_tiles(tiles)
 
 
 def draw_zone_tiles(tiles):
@@ -825,6 +866,146 @@ def draw_deep_ore_tiles(tiles):
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 star[y + dy][x + dx] = noisy(rng, (236, 200, 110), 6)
     tiles["starstone_ore"] = star
+
+
+def draw_robot_tiles(tiles):
+    """The Warzone's Robot map (its own random sequence): metal hull panels with seams and
+    rivets, glow strips, hazard stripes, tyre rubber, crystal and rusty ground"""
+    rng = random.Random(127)
+
+    def panel(base, seam, light, rivet, noise=3):
+        tile = fill(rng, base, noise)
+        for i in range(TILE):
+            tile[0][i] = noisy(rng, seam, 3)
+            tile[i][0] = noisy(rng, seam, 3)
+            tile[TILE - 1][i] = noisy(rng, shade(seam, 0.9), 3)
+            tile[i][TILE - 1] = noisy(rng, shade(seam, 0.9), 3)
+        for i in range(1, TILE - 1):
+            tile[1][i] = noisy(rng, light, 3)
+            tile[i][1] = noisy(rng, light, 3)
+        for x, y in ((2, 2), (13, 2), (2, 13), (13, 13)):
+            tile[y][x] = noisy(rng, rivet, 3)
+        return tile
+
+    tiles["hull_white"] = panel((226, 228, 232), (168, 172, 180), (244, 245, 248), (150, 154, 162))
+    grey = panel((138, 144, 154), (92, 98, 108), (160, 166, 176), (70, 76, 86))
+    for y in (6, 9):  # Two grooves across it
+        for x in range(3, 13):
+            grey[y][x] = noisy(rng, (104, 110, 120), 3)
+    tiles["hull_grey"] = grey
+    tiles["hull_dark"] = panel((52, 58, 70), (30, 34, 44), (70, 78, 92), (98, 108, 124))
+    tiles["hull_orange"] = panel((214, 106, 40), (150, 66, 22), (240, 140, 66), (120, 52, 18), 5)
+
+    glow = fill(rng, (120, 236, 255), 5)
+    for i in range(TILE):
+        for j in (0, TILE - 1):
+            glow[j][i] = noisy(rng, (40, 150, 200), 4)
+            glow[i][j] = noisy(rng, (40, 150, 200), 4)
+    for y in range(5, 11):
+        for x in range(5, 11):
+            glow[y][x] = noisy(rng, (226, 252, 255), 3)
+    tiles["hull_glow"] = glow
+
+    hazard = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):
+            yellow = (x + y) % 8 < 4
+            hazard[y][x] = noisy(rng, (240, 190, 40) if yellow else (36, 36, 40), 6)
+    tiles["hazard"] = hazard
+
+    rubber = fill(rng, (40, 40, 44), 4)
+    for y in range(TILE):  # Chunky tread
+        for x in range(TILE):
+            if (x + (y // 4) * 2) % 4 < 1:
+                rubber[y][x] = noisy(rng, (24, 24, 28), 3)
+            elif y % 4 == 0:
+                rubber[y][x] = noisy(rng, (58, 58, 64), 3)
+    tiles["rubber"] = rubber
+
+    crystal = [[None] * TILE for _ in range(TILE)]
+    for y in range(TILE):
+        for x in range(TILE):  # Slanted facets
+            facet = ((x * 2 + y) // 7) % 3
+            base = ((206, 70, 220), (160, 44, 190), (236, 120, 240))[facet]
+            crystal[y][x] = noisy(rng, base, 8)
+    speckle(rng, crystal, (255, 214, 255), 0.05, 4)
+    tiles["purple_crystal"] = crystal
+
+    rust = fill(rng, (168, 88, 48), 10)
+    speckle(rng, rust, (128, 62, 34), 0.24, 6)
+    speckle(rng, rust, (204, 122, 70), 0.14, 6)
+    speckle(rng, rust, (92, 84, 80), 0.04, 5)
+    tiles["rust_ground"] = rust
+
+
+def draw_second_ring_tiles(tiles):
+    """The Woodcutting World's second ring (its own random sequence): the four trees' logs and
+    leaves, the marsh's mud and the hollow's dusk grass"""
+    rng = random.Random(113)
+
+    def bark(base, dark, mark=None):
+        tile = [[None] * TILE for _ in range(TILE)]
+        for x in range(TILE):
+            stripe = x % 4 == 1 or x % 7 == 5
+            for y in range(TILE):
+                tile[y][x] = noisy(rng, dark if stripe or rng.random() < 0.1 else base, 7)
+        if mark:  # short dashes across the bark
+            for _ in range(7):
+                x0, y = rng.randint(0, 13), rng.randint(0, 15)
+                for dx in range(rng.randint(2, 4)):
+                    tile[y][(x0 + dx) % TILE] = noisy(rng, mark, 6)
+        return tile
+
+    def rings(heart, ring, edge):
+        tile = [[None] * TILE for _ in range(TILE)]
+        for y in range(TILE):
+            for x in range(TILE):
+                r = min(x, y, TILE - 1 - x, TILE - 1 - y)
+                c = edge if r == 0 else ring if r in (2, 5) else heart
+                tile[y][x] = noisy(rng, c, 6)
+        return tile
+
+    def leafy(base, dark, light, extra=None):
+        tile = fill(rng, base, 14)
+        speckle(rng, tile, dark, 0.25)
+        speckle(rng, tile, light, 0.12)
+        if extra:
+            speckle(rng, tile, extra, 0.05)
+        return tile
+
+    tiles["maple_log_side"] = bark((112, 84, 66), (84, 60, 46))
+    tiles["maple_log_top"] = rings((214, 176, 130), (186, 146, 104), (96, 70, 54))
+    tiles["maple_leaves"] = leafy((204, 58, 40), (160, 36, 30), (232, 96, 54), (244, 170, 60))
+    tiles["redwood_log_side"] = bark((140, 62, 42), (104, 42, 30))
+    tiles["redwood_log_top"] = rings((196, 112, 84), (164, 84, 60), (112, 50, 34))
+    tiles["redwood_leaves"] = leafy((44, 92, 56), (28, 68, 42), (64, 116, 72))
+    tiles["mangrove_log_side"] = bark((88, 66, 44), (62, 46, 32))
+    tiles["mangrove_log_top"] = rings((170, 128, 84), (140, 100, 64), (74, 54, 36))
+    tiles["mangrove_leaves"] = leafy((70, 124, 62), (46, 92, 48), (100, 150, 78))
+    tiles["starwood_log_side"] = bark((196, 208, 232), (150, 166, 200), (110, 150, 220))
+    tiles["starwood_log_top"] = rings((220, 232, 250), (150, 190, 240), (170, 182, 210))
+    tiles["starwood_leaves"] = leafy((96, 196, 250), (54, 140, 214), (170, 230, 255), (240, 252, 255))
+
+    # Mud: dark and wet, with darker hollows and the odd glint of water
+    mud = fill(rng, (84, 66, 52), 8)
+    speckle(rng, mud, (62, 48, 38), 0.28, 5)
+    speckle(rng, mud, (112, 92, 74), 0.08, 5)
+    speckle(rng, mud, (132, 134, 136), 0.03, 6)
+    tiles["mud"] = mud
+
+    # Dusk grass: deep indigo, with a few pale glints
+    dusk = fill(rng, (52, 62, 120), 10)
+    speckle(rng, dusk, (38, 46, 96), 0.22, 5)
+    speckle(rng, dusk, (84, 100, 170), 0.1, 6)
+    speckle(rng, dusk, (170, 220, 255), 0.025, 5)
+    tiles["dusk_grass_top"] = dusk
+    # Its side: dark rock below the grass, so the hollow's slopes stay blue and not brown
+    side = [[tuple(clamp(v * 0.8) for v in pixel) for pixel in row] for row in tiles["dark_stone"]]
+    for x in range(TILE):
+        depth = rng.choice((2, 3, 3, 4))
+        for y in range(depth):
+            side[y][x] = noisy(rng, (52, 62, 120) if y < depth - 1 else (38, 46, 96), 8)
+    tiles["dusk_grass_side"] = side
 
 
 def build_atlas():

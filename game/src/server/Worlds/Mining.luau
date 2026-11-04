@@ -19,8 +19,8 @@
 --   The deep cave from the Gold Chamber the Descent winds down to the Silver Tunnels
 --                 (Mining 20, a miners' camp), and on: the Amethyst Geode (35, a huge hollow
 --                 ball lined with purple crystal), the Sapphire Lake (50, a lake deep enough
---                 to swim, glowing from below), the Magma Depths (65, lava pools on a dark
---                 floor) and, at the very bottom, the Star Vault (80, starlit black rock).
+--                 to swim, glowing from below). That's as deep as the world goes: Ruby and
+--                 Starstone are late-game, only from nodes on your own island.
 --                 The mountain's rock hangs deep enough under it that nothing breaks out.
 -- The halls are 30-70 blocks across and up to 30 high, with pale stone floors, a dirt path
 -- down the middle, glowing vines and dripstone hanging from the roof and giant crystals
@@ -173,35 +173,6 @@ local TUNNELS: { Tunnel } = {
 		Vein = -0.3,
 		Deep = true,
 	},
-	-- The Silver Tunnels down to the Magma Depths
-	{
-		Points = {
-			Vector3.new(-34, -30, 66),
-			Vector3.new(-26, -35, 74),
-			Vector3.new(-28, -40, 84),
-			Vector3.new(-32, -44, 90),
-		},
-		Width = 4.5,
-		Height = 9,
-		Ore = "RubyOre",
-		Vein = -0.34,
-		Deep = true,
-		Floors = { "DarkStone", "Stone", "DarkStone" },
-	},
-	-- From the lake down to the Star Vault at the very bottom
-	{
-		Points = {
-			Vector3.new(42, -44, 60),
-			Vector3.new(34, -50, 68),
-			Vector3.new(26, -56, 72),
-			Vector3.new(20, -62, 74),
-		},
-		Width = 4.5,
-		Height = 9,
-		Ore = "SapphireOre",
-		Vein = -0.32,
-		Deep = true,
-	},
 }
 local CHAMBERS: { Chamber } = {
 	{ Name = "Hall", X = 0, Z = 42, Floor = 1, Radii = Vector3.new(22, 18, 17) },
@@ -252,29 +223,6 @@ local CHAMBERS: { Chamber } = {
 		Vein = -0.14,
 		Deep = true,
 		Floors = { "Gravel", "SmoothStone", "Sand" },
-	},
-	{
-		Name = "Magma",
-		X = -36,
-		Z = 98,
-		Floor = -44,
-		Radii = Vector3.new(24, 16, 20),
-		Ore = "RubyOre",
-		Vein = -0.16,
-		Deep = true,
-		Floors = { "DarkStone", "Obsidian", "DarkStone", "Stone" },
-	},
-	{
-		Name = "Vault",
-		X = 14,
-		Z = 74,
-		Floor = -64,
-		Radii = Vector3.new(18, 12, 16),
-		Ore = "StarstoneOre",
-		Vein = -0.2,
-		Deep = true,
-		Floors = { "DarkStone", "Obsidian" },
-		Wall = "DarkStone",
 	},
 }
 
@@ -1353,8 +1301,7 @@ end
 
 -- The deep cave's own look, zone by zone, and its gate signs
 local function furnishDeep(ctx: Context.Context)
-	local silver, geode, lake, magma, vault =
-		chamber("Silver"), chamber("Geode"), chamber("Lake"), chamber("Magma"), chamber("Vault")
+	local silver, geode, lake = chamber("Silver"), chamber("Geode"), chamber("Lake")
 	local rng = ctx.Rng
 
 	-- The Silver Tunnels: an old miners' camp, lanterns, a cart of silver, braziers
@@ -1402,51 +1349,10 @@ local function furnishDeep(ctx: Context.Context)
 		crystal(ctx, roofAt(ctx, lake, x, z), false, if i % 2 == 0 then CRYSTAL.Cyan else CRYSTAL.Blue, 5)
 	end
 
-	-- The Magma Depths: lava pouring into pools on a dark floor, red crystals, braziers
-	for _, at in { Vector2.new(-8, 4), Vector2.new(9, -6), Vector2.new(2, 10) } do
-		local x, z = magma.X + at.X, magma.Z + at.Y
-		local y = floorAt(ctx, x, z, magma.Floor - 1)
-		if y then
-			lavaPool(ctx, x, y, z, 3)
-			lavaFall(ctx, x, y, z + 1)
-		end
-	end
-	for _, spot in chamberSpots(ctx, magma, 6, 0.9, 8) do
-		crystal(ctx, ctx.Top(spot.X, spot.Y, spot.Z), true, CRYSTAL.Red, rng:NextInteger(3, 5))
-	end
-	for _, spot in chamberSpots(ctx, magma, 3, 0.6, 10) do
-		brazier(ctx, spot.X, spot.Y, spot.Z)
-	end
-
-	-- The Star Vault: near-black rock, starlight specks across the roof, pale crystals
-	for _ = 1, 70 do
-		local x = vault.X + rng:NextInteger(-math.floor(vault.Radii.X), math.floor(vault.Radii.X))
-		local z = vault.Z + rng:NextInteger(-math.floor(vault.Radii.Z), math.floor(vault.Radii.Z))
-		local floorY = floorAt(ctx, x, z, vault.Floor - 1)
-		if floorY then
-			local top = ceiling(ctx, x, floorY, z)
-			local speck = Decor.Part(
-				ctx.Decor,
-				"Star",
-				Vector3.one * rng:NextNumber(0.25, 0.6),
-				CFrame.new(ctx.Top(x, top, z) + Vector3.new(rng:NextNumber(-1, 1), -0.2, rng:NextNumber(-1, 1))),
-				CRYSTAL.Star,
-				Enum.Material.Neon
-			)
-			speck.CanCollide = false
-			speck.CastShadow = false
-		end
-	end
-	for _, spot in chamberSpots(ctx, vault, 6, 0.9, 7) do
-		crystal(ctx, ctx.Top(spot.X, spot.Y, spot.Z), true, CRYSTAL.Star, rng:NextInteger(3, 6))
-	end
-
 	-- Each zone's sign where its tunnel leaves the zone before, facing the way you come
 	caveSign(ctx, -56, 104, -14, Vector3.new(0.4, 0, 0.9).Unit, "SILVER TUNNELS", "MINING 20")
 	caveSign(ctx, -30, 50, -30, Vector3.new(-1, 0, 0.6).Unit, "AMETHYST GEODE", "MINING 35")
-	caveSign(ctx, -34, 66, -30, Vector3.new(-1, 0, -0.8).Unit, "MAGMA DEPTHS", "MINING 65")
 	caveSign(ctx, 17, 24, -42, Vector3.new(-1, 0, -0.35).Unit, "SAPPHIRE LAKE", "MINING 50")
-	caveSign(ctx, 42, 60, -44, Vector3.new(0.5, 0, -1).Unit, "STAR VAULT", "MINING 80")
 end
 
 -- The way in -----------------------------------------------------------------------------------
@@ -1750,8 +1656,8 @@ function Mining.Build(ctx: Context.Context)
 		Z = PEAKS.Z,
 		Radius = PEAKS.R,
 		Column = peakColumn,
-		-- Deep enough to hold the deep cave with rock to spare under the Star Vault
-		Depth = 110,
+		-- Deep enough to hold the deep cave with rock to spare under the Sapphire Lake
+		Depth = 84,
 		Fill = function(x, y, z, depth)
 			-- Sandstone right under the mountain's skin, a little soil under the grass
 			if heights[ck(x, z)] then

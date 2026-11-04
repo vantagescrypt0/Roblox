@@ -21,6 +21,7 @@ local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Slivers = require(ReplicatedStorage.Shared.Slivers)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local Props = require(script.Parent.Parent.Util.Props)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
@@ -198,21 +199,32 @@ function FarmService.HarvestTool(player: Player, crop: Crops.Crop): Tools.Tool?
 		local article = if string.find(kind, "^[aeiou]") then "an" else "a"
 		StateService.Notify(player, `Hold {article} {kind} to harvest {crop.Id}`, "bad")
 	end
+	-- With a full Bag the crop stays ripe, rather than lose it
+	if tool and not InventoryService.HasRoom(player, crop.Product, 1) then
+		InventoryService.NotifyFull(player)
+		return nil
+	end
 	return tool
 end
 
 -- What harvesting a ripe crop with `tool` gives: the crop (sometimes two, more often with a
 -- higher Farming level or a better hoe), now and then a spare seed, and Farming and player
 -- XP. Harvesting doesn't wear the tool (a busy farmer harvests thousands an hour; tilling
--- does wear a hoe).
-function FarmService.Harvest(player: Player, crop: Crops.Crop, tool: Tools.Tool)
+-- does wear a hoe). A rare crop never gives a spare seed. In a shared world (`public`) a crop
+-- with slivers (Slivers.luau) sometimes gives one.
+function FarmService.Harvest(player: Player, crop: Crops.Crop, tool: Tools.Tool, public: boolean?)
 	local farmingLevel = ProgressionService.GetSkillLevel(player, "Farming")
 	local chance = Leveling.BonusChance(farmingLevel) + tool.Harvest + GearService.DropBonus(player, "Farming")
 	local amount = if rng:NextNumber() < chance then 2 else 1
 
-	InventoryService.Add(player, crop.Product, amount)
-	if rng:NextNumber() < SPARE_SEED_CHANCE then
-		InventoryService.Add(player, crop.Seed, 1)
+	InventoryService.AddGathered(player, crop.Product, amount)
+	if not crop.Rare and rng:NextNumber() < SPARE_SEED_CHANCE then
+		InventoryService.AddGathered(player, crop.Seed, 1)
+	end
+	local sliver = Slivers.ByOre[crop.Id]
+	if public and sliver and rng:NextNumber() < sliver.Chance then
+		InventoryService.AddGathered(player, sliver.Item, 1)
+		StateService.Notify(player, `Found a {sliver.Name}! {sliver.Need} craft {Items[sliver.Node].Name}`, "level")
 	end
 	ProgressionService.AddSkillXP(player, "Farming", crop.FarmingXP)
 	ProgressionService.AddPlayerXP(player, crop.PlayerXP)
@@ -285,7 +297,7 @@ local function onPlotClicked(player: Player, plot: Plot)
 		-- Dig the plant up to plant something else; the seed comes back
 		data.Farm.Plots[plot.Key] = nil
 		DataService.MarkChanged(player)
-		InventoryService.Add(player, crop.Seed, 1)
+		InventoryService.AddGathered(player, crop.Seed, 1)
 		StateService.Notify(player, `Dug up the {crop.Id}`, "info")
 	elseif not crop and shovel then
 		untill(player, plot)

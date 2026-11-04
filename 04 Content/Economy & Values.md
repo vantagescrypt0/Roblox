@@ -29,34 +29,42 @@ What everything is worth, so trading between players has a fair reference. The n
 | Water Bucket (pours a water source; leaves a Bucket) | 20 | – | Builder 20 |
 | Lava Bucket (pours a lava source; leaves a Bucket) | 50 | – | Builder 50 |
 | Bucket (empty; scoops a source back up) | 10 | – | – |
-| Bottomless Water Bucket (never empties) | 2,500,000 | – | Builder 2,500,000 |
-| Bottomless Lava Bucket (never empties) | 5,000,000 | – | Builder 5,000,000 |
-| Wood | 2 | Lumberjack 1 | – |
-| Birch Wood (Birch Grove, Woodcutting 10) | 12 | Lumberjack 6 | – |
-| Spruce Wood (Snowy Pines, Woodcutting 20) | 28 | Lumberjack 14 | – |
-| Cherry Wood (Cherry Hills, Woodcutting 30) | 54 | Lumberjack 27 | – |
-| Stone | 2 | Miner 1 | Builder 4 (or free from a stone generator: lava + water) |
+| Bottomless Water Bucket (never empties) | 25,000,000 | – | Builder 25,000,000 |
+| Bottomless Lava Bucket (never empties) | 50,000,000 | – | Builder 50,000,000 |
+| Wood | 4 | Lumberjack 2 | – |
+| Birch Wood (Birch Grove, Woodcutting 10) | 20 | Lumberjack 10 | – |
+| Spruce Wood (Snowy Pines, Woodcutting 20) | 62 | Lumberjack 31 | – |
+| Cherry Wood (Cherry Hills, Woodcutting 30) | 170 | Lumberjack 85 | – |
+| Maple Wood (Maple Ridge, Woodcutting 40) | 534 | Lumberjack 267 | – |
+| Redwood (Redwood Giants, Woodcutting 55) | 2,030 | Lumberjack 1,015 | – |
+| Mangrove Wood (your island only, Woodcutting 70) | 3,000 | Lumberjack 1,500 | – |
+| Starwood (your island only, Woodcutting 85) | 12,000 | Lumberjack 6,000 | – |
+| Stone | 4 | Miner 2 | Builder 4 (or free from a stone generator: lava + water) |
 | Planks (1 Wood → 4) | 1 | – | – |
 | Sticks (2 Planks → 4) | 1 | – | – |
-| Coal | 2 | Miner 1 | Miner 3 |
-| Raw Iron | 8 | Miner 4 | – |
-| Iron Ingot (Raw Iron + Coal) | 11 | Miner 6 | – |
-| Raw Gold (deep in the Mining World; Iron pickaxe, Mining 10) | 32 | Miner 16 | – |
-| Gold Ingot (Raw Gold + Coal) | 37 | Miner 20 | – |
+| Coal | 4 | Miner 2 | Miner 6 |
+| Raw Iron | 14 | Miner 7 | – |
+| Iron Ingot (Raw Iron + Coal) | 20 | Miner 11 | – |
+| Raw Gold (deep in the Mining World; Iron pickaxe, Mining 10) | 50 | Miner 25 | – |
+| Gold Ingot (Raw Gold + Coal) | 60 | Miner 32 | – |
 | Furnace (8 Stone) | 18 | – | – |
 | Wheat Seeds | 12 | – | Merchant 12 |
 | Wheat | 2 | Merchant 1 | – |
-| Carrot Seeds | 24 | – | Merchant 24 |
-| Carrot | 4 | Merchant 2 | – |
-| Potato Seeds | 60 | – | Merchant 60 |
-| Potato | 10 | Merchant 5 | – |
-| Pumpkin Seeds (Farming 15) | 120 | – | Merchant 120 |
-| Pumpkin (grows in 4 min) | 20 | Merchant 10 | – |
-| Melon Seeds (Farming 25) | 180 | – | Merchant 180 |
-| Melon (grows in 6 min) | 30 | Merchant 15 | – |
+| Carrot Seeds | 48 | – | Merchant 48 |
+| Carrot | 8 | Merchant 4 | – |
+| Potato Seeds | 120 | – | Merchant 120 |
+| Potato | 20 | Merchant 10 | – |
+| Pumpkin Seeds (Farming 15) | 264 | – | Merchant 264 |
+| Pumpkin (grows in 4 min) | 44 | Merchant 22 | – |
+| Melon Seeds (Farming 25) | 648 | – | Merchant 648 |
+| Melon (grows in 6 min) | 108 | Merchant 54 | – |
+| Sugarcane (Farming 35, grows in 5 min; seeds from slivers) | 900 | Merchant 450 | – |
+| Strawberry (your island only, Farming 50, grows in 6 min) | 8,000 | Merchant 4,000 | – |
+| Dragonfruit (your island only, Farming 65, axe, grows in 7 min) | 16,000 | Merchant 8,000 | – |
+| Starfruit (your island only, Farming 80, grows in 8 min) | 40,000 | Merchant 20,000 | – |
 | Glowberry Seeds (Warzone only) | 250 | – | – |
 | Sapling (from leaves and felled trees) | 8 | – | Lumberjack 20 |
-| Glowberry | 40 | Merchant 20 | – |
+| Glowberry | 80 | Merchant 40 | – |
 | Scrap (Warzone) | 6 | – | – |
 | Crystal (Warzone) | 60 | – | – |
 
@@ -82,6 +90,7 @@ A **node** is a higher-value block because it grows back in the same spot after 
 | Coal Ore | 20s |
 | Iron Ore | 45s |
 | Birch / Spruce / Cherry Wood (worlds) | 25s / 30s / 35s |
+| Maple / Redwood / Mangrove / Starwood (worlds) | 40s / 45s / 50s / 60s |
 | Gold Ore (Mining World) | 90s |
 
 Blocks you dig out of the island underside (ore veins) and blocks you placed yourself are not nodes: once mined, they're gone.
@@ -96,6 +105,7 @@ Plant once. After each harvest the plant stays and starts growing again, with no
 | Potato | 150s | 2 | 12 harvests (30 min) |
 | Pumpkin | 240s | 2.5 | 12 harvests (48 min) |
 | Melon | 360s | 2.5 | 12 harvests (72 min) |
+| Sugarcane, Strawberry, Dragonfruit, Starfruit | 300s to 480s | 6 to 36 | not sold: slivers (Sugarcane) or loot crates and Warzone chests (the others), and they never give a spare seed |
 | Glowberry | 240s | 5 | 12 harvests (50 min) |
 
 On your island (crops grow while you're away), better crops earn about the same coins per plot per minute but need far fewer clicks. In the Farming World, where you harvest nonstop, a better crop pays far more an hour (see Coin pace). The Farming level bonus (a chance of a double crop) comes on top.
@@ -103,17 +113,40 @@ On your island (crops grow while you're away), better crops earn about the same 
 ## Coin pace (rebalance 2026-10-27)
 Your targets: about **2k coins an hour early**, **50k mid game**, **1M late game**; the best things cost **10M–50M** and the richest players hold **100M+**. Prices are fitted by `tools/balance.py` (run `python tools/balance.py`): each resource earns a set amount an hour at the level it unlocks, for steady play in the worlds.
 
-| Stage | Skill level | Best resource today | Coins an hour |
+| Stage | Skill level | Best resource | Coins an hour (modelled) |
 |---|---|---|---|
-| Early | 1–5 | Wheat, Coal, Oak, then Raw Iron and Carrots | ~1k–6k |
-| Getting going | 10 | Raw Gold, Potatoes, Birch | ~10k–25k |
-| Mid | 20–30 | Spruce, Pumpkins; then Cherry and Melons | ~25k–45k |
-| Mid, maxed | 50–99 | the same, with bigger double-drop chances | ~35k–63k |
-| Late | — | **nothing yet** | target ~1M |
+| Early | 1–5 | Wheat, Coal, Oak, then Iron and Carrots | ~2k–11k |
+| Getting going | 10 | Gold, Potatoes, Birch | ~15k–40k |
+| Mid | 20–30 | Silver, Spruce, Cherry, Pumpkins, Melons | ~50k–170k |
+| Late mid | 35–50 | Amethyst, Maple, then Sapphire, Sugarcane | ~400k–2M |
+| Top of the worlds | 99 | Sapphire, Redwood, Sugarcane | ~1.9M–2.3M |
+| Late game | — | nodes, saplings and seeds on your island ([[Late-game Rule]]) | on top of that, see below |
 
-**The late game is missing content:** today's best resources unlock at Mining 10, Farming 25 and Woodcutting 30, so from there to 99 nothing new pays more, and nothing costs 10M–50M yet. Closing the gap needs new top-tier ores, crops and trees at higher levels (each tier worth about 2–3x the one before) and new big purchases. That's a content decision for you (see the Roadmap).
+## The billion scale (your call, 2026-11-02)
+You said to raise what things sell for instead of speeding nodes up: in Skybounds a billion "wasn't easy but also very manageable if smart", and the elite held 25B+. We're not copying that exactly, but the scale here is billions. Everything below is modelled by `tools/balance.py`, not measured with real players.
 
-Island expansion: Meadow **3,000**, Grove **40,000**, Grand **400,000** coins (were 300 / 1,500 / 6,000).
+- **Grinding one world alone**, a billion takes about **430-540 hours**.
+- **A smart player** gets there much sooner through what one late-game item earns an hour:
+
+| One of these | Sells for | Makes about (before double drops) |
+|---|---|---|
+| Ruby Node | 5,000 each | 75k an hour |
+| Starstone Node | 20,000 each | 240k an hour |
+| Strawberry plot | 4,000 each | 40k an hour |
+| Dragonfruit plot | 8,000 each | 69k an hour |
+| Starfruit plot | 20,000 each | 150k an hour |
+| Mangrove tree | 1,500 a log | 90k an hour |
+| Starwood tree | 6,000 a log | 168k an hour |
+
+  20 Starstone Nodes come to about 5M-8M an hour, so a billion in roughly 120-200 hours.
+- **The elite:** someone with around 100 late nodes is limited by how fast they can swing, at about 40M an hour, so 25B is possible in about 600-1,000 hours.
+- **Big things to save for:** island levels up to 500M, Bottomless Buckets at 25M and 50M. More billion-coin things can come later.
+- Late trees take 30 minutes to regrow, unlike 3 for the others. Otherwise, with logs this valuable, one tree would pay like dozens of nodes.
+
+
+**Before the late-game phases (kept for the record):** the best resources unlocked at Mining 10, Farming 25 and Woodcutting 30, so from there to 99 nothing new paid more, and nothing cost 10M–50M. Closing the gap needs new top-tier ores, crops and trees at higher levels (each tier worth about 2–3x the one before) and new big purchases. That's a content decision for you (see the Roadmap).
+
+Island expansion: level 2 **3,000**, level 3 **40,000**, level 4 **1,000,000**, level 5 **10,000,000**, level 6 **100,000,000**, level 7 **500,000,000** coins. Levels 5-7 move the build border to 240 / 288 / 336 blocks.
 
 ## Trading between players
 Built 2026-10-24 (code: `TradeService.luau` on the server, `TradeWindow.luau` on the client). Screenshot: `art/renders/ui-trade-window.png`.

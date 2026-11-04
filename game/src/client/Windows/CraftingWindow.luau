@@ -64,6 +64,7 @@ local PART_USES: { [string]: string } = {
 	Rope = "The binding for iron tools",
 	IronPlate = "The head of iron tools (3 for a pickaxe or axe, 2 for a hoe or sword, 1 for a shovel); also binds a Birch Handle",
 	SturdyHandle = "The handle of iron tools",
+	Shield = "Wear it from your Bag. Hold right-click to block in the Warzone",
 	SilverPlate = "Binds a Spruce Handle",
 	RefinedAmethyst = "The head of Amethyst tools",
 	RefinedSapphire = "The head of Sapphire tools",
@@ -214,8 +215,8 @@ local function render()
 		tile.Button.Visible = recipe.Station == station
 		local enough, skilled = check(recipe)
 		local selected = recipe.Id == selectedId
-		tile.Stroke.Color = if selected then C.Orange elseif enough and skilled then C.Green else C.Line
-		tile.Stroke.Thickness = if selected then 3.5 elseif enough and skilled then 2.5 else 2
+		tile.Stroke.Color = if selected then C.Accent elseif enough and skilled then C.Green else C.Line
+		tile.Stroke.Thickness = if selected then 3 elseif enough and skilled then 2 else 1.5
 		tile.Button.BackgroundColor3 = if selected then C.Panel else C.Card
 		tile.Lock.Visible = not skilled
 	end
@@ -255,8 +256,8 @@ local function buildGrid(parent: Instance)
 			LayoutOrder = index,
 			Parent = grid,
 		})
-		Theme.corner(button, 6)
-		local stroke = Theme.stroke(button, C.Line, 2)
+		Theme.corner(button, 10)
+		local stroke = Theme.stroke(button, C.Line, 1.5)
 		ItemIcon.create(button, recipe.Output, UDim2.fromScale(0.8, 0.8))
 		if recipe.Amount > 1 then
 			local amount = Theme.text(button, tostring(recipe.Amount), 15, Theme.Font.Bold)
@@ -273,7 +274,7 @@ local function buildGrid(parent: Instance)
 			BackgroundColor3 = C.Blue,
 			FontFace = Theme.Font.Bold,
 			TextSize = 11,
-			TextColor3 = C.White,
+			TextColor3 = C.Well,
 			Text = "Locked",
 			ZIndex = 3,
 			Visible = false,
@@ -398,7 +399,7 @@ function CraftingWindow.Open(which: Recipes.Station?)
 		end
 	end
 	local info = STATIONS[station]
-	window.Title.Text = info.Title
+	Window.setTitle(window, info.Title)
 	craftButton.SetText(info.Verb)
 	Window.open(window)
 end
@@ -408,7 +409,7 @@ function CraftingWindow.IsOpen(): boolean
 end
 
 function CraftingWindow.Start()
-	window = Window.new("CraftingWindow", "Crafting Table", Vector2.new(760, 480), C.Orange)
+	window = Window.new("CraftingWindow", "Crafting Table", Vector2.new(780, 496))
 	window.OnOpen = render
 	buildGrid(window.Body)
 	buildDetail(window.Body)

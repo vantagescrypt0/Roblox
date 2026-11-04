@@ -1,15 +1,15 @@
 --!strict
--- Pop-up windows (Bag, Island, Shop, Crafting, Trade...): a white panel with a colored header
--- band, the title sticking out of its top-left and a red X on the top-right corner. The game
--- dims and blurs behind it. Only one is open at a time.
+-- Pop-up windows (Bag, Island, Shop, Crafting, Trade...) in Night Glass: a dark panel with its
+-- title top left and an X top right. The game dims and blurs behind it. Only one is open at a time.
 
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
 
+local Glass = require(script.Parent.Glass)
 local Sfx = require(script.Parent.Sfx)
 local Theme = require(script.Parent.Theme)
 
-local HEADER = 46
+local HEADER = 68
 
 export type Window = {
 	Gui: ScreenGui,
@@ -95,21 +95,20 @@ function Window.toggle(window: Window)
 	end
 end
 
--- `color` is the header band's color (each window has its own, see the UI study)
-function Window.new(name: string, title: string, size: Vector2, color: Color3?): Window
+function Window.new(name: string, title: string, size: Vector2): Window
+	local window: Window
 	local gui = Theme.screen(name, 10)
 	gui.Enabled = false
 	gui.IgnoreGuiInset = true
 
-	local window: Window
-
-	-- Dim the game behind the window; clicking it closes the window
+	-- The dim behind it closes it when clicked. Modal frees the mouse while you're in first person.
 	local dim = Theme.make("TextButton", {
 		Size = UDim2.fromScale(1, 1),
 		BackgroundColor3 = Theme.Color.Outline,
 		BackgroundTransparency = 0.55,
 		Text = "",
 		AutoButtonColor = false,
+		Modal = true,
 		Parent = gui,
 	})
 	dim.Activated:Connect(function()
@@ -120,30 +119,36 @@ function Window.new(name: string, title: string, size: Vector2, color: Color3?):
 	local holder = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
+		Name = "Holder",
 		Size = UDim2.fromOffset(size.X, size.Y),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	})
 	Theme.autoScale(holder)
-	local root = Theme.panel(holder, UDim2.fromScale(1, 1))
+
+	local root = Glass.panel(holder, UDim2.fromScale(1, 1))
+	root.Name = "Root"
 	root.AnchorPoint = Vector2.new(0.5, 0.5)
 	root.Position = UDim2.fromScale(0.5, 0.5)
 	Theme.make("UIScale", { Name = "OpenScale", Parent = root })
 
-	local titleLabel = Theme.header(root, title, HEADER, color)
+	local titleLabel = Glass.text(root, string.upper(title), 26, Glass.Font.Title)
+	titleLabel.Position = UDim2.fromOffset(28, 16)
+	titleLabel.Size = UDim2.new(0.6, 0, 0, 32)
 
-	-- The X straddles the panel's top-right corner
-	local close = Theme.closeButton(root, function()
+	local close = Glass.button(root, "X", UDim2.fromOffset(40, 40), function()
 		Window.close(window)
 	end)
-	close.Holder.AnchorPoint = Vector2.new(0.5, 0.5)
-	close.Holder.Position = UDim2.new(1, -8, 0, 6)
-	close.Holder.ZIndex = 5
+	close.Face.AnchorPoint = Vector2.new(1, 0)
+	close.Face.Position = UDim2.new(1, -24, 0, 12)
+	close.Stroke.Color = Glass.Color.Edge
+	close.Stroke.Transparency = 0.84
+	close.Label.TextSize = 20
 
 	local body = Theme.make("Frame", {
 		Name = "Body",
-		Position = UDim2.fromOffset(14, HEADER + 12),
-		Size = UDim2.new(1, -28, 1, -(HEADER + 26)),
+		Position = UDim2.fromOffset(24, HEADER),
+		Size = UDim2.new(1, -48, 1, -(HEADER + 20)),
 		BackgroundTransparency = 1,
 		Parent = root,
 	})
@@ -160,12 +165,9 @@ function Window.new(name: string, title: string, size: Vector2, color: Color3?):
 	return window
 end
 
--- Repaints a window's header band (e.g. a Challenges group in its own color)
-function Window.setColor(window: Window, color: Color3)
-	local band = window.Root:FindFirstChild("Header") :: Frame
-	band.BackgroundColor3 = color
-	local fill = band:FindFirstChild("Fill") :: Frame
-	fill.BackgroundColor3 = color
+-- Titles are always in capitals
+function Window.setTitle(window: Window, title: string)
+	window.Title.Text = string.upper(title)
 end
 
 -- Scrolling list area inside a window body

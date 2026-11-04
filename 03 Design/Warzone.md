@@ -1,6 +1,37 @@
 # Warzone (Draft)
 Inspired by the Skybounds Warzone — see [[Skybounds (Minecraft)]].
 
+> **2026-11-02, your verdict on the prototype: "terrible and low effort".** Everything under "Prototype" below is Claude's guess and is being replaced:
+> - **It's PvP, not PvE:** the monsters come out. This replaces "PvP + PvE" from 2026-10-14.
+> - **You actually loot chests:** not a click that drops random loot in a bag.
+> - **The exit was never agreed:** Claude invented the green pads without asking. Ask how it should work.
+> - **The map:** connected floating islands like Team Vaeron's Skybounds Warzones, see [[Vaeron Warzones]].
+>
+> **Your rules (2026-11-02):**
+> - **Competitive:** "The warzone will be competitive thats why starter players are not there."
+> - **Combat tag:** shows for **20 seconds**; while tagged you can't leave.
+> - **Leaving:** a button that only exists in the Warzone. Hold it for **5-10 seconds**; it makes a **noise** so people know you're teleporting out.
+> - **Death:** **everything drops**. Your **body lies on the ground** and players can loot it. It **despawns with its loot after 15 minutes**.
+> - **Looting:** a **traditional Minecraft chest screen**, for bodies and for all chests in the game.
+> - **Chests:** shared slots; once emptied, the chest **vanishes and a new one spawns elsewhere**.
+> - **First map:** **Robot / sci-fi**.
+> - **Carrying:** Minecraft's **36 slots with stacks**, in the whole game. Store the rest in **real chests you place on your island**; bring only what fits.
+> - **Shield:** **hold right-click to block** from the front, like Minecraft.
+> - **Arrival:** you land in the **citadel, a safe zone** with no PvP. Leave it to fight.
+> - **Regular chests are all the same**, spread out at random with no hotspots. **Skydrops and Legendary Skydrops** are also random but better, and land "not that far but not right next to spawn".
+>
+> **Your rules, second batch (2026-11-02):**
+> - **Armour:** four pieces, like Minecraft (helmet, chest, legs, boots), worn from the Bag's Equipment panel. Built 2026-11-03; on the body they're still plain plates, and they do nothing in a fight yet.
+> - **Quitting:** you vanish and are safe, and have **5 minutes to rejoin**. Trying to rejoin automatically teleports you back to the exact server and spot. Miss the 5 minutes and your body drops there with everything. Quit while combat tagged and it drops at once.
+> - **Falling off:** you come back where you jumped from and take a little **ticking poison**.
+> - **After you die:** back to Town.
+> - **Health bar and hunger bar:** food is a Minecraft-style hunger bar, in the Warzone only. It drains as you run and fight, eating fills it, health only regrows while you're well fed, and at empty hunger you slowly lose health. You stock up on your island and bring food in.
+> - **Shield:** one kind for now, crafted at the Anvil from planks and iron. Hold right-click to block every hit from the front; you walk slowly while blocking. Tiers can come later. It's a generated model on the left arm, raised in front of the chest while blocking. An axe hit knocks it down for 5 s (Claude's pick, not confirmed), with no popup.
+>
+> **2026-11-02, built:** the real map replaced the greybox (citadel, 26 islands, North/East/South/West landmarks, see [[Warzone Rebuild Plan]]). The monsters, raid bag, green pads and click-for-loot chests are gone. The safe zone, combat tag and hold-to-leave button work. The "Decided" and "Prototype" sections below are the old design, kept for reference.
+>
+> **2026-11-03, built:** chests. 24 are out at a time, on open ground on the islands, never in the citadel: all the same, shared slots, the traditional chest screen, and an emptied one vanishes and a new one appears elsewhere 20 seconds later. What they hold is Claude's pick, in `shared/WarzoneLoot.luau`. **Lootable bodies aren't in yet,** so for now dying doesn't drop what you carry.
+
 ## Decided
 - **Death drop (from Skybounds):** when you die, a **loot head** (your avatar's head) drops where you fell. Open it (right-click on PC) to take the loot. The loot stays in the head until someone takes it. See [[Decision Log]].
 
@@ -8,6 +39,8 @@ Inspired by the Skybounds Warzone — see [[Skybounds (Minecraft)]].
 - **Unlock:** you need **player level 10** to enter (like Skybounds). Player level resets each season, see [[Skills & Levels]], reached through [[Tutorial & Quests]]. This also keeps brand-new players out of PvP.
 - **Level gates apply:** mobs need a Combat level and crops need a Farming level. See [[Skills & Levels]].
 
+> **2026-11-02: the entrance is open.** The Warzone is its own place now. You jump into the black void pit in Town's Portal Plaza (player level 10, or it puts you back at the rim). Extract or die and you go back to Town. The arena is still the greybox prototype. Chests can hold Loot Crates and the late game's nodes, saplings and seeds ([[Late-game Rule]]); resource nodes placed in the Warzone itself wait until you ask for them.
+>
 > **2026-10-15:** The island portal now goes to **Town**. The Warzone will be reached from Town once you're ready to add it; its code is built but switched off (`WarzoneService`, `MobService` aren't started in `Main.server.luau`).
 
 ## Prototype (built + playtested 2026-10-15)
@@ -31,7 +64,7 @@ Greybox arena, one shared map. These are **prototype defaults Claude picked**; c
 ## Skydrops (your idea, 2026-10-29; not built)
 - On top of the regular chests that spawn round the Warzone, **Skydrops** fall from the sky: chests with better loot (ore nodes among it, see [[Late-game Proposal]]).
 - **Regular Skydrops** fall every 10 minutes and everyone gets a **marker** showing where. **Legendary Skydrops** fall at a random time every 4–8 hours, with **no marker**: you have to find it.
-- A **Skydrop token** calls one down. Tokens are earned in game, bought with coins, or bought with Robux. A Skydrop is up for grabs, so anyone can take it: calling one is a flex and a chance if you're strategic, not a guaranteed prize.
+- A **Skydrop token** calls one down. **Your call 2026-11-02:** tokens come from loot crates, from Robux **with a limit on how many you can buy a day**, and from other ways still to come up with. A Skydrop is up for grabs, so anyone can take it: calling one is a flex and a chance if you're strategic, not a guaranteed prize.
 - [Inference] Before Robux tokens ship: Roblox treats paid random items as loot boxes (show the odds; some countries restrict them). Check the rules then, with our [[Monetization Principles]].
 
 ## PvP fairness — [Inference], to discuss

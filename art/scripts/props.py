@@ -288,11 +288,61 @@ def crops():
     return out
 
 
+def far_crops():
+    """The Farming World's second ring: ripe sugarcane, strawberries, dragonfruit, starfruit"""
+    out = []
+
+    b = Builder(seed=61)
+    for y in (-0.9, 0.9):
+        for x in (-1.2, 0, 1.2):
+            h = b.rng.uniform(3.4, 4.3)
+            b.cylinder(0.14, h, (x, y, h / 2), color="stalk", segments=5)
+            for z in (h * 0.33, h * 0.66):
+                b.cylinder(0.17, 0.1, (x, y, z), color="grass_dark", segments=5)
+            b.cone(0.13, 0.9, (x + 0.25, y, h + 0.15), (0, 40, 0), color="leaf_light", segments=4)
+            b.cone(0.13, 0.9, (x - 0.25, y, h), (0, -40, 0), color="leaf", segments=4)
+    out.append(b.finish("Crop_Sugarcane"))
+
+    b = Builder(seed=62)
+    for y in (-1.2, 0, 1.2):
+        for x in (-1.2, 0, 1.2):
+            b.blob(0.52, (x, y, 0.42), color="leaf", squash=(1.1, 1.1, 0.65))
+            b.blob(0.3, (x - 0.2, y + 0.2, 0.68), color="leaf_light", squash=(1, 1, 0.7))
+            for k in range(4):
+                angle = math.radians(k * 90 + b.rng.uniform(-20, 20))
+                b.blob(0.16, (x + 0.42 * math.cos(angle), y + 0.42 * math.sin(angle), 0.32), color="red", squash=(1, 1, 1.2), jitter=0.0)
+    out.append(b.finish("Crop_Strawberry"))
+
+    b = Builder(seed=63)
+    for x, y in ((-0.85, -0.7), (0.85, -0.5), (0, 0.85)):
+        h = b.rng.uniform(1.9, 2.5)
+        b.cylinder(0.3, h, (x, y, h / 2), color="leaf_dark", segments=6, radius2=0.22)
+        b.cylinder(0.14, 0.7, (x + 0.34, y, h * 0.55), (0, 60, 0), color="leaf", segments=5)
+        b.blob(0.32, (x, y, h + 0.25), color="flower_pink", squash=(1, 1, 1.3))
+        b.blob(0.22, (x + 0.72, y, h * 0.68), color="flower_pink", squash=(1, 1, 1.25))
+    out.append(b.finish("Crop_Dragonfruit"))
+
+    b = Builder(seed=64)
+    for x, y in ((-0.9, -0.8), (0.9, -0.8), (0, 0.9)):
+        b.cylinder(0.08, 1.2, (x, y, 0.6), color="root", segments=5)
+        b.blob(0.62, (x, y, 1.45), color="leaf_dark", squash=(1, 1, 0.8))
+        for k in range(3):
+            angle = math.radians(k * 120 + b.rng.uniform(-25, 25))
+            cx, cy, cz = x + 0.6 * math.cos(angle), y + 0.6 * math.sin(angle), 1.2 + k * 0.18
+            b.blob(0.14, (cx, cy, cz), color="glow", jitter=0.0)
+            for p in range(5):
+                a = math.radians(p * 72)
+                b.cone(0.09, 0.26, (cx + math.sin(a) * 0.18, cy, cz + math.cos(a) * 0.18), (0, p * 72, 0), color="flower_yellow", segments=4)
+    out.append(b.finish("Crop_Starfruit"))
+    return out
+
+
 def main():
     common.reset_scene()
     lowpoly.palette_material()
 
-    groups = [workbench(), market(), portal(), planter()] + [[c] for c in crops()]
+    far = far_crops()
+    groups = [workbench(), market(), portal(), planter()] + [[c] for c in crops()] + [[c] for c in far]
     everything = [obj for group in groups for obj in group]
 
     # One close-up preview per prop (others hidden)
@@ -313,6 +363,8 @@ def main():
 
     print("blend:", common.save_blend("Props"))
     print("fbx:", lowpoly.export_fbx(os.path.join(common.EXPORT_DIR, "Props.fbx"), everything))
+    # New crops alone, so existing props keep their uploads
+    print("new:", lowpoly.export_fbx(os.path.join(common.EXPORT_DIR, "Props_new.fbx"), far))
 
 
 main()

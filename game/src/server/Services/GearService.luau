@@ -1,9 +1,10 @@
 --!strict
--- Pets and armor sets (Gear.luau), the skill challenges' rewards. A player wears one pet and
--- one armor set at a time (data.Equipped), picked in the Bag (the Equip remote). The pet
--- floats beside its owner (PetModels; a pet you don't own any more is put away) and gives
--- more XP in its skill; the armor is drawn on the character (ArmorModels) and gives a better
--- chance of a double drop in its skill. Also builds the trophy blocks' look (TrophyModels)
+-- Pets and armor pieces (Gear.luau), the skill challenges' rewards, and the shield. A player
+-- wears one pet, one armor piece per slot and one shield at a time (data.Equipped), picked in
+-- the Bag (the Equip remote). The shield goes on the left arm (ShieldModel; WarzoneService
+-- does the blocking). The pet floats beside its owner (PetModels; a pet you don't own any more is put away) and gives
+-- more XP in its skill; each armor piece is drawn on the character (ArmorModels) and gives a
+-- better chance of a double drop in its skill. Also builds the trophy blocks' look (TrophyModels)
 -- when a server starts. Runs in every place.
 
 local Players = game:GetService("Players")
@@ -14,16 +15,17 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local ArmorModels = require(script.Parent.Parent.Util.ArmorModels)
 local PetModels = require(script.Parent.Parent.Util.PetModels)
+local ShieldModel = require(script.Parent.Parent.Util.ShieldModel)
 local TrophyModels = require(script.Parent.Parent.Util.TrophyModels)
 local DataService = require(script.Parent.DataService)
-local StateService = require(script.Parent.StateService)
+local InventoryService = require(script.Parent.InventoryService)
 
 -- Where the pet floats: to the right of and a little behind its owner
 local PET_OFFSET = CFrame.new(3, 0.5, 2.5)
 
 local GearService = {}
 
-local shown: { [Player]: { Pet: string, Armor: string, Character: Model? } } = {}
+local shown: { [Player]: { Pet: string, Armor: string, Shield: string, Character: Model? } } = {}
 local petModels: { [Player]: Model } = {}
 
 -- Extra skill XP (0.05 = +5%) from the pet a player wears, for `skill`
@@ -33,11 +35,22 @@ function GearService.XPBonus(player: Player, skill: string): number
 	return if pet and pet.Skill == skill then pet.XPBonus else 0
 end
 
--- Extra chance of a double drop (0.03 = +3%) from the armor a player wears, for `skill`
+-- Extra chance of a double drop (0.03 = +3%) from the armor a player wears, for `skill`: each
+-- piece of that skill counts
 function GearService.DropBonus(player: Player, skill: string): number
 	local data = DataService.GetData(player)
-	local armor = data and Gear.Armors[data.Equipped.Armor]
-	return if armor and armor.Skill == skill then armor.DropBonus else 0
+	if not data then
+		return 0
+	end
+	local equipped = data.Equipped :: { [string]: string }
+	local bonus = 0
+	for _, slot in Gear.ArmorSlots do
+		local armor = Gear.Armors[equipped[slot]]
+		if armor and armor.Skill == skill then
+			bonus += armor.DropBonus
+		end
+	end
+	return bonus
 end
 
 local function removePet(player: Player)
@@ -94,28 +107,49 @@ local function refresh(player: Player)
 	if not data or not character then
 		return
 	end
+	local equipped = data.Equipped :: { [string]: string }
 	local last = shown[player]
-	local pet, armor = data.Equipped.Pet, data.Equipped.Armor
-	if last and last.Pet == pet and last.Armor == armor and last.Character == character then
-		return
+	local worn = {}
+	for _, slot in Gear.ArmorSlots do
+		table.insert(worn, equipped[slot] or "")
 	end
-	shown[player] = { Pet = pet, Armor = armor, Character = character }
+	local armorKey = table.concat(worn, "|")
+	local pet, shield = equipped.Pet, equipped.Shield
+	local sameBody = last ~= nil and last.Character == character
+	shown[player] = { Pet = pet, Armor = armorKey, Shield = shield, Character = character }
 
-	removePet(player)
-	local oldArmor = character:FindFirstChild("Armor")
-	if oldArmor then
-		oldArmor:Destroy()
+	if not sameBody or last.Pet ~= pet then
+		removePet(player)
+		if pet ~= "" then
+			spawnPet(player, character, pet)
+		end
 	end
-	if pet ~= "" then
-		spawnPet(player, character, pet)
+	if not sameBody or last.Armor ~= armorKey then
+		local oldArmor = character:FindFirstChild("Armor")
+		if oldArmor then
+			oldArmor:Destroy()
+		end
+		local pieces = {}
+		for _, itemId in worn do
+			local armor = Gear.Armors[itemId]
+			if armor then
+				table.insert(pieces, { Slot = armor.Slot, Skill = armor.Skill, Tier = armor.Tier })
+			end
+		end
+		ArmorModels.Apply(character, pieces)
 	end
-	local set = Gear.Armors[armor]
-	if set then
-		ArmorModels.Apply(character, set.Skill, set.Tier)
+	if not sameBody or last.Shield ~= shield then
+		local oldShield = character:FindFirstChild("Shield")
+		if oldShield then
+			oldShield:Destroy()
+		end
+		if shield ~= "" then
+			ShieldModel.Apply(character)
+		end
 	end
 end
 
--- Wears a pet or armor set, or takes it off if it's already worn
+-- Wears something in its slot, or takes it off if it's already worn. The Bag shows the result.
 local function onEquip(player: Player, itemId: unknown)
 	if type(itemId) ~= "string" then
 		return
@@ -125,25 +159,55 @@ local function onEquip(player: Player, itemId: unknown)
 	if not data or not item or not item.Equip or (data.Items[itemId] or 0) <= 0 then
 		return
 	end
-	local slot = if item.Equip == "Pet" then "Pet" else "Armor"
 	local equipped = data.Equipped :: { [string]: string }
-	if equipped[slot] == itemId then
+	local slot = item.Equip
+	local worn = equipped[slot] or ""
+	if worn == itemId then
+		if not InventoryService.PutBackFromWearing(player, itemId) then
+			InventoryService.NotifyFull(player)
+			return
+		end
 		equipped[slot] = ""
-		StateService.Notify(player, `Put away: {item.Name}`, "info")
 	else
+		if not InventoryService.TakeOutToWear(player, itemId) then
+			return
+		end
+		-- What was on goes back where the new piece just came from
+		if worn ~= "" then
+			InventoryService.PutBackFromWearing(player, worn)
+		end
 		equipped[slot] = itemId
-		local pet, armor = Gear.Pets[itemId], Gear.Armors[itemId]
-		local bonus = if pet
-			then `+{math.round(pet.XPBonus * 100)}% {pet.Skill} XP`
-			elseif armor then `+{math.round(armor.DropBonus * 100)}% double {armor.Skill} drops`
-			else ""
-		StateService.Notify(player, `Wearing {item.Name}: {bonus}`, "good")
 	end
 	DataService.MarkChanged(player)
 	refresh(player)
 end
 
--- A pet or armor set the player no longer has (traded away) comes off
+-- Saves from before armor came in pieces: each whole set becomes its four pieces, and what was
+-- being worn stays worn
+local function splitOldArmor(_player: Player, data: DataService.Data)
+	if data.Flags.ArmorPieces then
+		return
+	end
+	data.Flags.ArmorPieces = true
+	local equipped = data.Equipped :: { [string]: any }
+	for oldId, pieces in Gear.OldArmorSets do
+		local count = data.Items[oldId]
+		if count and count > 0 then
+			for _, piece in pieces do
+				data.Items[piece] = (data.Items[piece] or 0) + count
+			end
+			if equipped.Armor == oldId then
+				for _, piece in pieces do
+					equipped[Gear.Armors[piece].Slot] = piece
+				end
+			end
+		end
+		data.Items[oldId] = nil
+	end
+	equipped.Armor = nil
+end
+
+-- A pet or armor piece the player no longer has (traded away) comes off
 local function checkOwned(player: Player, data: DataService.Data)
 	local equipped = data.Equipped :: { [string]: string }
 	local changed = false
@@ -162,6 +226,7 @@ end
 function GearService.Start()
 	TrophyModels.Make()
 	Remotes.Equip.OnServerEvent:Connect(onEquip)
+	DataService.OnLoading(splitOldArmor)
 	DataService.OnChanged(checkOwned)
 	DataService.OnDataLoaded(function(player, data)
 		player.CharacterAdded:Connect(function(character)

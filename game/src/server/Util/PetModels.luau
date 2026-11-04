@@ -17,6 +17,9 @@ local TIER_COLORS = {
 	Color3.fromRGB(168, 96, 230),
 	Color3.fromRGB(220, 40, 60),
 	Color3.fromRGB(255, 236, 170),
+	-- Farming's far crops (it has nine resources, ten with Glowberry)
+	Color3.fromRGB(236, 70, 160),
+	Color3.fromRGB(150, 240, 220),
 }
 local BLACK = Color3.fromRGB(28, 24, 22)
 

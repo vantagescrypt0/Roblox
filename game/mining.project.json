@@ -12,6 +12,9 @@
       },
       "ItemModels": {
         "$path": "assets-replicated/ItemModels.rbxm"
+      },
+      "ShieldModels": {
+        "$path": "assets-replicated/ShieldModels.rbxm"
       }
     },
 

@@ -20,9 +20,6 @@ local C = Theme.Color
 
 local TILE = 60
 local SQUARE = Vector2.new(146, 200)
-local DONE = Color3.fromRGB(120, 178, 82)
-local CURRENT = Color3.fromRGB(232, 196, 72)
-local AHEAD = Color3.fromRGB(150, 108, 196)
 
 local ChallengesWindow = {}
 
@@ -70,11 +67,11 @@ local function rewardChip(order: number, icon: string?, text: string, color: Col
 		LayoutOrder = order,
 		AutomaticSize = Enum.AutomaticSize.X,
 		Size = UDim2.fromOffset(0, 40),
-		BackgroundColor3 = C.Card,
+		BackgroundColor3 = C.Well,
 		Parent = rewardRow,
 	})
-	Theme.corner(chip, 6)
-	Theme.stroke(chip, C.Line, 2)
+	Theme.corner(chip, 9)
+	Theme.stroke(chip, C.Line, 1.5)
 	Theme.padding(chip, 4, 10, 0, 0)
 	Theme.list(chip, Enum.FillDirection.Horizontal, 6).VerticalAlignment = Enum.VerticalAlignment.Center
 	if icon then
@@ -219,18 +216,26 @@ local function renderBoard(group: Boards.Board)
 
 	Window.clear(grid)
 	for index, challenge in group.Challenges do
-		local color = if info.Done[index] then DONE elseif index == info.Index and not group.Soon then CURRENT else AHEAD
+		local color = if info.Done[index]
+			then C.Green
+			elseif index == info.Index and not group.Soon then C.Gold
+			else C.Purple
 		local tile = Theme.make("TextButton", {
 			LayoutOrder = index,
-			BackgroundColor3 = color,
+			BackgroundColor3 = C.SlotBottom:Lerp(color, 0.4),
 			AutoButtonColor = false,
 			Text = "",
 			Parent = grid,
 		})
-		Theme.corner(tile, 6)
+		Theme.corner(tile, 10)
 		local isSelected = index == (selected or info.Index)
-		Theme.stroke(tile, if isSelected then C.Outline else Theme.darken(color, 0.35), if isSelected then 3 else 2)
-		local number = Theme.text(tile, tostring(index), 22, Theme.Font.Title, Theme.textOn(color))
+		Theme.stroke(
+			tile,
+			if isSelected then C.Ink else color,
+			if isSelected then 3 else 1.5,
+			if isSelected then 0 else 0.3
+		)
+		local number = Theme.text(tile, tostring(index), 22, Theme.Font.Title, C.Ink)
 		number.Size = UDim2.fromScale(1, 1)
 		number.TextXAlignment = Enum.TextXAlignment.Center
 		if info.Done[index] then
@@ -274,12 +279,10 @@ function ChallengesWindow.Render()
 	groupsView.Visible = group == nil
 	boardView.Visible = group ~= nil
 	if group then
-		window.Title.Text = `{group.Name} Challenges`
-		Window.setColor(window, if group.Soon then C.Disabled else colorOf(group))
+		Window.setTitle(window, `{group.Name} Challenges`)
 		renderBoard(group)
 	else
-		window.Title.Text = "Challenges"
-		Window.setColor(window, C.Gold)
+		Window.setTitle(window, "Challenges")
 		renderGroups()
 	end
 end
@@ -396,7 +399,7 @@ local function buildBoard(body: Frame)
 end
 
 function ChallengesWindow.Start()
-	window = Window.new("ChallengesWindow", "Challenges", Vector2.new(660, 560), C.Gold)
+	window = Window.new("ChallengesWindow", "Challenges", Vector2.new(680, 576))
 	window.OnOpen = function()
 		selected = nil
 		ChallengesWindow.Render()

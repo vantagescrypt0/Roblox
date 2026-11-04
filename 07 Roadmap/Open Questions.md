@@ -1,6 +1,10 @@
 # Open Questions
 
+## Publishing
+- [ ] Your Roblox account is set as under 18 by mistake: fix it with ID, or publish under a group owned by an account with your real age? Decide before going public (Claude's pick: try the ID fix, then a group)
+
 ## Warzone
+- [ ] Server sizes: how many players per server in the Warzone and the other places? (You want to discuss this. Set per place, in the place's settings.)
 - [x] Death penalty: drop a lootable head (see [[Warzone]])
 - [ ] Loot head: holds all or part of your loot? Who can open it first? How long until it despawns? *(Prototype: whole raid bag, anyone, 2 minutes)*
 - [x] PvP, PvE, or both? → Both, plus farming and chests
@@ -33,7 +37,8 @@
 ## Town & worlds
 - [ ] Anything you remember about the Skybounds spawn/hub to borrow? See [[Town & Worlds]]
 - [ ] More shopkeepers later (e.g. a Slayer for PvE gear next to the Slaying portal)?
-- [ ] Node items: price and how you get them (shop, rare drop, Warzone)?
+- [x] Node items: how you get them? → Slivers for what's in the worlds; loot crates and Warzone chests for the late game ([[Late-game Rule]])
+- [x] With late resources off the worlds, do the coin targets change? → Yes: sell prices raised and scaled around billions ([[Economy & Values]], 2026-11-02)
 
 ## Tutorial
 - [ ] Review the draft quest chain in [[Tutorial & Quests]]

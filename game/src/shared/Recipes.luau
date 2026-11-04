@@ -13,6 +13,9 @@
 --   The deep cave: Silver Ingots -> the Gem Bench; gems refined there (Amethyst + Silver,
 --   Sapphire + Gold) + handles of Birch / Spruce bound with metal plates + Rope -> the
 --   Amethyst and Sapphire tiers, at the Anvil
+--   The top: Refined Ruby + a Cherry Handle + Cane Rope (Rope + Sugarcane) -> Ruby tools;
+--   Starsteel Plates (Starstone + Iron + Gold, smelted, then hammered) + a Redwood Handle +
+--   Cane Rope -> Starsteel tools
 --   Slivers (Slivers.luau) -> island nodes
 -- Crystal (from the Warzone) is a side tier on the iron parts for now.
 -- Station says where a recipe is made: at the Crafting Table, in a Furnace, on an Anvil or
@@ -37,6 +40,7 @@ export type Recipe = {
 	Requires: { [string]: number }, -- skill id -> level
 	CraftingXP: number,
 	Station: Station,
+	Hand: boolean?, -- also made anywhere in the Bag's 2x2 grid, one input to a square
 }
 
 local Recipes: { Recipe } = {
@@ -48,6 +52,7 @@ local Recipes: { Recipe } = {
 		Requires = {},
 		CraftingXP = 75,
 		Station = "CraftingTable",
+		Hand = true,
 	},
 	{
 		Id = "Sticks",
@@ -56,6 +61,17 @@ local Recipes: { Recipe } = {
 		Inputs = { Planks = 2 },
 		Requires = {},
 		CraftingXP = 40,
+		Station = "CraftingTable",
+		Hand = true,
+	},
+	-- Eight planks, as in Minecraft: 27 slots to keep what you can't carry (ChestService)
+	{
+		Id = "Chest",
+		Output = "Chest",
+		Amount = 1,
+		Inputs = { Planks = 8 },
+		Requires = {},
+		CraftingXP = 150,
 		Station = "CraftingTable",
 	},
 	{
@@ -94,6 +110,7 @@ local Recipes: { Recipe } = {
 		Requires = {},
 		CraftingXP = 150,
 		Station = "CraftingTable",
+		Hand = true,
 	},
 	{
 		Id = "Rope",
@@ -103,6 +120,7 @@ local Recipes: { Recipe } = {
 		Requires = {},
 		CraftingXP = 450,
 		Station = "CraftingTable",
+		Hand = true,
 	},
 	{
 		Id = "Anvil",
@@ -131,6 +149,16 @@ local Recipes: { Recipe } = {
 		CraftingXP = 160,
 		Station = "Anvil",
 	},
+	-- One shield for now (your call, 2026-11-02); the amounts are Claude's picks
+	{
+		Id = "Shield",
+		Output = "Shield",
+		Amount = 1,
+		Inputs = { Planks = 8, IronIngot = 2 },
+		Requires = {},
+		CraftingXP = 420,
+		Station = "Anvil",
+	},
 	-- The deep cave's ores ([[Mining Phase Plan]])
 	{
 		Id = "SilverIngot",
@@ -138,7 +166,7 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { RawSilver = 1, Coal = 1 },
 		Requires = {},
-		CraftingXP = 210,
+		CraftingXP = 225,
 		Station = "Furnace",
 	},
 	{
@@ -147,7 +175,7 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { SilverIngot = 2 },
 		Requires = {},
-		CraftingXP = 420,
+		CraftingXP = 450,
 		Station = "Anvil",
 	},
 	{
@@ -156,7 +184,7 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { SilverIngot = 4, Planks = 4, Stone = 2 },
 		Requires = { Crafting = 15 },
-		CraftingXP = 1005,
+		CraftingXP = 1065,
 		Station = "CraftingTable",
 	},
 	{
@@ -165,7 +193,7 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { Amethyst = 2, SilverIngot = 1 },
 		Requires = {},
-		CraftingXP = 540,
+		CraftingXP = 585,
 		Station = "GemBench",
 	},
 	{
@@ -174,7 +202,7 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { Sapphire = 2, GoldIngot = 1 },
 		Requires = {},
-		CraftingXP = 555,
+		CraftingXP = 600,
 		Station = "GemBench",
 	},
 	-- Handles from the better woods, bound with metal
@@ -193,7 +221,71 @@ local Recipes: { Recipe } = {
 		Amount = 1,
 		Inputs = { SpruceWood = 1, SilverPlate = 1 },
 		Requires = {},
+		CraftingXP = 575,
+		Station = "Anvil",
+	},
+	-- The top two tiers: they need Sugarcane and Redwood as well as the deepest ores
+	{
+		Id = "GoldPlate",
+		Output = "GoldPlate",
+		Amount = 1,
+		Inputs = { GoldIngot = 2 },
+		Requires = {},
+		CraftingXP = 390,
+		Station = "Anvil",
+	},
+	{
+		Id = "RefinedRuby",
+		Output = "RefinedRuby",
+		Amount = 1,
+		Inputs = { Ruby = 2, SilverIngot = 1, GoldIngot = 1 },
+		Requires = {},
+		CraftingXP = 855,
+		Station = "GemBench",
+	},
+	{
+		Id = "CherryHandle",
+		Output = "CherryHandle",
+		Amount = 1,
+		Inputs = { CherryWood = 1, GoldPlate = 1 },
+		Requires = {},
 		CraftingXP = 550,
+		Station = "Anvil",
+	},
+	{
+		Id = "CaneRope",
+		Output = "CaneRope",
+		Amount = 1,
+		Inputs = { Rope = 1, Sugarcane = 4 },
+		Requires = {},
+		CraftingXP = 870,
+		Station = "CraftingTable",
+	},
+	{
+		Id = "StarsteelIngot",
+		Output = "StarsteelIngot",
+		Amount = 1,
+		Inputs = { Starstone = 1, IronIngot = 1, GoldIngot = 1 },
+		Requires = {},
+		CraftingXP = 570,
+		Station = "Furnace",
+	},
+	{
+		Id = "StarsteelPlate",
+		Output = "StarsteelPlate",
+		Amount = 1,
+		Inputs = { StarsteelIngot = 2 },
+		Requires = {},
+		CraftingXP = 1140,
+		Station = "Anvil",
+	},
+	{
+		Id = "RedwoodHandle",
+		Output = "RedwoodHandle",
+		Amount = 1,
+		Inputs = { Redwood = 1, StarsteelIngot = 1 },
+		Requires = {},
+		CraftingXP = 800,
 		Station = "Anvil",
 	},
 }
@@ -214,7 +306,7 @@ end
 -- Each tier's parts, where it's put together and the Crafting level it needs. Head pieces
 -- per tool kind are like Minecraft (3 for a pickaxe or axe, 2 for a hoe or sword, 1 for a
 -- shovel); Sticks as a handle come in the old Minecraft counts, other handles and a
--- binding are one each. Ruby and Starsteel join with Sugarcane (Cane Rope) and Redwood.
+-- binding are one each.
 type TierParts = { Head: string, Handle: string, Binding: string?, Station: Station, Crafting: number }
 local TIERS: { [string]: TierParts } = {
 	Wooden = { Head = "Planks", Handle = "Sticks", Station = "CraftingTable", Crafting = 0 },
@@ -222,6 +314,14 @@ local TIERS: { [string]: TierParts } = {
 	Iron = { Head = "IronPlate", Handle = "SturdyHandle", Binding = "Rope", Station = "Anvil", Crafting = 3 },
 	Amethyst = { Head = "RefinedAmethyst", Handle = "BirchHandle", Binding = "Rope", Station = "Anvil", Crafting = 15 },
 	Sapphire = { Head = "RefinedSapphire", Handle = "SpruceHandle", Binding = "Rope", Station = "Anvil", Crafting = 25 },
+	Ruby = { Head = "RefinedRuby", Handle = "CherryHandle", Binding = "CaneRope", Station = "Anvil", Crafting = 35 },
+	Starsteel = {
+		Head = "StarsteelPlate",
+		Handle = "RedwoodHandle",
+		Binding = "CaneRope",
+		Station = "Anvil",
+		Crafting = 45,
+	},
 	-- The Warzone's side tier
 	Crystal = { Head = "Crystal", Handle = "SturdyHandle", Binding = "Rope", Station = "Anvil", Crafting = 8 },
 }
@@ -237,23 +337,28 @@ local COST = {
 -- so the beginner quests always work; hoes follow Farming's pace.
 local KIND_SKILL = { Pickaxe = "Mining", Shovel = "Mining", Axe = "Woodcutting", Hoe = "Farming", Sword = "Combat" }
 local SKILL_LEVELS: { [string]: { [string]: number } } = {
-	Default = { Wooden = 0, Stone = 0, Iron = 4, Amethyst = 35, Sapphire = 50, Crystal = 8 },
-	Hoe = { Wooden = 0, Stone = 3, Iron = 6, Amethyst = 35, Sapphire = 50, Crystal = 12 },
+	Default = { Wooden = 0, Stone = 0, Iron = 4, Amethyst = 35, Sapphire = 50, Ruby = 65, Starsteel = 80, Crystal = 8 },
+	Hoe = { Wooden = 0, Stone = 3, Iron = 6, Amethyst = 35, Sapphire = 50, Ruby = 65, Starsteel = 80, Crystal = 12 },
 }
 -- Crafting XP for a tool: 1.5x the raw skill XP in each of its parts
 local PART_XP = {
 	Planks = 19,
 	Stone = 45,
 	IronPlate = 280,
-	RefinedAmethyst = 540,
-	RefinedSapphire = 555,
+	RefinedAmethyst = 585,
+	RefinedSapphire = 600,
+	RefinedRuby = 855,
+	StarsteelPlate = 1140,
 	Crystal = 540,
 	Sticks = 9,
 	SturdyHandle = 160,
 	BirchHandle = 380,
-	SpruceHandle = 550,
+	SpruceHandle = 575,
+	CherryHandle = 550,
+	RedwoodHandle = 800,
 	Twine = 150,
 	Rope = 450,
+	CaneRope = 870,
 }
 -- Combat XP only comes from the Warzone, so only Crystal swords (from the Warzone too) need it
 

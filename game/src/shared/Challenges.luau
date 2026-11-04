@@ -33,7 +33,7 @@ export type Resource = {
 	Milestones: { Milestone },
 }
 
-local ROMAN = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII" }
+local ROMAN = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X" }
 
 local List: { Resource } = {}
 local bySkill: { [string]: { Resource } } = {}
@@ -74,11 +74,26 @@ add("Farming", "Carrot", "Carrot", "Carrot", { 750, 3500, 35000 })
 add("Farming", "Potato", "Potato", "Potato", { 1000, 5000, 50000 })
 add("Farming", "Pumpkin", "Pumpkin", "Pumpkin", { 1250, 6500, 65000 }, "Axe to harvest")
 add("Farming", "Melon", "Melon", "Melon", { 1500, 7500, 75000 }, "Axe to harvest")
+add("Farming", "Sugarcane", "Sugarcane", "Sugarcane", { 1750, 8500, 85000 })
+add("Farming", "Strawberry", "Strawberry", "Strawberry", { 100, 500, 2500 }, "Your island only: Strawberry Seeds")
+add(
+	"Farming",
+	"Dragonfruit",
+	"Dragonfruit",
+	"Dragonfruit",
+	{ 100, 500, 2500 },
+	"Your island only: Dragonfruit Seeds, axe"
+)
+add("Farming", "Starfruit", "Starfruit", "Starfruit", { 100, 500, 2500 }, "Your island only: Starfruit Seeds")
 -- Woodcutting: logs (leaves don't count)
 add("Woodcutting", "Wood", "Oak", "Wood", { 250, 1250, 12500 })
 add("Woodcutting", "BirchWood", "Birch", "BirchWood", { 375, 1750, 17500 })
 add("Woodcutting", "SpruceWood", "Spruce", "SpruceWood", { 500, 2500, 25000 })
 add("Woodcutting", "CherryWood", "Cherry", "CherryWood", { 625, 3000, 30000 })
+add("Woodcutting", "MapleWood", "Maple", "MapleWood", { 750, 3500, 35000 })
+add("Woodcutting", "Redwood", "Redwood", "Redwood", { 875, 4000, 40000 })
+add("Woodcutting", "MangroveWood", "Mangrove", "MangroveWood", { 100, 500, 2500 }, "Your island only: Mangrove Sapling")
+add("Woodcutting", "Starwood", "Starwood", "Starwood", { 100, 500, 2500 }, "Your island only: Starwood Sapling")
 -- Mining: ore
 add("Mining", "CoalOre", "Coal", "CoalOre", { 250, 1250, 12500 }, "Any pickaxe")
 add("Mining", "IronOre", "Iron", "IronOre", { 375, 1750, 17500 }, "Stone Pickaxe or better")
@@ -86,8 +101,15 @@ add("Mining", "GoldOre", "Gold", "GoldOre", { 500, 2500, 25000 }, "Iron Pickaxe 
 add("Mining", "SilverOre", "Silver", "SilverOre", { 625, 3000, 30000 }, "Iron Pickaxe or better")
 add("Mining", "AmethystOre", "Amethyst", "AmethystOre", { 750, 3500, 35000 }, "Iron Pickaxe or better")
 add("Mining", "SapphireOre", "Sapphire", "SapphireOre", { 875, 4000, 40000 }, "Amethyst Pickaxe or better")
-add("Mining", "RubyOre", "Ruby", "RubyOre", { 1000, 5000, 50000 }, "Sapphire Pickaxe or better")
-add("Mining", "StarstoneOre", "Starstone", "StarstoneOre", { 1250, 6000, 60000 }, "Ruby Pickaxe or better")
+add("Mining", "RubyOre", "Ruby", "RubyOre", { 100, 500, 2500 }, "Your island only: Ruby Node, Sapphire Pickaxe")
+add(
+	"Mining",
+	"StarstoneOre",
+	"Starstone",
+	"StarstoneOre",
+	{ 100, 500, 2500 },
+	"Your island only: Starstone Node, Ruby Pickaxe"
+)
 
 local Challenges = {
 	List = table.freeze(List),

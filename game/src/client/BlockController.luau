@@ -34,6 +34,7 @@ local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Hotbar)
+local HeldController = require(script.Parent.HeldController)
 local Sfx = require(script.Parent.UI.Sfx)
 
 local player = Players.LocalPlayer :: Player
@@ -73,6 +74,7 @@ local DEBRIS_COLORS: { [string]: Color3 } = {
 	Furnace = Color3.fromRGB(110, 110, 110),
 	Anvil = Color3.fromRGB(62, 64, 72),
 	GemBench = Color3.fromRGB(162, 130, 78),
+	Chest = Color3.fromRGB(150, 104, 58),
 	SilverOre = Color3.fromRGB(196, 204, 214),
 	AmethystOre = Color3.fromRGB(168, 96, 230),
 	SapphireOre = Color3.fromRGB(60, 110, 235),
@@ -82,11 +84,19 @@ local DEBRIS_COLORS: { [string]: Color3 } = {
 	BirchWood = Color3.fromRGB(220, 216, 204),
 	SpruceWood = Color3.fromRGB(70, 50, 30),
 	CherryWood = Color3.fromRGB(92, 52, 56),
+	MapleWood = Color3.fromRGB(112, 84, 66),
+	Redwood = Color3.fromRGB(140, 62, 42),
+	MangroveWood = Color3.fromRGB(88, 66, 44),
+	Starwood = Color3.fromRGB(190, 204, 232),
 	Planks = Color3.fromRGB(162, 130, 78),
 	Leaves = Color3.fromRGB(58, 120, 38),
 	BirchLeaves = Color3.fromRGB(110, 160, 70),
 	SpruceLeaves = Color3.fromRGB(46, 84, 58),
 	CherryLeaves = Color3.fromRGB(238, 164, 196),
+	MapleLeaves = Color3.fromRGB(204, 58, 40),
+	RedwoodLeaves = Color3.fromRGB(44, 92, 56),
+	MangroveLeaves = Color3.fromRGB(70, 124, 62),
+	StarwoodLeaves = Color3.fromRGB(96, 196, 250),
 	RedWool = Color3.fromRGB(168, 42, 36),
 	WhiteWool = Color3.fromRGB(232, 234, 234),
 	StoneBricks = Color3.fromRGB(122, 122, 124),
@@ -217,6 +227,25 @@ local function aim(): Target?
 	}
 end
 
+-- The Warzone chest under the pointer, if it's in reach
+local function aimedLootChest(): string?
+	local folder = Workspace:FindFirstChild("LootChests")
+	local origin = rootPosition()
+	local ray = screenRay()
+	if not folder or not origin or not ray then
+		return nil
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { folder }
+	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 120, params)
+	if not hit or (hit.Position - origin).Magnitude > Blocks.Reach then
+		return nil
+	end
+	local id = hit.Instance:GetAttribute("ChestId")
+	return if type(id) == "string" then id else nil
+end
+
 -- The shop of the shopkeeper under the pointer, if we're close enough to talk
 local function aimedShop(): string?
 	local keepers = shopkeepers()
@@ -256,8 +285,13 @@ local function burst(position: Vector3, color: Color3)
 	end
 end
 
--- The arm swing played while mining (the same slash a tool click plays)
+-- The arm swing played while mining and when you click. What's in your hand swings itself; an empty
+-- hand plays a slash.
 local function swing()
+	HeldController.Swing()
+	if HeldController.Holding() then
+		return
+	end
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 	local animator = humanoid and humanoid:FindFirstChildOfClass("Animator")
@@ -303,7 +337,7 @@ local function useHeld(current: Target): boolean
 	local sound = ""
 	if (name == "Grass" or name == "Dirt") and tool and tool.Kind == "Hoe" then
 		remote, sound = Remotes.Till, "DirtHit"
-	elseif (name == "Grass" or name == "Dirt") and itemId == "Sapling" then
+	elseif (name == "Grass" or name == "Dirt") and itemId and Items[itemId].Tree then
 		remote, sound = Remotes.PlantSapling, "Leaves"
 	end
 	if remote then
@@ -315,11 +349,18 @@ local function useHeld(current: Target): boolean
 end
 
 -- Clicking something you use rather than break. Returns true if the click was used.
--- `secondary` is a right click or a tap; breakable stations (furnace, anvil, gem bench) only open on
+-- `secondary` is a right click or a tap; breakable stations (furnace, anvil, gem bench, chest) only open on
 -- those, so a left click can still break them.
 local function interact(secondary: boolean): boolean
 	local current = target
-	if current and current.Part.Name == "Farmland" then
+	local lootChest = if secondary then aimedLootChest() else nil
+	if lootChest then
+		Remotes.OpenLootChest:FireServer(lootChest)
+		return true
+	elseif current and secondary and current.Part.Name == "Chest" then
+		Remotes.OpenChest:FireServer(current.X, current.Y, current.Z)
+		return true
+	elseif current and current.Part.Name == "Farmland" then
 		Remotes.FarmClick:FireServer(current.X, current.Y, current.Z)
 		Sfx.play("Leaves", current.Part.Position)
 		return true
@@ -407,6 +448,8 @@ local function update(dt: number)
 		cooldown = 0.15
 	end
 end
+
+BlockController.Swing = swing
 
 function BlockController.Start(handlers: Callbacks)
 	callbacks = handlers

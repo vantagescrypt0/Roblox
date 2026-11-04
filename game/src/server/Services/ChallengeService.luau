@@ -10,7 +10,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Challenges = require(ReplicatedStorage.Shared.Challenges)
 local Gear = require(ReplicatedStorage.Shared.Gear)
-local Items = require(ReplicatedStorage.Shared.Items)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local StateService = require(script.Parent.StateService)
@@ -32,8 +31,10 @@ function ChallengeService.Count(player: Player, resourceId: string, amount: numb
 			data.Challenges.Reached[milestone.Id] = true
 			local reward = Gear.Rewards[milestone.Id]
 			if reward then
-				InventoryService.Add(player, reward, 1)
-				StateService.Notify(player, `Challenge complete! {Items[reward].Name} is in your Bag`, "level")
+				for _, itemId in reward do
+					InventoryService.Add(player, itemId, 1)
+				end
+				StateService.Notify(player, `Challenge complete! {milestone.Name} is in your Bag`, "level")
 			end
 		end
 	end
