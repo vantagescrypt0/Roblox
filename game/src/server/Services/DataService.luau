@@ -46,6 +46,9 @@ local TEMPLATE = {
 		Nodes = {} :: { [string]: string },
 		-- Storage chests: cell -> which way it faces and what's in it (ChestService)
 		Chests = {} :: { [string]: { Turn: number, Items: { { Slot: number, Item: string, Count: number } } } },
+		-- Decorations: cell -> which way it faces (quarter turns), and what a sign says (DecorService)
+		Turns = {} :: { [string]: number },
+		Signs = {} :: { [string]: string },
 	},
 	-- item id -> count: what's in Slots plus what's worn (InventoryService keeps them in step)
 	Items = {} :: { [string]: number },

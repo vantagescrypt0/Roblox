@@ -8,8 +8,10 @@
 --                top, with the SKYCORE logo (rainbow and clouds) over a big stone arch;
 --                the street runs through the arch into town
 --   Market street  eight striped market stalls either side of the street past the arch
---   Market Square  a big fountain in the middle of the town, ringed by four shops you walk
---                into, each with its shopkeeper behind the counter (Shops.luau, Util/Npc):
+--   Market Square  the Warzone's entrance in the middle of the town: a black, starry void pit
+--                with a stone frame round it like an End portal, and effects rising out of it
+--                (player level 10). Four shops you walk into ring the square, each with its
+--                shopkeeper behind the counter (Shops.luau, Util/Npc):
 --                Market (Merchant) and Lumber Yard (Lumberjack) on the west side, Builder
 --                and Miner on the east, each built in its own materials with its own
 --                goods outside
@@ -19,8 +21,6 @@
 --                (Farming, Woodcutting, Mining) and Slaying (boarded up until PvE), each
 --                with a banner in its colour
 -- Nothing here can be broken, and anyone who falls off is put back at the spawn point.
---                In the middle of it, the Warzone's entrance: a black void pit with stepped
---                brick sides, like the Skybounds spawn. Jump in (player level 10).
 --
 -- Grid: x runs west to east, z south to north; y = 0 is the ground, things stand on y = 1.
 
@@ -50,11 +50,11 @@ local StateService = require(script.Parent.StateService)
 local TravelService = require(script.Parent.TravelService)
 local DataService = require(script.Parent.DataService)
 
-local CENTER = Vector3.new(0, 200, 0) -- top of the ground at the fountain
+local CENTER = Vector3.new(0, 200, 0) -- top of the ground in the middle of the square
 local SIZE = Blocks.Size
 local FALL_LIMIT = 160
 local SEED = 2026
--- The Town island reaches well south of the fountain, so the mountain stands inside it
+-- The Town island reaches well south of the square, so the mountain stands inside it
 -- (hills ease down near an island's rim)
 local TOWN = { X = 0, Z = -20, R = 104 }
 local SPAWN = { X = 0, Z = -172, R = 17 } -- the spawn islet
@@ -68,8 +68,8 @@ local ARCH_HALF = 4 -- the arch through it is nine blocks wide
 local PORTAL_Z = 64 -- the row of world portals
 local PORTAL_PLAZA = { Z1 = 46, Z2 = 78, Half = 42 }
 local SQUARE = 26 -- half-width of the Market Square
-local PIT = { X = 0, Z = 55, R = 7 } -- the Warzone's entrance, in the Portal Plaza
-local PIT_BOTTOM = -3 -- the void's surface, just under the lowest step
+local PIT = { X = 0, Z = 0, Half = 4 } -- the Warzone's entrance, in the middle of Market Square
+local PIT_BOTTOM = -2 -- the void's surface, three blocks below the top of the frame
 local PIT_DEEP = 8 -- how far the shaft goes on under it, for anyone falling through
 local STREET_HALF = 16 -- the market street, kerb to kerb
 local LANE_END = 84 -- how far the lanes run east and west
@@ -331,13 +331,7 @@ local function bridge(z1: number, z2: number)
 			if nextZ then
 				-- Flowers along the top of the wall to the next pillar
 				local inward = Vector3.new(-math.sign(x), 0, 0)
-				Decor.FlowerBox(
-					decor,
-					top(x, 1, (z + nextZ) / 2) - inward * 0.45,
-					inward,
-					(nextZ - z - 1) * SIZE - 0.4,
-					FLOWER_COLORS
-				)
+				Decor.FlowerBox(decor, top(x, 1, (z + nextZ) / 2) - inward * 0.45, inward, (nextZ - z - 1) * SIZE - 0.4)
 			end
 		end
 	end
@@ -589,47 +583,8 @@ local function stall(info: StallInfo)
 	Decor.Lantern(decor, site:Pos(0, 2.9, 1.2), true, 14)
 end
 
--- The fountain in the middle of the square: a wide stone basin of water with a tall pillar
--- spraying from the top and spouts round the rim
-local function fountain()
-	local r = 5
-	for x = -r, r do
-		for z = -r, r do
-			local rim = math.abs(x) == r or math.abs(z) == r
-			if rim and not (math.abs(x) == r and math.abs(z) == r) then
-				set(x, 1, z, "StoneBricks")
-				if (x + z) % 4 == 0 then
-					Decor.Jet(decor, top(x, 1, z), 3)
-				end
-			elseif rim then
-				set(x, 1, z, "SmoothStone")
-				set(x, 2, z, "StoneBricks")
-				set(x, 3, z, "SmoothStone")
-				Decor.Jet(decor, top(x, 3, z), 4)
-			else
-				set(x, 0, z, "SmoothStone")
-			end
-		end
-	end
-	-- An inner basin raised on a pedestal, and the pillar
-	for x = -1, 1 do
-		for z = -1, 1 do
-			for y = 1, 2 do
-				set(x, y, z, "StoneBricks")
-			end
-		end
-	end
-	for y = 3, 6 do
-		set(0, y, 0, "StoneBricks")
-	end
-	set(0, 7, 0, "SmoothStone")
-	Decor.Water(
-		decor,
-		top(0, 0, 0) + Vector3.new(0, SIZE * 0.8, 0),
-		Vector2.new((2 * r - 1) * SIZE, (2 * r - 1) * SIZE),
-		SIZE * 0.8
-	)
-	Decor.Jet(decor, top(0, 7, 0), 14)
+-- Benches and flower beds round the pit in the middle of the square
+local function squareSeats()
 	for _, corner in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
 		Decor.Bench(decor, top(corner[1] * 9, 0, corner[2] * 9), Vector3.new(-corner[1], 0, -corner[2]).Unit, 3)
 	end
@@ -698,7 +653,7 @@ local function windows(site: Build.Site, hw: number, depth: number, height: numb
 		site:Fill(u, 2, 0, u + 1, height - 2, 0, "Glass")
 		-- A window box of flowers under it
 		local sill = site:Pos(u + 0.5, 1.5, 0) + site.Front * (SIZE / 2)
-		Decor.FlowerBox(decor, sill, site.Front, 2 * SIZE - 0.4, FLOWER_COLORS)
+		Decor.FlowerBox(decor, sill, site.Front, 2 * SIZE - 0.4)
 	end
 	for _, u in { -hw, hw } do
 		for v = 2, depth - 2, 4 do
@@ -950,7 +905,7 @@ local function cottage(x: number, z: number, front: Vector3, roof: string, pathT
 	building(site, hw, depth, height, style, 0, 2)
 	for _, u in { -2, 2 } do
 		site:Fill(u, 2, 0, u, 3, 0, "Glass")
-		Decor.FlowerBox(decor, site:Pos(u, 1.5, 0) + site.Front * (SIZE / 2), site.Front, SIZE - 0.4, FLOWER_COLORS)
+		Decor.FlowerBox(decor, site:Pos(u, 1.5, 0) + site.Front * (SIZE / 2), site.Front, SIZE - 0.4)
 	end
 	site:Fill(-hw, 2, 2, -hw, 3, 3, "Glass")
 	site:Fill(hw, 2, 2, hw, 3, 3, "Glass")
@@ -1163,81 +1118,195 @@ local function portals()
 	end
 end
 
--- The Warzone's entrance: a round hole in the plaza, stepping down in brick to a shaft lined
--- with obsidian. The void itself is a part (voidField)
+-- The Warzone's entrance: a square hole with a low stone frame round it, its corners left open
+-- like an End portal's, and walls going down to the void. The void itself is a part (voidField)
 local function voidPit()
-	local r = PIT.R
-	local reach = math.ceil(r) + 2
-	for x = PIT.X - reach, PIT.X + reach do
-		for z = PIT.Z - reach, PIT.Z + reach do
-			local d = math.sqrt((x - PIT.X) ^ 2 + (z - PIT.Z) ^ 2)
-			if d > r and d <= r + 1.5 then
-				set(x, 0, z, "Bricks")
-			elseif d <= r then
-				ctx.Carve(x, 0, z)
-				if d > r - 1.5 then
-					set(x, -1, z, "Bricks")
-				else
-					ctx.Carve(x, -1, z)
-					if d > r - 3 then
-						set(x, -2, z, "StoneBricks")
-						for y = -3, -PIT_DEEP, -1 do
-							set(x, y, z, "Obsidian")
-						end
-					else
-						for y = -2, -PIT_DEEP, -1 do
-							ctx.Carve(x, y, z)
-						end
-					end
+	local frame = PIT.Half + 1
+	-- The same aged stone every time for a cell: mostly clean, some cracked, a little moss
+	local function agedStone(x: number, y: number, z: number): string
+		local roll = (x * 7 + y * 5 + z * 13) % 9
+		return if roll == 0 then "MossyStoneBricks" elseif roll <= 2 then "CrackedStoneBricks" else "StoneBricks"
+	end
+	for dx = -frame - 1, frame + 1 do
+		for dz = -frame - 1, frame + 1 do
+			local x, z = PIT.X + dx, PIT.Z + dz
+			local ring = math.max(math.abs(dx), math.abs(dz))
+			if ring <= PIT.Half then
+				for y = 0, -PIT_DEEP, -1 do
+					ctx.Carve(x, y, z)
 				end
+			elseif ring == frame then
+				-- The corners stay ground, open like an End portal's
+				if math.abs(dx) ~= frame or math.abs(dz) ~= frame then
+					set(x, 1, z, agedStone(x, 1, z))
+				end
+				for y = 0, PIT_BOTTOM + 1, -1 do
+					set(x, y, z, agedStone(x, y, z))
+				end
+				for y = PIT_BOTTOM, -PIT_DEEP, -1 do
+					set(x, y, z, "Obsidian")
+				end
+			else
+				set(x, 0, z, "StoneBricks")
 			end
 		end
 	end
-	for _, side in { -1, 1 } do
-		Decor.LampPost(decor, top(PIT.X + side * 11, 0, PIT.Z - 7), 4, 18)
+	for _, spot in { { -11, -7 }, { 11, -7 }, { -11, 7 }, { 11, 7 } } do
+		local x, z = PIT.X + spot[1], PIT.Z + spot[2]
+		local outward = if spot[2] < 0 then -Vector3.zAxis else Vector3.zAxis
+		Decor.LampPost(decor, top(x, 0, z), 4, 18)
 		Decor.Banner(
 			decor,
-			top(PIT.X + side * 11, 4, PIT.Z - 7) - Vector3.new(0, 0.6, SIZE / 2 + 0.3),
-			-Vector3.zAxis,
+			top(x, 4, z) + outward * (SIZE / 2 + 0.3) - Vector3.new(0, 0.6, 0),
+			outward,
 			Color3.fromRGB(120, 36, 40)
 		)
 	end
-	Signs.Rustic(
-		decor,
-		top(PIT.X + 5, 0, PIT.Z - 10),
-		-Vector3.zAxis,
-		`THE WARZONE\nLEVEL {Leveling.WarzoneLevel}`,
-		Signs.Woods.Dark
-	)
+	-- A sign for each way in: from the arch and from the Portal Plaza
+	for _, side in { -1, 1 } do
+		Signs.Rustic(
+			decor,
+			top(PIT.X - side * 5, 0, PIT.Z + side * 10),
+			Vector3.zAxis * side,
+			`THE WARZONE\nLEVEL {Leveling.WarzoneLevel}`,
+			Signs.Woods.Dark
+		)
+	end
+end
+
+-- One kind of particle for the pit
+local function pitParticles(parent: BasePart, look: { [string]: any })
+	local particles = Instance.new("ParticleEmitter")
+	particles.Texture = look.Texture or "rbxasset://textures/particles/sparkles_main.dds"
+	particles.Color = look.Color
+	particles.LightEmission = look.Glow or 1
+	particles.Size = look.Size
+	particles.Transparency = look.Fade or NumberSequence.new(0)
+	particles.Lifetime = look.Lifetime
+	particles.Rate = look.Rate
+	particles.Speed = look.Speed
+	particles.SpreadAngle = look.Spread or Vector2.zero
+	particles.Drag = look.Drag or 0
+	particles.RotSpeed = look.Spin or NumberRange.new(0)
+	particles.EmissionDirection = Enum.NormalId.Top
+	particles.Parent = parent
+end
+
+-- An unseen part that holds effects, and that nothing touches
+local function pitHolder(name: string, size: Vector3, at: Vector3): Part
+	local holder = Decor.Part(decor, name, size, CFrame.new(at), Color3.new(0, 0, 0))
+	holder.Transparency = 1
+	holder.CanCollide = false
+	holder.CanTouch = false
+	holder.CastShadow = false
+	return holder
 end
 
 -- The void at the bottom of the pit: touching it takes you to the Warzone. Below level 10, or if
 -- the trip can't happen, you're put back at the rim.
 local function voidField()
-	-- A little wider than the opening, so its round edge hides under the blocky step
-	local across = (PIT.R - 3) * 2 * SIZE + 2 * SIZE
+	local across = (2 * PIT.Half + 1) * SIZE
+	local surface = top(PIT.X, PIT_BOTTOM, PIT.Z)
 	local void = Decor.Part(
 		decor,
 		"WarzoneVoid",
-		Vector3.new(0.4, across, across),
-		CFrame.new(top(PIT.X, PIT_BOTTOM, PIT.Z)) * CFrame.Angles(0, 0, math.rad(90)),
-		Color3.fromRGB(4, 3, 10)
+		Vector3.new(across + 0.2, 0.4, across + 0.2),
+		CFrame.new(surface),
+		Color3.fromRGB(10, 5, 26),
+		-- Neon, so the glow doesn't put a shiny spot on it
+		Enum.Material.Neon
 	)
-	void.Shape = Enum.PartType.Cylinder
 	void.CanCollide = false
 	void.CastShadow = false
-	local stars = Instance.new("ParticleEmitter")
-	stars.Texture = "rbxasset://textures/particles/sparkles_main.dds"
-	stars.Color = ColorSequence.new(Color3.fromRGB(200, 190, 255))
-	stars.LightEmission = 1
-	stars.Size = NumberSequence.new(0.35)
-	stars.Lifetime = NumberRange.new(2, 4)
-	stars.Rate = 14
-	stars.Speed = NumberRange.new(0)
-	stars.Parent = void
+
+	local purple = Color3.fromRGB(150, 80, 255)
+	local twinkle = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0),
+		NumberSequenceKeypoint.new(0.5, 0.8),
+		NumberSequenceKeypoint.new(1, 0),
+	})
+
+	-- Stars hanging in the pit at different depths, so they shift against each other as you
+	-- move, like an End portal's
+	local stars = pitHolder("VoidStars", Vector3.new(across, 2 * SIZE, across), surface + Vector3.yAxis * SIZE)
+	for _, look in
+		{
+			{ Color = Color3.fromRGB(225, 215, 255), Rate = 34 },
+			{ Color = purple, Rate = 24 },
+			{ Color = Color3.fromRGB(150, 240, 215), Rate = 8 },
+		}
+	do
+		pitParticles(stars, {
+			Color = ColorSequence.new(look.Color),
+			Size = twinkle,
+			Lifetime = NumberRange.new(2.5, 5),
+			Rate = look.Rate,
+			Speed = NumberRange.new(0.1, 0.5),
+			Spread = Vector2.new(180, 180),
+		})
+	end
+
+	-- What comes out of it: violet flames licking up, motes rising high over the square, a few
+	-- fast bright sparks, and slow purple smoke
+	pitParticles(void, {
+		Texture = "rbxasset://textures/particles/fire_main.dds",
+		Color = ColorSequence.new(Color3.fromRGB(190, 110, 255), Color3.fromRGB(70, 20, 170)),
+		Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 3.5), NumberSequenceKeypoint.new(1, 0.5) }),
+		Fade = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.5),
+			NumberSequenceKeypoint.new(0.6, 0.65),
+			NumberSequenceKeypoint.new(1, 1),
+		}),
+		Lifetime = NumberRange.new(1.2, 2),
+		Rate = 34,
+		Speed = NumberRange.new(7, 12),
+		Spread = Vector2.new(6, 6),
+		Spin = NumberRange.new(-30, 30),
+	})
+	pitParticles(void, {
+		Color = ColorSequence.new(purple, Color3.fromRGB(240, 140, 255)),
+		Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1.2), NumberSequenceKeypoint.new(1, 0) }),
+		Lifetime = NumberRange.new(3, 5),
+		Rate = 60,
+		Speed = NumberRange.new(10, 20),
+		Spread = Vector2.new(9, 9),
+		Drag = 0.25,
+	})
+	pitParticles(void, {
+		Color = ColorSequence.new(Color3.fromRGB(255, 240, 255)),
+		Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.7), NumberSequenceKeypoint.new(1, 0) }),
+		Lifetime = NumberRange.new(2, 3),
+		Rate = 14,
+		Speed = NumberRange.new(24, 36),
+		Spread = Vector2.new(5, 5),
+		Drag = 0.4,
+	})
+	pitParticles(void, {
+		Texture = "rbxasset://textures/particles/smoke_main.dds",
+		Color = ColorSequence.new(Color3.fromRGB(130, 70, 230), Color3.fromRGB(50, 18, 105)),
+		Glow = 0.5,
+		Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 5), NumberSequenceKeypoint.new(1, 13) }),
+		Fade = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.2, 0.8),
+			NumberSequenceKeypoint.new(1, 1),
+		}),
+		Lifetime = NumberRange.new(4, 6),
+		Rate = 6,
+		Speed = NumberRange.new(4, 7),
+		Spread = Vector2.new(12, 12),
+		Spin = NumberRange.new(-20, 20),
+	})
+
+	-- Its glow on the walls, from inside the shaft, so the brick still shows
+	local light = Instance.new("PointLight")
+	light.Color = purple
+	light.Range = 24
+	light.Brightness = 0.8
+	light.Parent = pitHolder("VoidGlow", Vector3.one, surface + Vector3.yAxis * SIZE)
 
 	local busy: { [Player]: boolean } = {}
-	local rim = top(PIT.X, 0, PIT.Z - PIT.R - 3) + Vector3.new(0, 4, 0)
+	local rim = top(PIT.X, 0, PIT.Z - PIT.Half - 4) + Vector3.new(0, 4, 0)
 	void.Touched:Connect(function(hit)
 		local character = hit:FindFirstAncestorOfClass("Model")
 		local player = character and Players:GetPlayerFromCharacter(character)
@@ -1370,7 +1439,6 @@ local function build()
 
 	-- The way in: spawn, the bridge, the plaza and the arch through the mountain
 	portals()
-	voidPit()
 	for _, x in { -8, -7, -6, 6, 7, 8 } do
 		for z = HOME_PORTAL_Z + 4, SPAWN_PLAZA.Z2 - 4 do
 			if rng:NextNumber() < 0.75 then
@@ -1396,7 +1464,8 @@ local function build()
 	for _, info in STALLS do
 		stall(info)
 	end
-	fountain()
+	squareSeats()
+	voidPit()
 	for _, info in SHOPS do
 		shop(info)
 	end

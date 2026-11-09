@@ -20,6 +20,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local DecorModels = require(script.Parent.DecorModels)
 local Pace = require(script.Parent.Pace)
 
 local SIZE = Blocks.Size
@@ -48,6 +49,9 @@ export type World = {
 	Inner: ((x: number, y: number, z: number) -> boolean)?,
 	-- Called after `set` changes a cell (islands use it to make water and lava flow)
 	Changed: ((x: number, y: number, z: number) -> ())?,
+	-- For decorations (DecorService): after a cell changes, and after one's part is drawn
+	DecorChanged: ((x: number, y: number, z: number) -> ())?,
+	Drawn: ((x: number, y: number, z: number, part: BasePart) -> ())?,
 }
 
 -- A merged piece and its cells. Part is nil for a piece buried where nobody can see it.
@@ -154,7 +158,33 @@ local function exposed(world: World, x: number, y: number, z: number): boolean
 	return false
 end
 
+-- A decoration: its model, turned and sitting where it does in the cell
+local function makeDecor(world: World, blockType: string, decor: any, x: number, y: number, z: number): BasePart
+	local key = BlockWorld.key(x, y, z)
+	local frame = CFrame.new(BlockWorld.position(world, x, y, z))
+		* CFrame.Angles(0, (world.Turns[key] or 0) * math.pi / 2, 0)
+		* CFrame.new(decor.Anchor)
+	local part = DecorModels.Place(world.Model, decor.Model, frame, {
+		Tint = decor.Tint,
+		Collide = decor.Solid,
+		Query = true,
+		Light = decor.Light,
+	})
+	part.Name = blockType
+	part:SetAttribute("X", x)
+	part:SetAttribute("Y", y)
+	part:SetAttribute("Z", z)
+	if world.Protected[key] then
+		part:SetAttribute("Locked", true)
+	end
+	return part
+end
+
 local function makePart(world: World, blockType: string, x: number, y: number, z: number): BasePart
+	local def = Blocks.Types[blockType]
+	if def and def.Decor then
+		return makeDecor(world, blockType, def.Decor, x, y, z)
+	end
 	local source = template(blockType)
 	local part: BasePart
 	local rotation = templateRotations[blockType]
@@ -223,7 +253,14 @@ local function refresh(world: World, x: number, y: number, z: number)
 		part = nil
 	end
 	if shouldShow and not part then
-		world.Parts[key] = makePart(world, blockType :: string, x, y, z)
+		local made = makePart(world, blockType :: string, x, y, z)
+		-- In the list first: what's drawn on a decoration looks its part up
+		world.Parts[key] = made
+		local def = Blocks.Types[blockType :: string]
+		local drawn = world.Drawn
+		if def and def.Decor and drawn then
+			drawn(x, y, z, made)
+		end
 	end
 end
 
@@ -409,6 +446,10 @@ function BlockWorld.set(world: World, x: number, y: number, z: number, blockType
 	local changed = world.Changed
 	if changed then
 		changed(x, y, z)
+	end
+	local decorChanged = world.DecorChanged
+	if decorChanged then
+		decorChanged(x, y, z)
 	end
 end
 

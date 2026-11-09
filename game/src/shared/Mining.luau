@@ -10,10 +10,16 @@ local Tools = require(script.Parent.Tools)
 
 local Mining = {}
 
--- Returns break time in seconds and whether the block will drop its item
-function Mining.BreakTime(blockType: string, heldItem: string?): (number, boolean)
+-- Can this block be broken here? `onIsland` is a player's own island
+function Mining.CanBreak(blockType: string, onIsland: boolean): boolean
 	local block = Blocks.Types[blockType]
-	if not block or not block.Breakable then
+	return block ~= nil and (block.Breakable or (onIsland and block.BreaksOnIsland == true))
+end
+
+-- Returns break time in seconds and whether the block will drop its item
+function Mining.BreakTime(blockType: string, heldItem: string?, onIsland: boolean?): (number, boolean)
+	local block = Blocks.Types[blockType]
+	if not block or not Mining.CanBreak(blockType, onIsland == true) then
 		return math.huge, false
 	end
 	local tool = if heldItem then Tools.ByItem[heldItem] else nil

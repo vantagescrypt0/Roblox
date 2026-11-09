@@ -23,6 +23,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Decorations = require(ReplicatedStorage.Shared.Decorations)
 local Gathering = require(ReplicatedStorage.Shared.Gathering)
 local Gear = require(ReplicatedStorage.Shared.Gear)
 local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
@@ -36,6 +37,7 @@ local Tools = require(ReplicatedStorage.Shared.Tools)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local ChallengeService = require(script.Parent.ChallengeService)
 local ChestService = require(script.Parent.ChestService)
+local DecorService = require(script.Parent.DecorService)
 local GearService = require(script.Parent.GearService)
 local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -157,7 +159,13 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	local world = area.World
 	local blockType = BlockWorld.get(world, cx, cy, cz)
 	local def = blockType and Blocks.Types[blockType]
-	if not blockType or not def or not def.Breakable or world.Protected[BlockWorld.key(cx, cy, cz)] then
+	local onIsland = not area.Public
+	if
+		not blockType
+		or not def
+		or not Mining.CanBreak(blockType, onIsland)
+		or world.Protected[BlockWorld.key(cx, cy, cz)]
+	then
 		return
 	end
 	if not inReach(player, world, cx, cy, cz) then
@@ -165,7 +173,7 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	end
 	-- How long this block takes with what they're holding (toughness vs tool power)
 	local held = HotbarService.GetHeldItem(player)
-	local breakTime, canHarvest = Mining.BreakTime(blockType, held)
+	local breakTime, canHarvest = Mining.BreakTime(blockType, held, onIsland)
 	-- A shared world's nodes are for everyone: one you can't collect doesn't break at all
 	-- (the client doesn't crack it, it just asks once so the player hears why)
 	if area.Public and not canHarvest then
@@ -191,6 +199,9 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	end
 	BlockWorld.set(world, cx, cy, cz, area.Remains(cx, cy, cz))
 	local fellLeaves, fellSapling = area.Broken(cx, cy, cz)
+	if def.Decor then
+		DecorService.Removed(player, world, cx, cy, cz)
+	end
 	if blockType == "Chest" then
 		ChestService.Broken(player, cx, cy, cz)
 	end
@@ -239,7 +250,16 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 	end
 end
 
-local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemId: unknown)
+local function onPlace(
+	player: Player,
+	x: unknown,
+	y: unknown,
+	z: unknown,
+	itemId: unknown,
+	aimX: unknown,
+	aimY: unknown,
+	aimZ: unknown
+)
 	if not isCell(x, y, z) or type(itemId) ~= "string" then
 		return
 	end
@@ -259,6 +279,11 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 		return
 	end
 	if world.Protected[cellKey] or IslandService.GetNode(player, cx, cy, cz) then
+		return
+	end
+	-- A decoration needs a really empty cell, and nothing goes where a tall one reaches
+	local isDecor = Decorations.ByItem[itemId :: string] ~= nil
+	if (isDecor and occupant) or DecorService.InTall(world, cx, cy, cz) then
 		return
 	end
 	if cy > MAX_HEIGHT or cy < -MAX_DEPTH then
@@ -286,6 +311,14 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 	if not pouring and BlockWorld.occupied(world, cx, cy, cz) then
 		return
 	end
+	local block: string? = item.Block
+	local turn: number? = nil
+	if isDecor then
+		block, turn = DecorService.Plan(player, world, itemId :: string, cx, cy, cz, aimX, aimY, aimZ)
+		if not block then
+			return
+		end
+	end
 	if item.Keep then
 		-- A Bottomless bucket: you need one, but it's never used up
 		if InventoryService.Count(player, itemId) < 1 then
@@ -306,8 +339,14 @@ local function onPlace(player: Player, x: unknown, y: unknown, z: unknown, itemI
 		StateService.Notify(player, `Placed your {item.Name}: mine it and it grows back`, "good")
 		QuestService.Record(player, "PlaceNode")
 	else
-		BlockWorld.set(world, cx, cy, cz, item.Block)
-		IslandService.RecordChange(player, cx, cy, cz, item.Block)
+		if turn then
+			DecorService.SetTurn(player, world, cx, cy, cz, turn)
+		end
+		BlockWorld.set(world, cx, cy, cz, block)
+		IslandService.RecordChange(player, cx, cy, cz, block)
+		if itemId == "Sign" then
+			Remotes.OpenSign:FireClient(player, cx, cy, cz, "")
+		end
 		if item.Block == "Chest" then
 			ChestService.Placed(player, world, cx, cy, cz)
 		end

@@ -12,11 +12,13 @@ local RunService = game:GetService("RunService")
 local Combat = require(ReplicatedStorage.Shared.Combat)
 local Foods = require(ReplicatedStorage.Shared.Foods)
 local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
+local Decorations = require(ReplicatedStorage.Shared.Decorations)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Knockback = require(ReplicatedStorage.Shared.Knockback)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local SwordArt = require(ReplicatedStorage.Shared.SwordArt)
 local Tools = require(ReplicatedStorage.Shared.Tools)
+local DecorModels = require(script.Parent.Parent.Util.DecorModels)
 local HeldModel = require(script.Parent.Parent.Util.HeldModel)
 local DataService = require(script.Parent.DataService)
 local MobService = require(script.Parent.MobService)
@@ -262,6 +264,20 @@ local function makeHandle(itemId: string): (BasePart, CFrame)
 		local back = rotation:VectorToObjectSpace(Vector3.zAxis)
 		local right = up:Cross(back).Unit
 		return handle, CFrame.fromMatrix(rotation:PointToObjectSpace(holdPoint), right, up, back)
+	end
+
+	local decor = item and item.Block and Decorations.ByBlock[item.Block]
+	if decor then
+		-- Its main mesh, shrunk to fit in a hand
+		local template = DecorModels.Get(decor.Model)
+		local handle = template:Clone()
+		handle:ClearAllChildren()
+		handle.Size = template.Size
+			* (BLOCK_IN_HAND * 1.3 / math.max(template.Size.X, template.Size.Y, template.Size.Z))
+		if decor.Tint then
+			handle.Color = decor.Tint
+		end
+		return handle, CFrame.new(0, 0, 0.2)
 	end
 
 	local blocks = ReplicatedStorage:FindFirstChild("Blocks")

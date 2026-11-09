@@ -33,6 +33,7 @@ from mathutils import Matrix, Vector
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import common  # noqa: E402
+import decor  # noqa: E402
 from lowpoly import Builder, export_fbx  # noqa: E402
 
 REPO_DIR = os.path.dirname(common.ART_DIR)
@@ -681,6 +682,8 @@ ICON_ONLY = {
     "Anvil": (anvil, -30, 22),
     "GemBench": (gem_bench, -30, 22),
     "Shield": (shield, -24, 12),
+    # The decorations the Builder sells (decor.py)
+    **decor.ICONS,
 }
 # Pictures for the HUD menu buttons. Not items: no model is exported, only an icon cell,
 # after every item and block so their cells never move. name -> (build, azimuth, elevation)

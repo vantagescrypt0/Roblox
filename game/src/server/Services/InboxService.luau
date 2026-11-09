@@ -27,6 +27,7 @@ local StateService = require(script.Parent.StateService)
 local MAX_MAIL = 100
 local CLAIM_COOLDOWN = 0.2
 local BAG_LETTER = "Your Bag"
+local OLD_NAME = "Skyblox"
 
 -- What a sender writes (InboxService.Send)
 export type Mail = { From: string, Text: string, Items: { [string]: number }?, Coins: number? }
@@ -194,6 +195,13 @@ function InboxService.Start()
 		end
 	end)
 	DataService.OnDataLoaded(function(player, data)
+		-- Letters saved before the game got its name still carry the old one
+		for _, letter in data.Inbox.Mail do
+			if letter.From == OLD_NAME then
+				letter.From = "Skycore"
+				DataService.MarkChanged(player)
+			end
+		end
 		if not data.Flags.StarterHoe then
 			data.Flags.StarterHoe = true
 			deliver(player, data, {

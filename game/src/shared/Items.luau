@@ -16,6 +16,7 @@
 -- The scale is billions (your call, 2026-11-02): see "The billion scale" in that note.
 
 local Blocks = require(script.Parent.Blocks)
+local Decorations = require(script.Parent.Decorations)
 local Gear = require(script.Parent.Gear)
 local Slivers = require(script.Parent.Slivers)
 local Tools = require(script.Parent.Tools)
@@ -52,7 +53,7 @@ local Items: { [string]: Item } = {
 	Redwood = { Name = "Redwood", Icon = "🌲", Value = 2030, SellPrice = 1015, Block = "Redwood" },
 	MangroveWood = { Name = "Mangrove Wood", Icon = "🪵", Value = 3000, SellPrice = 1500, Block = "MangroveWood" },
 	Starwood = { Name = "Starwood", Icon = "🌟", Value = 12000, SellPrice = 6000, Block = "Starwood" },
-	Planks = { Name = "Planks", Icon = "🟧", SellPrice = 0, Block = "Planks" },
+	Planks = { Name = "Planks", Icon = "🟧", SellPrice = 0, BuyPrice = 3, Block = "Planks" },
 	Stone = { Name = "Stone", Icon = "⛰️", Value = 4, SellPrice = 2, BuyPrice = 4, Block = "Stone" },
 	Furnace = { Name = "Furnace", Icon = "🔥", SellPrice = 0, Block = "Furnace" },
 	Chest = { Name = "Chest", Icon = "📦", SellPrice = 0, Block = "Chest" },
@@ -139,6 +140,9 @@ local Items: { [string]: Item } = {
 		BuyPrice = 6,
 		Block = "CrackedStoneBricks",
 	},
+	Obsidian = { Name = "Obsidian", Icon = "⬛", Value = 8, SellPrice = 0, BuyPrice = 12, Block = "Obsidian" },
+	DarkStone = { Name = "Dark Stone", Icon = "⬛", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "DarkStone" },
+	Runestone = { Name = "Runestone", Icon = "🟦", Value = 8, SellPrice = 0, BuyPrice = 12, Block = "Runestone" },
 	BarnPlanks = { Name = "Barn Planks", Icon = "🟥", Value = 2, SellPrice = 0, BuyPrice = 4, Block = "BarnPlanks" },
 	Thatch = { Name = "Thatch", Icon = "🟨", Value = 2, SellPrice = 0, BuyPrice = 4, Block = "Thatch" },
 	HayBale = { Name = "Hay Bale", Icon = "🌾", Value = 3, SellPrice = 0, BuyPrice = 5, Block = "HayBale" },
@@ -391,6 +395,17 @@ local Items: { [string]: Item } = {
 }
 -- The skill challenges' rewards (Gear.luau): pets, armor sets and trophies. They're earned,
 -- not bought, and the shops don't buy them; players can still trade them.
+for _, itemId in Decorations.Items do
+	local decor = Decorations.ByItem[itemId]
+	Items[itemId] = {
+		Name = decor.Name,
+		Icon = decor.Icon,
+		Value = math.ceil(decor.Price * 2 / 3),
+		SellPrice = 0,
+		BuyPrice = decor.Price,
+		Block = decor.Block,
+	}
+end
 for _, pet in Gear.PetList do
 	Items[pet.Item] = { Name = pet.Name, Icon = "🐾", Value = 7500 * pet.Tier, SellPrice = 0, Equip = "Pet" }
 end

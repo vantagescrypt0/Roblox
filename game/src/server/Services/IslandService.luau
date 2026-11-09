@@ -501,6 +501,9 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 			(world.Cells :: any)[cellKey] = if blockType == "Air" then nil else blockType
 		end
 	end
+	for cellKey, turn in data.Island.Turns do
+		world.Turns[cellKey] = turn
+	end
 	-- Nodes the player placed (they always come back too)
 	for cellKey, blockType in data.Island.Nodes do
 		if not generated.Protected[cellKey] and Blocks.Types[blockType] then

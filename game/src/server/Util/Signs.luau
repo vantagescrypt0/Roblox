@@ -14,6 +14,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Decor = require(script.Parent.Decor)
+local DecorModels = require(script.Parent.DecorModels)
 local Props = require(script.Parent.Props)
 
 local SIZE = Blocks.Size
@@ -89,10 +90,12 @@ local function inkFor(wood: Color3): Color3
 	return if value < 0.45 then CARVED else BURNT
 end
 
-local function plank(parent: Instance, size: Vector3, cframe: CFrame, color: Color3): Part
-	local p = Decor.Part(parent, "SignPlank", size, cframe, color, Enum.Material.WoodPlanks)
-	p.CanCollide = false
-	return p
+local function plank(parent: Instance, size: Vector3, cframe: CFrame, color: Color3): BasePart
+	return DecorModels.Place(parent, "SignPlank", cframe, {
+		Scale = size,
+		Tint = color,
+		Material = Enum.Material.WoodPlanks,
+	})
 end
 
 -- A rough board: a few planks one above another, each a little off and a slightly
@@ -118,15 +121,11 @@ local function roughBoard(
 	end
 	for _, side in { -1, 1 } do
 		for _, y in { -height / 2 + 0.3, height / 2 - 0.3 } do
-			Decor.Part(
-				parent,
-				"Nail",
-				Vector3.new(0.14, 0.14, 0.06),
-				centre * CFrame.new(side * (width / 2 - 0.35), y, -0.17),
-				IRON,
-				Enum.Material.Metal
-			).CanCollide =
-				false
+			DecorModels.Place(parent, "SignPlank", centre * CFrame.new(side * (width / 2 - 0.35), y, -0.17), {
+				Scale = Vector3.new(0.14, 0.14, 0.06),
+				Tint = IRON,
+				Material = Enum.Material.Metal,
+			})
 		end
 	end
 	local face = Decor.Part(
@@ -152,12 +151,17 @@ function Signs.Board(
 	front: Vector3,
 	width: number
 ): Part
+	local size = Vector3.new(width * SIZE, boardHeight(text), 0.4)
+	local frame = CFrame.lookAt(position, position + front)
+	plank(parent, size, frame, Color3.fromRGB(162, 130, 78)).CanCollide = true
+	-- The words go on a clear plain part, so they stay upright whichever way the mesh was made
 	local sign = Instance.new("Part")
 	sign.Name = name
-	sign.Size = Vector3.new(width * SIZE, boardHeight(text), 0.4)
-	sign.CFrame = CFrame.lookAt(position, position + front)
-	sign.Color = Color3.fromRGB(162, 130, 78)
-	sign.Material = Enum.Material.WoodPlanks
+	sign.Size = Vector3.new(size.X, size.Y, 0.05)
+	sign.CFrame = frame * CFrame.new(0, 0, -0.21)
+	sign.Transparency = 1
+	sign.CanCollide = false
+	sign.CanQuery = false
 	sign.Anchored = true
 	sign.Parent = parent
 	Signs.Label(sign, text, front)
@@ -228,15 +232,11 @@ function Signs.Hanging(
 	local drop = 1.2
 	local top = CFrame.lookAt(under, under + front)
 	for _, side in { -1, 1 } do
-		Decor.Part(
-			parent,
-			"Chain",
-			Vector3.new(0.12, drop, 0.12),
-			top * CFrame.new(side * (width / 2 - 0.6), -drop / 2, 0),
-			IRON,
-			Enum.Material.Metal
-		).CanCollide =
-			false
+		DecorModels.Place(parent, "SignPlank", top * CFrame.new(side * (width / 2 - 0.6), -drop / 2, 0), {
+			Scale = Vector3.new(0.12, drop, 0.12),
+			Tint = IRON,
+			Material = Enum.Material.Metal,
+		})
 	end
 	local swing = CFrame.Angles(0, 0, math.rad(rng:NextNumber(-3, 3)))
 	return roughBoard(parent, top * CFrame.new(0, -drop - height / 2, 0) * swing, width, height, color, text, rng)

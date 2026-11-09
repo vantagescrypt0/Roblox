@@ -28,6 +28,7 @@ local Workspace = game:GetService("Workspace")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Items = require(ReplicatedStorage.Shared.Items)
+local Decorations = require(ReplicatedStorage.Shared.Decorations)
 local Mining = require(ReplicatedStorage.Shared.Mining)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
@@ -63,6 +64,7 @@ local SLASH_ANIMATION = {
 	[Enum.HumanoidRigType.R15] = "rbxassetid://522635514",
 	[Enum.HumanoidRigType.R6] = "rbxassetid://129967478",
 }
+local SIGNS = { SignPost = true, WallSign = true }
 -- Liquid sources an empty Bucket can scoop up
 local SOURCES = { Water = true, Lava = true }
 local DEBRIS_COLORS: { [string]: Color3 } = {
@@ -185,7 +187,10 @@ local function aim(): Target?
 	params.FilterDescendantsInstances = { area }
 	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 120, params)
 	-- Look through water and lava, unless an empty Bucket is out to scoop them
-	local throughLiquid = Hotbar.SelectedItem() ~= "Bucket"
+	local held = Hotbar.SelectedItem()
+	local heldDecor = held and Decorations.ByItem[held]
+	-- ...and to put a lily pad on them
+	local throughLiquid = held ~= "Bucket" and not (heldDecor and heldDecor.Mount == "Water")
 	for _ = 1, 8 do
 		local def = hit and Blocks.Types[hit.Instance.Name]
 		if not hit or not throughLiquid or not def or not def.Liquid then
@@ -346,7 +351,7 @@ local function place()
 	if not ON_ISLAND or not item or not item.Block or not current then
 		return
 	end
-	Remotes.PlaceBlock:FireServer(current.PX, current.PY, current.PZ, itemId)
+	Remotes.PlaceBlock:FireServer(current.PX, current.PY, current.PZ, itemId, current.X, current.Y, current.Z)
 	local sound = if item.Block == "Water" then "Pour" elseif item.Block == "Lava" then "Sizzle" else "Place"
 	Sfx.play(sound, current.Part.Position)
 end
@@ -393,6 +398,9 @@ local function interact(secondary: boolean): boolean
 		return true
 	elseif current and current.Part.Name == "CraftingTable" then
 		callbacks.OpenCrafting("CraftingTable")
+		return true
+	elseif current and secondary and ON_ISLAND and SIGNS[current.Part.Name] then
+		Remotes.OpenSign:FireServer(current.X, current.Y, current.Z)
 		return true
 	elseif current and secondary and current.Part.Name == "Furnace" then
 		callbacks.OpenCrafting("Furnace")
@@ -481,7 +489,14 @@ local function update(dt: number)
 	end
 	local def = current and Blocks.Types[current.Part.Name]
 	local locked = current ~= nil and current.Part:GetAttribute("Locked") == true
-	if not breaking or not current or not def or not def.Breakable or locked or cooldown > 0 then
+	if
+		not breaking
+		or not current
+		or not def
+		or not Mining.CanBreak(current.Part.Name, ON_ISLAND)
+		or locked
+		or cooldown > 0
+	then
 		progress = 0
 		progressPart = nil
 		selection.SurfaceTransparency = 1
@@ -489,7 +504,7 @@ local function update(dt: number)
 		return
 	end
 	-- Toughness vs tool power; switching tools mid-way changes the speed
-	local breakTime, canHarvest = Mining.BreakTime(current.Part.Name, Hotbar.SelectedItem())
+	local breakTime, canHarvest = Mining.BreakTime(current.Part.Name, Hotbar.SelectedItem(), ON_ISLAND)
 	if not ON_ISLAND and not canHarvest then
 		-- A shared world's block only breaks with the tool that collects it: ask the server
 		-- once per press, so it can say which tool you need

@@ -2,6 +2,7 @@
 -- The order items are listed in on screen (Bag, trade window): blocks, materials, seeds,
 -- crops, Warzone materials, every tool, then the challenge rewards.
 
+local Decorations = require(script.Parent.Decorations)
 local Gear = require(script.Parent.Gear)
 local Tools = require(script.Parent.Tools)
 
@@ -53,6 +54,9 @@ local ORDER = {
 	"MushroomStem",
 	"Mud",
 	"DuskGrass",
+	"Obsidian",
+	"DarkStone",
+	"Runestone",
 	"Bucket",
 	"WaterBucket",
 	"LavaBucket",
@@ -142,6 +146,9 @@ local ORDER = {
 	"Scrap",
 	"Crystal",
 }
+for _, itemId in Decorations.Items do
+	table.insert(ORDER, itemId)
+end
 for _, tool in Tools.List do
 	table.insert(ORDER, tool.Item)
 end

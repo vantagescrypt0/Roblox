@@ -7,6 +7,8 @@
 --            nobody sells their iron by accident)
 -- Seeds need the crop's Farming level (Crops.luau) to buy.
 
+local Decorations = require(script.Parent.Decorations)
+
 export type Shop = {
 	Id: string,
 	Name: string,
@@ -104,13 +106,14 @@ local List: { Shop } = {
 	{
 		Id = "Builder",
 		Name = "Builder",
-		Tagline = "Sells every block, water and lava",
+		Tagline = "Sells blocks, decorations, water and lava",
 		Buys = {},
 		Sells = {
 			"WaterBucket",
 			"LavaBucket",
 			"Grass",
 			"Dirt",
+			"Planks",
 			"Stone",
 			"Cobblestone",
 			"StoneBricks",
@@ -147,6 +150,9 @@ local List: { Shop } = {
 			"MushroomStem",
 			"Mud",
 			"DuskGrass",
+			"Obsidian",
+			"DarkStone",
+			"Runestone",
 			"BottomlessWaterBucket",
 			"BottomlessLavaBucket",
 		},
@@ -161,6 +167,15 @@ local List: { Shop } = {
 		},
 	},
 }
+
+-- The Builder sells every decoration too
+for _, shop in List do
+	if shop.Id == "Builder" then
+		for _, itemId in Decorations.Items do
+			table.insert(shop.Sells, itemId)
+		end
+	end
+end
 
 local byId: { [string]: Shop } = {}
 for _, shop in List do

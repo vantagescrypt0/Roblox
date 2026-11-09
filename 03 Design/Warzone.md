@@ -61,6 +61,8 @@ Inspired by the Skybounds Warzone — see [[Skybounds (Minecraft)]].
 - **Unlock:** you need **player level 10** to enter (like Skybounds). Player level resets each season, see [[Skills & Levels]], reached through [[Tutorial & Quests]]. This also keeps brand-new players out of PvP.
 - **Level gates apply:** mobs need a Combat level and crops need a Farming level. See [[Skills & Levels]].
 
+> **2026-11-04: the entrance moved.** The void pit is now in the middle of Town's Market Square, where the fountain was, with a stone frame like an End portal and effects rising out of it. See [[Town & Worlds]].
+>
 > **2026-11-02: the entrance is open.** The Warzone is its own place now. You jump into the black void pit in Town's Portal Plaza (player level 10, or it puts you back at the rim). Extract or die and you go back to Town. The arena is still the greybox prototype. Chests can hold Loot Crates and the late game's nodes, saplings and seeds ([[Late-game Rule]]); resource nodes placed in the Warzone itself wait until you ask for them.
 >
 > **2026-10-15:** The island portal now goes to **Town**. The Warzone will be reached from Town once you're ready to add it; its code is built but switched off (`WarzoneService`, `MobService` aren't started in `Main.server.luau`).

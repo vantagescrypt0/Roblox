@@ -40,8 +40,8 @@ Config.GlowImage = "rbxassetid://72340108615521"
 
 Config.ItemIconSheets = table.freeze({
 	"rbxassetid://93743291124490",
-	"rbxassetid://91893650663343",
-	"rbxassetid://137024573167107",
+	"rbxassetid://138476835803414",
+	"rbxassetid://95151359504155",
 })
 
 -- Who can fly (double-tap Space, see client/FlightController): user ids. Only the game's

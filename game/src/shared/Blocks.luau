@@ -16,6 +16,7 @@
 -- Water and lava are blocks too (Liquids.luau): nobody can break them, and they're drawn
 -- see-through and lower than a full block.
 
+local Decorations = require(script.Parent.Decorations)
 local Gear = require(script.Parent.Gear)
 local Liquids = require(script.Parent.Liquids)
 
@@ -27,6 +28,8 @@ export type Block = {
 	RequiresTool: boolean?,
 	MinTier: number?,
 	Breakable: boolean,
+	BreaksOnIsland: boolean?, -- not Breakable, except on a player's own island
+	Decor: Decorations.Decoration?, -- drawn as this model, not a cube
 	SeeThrough: boolean?, -- blocks behind it still get drawn (glass, water, ice)
 	NodeRespawn: number?, -- seconds a mined node takes to grow back
 	Ore: boolean?, -- a mined node of it leaves an Empty Ore block while it grows back
@@ -45,6 +48,14 @@ local function stone(name: string, drop: string?): Block
 		MinTier = 1,
 		Breakable = true,
 	}
+end
+
+-- Stone that can only be broken on a player's own island
+local function islandStone(name: string, drop: string): Block
+	local block = stone(name, drop)
+	block.Breakable = false
+	block.BreaksOnIsland = true
+	return block
 end
 
 -- Leaves: break in a moment, drop nothing (oak leaves sometimes give a sapling, see
@@ -268,9 +279,11 @@ local Blocks: { [string]: Block } = {
 	-- Special blocks the game places; players can't break them
 	CraftingTable = { Name = "Crafting Table", Drop = nil, Hardness = 2.5, Breakable = false },
 	Farmland = { Name = "Farmland", Drop = nil, Hardness = 0.6, Breakable = false },
-	Obsidian = { Name = "Obsidian", Drop = nil, Hardness = 50, Breakable = false },
+	-- These three stay solid out in the worlds, but the Builder sells them, so the ones on your
+	-- own island break like stone (the portals' are protected, as always)
+	Obsidian = islandStone("Obsidian", "Obsidian"),
 	-- Carved stone the portals are built from
-	Runestone = { Name = "Runestone", Drop = nil, Hardness = 50, Breakable = false },
+	Runestone = islandStone("Runestone", "Runestone"),
 
 	-- Building blocks (the Builder sells the ones with a Drop)
 	StoneBricks = stone("Stone Bricks", "StoneBricks"),
@@ -295,7 +308,7 @@ local Blocks: { [string]: Block } = {
 	Barrel = { Name = "Barrel", Drop = "Barrel", Hardness = 2, Tool = "Axe", Breakable = true },
 	Bookshelf = { Name = "Bookshelf", Drop = "Bookshelf", Hardness = 1.5, Tool = "Axe", Breakable = true },
 	-- The deep rock behind a cave's walls: as far as anyone can dig
-	DarkStone = { Name = "Dark Stone", Drop = nil, Hardness = 50, Breakable = false },
+	DarkStone = islandStone("Dark Stone", "DarkStone"),
 	-- Zone scenery: snowy pines, autumn trees, pumpkin and melon patches, mesa cliffs
 	Snow = { Name = "Snow", Drop = "Snow", Hardness = 0.5, Tool = "Shovel", Breakable = true },
 	SnowyGrass = { Name = "Snowy Grass", Drop = "SnowyGrass", Hardness = 0.6, Tool = "Shovel", Breakable = true },
@@ -345,6 +358,19 @@ end
 -- look is built in code (Util/TrophyModels), so they're see-through to the blocks round them.
 for _, trophy in Gear.TrophyList do
 	Blocks[trophy.Block] = { Name = trophy.Name, Drop = trophy.Item, Hardness = 1, Breakable = true, SeeThrough = true }
+end
+
+-- Decorations (Decorations.luau) place, break and save as blocks, but they're drawn as models
+for block, decor in Decorations.ByBlock do
+	Blocks[block] = {
+		Name = decor.Name,
+		Drop = decor.Item,
+		Hardness = decor.Hardness,
+		Tool = decor.Tool,
+		Breakable = true,
+		SeeThrough = true,
+		Decor = decor,
+	}
 end
 
 local Size = 3

@@ -33,6 +33,17 @@ To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_til
 ```
 `preview` renders at half size into `renders/store_*.png`, about 20 s a picture. Upload on Creator Hub: Skycore → Places → start place → Icon / Thumbnails (the Thumbnails page has a Home Page tab and an Experience Detail Page tab, each with its own list).
 
+## Decorations (what the Builder sells, and Town and the worlds use)
+`scripts/decor.py` models the lamp posts, lanterns, benches, fences, signs, banners, awnings, flowers, plants, minecart and rails, in the same sizes the old part-built pieces had. It writes `export/Decor.fbx`, `export/Decor.json` and `game/src/shared/DecorArt.luau` (each mesh's middle and size), and `scripts/items3d.py` imports its `ICONS` for the icon sheets.
+
+```
+"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/decor.py
+```
+
+An object named `Decor_<Name>` is a model's main mesh, and `Decor_<Name>__Glow`, `__Tint` or `__Fronds` go with it. In `game/assets-replicated/DecorModels.rbxm` each is a MeshPart named `<Name>`, sitting around the middle of the world where its model's origin is, with its others as children named `Glow`, `Tint`, `Fronds`. A `Tint` mesh and the coloured-shape models (`SignPlank`, `AwningStripe`, `LilyBloom`) have no texture, so the game can colour them.
+
+Studio's MCP can do the upload with no screen control: `open_cloud_invoke` POST `/assets/v1/assets` with the FBX (its folder must be in Assistant Settings -> MCP Permissions -> approved upload directories), `insert_asset` to bring the Model in, then `SerializationService:SerializeInstancesAsync` to write the `.rbxm`.
+
 ## Items (tools, crops, seeds, ores, loot) and their icons
 `scripts/items3d.py` builds every item as a low-poly 3D model with the shared palette (`lowpoly.py`): tapered wooden handles with leather grips, curved pickaxe heads, wedge axe blades, diamond-section sword blades, seed pouches tagged by crop, crops, ore lumps, an ingot, a crystal, a scrap gear, and buckets (empty, water, lava; the Bottomless ones have gold bands). Tiers are materials: Wooden (light wood, leather lashing), Stone (rough chipped stone), Iron (steel, metal collar), Crystal (cyan, gold fittings). Tools are modelled upright and tilted 45° so the handle is bottom-left and the head top-right.
 

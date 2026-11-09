@@ -16,7 +16,9 @@ local NAMES = {
 	"Expand", -- client -> server: buy the next island tier
 	"IslandRebuilt", -- server -> client: your island was upgraded to this level (for effects)
 	"BreakBlock", -- client -> server: break the block at grid x, y, z (your island, or the world you're in)
-	"PlaceBlock", -- client -> server: place an item's block at grid x, y, z
+	"PlaceBlock", -- client -> server: place an item's block at grid x, y, z, aimed at the block at x, y, z
+	"OpenSign", -- both ways: client asks to open its sign at grid x, y, z; server opens it (and the words)
+	"EditSign", -- client -> server: write these words on your sign at grid x, y, z
 	"MoveStack", -- client -> server: move items between inventory slots (from, to, amount)
 	"QuickMove", -- client -> server: send a stack between the hotbar and the rest (slot)
 	"SelectSlot", -- client -> server: hotbar slot 1-9 is now selected
@@ -82,6 +84,8 @@ return {
 	IslandRebuilt = folder:WaitForChild("IslandRebuilt") :: RemoteEvent,
 	BreakBlock = folder:WaitForChild("BreakBlock") :: RemoteEvent,
 	PlaceBlock = folder:WaitForChild("PlaceBlock") :: RemoteEvent,
+	OpenSign = folder:WaitForChild("OpenSign") :: RemoteEvent,
+	EditSign = folder:WaitForChild("EditSign") :: RemoteEvent,
 	MoveStack = folder:WaitForChild("MoveStack") :: RemoteEvent,
 	QuickMove = folder:WaitForChild("QuickMove") :: RemoteEvent,
 	SelectSlot = folder:WaitForChild("SelectSlot") :: RemoteEvent,
