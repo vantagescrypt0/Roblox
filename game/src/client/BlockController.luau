@@ -37,6 +37,7 @@ local Skydrops = require(ReplicatedStorage.Shared.Skydrops)
 local Tools = require(ReplicatedStorage.Shared.Tools)
 local Hotbar = require(script.Parent.Hotbar)
 local HeldController = require(script.Parent.HeldController)
+local KitPowerController = require(script.Parent.KitPowerController)
 local Sfx = require(script.Parent.UI.Sfx)
 
 local player = Players.LocalPlayer :: Player
@@ -140,6 +141,7 @@ local progress = 0
 local progressPart: BasePart? = nil
 local cooldown = 0
 local rightDown: Vector2? = nil
+local rightDownAt = 0
 local touchStart: { Position: Vector2, Time: number }? = nil
 local swingTimer = 0
 local swingTrack: AnimationTrack? = nil
@@ -568,6 +570,7 @@ function BlockController.Start(handlers: Callbacks)
 			end
 		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
 			rightDown = UserInputService:GetMouseLocation()
+			rightDownAt = os.clock()
 		elseif input.UserInputType == Enum.UserInputType.Touch then
 			local position = Vector2.new(input.Position.X, input.Position.Y)
 			pointer = position
@@ -593,11 +596,15 @@ function BlockController.Start(handlers: Callbacks)
 		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
 			local start = rightDown
 			rightDown = nil
-			-- A right click (not a camera drag) uses or places
+			-- A right click (not a camera drag) uses or places. Quick, with a kit's sword, it fires the sword's special;
+			-- held down, it's your shield.
 			if start and (UserInputService:GetMouseLocation() - start).Magnitude <= CLICK_SLOP then
 				target = aim()
 				if not interact(true) then
-					place()
+					local quick = os.clock() - rightDownAt <= KitPowerController.QuickClick
+					if not (quick and KitPowerController.RightClick()) then
+						place()
+					end
 				end
 			end
 		elseif input.UserInputType == Enum.UserInputType.Touch then

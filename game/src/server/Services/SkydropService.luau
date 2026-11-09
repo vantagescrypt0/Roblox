@@ -18,6 +18,7 @@ local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Skydrops = require(ReplicatedStorage.Shared.Skydrops)
 local WarzoneLoot = require(ReplicatedStorage.Shared.WarzoneLoot)
 local Warzone = require(script.Parent.Parent.Worlds.Warzone)
+local AwardService = require(script.Parent.AwardService)
 local ChestService = require(script.Parent.ChestService)
 local LootChestService = require(script.Parent.LootChestService)
 local QuestService = require(script.Parent.QuestService)
@@ -266,6 +267,7 @@ local function open(entry: Sealed, player: Player)
 		sparkles.Rate = 150
 	end
 	QuestService.Record(player, "BreakLegendary")
+	AwardService.Give(player, "Legendary")
 	for _, other in Players:GetPlayers() do
 		local character = other.Character
 		local root = character and character:FindFirstChild("HumanoidRootPart")

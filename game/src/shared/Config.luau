@@ -38,6 +38,9 @@ Config.VitalsSheet = "rbxassetid://95020115199214"
 -- A soft round light, white so it can be tinted (art/scripts/slot_icons.ps1)
 Config.GlowImage = "rbxassetid://72340108615521"
 
+-- Light rays, white so they can be tinted, behind a Loot Crate as it bursts open (art/scripts/crate_rays.py)
+Config.RaysImage = "rbxassetid://70676766743804"
+
 Config.ItemIconSheets = table.freeze({
 	"rbxassetid://93743291124490",
 	"rbxassetid://138476835803414",

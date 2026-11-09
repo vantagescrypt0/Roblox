@@ -1,13 +1,13 @@
 --!strict
 -- The Challenges board's groups. Each group is its own chain of numbered challenges (done
 -- one at a time, in order, like the Skybounds tutorial screen): Beginner (Quests.luau, the
--- tutorial the quest tracker starts on), the three Grinding Worlds, Crafting, your Island
--- and the Warzone, plus Slaying, which isn't open yet.
+-- tutorial the quest tracker starts on), the three Grinding Worlds, Crafting, your Island,
+-- Slaying and the Warzone.
 --
 -- Events are the same as in Quests.luau ("Mine:CoalOre", "Chop", "Craft:IronPickaxe"...),
 -- plus "MineOre" (any ore), "CraftTool:<tier>" (any tool of a tier), "Refine" (anything at
 -- the Gem Bench), "CraftNode" (a node from slivers), "PlaceNode",
--- "PlantSapling", "PlaceTrophy" and "Kill" (a monster). In the Warzone: "PvPHit", "PvPCrit",
+-- "PlantSapling", "PlaceTrophy", "Kill" (any monster) and "Kill:<monster>". In the Warzone: "PvPHit", "PvPCrit",
 -- "PvPKill", "BlockHit" (a hit your shield stopped), "OpenChest", "LootBody" (someone else's),
 -- "OpenSkydrop" and "BreakLegendary" (the last crack on one). Reach challenges check a
 -- value: "ReachLevel", "Reach:<skill>" and "ReachIsland" (the island's tier).
@@ -239,17 +239,44 @@ local List: { Board } = {
 		Name = "Slaying",
 		Icon = "IronSword",
 		Color = "Red",
-		Soon = "Not open yet",
 		Challenges = {
 			c("Slaying:Kill10", "Defeat 10 monsters", "Kill", 10, 500, 750),
 			c("Slaying:Lv5", "Reach Combat level 5", "Reach:Combat", 5, 1000, 1250),
+			c("Slaying:Slime100", "Defeat 100 Slimes", "Kill:Slime", 100, 1500, 1500),
+			c("Slaying:Lv10", "Reach Combat level 10", "Reach:Combat", 10, 2000, 2000),
 			c("Slaying:Kill100", "Defeat 100 monsters", "Kill", 100, 3000, 2500),
-			c("Slaying:Lv15", "Reach Combat level 15", "Reach:Combat", 15, 6000, 4000),
+			c("Slaying:Thornling100", "Defeat 100 Thornlings in the Bramble Woods", "Kill:Thornling", 100, 4000, 3000),
+			c("Slaying:Lv15", "Reach Combat level 15", "Reach:Combat", 15, 6000, 4000, { SlimeSpawner = 1 }),
+			c("Slaying:Lv20", "Reach Combat level 20", "Reach:Combat", 20, 8000, 4500),
+			c("Slaying:Boar100", "Defeat 100 Boar Brutes in Rust Canyon", "Kill:BoarBrute", 100, 10000, 5000),
 			c("Slaying:Kill1000", "Defeat 1,000 monsters", "Kill", 1000, 15000, 7000),
 			c("Slaying:Lv30", "Reach Combat level 30", "Reach:Combat", 30, 25000, 9000),
+			c("Slaying:Bones100", "Defeat 100 Rattlebones on the Bone Flats", "Kill:Rattlebones", 100, 30000, 10000),
+			c("Slaying:Lv40", "Reach Combat level 40", "Reach:Combat", 40, 40000, 11000),
+			c("Slaying:Spore100", "Defeat 100 Sporelings in the Sporewood Bog", "Kill:Sporeling", 100, 50000, 12000),
 			c("Slaying:Kill5000", "Defeat 5,000 monsters", "Kill", 5000, 60000, 13000),
+			c("Slaying:Lv55", "Reach Combat level 55", "Reach:Combat", 55, 80000, 14000),
+			c("Slaying:Yeti100", "Defeat 100 Frost Yetis on Frostfang Peaks", "Kill:FrostYeti", 100, 100000, 15000),
 			c("Slaying:Lv60", "Reach Combat level 60", "Reach:Combat", 60, 100000, 16000),
+			c("Slaying:Kill25000", "Defeat 25,000 monsters", "Kill", 25000, 150000, 20000),
+			c("Slaying:Lv80", "Reach Combat level 80", "Reach:Combat", 80, 150000, 20000),
 			c("Slaying:Lv99", "Reach Combat level 99", "Reach:Combat", 99, 300000, 25000),
+			c(
+				"Slaying:Cinderkin25",
+				"Defeat 25 Cinderkin (from a spawner on your island)",
+				"Kill:Cinderkin",
+				25,
+				400000,
+				26000
+			),
+			c(
+				"Slaying:Voidling25",
+				"Defeat 25 Voidlings (from a spawner on your island)",
+				"Kill:Voidling",
+				25,
+				600000,
+				28000
+			),
 		},
 	},
 	{

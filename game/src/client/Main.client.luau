@@ -18,6 +18,7 @@ local SwimController = require(script.Parent.SwimController)
 local HeldController = require(script.Parent.HeldController)
 local Hotbar = require(script.Parent.Hotbar)
 local Hud = require(script.Parent.Hud)
+local MobController = require(script.Parent.MobController)
 local NpcController = require(script.Parent.NpcController)
 local PromptUI = require(script.Parent.PromptUI)
 local QuestTracker = require(script.Parent.QuestTracker)
@@ -25,10 +26,15 @@ local BagWindow = require(script.Parent.Windows.BagWindow)
 local ChallengesWindow = require(script.Parent.Windows.ChallengesWindow)
 local ChestWindow = require(script.Parent.Windows.ChestWindow)
 local SignWindow = require(script.Parent.Windows.SignWindow)
+local SettingsWindow = require(script.Parent.Windows.SettingsWindow)
+local VisitWindow = require(script.Parent.Windows.VisitWindow)
 local CraftingWindow = require(script.Parent.Windows.CraftingWindow)
+local CrateOpening = require(script.Parent.CrateOpening)
 local CrateWindow = require(script.Parent.Windows.CrateWindow)
 local InboxWindow = require(script.Parent.Windows.InboxWindow)
 local IslandWindow = require(script.Parent.Windows.IslandWindow)
+local KitPowerController = require(script.Parent.KitPowerController)
+local KitsWindow = require(script.Parent.Windows.KitsWindow)
 local ShopWindow = require(script.Parent.Windows.ShopWindow)
 local SkillsWindow = require(script.Parent.Windows.SkillsWindow)
 local TradeWindow = require(script.Parent.Windows.TradeWindow)
@@ -53,8 +59,12 @@ TradeWindow.Start()
 SkillsWindow.Start()
 InboxWindow.Start()
 CrateWindow.Start()
+KitsWindow.Start()
+CrateOpening.Start(CrateWindow.Count, KitsWindow.CrateOnSale, KitsWindow.OpenCrate)
 ChestWindow.Start()
 SignWindow.Start()
+VisitWindow.Start()
+SettingsWindow.Start()
 ChallengesWindow.Start()
 QuestTracker.Start(ChallengesWindow.OpenTracked)
 PromptUI.Start()
@@ -63,6 +73,15 @@ Hud.Start({
 	OnSkills = SkillsWindow.Toggle,
 	OnChallenges = ChallengesWindow.Toggle,
 	OnInbox = InboxWindow.Toggle,
+	OnSettings = SettingsWindow.Toggle,
+	OnKits = KitsWindow.Toggle,
+	OnVisit = function()
+		if Places.Current() ~= "Island" then
+			Hud.Toast("Visit islands from your own island", "info")
+		else
+			VisitWindow.Toggle()
+		end
+	end,
 	OnIsland = function()
 		if Places.Current() ~= "Island" then
 			Hud.Toast("Your island is back through the portal", "info")
@@ -80,16 +99,24 @@ BlockController.Start({
 	OpenShop = ShopWindow.Open,
 })
 NpcController.Start()
+MobController.Start()
 AmbientController.Start()
 FlightController.Start()
 SwimController.Start()
 HeldController.Start()
+KitPowerController.Start()
 CombatController.Start()
 SprintController.Start()
 FirstPersonController.Start()
 
+Remotes.KitState.OnClientEvent:Connect(function(state)
+	-- Only in the Menu for someone who owns a kit or can buy something
+	Hud.ShowKits(KitsWindow.SetState(state))
+end)
+
 Remotes.State.OnClientEvent:Connect(function(state)
 	Hud.Render(state)
+	SettingsWindow.SetState(state)
 	Hotbar.SetState(state)
 	VitalsHud.SetState(state)
 	QuestTracker.Render(state)

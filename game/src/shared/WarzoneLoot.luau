@@ -33,7 +33,8 @@ local Tables: { [Kind]: LootTable } = {
 		{ Item = "Sapphire", Min = 1, Max = 1, Weight = 3 },
 		{ Item = "GlowberrySeeds", Min = 1, Max = 2, Weight = 4 },
 		-- Rare
-		{ Item = "LootCrate", Min = 1, Max = 1, Weight = 3 },
+		-- A quarter of what it was before crates held 6 things, so chests pay out as much late game as before
+		{ Item = "LootCrate", Min = 1, Max = 1, Weight = 0.75 },
 		{ Item = "StrawberrySeeds", Min = 1, Max = 1, Weight = 1.2 },
 		{ Item = "MangroveSapling", Min = 1, Max = 1, Weight = 1 },
 		{ Item = "RubyNode", Min = 1, Max = 1, Weight = 0.8 },
@@ -41,6 +42,8 @@ local Tables: { [Kind]: LootTable } = {
 		{ Item = "StarfruitSeeds", Min = 1, Max = 1, Weight = 0.2 },
 		{ Item = "StarwoodSapling", Min = 1, Max = 1, Weight = 0.15 },
 		{ Item = "StarstoneNode", Min = 1, Max = 1, Weight = 0.15 },
+		{ Item = "CinderkinSpawner", Min = 1, Max = 1, Weight = 0.2 },
+		{ Item = "VoidlingSpawner", Min = 1, Max = 1, Weight = 0.1 },
 	}),
 	-- Fuller than a chest, with bigger stacks, and the rare things about ten times likelier
 	Skydrop = make(8, 12, {
@@ -52,7 +55,7 @@ local Tables: { [Kind]: LootTable } = {
 		{ Item = "Amethyst", Min = 2, Max = 4, Weight = 8 },
 		{ Item = "Sapphire", Min = 1, Max = 3, Weight = 6 },
 		{ Item = "GlowberrySeeds", Min = 2, Max = 4, Weight = 6 },
-		{ Item = "LootCrate", Min = 1, Max = 1, Weight = 5 },
+		{ Item = "LootCrate", Min = 1, Max = 1, Weight = 1.25 },
 		{ Item = "StrawberrySeeds", Min = 1, Max = 2, Weight = 3 },
 		{ Item = "MangroveSapling", Min = 1, Max = 1, Weight = 2.5 },
 		{ Item = "GoldNode", Min = 1, Max = 1, Weight = 2.5 },
@@ -64,6 +67,8 @@ local Tables: { [Kind]: LootTable } = {
 		{ Item = "StarfruitSeeds", Min = 1, Max = 1, Weight = 0.5 },
 		{ Item = "StarwoodSapling", Min = 1, Max = 1, Weight = 0.4 },
 		{ Item = "StarstoneNode", Min = 1, Max = 1, Weight = 0.4 },
+		{ Item = "CinderkinSpawner", Min = 1, Max = 1, Weight = 0.7 },
+		{ Item = "VoidlingSpawner", Min = 1, Max = 1, Weight = 0.35 },
 	}),
 	-- Worth the wait and the fight: no food or scrap, and the late game's best things are far likelier. Nodes last
 	-- for ever on your island, so even here you'd expect about one good one in each.
@@ -82,6 +87,8 @@ local Tables: { [Kind]: LootTable } = {
 		{ Item = "StarfruitSeeds", Min = 1, Max = 2, Weight = 4 },
 		{ Item = "MangroveSapling", Min = 1, Max = 2, Weight = 4 },
 		{ Item = "StarwoodSapling", Min = 1, Max = 2, Weight = 3 },
+		{ Item = "CinderkinSpawner", Min = 1, Max = 1, Weight = 2.5 },
+		{ Item = "VoidlingSpawner", Min = 1, Max = 1, Weight = 1.5 },
 	}),
 }
 

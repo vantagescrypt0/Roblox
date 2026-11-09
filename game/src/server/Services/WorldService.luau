@@ -6,6 +6,8 @@
 --   Mining       a quarry camp and a great mountain with a cavern full of ore (Worlds/Mining)
 --   Woodcutting  oak woods, a birch grove, snowy pines and cherry blossom hills (Worlds/Woodcutting)
 --   Farming      wheat plains, veggie gardens, a pumpkin hollow and a melon oasis (Worlds/Farming)
+--   Slaying      six zones of monsters to fight, with gates between them (Worlds/Slaying,
+--                SlayingService)
 -- Each zone island has its own resource, gated by a skill level (BlockService, Crops).
 -- This service gives them the tools (Worlds/Context) and runs what they make:
 --   nodes   resource blocks (ore, logs, leaves): mine one and it grows back in the same
@@ -43,6 +45,7 @@ local Context = require(script.Parent.Parent.Worlds.Context)
 local BlockService = require(script.Parent.BlockService)
 local FarmService = require(script.Parent.FarmService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local SlayingService = require(script.Parent.SlayingService)
 local StateService = require(script.Parent.StateService)
 local TravelService = require(script.Parent.TravelService)
 
@@ -54,6 +57,7 @@ local TITLES: { [string]: string } = {
 	Mining = "MINING WORLD",
 	Woodcutting = "WOODCUTTING WORLD",
 	Farming = "FARMING WORLD",
+	Slaying = "SLAYING WORLD",
 }
 
 -- SouthZ: where the arrival portals stand (x = 0); the builder puts an island under them
@@ -62,6 +66,7 @@ local BUILDERS: { [string]: Builder } = {
 	Mining = require(script.Parent.Parent.Worlds.Mining) :: any,
 	Woodcutting = require(script.Parent.Parent.Worlds.Woodcutting) :: any,
 	Farming = require(script.Parent.Parent.Worlds.Farming) :: any,
+	Slaying = require(script.Parent.Parent.Worlds.Slaying) :: any,
 }
 
 type Node = { X: number, Y: number, Z: number, Block: string, RespawnAt: number? }
@@ -301,7 +306,12 @@ function WorldService.Start()
 	area = makeArea()
 
 	local spawnPoint = Spawning.MakeSpawn(CENTER + Vector3.new(0, 0, (southZ + 4) * SIZE), Vector3.zAxis, world.Model)
-	Spawning.Start(spawnPoint, CENTER.Y - FALL_LIMIT)
+	if kind == "Slaying" then
+		local spawnFor, onFell = SlayingService.Setup(world.Model, CENTER.Y)
+		Spawning.Start(spawnPoint, CENTER.Y - FALL_LIMIT, nil, onFell, spawnFor)
+	else
+		Spawning.Start(spawnPoint, CENTER.Y - FALL_LIMIT)
+	end
 
 	Remotes.FarmClick.OnServerEvent:Connect(onFarmClick)
 	Players.PlayerRemoving:Connect(function(player)

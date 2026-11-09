@@ -13,7 +13,15 @@
 local Challenges = require(script.Parent.Challenges)
 
 export type Pet = { Item: string, Name: string, Skill: string, Tier: number, XPBonus: number, Kind: string }
-export type Armor = { Item: string, Name: string, Skill: string, Tier: number, Slot: string, DropBonus: number }
+export type Armor = {
+	Item: string,
+	Name: string,
+	Skill: string,
+	Tier: number,
+	Slot: string,
+	DropBonus: number,
+	Class: string?, -- how well it protects (Combat.ArmorClasses); nil = Leather
+}
 export type Trophy = { Item: string, Block: string, Name: string, Resource: string, Tier: number }
 
 local PET_XP_PER_TIER = 0.05
@@ -40,7 +48,12 @@ local TIER_COLORS = {
 	Color3.fromRGB(150, 240, 220),
 }
 -- Which animal each skill's pets are
-local PET_KINDS: { [string]: string } = { Farming = "Chicken", Woodcutting = "Beaver", Mining = "Mole" }
+local PET_KINDS: { [string]: string } = {
+	Farming = "Chicken",
+	Woodcutting = "Beaver",
+	Mining = "Mole",
+	Combat = "Monster", -- a small copy of the monster the tier came from (Util/PetModels)
+}
 
 local pets: { [string]: Pet } = {}
 local armors: { [string]: Armor } = {}
@@ -97,6 +110,31 @@ for _, resource in Challenges.List do
 			table.insert(trophyList, trophy)
 			rewards[milestone.Id] = { trophy.Item }
 		end
+	end
+end
+
+-- The armour kits' sets ([[Kits]]): they protect like diamond, which is as far as armour goes, and wear a tier's colours.
+-- `Skill` here is the set's name, which is how its look is found (ArmorArt.Sets); it boosts no skill.
+local KIT_SETS = {
+	{ Id = "Stormcaller", Tier = 5 }, -- diamond's colours
+	{ Id = "Sunforged", Tier = 3 }, -- gold's
+	{ Id = "Emberguard", Tier = 1 }, -- bronze's
+	{ Id = "Frostwarden", Tier = 2 }, -- silver's
+	{ Id = "Venomfang", Tier = 4 }, -- emerald's
+}
+for _, set in KIT_SETS do
+	for _, piece in ARMOR_PIECES do
+		local armor: Armor = {
+			Item = `{set.Id}{piece.Word}`,
+			Name = `{set.Id} {piece.Word}`,
+			Skill = set.Id,
+			Tier = set.Tier,
+			Slot = piece.Slot,
+			DropBonus = 0,
+			Class = "Kit",
+		}
+		armors[armor.Item] = armor
+		table.insert(armorList, armor)
 	end
 end
 

@@ -28,12 +28,17 @@ export type Letter = {
 	At: number, -- os.time() it arrived
 }
 
+local SAVE_NOW_WAIT = 20 -- seconds SaveNow waits for Roblox before giving up
+
 local TEMPLATE = {
 	Coins = 0,
 	Level = 1,
 	XP = 0,
 	-- The season this save is on (Seasons.luau; SeasonService resets it for a new one)
 	Season = 1,
+	Settings = { Music = 1, Effects = 1 },
+	KitClaims = {} :: { [string]: number }, -- kit id -> os.time() of its last claim (KitService)
+	Receipts = {} :: { [string]: number }, -- Robux purchases already paid out: purchase id -> when (KitService)
 	Island = {
 		Tier = 1,
 		-- Blocks the player changed: "x,y,z" -> block type, or "Air" where they broke one
@@ -49,6 +54,9 @@ local TEMPLATE = {
 		-- Decorations: cell -> which way it faces (quarter turns), and what a sign says (DecorService)
 		Turns = {} :: { [string]: number },
 		Signs = {} :: { [string]: string },
+		-- Who can visit (Everyone, Friends, Nobody) and what visitors wrote, newest first (VisitService)
+		VisitRule = "Everyone",
+		Guestbook = {} :: { { UserId: number, Name: string, Text: string, At: number } },
 	},
 	-- item id -> count: what's in Slots plus what's worn (InventoryService keeps them in step)
 	Items = {} :: { [string]: number },
@@ -253,6 +261,25 @@ function DataService.SendMessage(userId: number, message: { [string]: any }): bo
 end
 
 -- Call after changing a player's data so the HUD and leaderboard update.
+-- Saves now and waits for it, for what can't be lost (a Robux purchase). False if it wasn't saved in time.
+function DataService.SaveNow(player: Player): boolean
+	local profile = profiles[player]
+	if not profile or not profile:IsActive() then
+		return false
+	end
+	local saved = false
+	local connection = profile.OnAfterSave:Connect(function()
+		saved = true
+	end)
+	profile:Save()
+	local deadline = os.clock() + SAVE_NOW_WAIT
+	while not saved and os.clock() < deadline and profile:IsActive() do
+		task.wait(0.2)
+	end
+	connection:Disconnect()
+	return saved
+end
+
 function DataService.MarkChanged(player: Player)
 	if pendingChanges[player] then
 		return

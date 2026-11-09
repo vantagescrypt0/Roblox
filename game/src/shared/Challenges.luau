@@ -1,6 +1,6 @@
 --!strict
 -- Skill challenges, from the Skybounds skill menus (02 Research/References/Skybounds/menus).
--- Every crop, log and ore a skill gathers keeps a count of how many you've gathered this
+-- Every crop, log, ore and monster keeps a count of how many you've gathered or defeated this
 -- season, and milestones along it unlock rewards: a tier of the skill's pet and of its armor
 -- set (tier I from its first resource, II from the next...) and, at the top, the resource's
 -- trophy. Counts and unlocks reset each season along with the skills.
@@ -11,6 +11,7 @@
 
 local Crops = require(script.Parent.Crops)
 local Gathering = require(script.Parent.Gathering)
+local Monsters = require(script.Parent.Monsters)
 
 export type Reward = "Pet" | "Armor" | "Trophy"
 
@@ -43,8 +44,13 @@ local byId: { [string]: Resource } = {}
 local function add(skill: string, id: string, name: string, icon: string, steps: { number }, note: string?)
 	local crop = Crops.ById[id]
 	local gather = Gathering[id]
-	local level = if crop then crop.FarmingLevel elseif gather then gather.Level or 1 else 1
-	local xp = if crop then crop.FarmingXP elseif gather then gather.XP else 0
+	local monster = Monsters.ById[id]
+	local level = if crop
+		then crop.FarmingLevel
+		elseif gather then gather.Level or 1
+		elseif monster then monster.Level
+		else 1
+	local xp = if crop then crop.FarmingXP elseif gather then gather.XP elseif monster then monster.XP else 0
 	local list = bySkill[skill] or {}
 	bySkill[skill] = list
 	local tier = #list + 1
@@ -110,6 +116,17 @@ add(
 	{ 100, 500, 2500 },
 	"Your island only: Starstone Node, Ruby Pickaxe"
 )
+
+-- Combat: monsters. Kills come slower than logs, so the counts are lower; the late two are
+-- island-only (a spawner makes one every few minutes), so lower still
+add("Combat", "Slime", "Slime", "SlimeGel", { 100, 500, 5000 })
+add("Combat", "Thornling", "Thornling", "Thorn", { 150, 750, 7500 })
+add("Combat", "BoarBrute", "Boar Brute", "ToughHide", { 200, 1000, 10000 })
+add("Combat", "Rattlebones", "Rattlebones", "OldBone", { 250, 1250, 12500 })
+add("Combat", "Sporeling", "Sporeling", "Glowcap", { 300, 1500, 15000 })
+add("Combat", "FrostYeti", "Frost Yeti", "FrostFur", { 350, 1750, 17500 })
+add("Combat", "Cinderkin", "Cinderkin", "EmberCore", { 50, 250, 1250 }, "Your island only: Cinderkin Spawner")
+add("Combat", "Voidling", "Voidling", "VoidShard", { 50, 250, 1250 }, "Your island only: Voidling Spawner")
 
 local Challenges = {
 	List = table.freeze(List),

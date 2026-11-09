@@ -152,6 +152,9 @@ end
 for _, tool in Tools.List do
 	table.insert(ORDER, tool.Item)
 end
+for _, tool in Tools.KitSwords do
+	table.insert(ORDER, tool.Item)
+end
 table.insert(ORDER, "Shield")
 -- The skill challenges' rewards last: pets, armor pieces, trophies
 for _, pet in Gear.PetList do

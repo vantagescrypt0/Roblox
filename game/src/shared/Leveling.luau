@@ -16,6 +16,13 @@ Leveling.WarzoneLevel = 10
 -- play, so brand-new players (and throwaway accounts) can't be talked into bad trades
 Leveling.TradeLevel = 5
 
+-- Who can go into the Warzone below that level, to test it (user ids): only the game's owner
+local WARZONE_TESTERS = { [545120355] = true }
+
+function Leveling.CanEnterWarzone(player: Player, level: number): boolean
+	return level >= Leveling.WarzoneLevel or WARZONE_TESTERS[player.UserId] == true
+end
+
 -- XP a skill needs to go from `level` to `level + 1`: 2,460 at first, ~72,000 at 98
 -- (4.1M from 1 to 99)
 function Leveling.SkillXPToNext(level: number): number

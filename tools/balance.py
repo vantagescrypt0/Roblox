@@ -23,8 +23,14 @@ Leveling.luau (curves), BlockService GATHER and Crops.luau (XP), Items.luau (pri
     python tools/balance.py
 """
 
+import math
+
 STEADY = 0.8
-OVERHEAD = {"Mining": 1.2, "Woodcutting": 1.5, "Farming": 1.2}
+OVERHEAD = {"Mining": 1.2, "Woodcutting": 1.5, "Farming": 1.2, "Combat": 4.0}
+# A fully charged sword swing and each tier's sword (Combat.luau, Tools.luau); a monster's
+# "hardness" below is its health, and a kill takes as many swings as that needs
+SWING = 0.625
+SWORD = {1: 20, 2: 24, 3: 27, 4: 31, 5: 34, 6: 38, 7: 41}
 # By hand, Wooden, Stone, Iron, then the late-game tiers: Amethyst (Crystal, from the
 # Warzone, matches it), Sapphire, Ruby, Starsteel
 EFFICIENCY = {0: 1, 1: 2, 2: 4, 3: 6, 4: 8, 5: 10, 6: 12, 7: 14}
@@ -82,13 +88,26 @@ ACTIVITIES = {
         ("Dragonfruit", 65, 0, None, 3.7, 0),
         ("Starfruit", 80, 0, None, 4.2, 0),
     ],
+    # The Slaying World: the "hardness" here is the monster's health, and the coins are its drop's
+    "Combat": [
+        ("Slime", 1, 0, 60, 1.2, 3000),
+        ("Thornling", 10, 0, 110, 1.55, 15000),
+        ("BoarBrute", 20, 0, 180, 1.9, 50000),
+        ("Rattlebones", 30, 0, 260, 2.25, 140000),
+        ("Sporeling", 40, 0, 360, 2.6, 450000),
+        ("FrostYeti", 55, 0, 520, 3.0, 1800000),
+        ("Cinderkin", 70, 0, 700, 3.4, 0),
+        ("Voidling", 85, 0, 900, 3.8, 0),
+    ],
 }
+# The curves below were fitted to these three; Combat is fitted to the curves, so it doesn't move them
+CURVE_SKILLS = ("Mining", "Woodcutting", "Farming")
 
 
 # The late game: not in the Grinding Worlds, only from nodes on your own island (loot crates and
 # Warzone chests; your call, 2026-11-02). They keep an XP and a price, but nobody grinds them
 # at world pace, so they don't count toward how long a skill takes.
-ISLAND_ONLY = {"Ruby", "Starstone", "Mangrove", "Starwood", "Strawberry", "Dragonfruit", "Starfruit"}
+ISLAND_ONLY = {"Ruby", "Starstone", "Mangrove", "Starwood", "Strawberry", "Dragonfruit", "Starfruit", "Cinderkin", "Voidling"}
 # What they sell for. Their supply is the limit, not the player's speed, so these are set by what
 # one node, plot or tree should earn, not by a coins-an-hour target:
 #   (units an hour from one, where they come from)
@@ -100,6 +119,10 @@ LATE_PRICE = {
     "Strawberry": 4000,  # a plot: 10 an hour
     "Dragonfruit": 8000,  # a plot: ~8.6 an hour
     "Starfruit": 20000,  # a plot: 7.5 an hour
+    # A spawner makes one every 4 and 5 minutes, like a Ruby and a Starstone node, but each is a
+    # real fight (700 and 900 health), so they pay about 3x what a node of that rank does
+    "Cinderkin": 15000,
+    "Voidling": 50000,
 }
 # Late tools need Ruby or Starstone, so someone working only in the worlds stops at Sapphire
 WORLD_TOP_TIER = 5
@@ -111,8 +134,8 @@ WORLD_TOP_TIER = 5
 EXTRAS = [("Stone", "Coal", 0.75, 1.0), ("Glowberry", "Potato", 1.15, 4.0)]
 
 
-def bonus(level):  # Leveling.BonusChance: a double drop, +1% a level
-    return min(max(level - 1, 0) * 0.01, 0.75)
+def bonus(level, skill=None):  # Leveling.BonusChance: a double drop, +1% a level (not Combat's drops)
+    return 0 if skill == "Combat" else min(max(level - 1, 0) * 0.01, 0.75)
 
 
 def tool_tier(level, skill="Mining"):
@@ -139,7 +162,9 @@ def actions_per_hour(skill, activity, level, top_tier=None):
     if level < unlock or tier < need:
         return 0.0
     seconds = OVERHEAD[skill]
-    if hardness is not None:
+    if skill == "Combat":
+        seconds += math.ceil(hardness / SWORD[tier]) * SWING
+    elif hardness is not None:
         seconds += max(hardness * 1.5 / EFFICIENCY[tier], 0.05)
     return STEADY * 3600 / seconds
 
@@ -162,7 +187,7 @@ for _skill, _list in ACTIVITIES.items():
         _rate = actions_per_hour(_skill, _a, _at)
         XP[_a[0]] = max(1, round(BASE_XP_RATE * _a[4] / _rate / 5) * 5)
         PLAYER_XP[_a[0]] = max(1, round(XP[_a[0]] * PLAYER_SHARE))
-        PRICE[_a[0]] = LATE_PRICE.get(_a[0]) or max(1, round(_a[5] / (_rate * (1 + bonus(_at)))))
+        PRICE[_a[0]] = LATE_PRICE.get(_a[0]) or max(1, round(_a[5] / (_rate * (1 + bonus(_at, _skill)))))
 EXTRA_XP, EXTRA_PRICE = {}, {}
 for _name, _like, _xp_mult, _price_mult in EXTRAS:
     EXTRA_XP[_name] = round(XP[_like] * _xp_mult / 5) * 5
@@ -176,7 +201,7 @@ def best(skill, level, table):
             continue
         rate = actions_per_hour(skill, activity, level, WORLD_TOP_TIER) * table[activity[0]]
         if table is PRICE:
-            rate *= 1 + bonus(level)
+            rate *= 1 + bonus(level, skill)
         if rate > top_rate:
             top, top_rate = activity, rate
     return top, top_rate
@@ -198,7 +223,7 @@ def solve_skill_curve():
     """A and Q so the average skill reaches 10 in TARGET_L10 and 99 in TARGET_L99 hours"""
     def average(q):
         tens, nines = [], []
-        for skill in ACTIVITIES:
+        for skill in CURVE_SKILLS:
             r = skill_hours(skill, lambda level: level**q)
             tens.append(r[10])
             nines.append(r[99])
@@ -294,6 +319,12 @@ def main():
             print(f"  {skill:12} {name:9} L{act[1]:<3} XP {XP[name]:4}  player XP {PLAYER_XP[name]:3}  sells for {PRICE[name]:5}")
     for name, *_ in EXTRAS:
         print(f"  {'(extra)':12} {name:9}      XP {EXTRA_XP[name]:4}  player XP {round(EXTRA_XP[name] * PLAYER_SHARE):3}  sells for {EXTRA_PRICE[name]:5}")
+
+    # Slaying's slivers: as many hours to a spawner as to the node of the same rank
+    print("\nMonsters (the world's six): kills an hour with an Iron sword, sliver odds for those hours:")
+    for act, hours_to_one, need in zip(ACTIVITIES["Combat"], (1, 1.7, 3.3, 5, 9, 13), (10, 10, 12, 12, 15, 15)):
+        rate = actions_per_hour("Combat", act, max(act[1], 5))
+        print(f"  {act[0]:12} {rate:5.0f} kills/h, 1 sliver in {round(rate * hours_to_one / need / 5) * 5:4}, {need} make a spawner")
 
     # Crafting XP: CRAFT_SHARE x the skill XP of the raw materials in it
     raw = {"Planks": XP["Oak"] / 4, "Sticks": XP["Oak"] / 8, "Stone": EXTRA_XP["Stone"],

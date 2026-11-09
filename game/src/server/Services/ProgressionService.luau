@@ -8,6 +8,8 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Skills = require(ReplicatedStorage.Shared.Skills)
+local Metrics = require(script.Parent.Parent.Util.Metrics)
+local AwardService = require(script.Parent.AwardService)
 local DataService = require(script.Parent.DataService)
 local GearService = require(script.Parent.GearService)
 local StateService = require(script.Parent.StateService)
@@ -44,9 +46,11 @@ function ProgressionService.AddPlayerXP(player: Player, amount: number)
 	while data.Level < Leveling.MaxPlayerLevel and data.XP >= Leveling.PlayerXPToNext(data.Level) do
 		data.XP -= Leveling.PlayerXPToNext(data.Level)
 		data.Level += 1
+		Metrics.Event(player, "PlayerLevelUp", data.Level)
 		StateService.Notify(player, `Level {data.Level}`, "levelup")
 		if data.Level == Leveling.WarzoneLevel then
 			StateService.Notify(player, "The Warzone is now unlocked!", "level")
+			AwardService.Give(player, "WarzoneUnlocked")
 		end
 	end
 	if data.Level >= Leveling.MaxPlayerLevel then

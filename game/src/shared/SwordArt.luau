@@ -298,6 +298,72 @@ SwordArt.List = {
 		TrailTo = Vector3.new(0, 0.495, 0),
 		Glow = { Color = Color3.fromRGB(255, 196, 80), Shell = 0.975, Light = 1.5, Embers = 10 },
 	} :: Art,
+	-- The armour kits' swords ([[Kits]]): one family with the rest, each in its kit's theme. Right-click fires its
+	-- special (KitPowers.luau). Dark steel split by lightning
+	StormcallerSword = {
+		Mesh = "rbxassetid://98300870936117",
+		Texture = "rbxassetid://113709635119626",
+		Length = 6.4,
+		Grip = Vector3.new(0, -0.3625, 0),
+		Up = BLADE_UP,
+		Spine = SIDE,
+		Embers = bladeLine(-0.13, 0.46),
+		TrailFrom = Vector3.new(0, -0.13, 0),
+		TrailTo = Vector3.new(0, 0.495, 0),
+		Glow = { Color = Color3.fromRGB(90, 200, 255), Shell = 0.93, Light = 1.2, Embers = 9 },
+	} :: Art,
+	-- Bright gold, with a sun for a guard
+	SunforgedSword = {
+		Mesh = "rbxassetid://98090518298806",
+		Texture = "rbxassetid://89557158764483",
+		Length = 6.0,
+		Grip = Vector3.new(0, -0.3708, 0),
+		Up = BLADE_UP,
+		Spine = SIDE,
+		Embers = bladeLine(-0.13, 0.46),
+		TrailFrom = Vector3.new(0, -0.13, 0),
+		TrailTo = Vector3.new(0, 0.495, 0),
+		Glow = { Color = Color3.fromRGB(255, 208, 96), Shell = 0.94, Light = 1.2, Embers = 8 },
+	} :: Art,
+	-- Charred bronze with molten cracks, and flames up the edges
+	EmberguardSword = {
+		Mesh = "rbxassetid://138142707705645",
+		Texture = "rbxassetid://126826561937867",
+		Length = 6.4,
+		Grip = Vector3.new(0, -0.3792, 0),
+		Up = BLADE_UP,
+		Spine = SIDE,
+		Embers = bladeLine(-0.13, 0.46),
+		TrailFrom = Vector3.new(0, -0.13, 0),
+		TrailTo = Vector3.new(0, 0.495, 0),
+		Glow = { Color = Color3.fromRGB(255, 110, 32), Shell = 0.95, Light = 1.2, Embers = 10 },
+	} :: Art,
+	-- Polished silver under frost, with icicles near the guard
+	FrostwardenSword = {
+		Mesh = "rbxassetid://137936395978034",
+		Texture = "rbxassetid://71852712496522",
+		Length = 6.4,
+		Grip = Vector3.new(0, -0.3708, 0),
+		Up = BLADE_UP,
+		Spine = SIDE,
+		Embers = bladeLine(-0.13, 0.46),
+		TrailFrom = Vector3.new(0, -0.13, 0),
+		TrailTo = Vector3.new(0, 0.495, 0),
+		Glow = { Color = Color3.fromRGB(150, 228, 255), Shell = 0.93, Light = 1.2, Embers = 8 },
+	} :: Art,
+	-- Emerald scales and a coiled serpent for a guard
+	VenomfangSword = {
+		Mesh = "rbxassetid://91040823080223",
+		Texture = "rbxassetid://107555052736793",
+		Length = 6.4,
+		Grip = Vector3.new(0, 0.3542, 0),
+		Up = HANDLE_UP,
+		Spine = SIDE,
+		Embers = bladeLine(0.13, -0.46),
+		TrailFrom = Vector3.new(0, 0.13, 0),
+		TrailTo = Vector3.new(0, -0.495, 0),
+		Glow = { Color = Color3.fromRGB(96, 255, 120), Shell = 0.95, Light = 1.2, Embers = 8 },
+	} :: Art,
 } :: { [string]: Art }
 
 -- Where the elbow bends toward while holding a sword, from the shoulder, in arm lengths

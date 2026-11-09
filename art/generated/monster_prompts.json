@@ -1,0 +1,171 @@
+{
+  "style": "stylized low-poly blocky game creature, chunky rectangular shapes, bright hand-painted cartoon colours, friendly and silly, no blood, facing forward",
+  "monsters": {
+    "Slime": {
+      "size": [
+        6,
+        5,
+        6
+      ],
+      "prompt": "a squat rounded cube of bright green jelly with two big glossy black oval eyes, a wide wobbly smile and a little tuft of moss on top"
+    },
+    "Thornling": {
+      "size": [
+        5,
+        7,
+        5
+      ],
+      "prompt": "a small walking bramble creature made of twisted dark green vines and thorns, glowing yellow eyes, a leafy crest, stubby legs and two clawed vine arms"
+    },
+    "BoarBrute": {
+      "size": [
+        8,
+        9,
+        7
+      ],
+      "prompt": "a stocky upright boar warrior with big tusks, rust red bristly fur, brown leather straps, one iron shoulder plate and huge fists"
+    },
+    "Rattlebones": {
+      "size": [
+        5,
+        8,
+        5
+      ],
+      "prompt": "a cartoon skeleton with pale cream bones, an oversized round skull with a toothy grin, a tattered brown loincloth, holding a big femur bone as a club"
+    },
+    "Sporeling": {
+      "size": [
+        7,
+        8,
+        7
+      ],
+      "prompt": "a walking mushroom creature with a wide purple cap covered in glowing teal spots, a pale stubby body, two tiny glowing eyes and short legs"
+    },
+    "FrostYeti": {
+      "size": [
+        12,
+        13,
+        9
+      ],
+      "prompt": "a huge shaggy ice blue and white yeti with very long arms, small curved horns, icy crystal shards on its shoulders and a big toothy underbite"
+    },
+    "Cinderkin": {
+      "size": [
+        7,
+        9,
+        7
+      ],
+      "prompt": "a small imp made of cracked black basalt rock with glowing orange lava seams, ember flames on its head and curled stone horns"
+    },
+    "Voidling": {
+      "size": [
+        7,
+        9,
+        7
+      ],
+      "prompt": "a floating dark purple wisp creature with a single huge glowing magenta eye, ragged shadow tendrils below and small violet crystal shards orbiting its shoulders"
+    }
+  },
+  "item_style": "single game item, stylized low-poly chunky shapes, bright hand-painted cartoon colours, nothing else in the scene",
+  "prop_style": "stylized low-poly chunky blocky game prop, bright hand-painted cartoon colours, standing on its own with no ground",
+  "items": {
+    "SlimeGel": {
+      "size": [
+        3,
+        3,
+        3
+      ],
+      "prompt": "a glistening lump of bright green jelly in a small blobby shape"
+    },
+    "Thorn": {
+      "size": [
+        2,
+        4,
+        2
+      ],
+      "prompt": "one big curved dark green thorn with a woody brown base"
+    },
+    "ToughHide": {
+      "size": [
+        4,
+        2,
+        3
+      ],
+      "prompt": "a rolled up piece of thick brown bristly animal hide tied with a leather cord"
+    },
+    "OldBone": {
+      "size": [
+        1.5,
+        4,
+        1.5
+      ],
+      "prompt": "one old cracked cream coloured femur bone with knobbly ends"
+    },
+    "Glowcap": {
+      "size": [
+        3,
+        2.5,
+        3
+      ],
+      "prompt": "a small round mushroom cap with glowing teal and purple spots"
+    },
+    "FrostFur": {
+      "size": [
+        3,
+        3,
+        3
+      ],
+      "prompt": "a fluffy tuft of icy blue and white fur"
+    },
+    "EmberCore": {
+      "size": [
+        3,
+        3,
+        3
+      ],
+      "prompt": "a glowing orange molten rock orb with a cracked black crust"
+    },
+    "VoidShard": {
+      "size": [
+        2,
+        4,
+        2
+      ],
+      "prompt": "one jagged dark purple crystal shard glowing magenta inside"
+    },
+    "Spawner": {
+      "size": [
+        3,
+        3,
+        3
+      ],
+      "prompt": "a square iron cage with thick black bars and a glowing blue rune on its stone base, open and empty inside"
+    }
+  },
+  "props": {
+    "GiantCactus": {
+      "size": [
+        14,
+        34,
+        14
+      ],
+      "prompt": "a huge branching saguaro cactus with thick arms, bright green with a few small pink flowers on top"
+    },
+    "GlowMushroom": {
+      "size": [
+        12,
+        18,
+        12
+      ],
+      "prompt": "a giant fantasy mushroom with a broad glowing teal cap, pale fat stem and bright glowing spots"
+    },
+    "IceCrystal": {
+      "size": [
+        10,
+        14,
+        10
+      ],
+      "prompt": "a cluster of tall sharp pale blue ice crystals"
+    }
+  }
+}

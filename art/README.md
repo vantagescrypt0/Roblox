@@ -24,6 +24,15 @@ To add a block: add a tile in `draw_tiles()` (new tiles go in `draw_building_til
 - **Slot pictures:** `powershell -ExecutionPolicy Bypass -File art/scripts/slot_icons.ps1` writes `art/textures/ui/slot_*.png` and a check sheet, `art/renders/SlotIcons.png`. The helmet and chestplate start from ForgeGUI silhouettes in `art/textures/ui/source/`; the script draws the other four. They're mostly white so `ImageColor3` can tint them by armor tier. Upload through Studio's `upload_image` from a `http://localhost` server, then put the ids in `Config.SlotIcons`.
 - **Glow:** the same script draws `art/textures/ui/glow.png`, a soft white circle the Night Glass look tints (`Config.GlowImage`).
 
+## The game page's thumbnails (real footage)
+The page uses real captures with the store captions on them; the composed renders below are for ads. Capture in a Studio playtest with the HUD hidden and `workspace.StreamingEnabled` off, using MCP `screen_capture` with a camera position. Studio's view is far wider than 16:9, so take three captures from one point, tilted -14, 0 and +14 degrees, with `FieldOfView` 26, and save `<name>_0.png`, `_1`, `_2` and `<name>.json`. Then:
+
+```
+"%LOCALAPPDATA%\Programs\blender-5.2.2-windows-x64\blender.exe" --background --factory-startup --python art/scripts/store_footage.py -- <shots folder> world island mine forge farm forest
+```
+
+It joins them into `footage/<name>.png` and writes `marketing/page_<name>.png`. Studio has to be signed in, or every block's mesh fails to load and the world draws as bare trunks and flowers.
+
 ## Store art (the game icon and thumbnails)
 `scripts/store_art.py` builds each picture as a 3D scene from the game's own block and item meshes (`blend/Blocks.blend`, `blend/Items.blend`, so run `blocks.py` and `items3d.py` first if they changed), renders it with Cycles on the GPU, adds a soft glow in numpy, then stamps the logo and captions in the game's pixel lettering (the same letters as `Util/Logo.luau`). It writes `marketing/icon.png` (512) and `marketing/thumb1_world.png` to `thumb6_forest.png` (1920x1080).
 
@@ -101,6 +110,13 @@ Islands carry invisible `Marker_*` cubes (Spawn, Workbench, Market, Portal, Plot
 3. Only if the sheets changed: upload them with Studio's MCP `upload_image` from a `http://localhost` server, then update `ArmorArt.Palettes`.
 
 Import 3D stores the meshes in centimetres with their axes turned: `ArmorArt.MeshTurn` and `MeshScale` undo that.
+
+Game pass icons: `armour.py -- <Set> icon` for each set, then `powershell -ExecutionPolicy Bypass -File art/scripts/pass_icons.ps1` writes `marketing/Pass_<Set>.png`.
+
+Several sets can go in one import: `armour.py -- Sunforged,Emberguard` writes `export/Armour_Kits.fbx`, with pieces named `<Set>_<Piece>`. Run it once per set as well for each set's JSON.
+
+## The Loot Crate's opening
+`scripts/crate_open.py` models the chest in two halves, the floating stone it lands on and the rune stone (`export/CrateOpen.fbx`; ids and offsets in `game/src/shared/CrateArt.luau`). `scripts/crate_rays.py` draws `textures/ui/rays.png`, uploaded with Studio's `upload_image` (`Config.RaysImage`). `client/CrateOpening.luau` plays it.
 
 ## Import into Roblox Studio
 1. **Home** → **Import 3D** → pick the FBX. Tick **Anchored**; Scale Unit **Stud**. Import.

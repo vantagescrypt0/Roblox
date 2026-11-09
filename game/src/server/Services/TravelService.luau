@@ -96,6 +96,26 @@ function TravelService.Go(player: Player, destination: Places.Kind)
 	end
 end
 
+-- To one particular island server, to visit someone on it (VisitService takes over on arrival)
+function TravelService.ToIslandServer(player: Player, jobId: string, visit: number)
+	if traveling[player] then
+		return
+	end
+	traveling[player] = true
+	Remotes.Travel:FireClient(player, "Visit")
+	task.wait(FADE_TIME)
+	local options = Instance.new("TeleportOptions")
+	options.ServerInstanceId = jobId
+	options:SetTeleportData({ From = Places.Current(), Visit = visit })
+	local ok, err = pcall(function()
+		TeleportService:TeleportAsync(Places.Ids.Island, { player }, options)
+	end)
+	if not ok then
+		warn(`[TravelService] visiting another server failed: {err}`)
+		failed(player, "Couldn't get to that island. Try again in a moment.")
+	end
+end
+
 local function checkRejoin(player: Player, data: DataService.Data)
 	local back = data.Rejoin
 	if back.Until <= os.time() or Places.Current() == "Warzone" or Places.Ids.Warzone == 0 or RunService:IsStudio() then

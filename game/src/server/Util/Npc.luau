@@ -8,6 +8,7 @@
 --   Miner       yellow hard hat with a headlamp, grey beard, denim overalls, pickaxe on his back
 --   Lumberjack  red plaid shirt, suspenders, green beanie, big brown beard, axe on his back
 --   Builder     white shirt, blue overalls, red bandana, tool belt with a hammer and a pouch
+--   Slayer      a dark hood and leather coat, a scar over one eye, a big sword across his back
 -- Each gets a name tag (their name and what they trade) and a Shop attribute.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -237,6 +238,51 @@ local LOOKS: { [string]: Look } = {
 			add("Stubble", Vector3.new(5.6, 1.8, 0.2), Vector3.new(0, 1.4, -4.05), Color3.fromRGB(176, 132, 98))
 			-- Pencil tucked behind his ear
 			add("Pencil", Vector3.new(0.6, 0.6, 3.4), Vector3.new(4.3, 5.4, 0.6), Color3.fromRGB(240, 196, 64))
+		end,
+	},
+
+	Slayer = {
+		Skin = SKIN_TAN,
+		Shirt = Color3.fromRGB(60, 58, 66),
+		Pants = Color3.fromRGB(44, 42, 50),
+		Boots = Color3.fromRGB(36, 28, 24),
+		Brows = Color3.fromRGB(40, 32, 30),
+		Body = function(add)
+			local coat = Color3.fromRGB(72, 52, 40)
+			local strap = Color3.fromRGB(46, 34, 28)
+			add("Coat", Vector3.new(10.6, 12, 6.6), Vector3.new(0, 14.4, 0), coat)
+			add("CoatOpening", Vector3.new(2.2, 12, 0.3), Vector3.new(0, 14.4, -3.4), Color3.fromRGB(60, 58, 66))
+			add("Belt", Vector3.new(11, 1.6, 7), Vector3.new(0, 11.4, 0), strap)
+			add("Buckle", Vector3.new(2.2, 2, 0.4), Vector3.new(0, 11.4, -3.6), IRON)
+			for _, side in { -1, 1 } do
+				add("Pauldron", Vector3.new(4.4, 2.4, 4.4), Vector3.new(side * 6.8, 21, 0), strap)
+			end
+			-- A big sword slung across his back
+			local top = slung(add)
+			add(
+				"Blade",
+				Vector3.new(2.6, 10, 0.8),
+				top + Vector3.new(0, 0, 0.3),
+				Color3.fromRGB(200, 204, 216),
+				CFrame.Angles(0, 0, BACK_TILT)
+			)
+			add(
+				"Crossguard",
+				Vector3.new(6, 1.2, 1.2),
+				top - Vector3.new(0, 3, 0) + Vector3.new(0, 0, 0.3),
+				GOLD,
+				CFrame.Angles(0, 0, BACK_TILT)
+			)
+		end,
+		Head = function(add)
+			local hood = Color3.fromRGB(58, 46, 40)
+			add("Hood", Vector3.new(9.2, 5, 9.2), Vector3.new(0, 7.6, 0.4), hood)
+			add("HoodBack", Vector3.new(9, 6, 2), Vector3.new(0, 4.4, 4.2), hood)
+			for _, side in { -1, 1 } do
+				add("HoodSide", Vector3.new(0.8, 5, 6), Vector3.new(side * 4.3, 3.8, 1), hood)
+			end
+			add("Scar", Vector3.new(0.5, 3.4, 0.2), Vector3.new(2.2, 4.6, -4.1), Color3.fromRGB(150, 70, 70))
+			add("Stubble", Vector3.new(5.6, 1.8, 0.2), Vector3.new(0, 1.4, -4.05), Color3.fromRGB(176, 132, 98))
 		end,
 	},
 }

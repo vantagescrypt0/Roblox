@@ -28,6 +28,9 @@ export type Callbacks = {
 	OnSkills: () -> (),
 	OnChallenges: () -> (),
 	OnInbox: () -> (),
+	OnVisit: () -> (),
+	OnSettings: () -> (),
+	OnKits: () -> (),
 }
 
 local levelNumber: TextLabel
@@ -50,6 +53,7 @@ local menuFace: TextButton
 local menuStroke: UIStroke
 local menuPanel: Frame
 local menuOpen = false
+local kitsEntry: TextButton
 local lastCoins: number? = nil
 local lastLevel: number? = nil
 local lastMail: number? = nil
@@ -209,6 +213,28 @@ local function drawMenuBars(picture: Frame)
 	end
 end
 
+-- Three sliders, for Settings
+local function drawSliders(picture: Frame)
+	for row = 0, 2 do
+		local bar = Theme.make("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0.5, 0, 0.5, (row - 1) * 10),
+			Size = UDim2.new(0.86, 0, 0, 3),
+			BackgroundColor3 = C.Ink,
+			Parent = picture,
+		})
+		Theme.corner(bar, 2)
+		local knob = Theme.make("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(({ 0.3, 0.72, 0.45 })[row + 1], 0.5),
+			Size = UDim2.fromOffset(9, 9),
+			BackgroundColor3 = C.Blue,
+			Parent = bar,
+		})
+		Theme.corner(knob, 5)
+	end
+end
+
 local function setMenu(open: boolean)
 	menuOpen = open
 	menuPanel.Visible = open
@@ -233,7 +259,7 @@ local function buildMenu(group: Frame, callbacks: Callbacks)
 	-- The menu's own badge counts the mail waiting too, so it shows while the menu is shut
 	menuBadge = Theme.badge(menuFace)
 
-	local columns, rows, gap, pad = 3, 2, 8, 12
+	local columns, rows, gap, pad = 4, 2, 8, 12
 	menuPanel = Glass.panel(
 		group,
 		UDim2.fromOffset(columns * BUTTON + (columns - 1) * gap + pad * 2, rows * BUTTON + (rows - 1) * gap + pad * 2)
@@ -251,13 +277,17 @@ local function buildMenu(group: Frame, callbacks: Callbacks)
 		Parent = menuPanel,
 	})
 
-	local function entry(order: number, label: string, icon: string, onClick: () -> ()): TextButton
+	local function entry(order: number, label: string, icon: string?, onClick: () -> ()): TextButton
 		local button, slot = squareButton(menuPanel, label, function()
 			setMenu(false)
 			onClick()
 		end)
 		button.Face.LayoutOrder = order
-		ItemIcon.create(slot, icon, UDim2.fromScale(1, 1))
+		if icon then
+			ItemIcon.create(slot, icon, UDim2.fromScale(1, 1))
+		else
+			drawSliders(slot)
+		end
 		return button.Face
 	end
 	entry(1, "Bag", "IconBag", callbacks.OnBag)
@@ -265,6 +295,11 @@ local function buildMenu(group: Frame, callbacks: Callbacks)
 	entry(3, "Skills", "IronPickaxe", callbacks.OnSkills)
 	entry(4, "Challenges", "IconTrophy", callbacks.OnChallenges)
 	local inbox = entry(5, "Inbox", "IconMail", callbacks.OnInbox)
+	entry(6, "Visit", "Sign", callbacks.OnVisit)
+	entry(7, "Settings", nil, callbacks.OnSettings)
+	-- Hidden unless the server says the Crate Keeper Kit is on sale to you, or you own it
+	kitsEntry = entry(8, "Kits", "LootCrate", callbacks.OnKits)
+	kitsEntry.Visible = false
 	-- Red badge on the corner: how many letters are waiting
 	inboxBadge = Theme.badge(inbox)
 
@@ -400,6 +435,10 @@ function Hud.Render(state: any)
 end
 
 local toastCount = 0
+function Hud.ShowKits(visible: boolean)
+	kitsEntry.Visible = visible
+end
+
 function Hud.Toast(text: string, kind: string)
 	if kind == "levelup" then
 		Hud.Celebrate("Level Up!", text, C.Gold)
@@ -470,7 +509,10 @@ function Hud.Travel(destination: string)
 		return
 	end
 	local name = (Places.Names :: any)[destination]
-	fadeTitle.Text = if destination == "Island" or not name then "Heading home..." else `Traveling to {name}...`
+	fadeTitle.Text = if destination == "Visit"
+		then "Heading to their island..."
+		elseif destination == "Island" or not name then "Heading home..."
+		else `Traveling to {name}...`
 	setFade(true, TweenInfo.new(0.35))
 	Sfx.play("Travel")
 	-- Never leave the screen dark if the teleport silently never happens

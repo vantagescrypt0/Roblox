@@ -5,11 +5,12 @@
 --   Mining, Woodcutting, Farming
 --                shared resource worlds (WorldService) with rocks, trees and crops that
 --                grow back, reached through their portals in Town
---   Slaying      the PvE world (not built yet; its portal in Town is boarded up)
+--   Slaying      the monster world (WorldService, Worlds/Slaying): fight for Combat XP and
+--                drops; its portal in Town opens once it's published (Ids.Slaying)
 --   Warzone      the shared PvP and PvE arena, reached through the void pit in Town
 -- Which one a server is running comes from the PlaceKind attribute on Workspace, set in
 -- each place's Rojo project file (default.project.json = Island, town.project.json = Town,
--- mining/woodcutting/farming.project.json = the worlds, warzone.project.json = the Warzone).
+-- mining/woodcutting/farming/slaying.project.json = the worlds, warzone.project.json = the Warzone).
 
 local Workspace = game:GetService("Workspace")
 
@@ -24,7 +25,7 @@ Places.Ids = table.freeze({
 	Mining = 97612918094932,
 	Woodcutting = 75392192647539,
 	Farming = 134413726720555,
-	Slaying = 0,
+	Slaying = 74256606397606,
 	Warzone = 111392079569314,
 })
 
@@ -40,7 +41,7 @@ Places.Names = table.freeze({
 })
 
 -- The resource worlds WorldService can build
-local WORLDS = { Mining = true, Woodcutting = true, Farming = true }
+local WORLDS = { Mining = true, Woodcutting = true, Farming = true, Slaying = true }
 
 function Places.Current(): Kind
 	local kind = Workspace:GetAttribute("PlaceKind")

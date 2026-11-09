@@ -75,8 +75,28 @@ for _, tier in TIERS do
 	end
 end
 
+-- The armour kits' swords ([[Kits]]): as strong as Sapphire, so the late game's Ruby and Starsteel still beat them. They
+-- aren't in List, because nothing crafts them.
+local sapphire = byItem.SapphireSword
+local kitSwords: { Tool } = {}
+for _, kit in { "Stormcaller", "Sunforged", "Emberguard", "Frostwarden", "Venomfang" } do
+	local tool: Tool = {
+		Item = `{kit}Sword`,
+		Kind = "Sword",
+		Tier = 5,
+		TierName = kit,
+		Efficiency = 1,
+		Damage = sapphire.Damage,
+		Cooldown = sapphire.Cooldown,
+		Harvest = 0,
+	}
+	table.insert(kitSwords, tool)
+	byItem[tool.Item] = tool
+end
+
 return table.freeze({
 	List = table.freeze(list),
+	KitSwords = table.freeze(kitSwords),
 	ByItem = table.freeze(byItem),
 	TierNames = TIER_NAMES,
 })

@@ -19,6 +19,7 @@
 local Decorations = require(script.Parent.Decorations)
 local Gear = require(script.Parent.Gear)
 local Liquids = require(script.Parent.Liquids)
+local Monsters = require(script.Parent.Monsters)
 
 export type Block = {
 	Name: string,
@@ -358,6 +359,18 @@ end
 -- look is built in code (Util/TrophyModels), so they're see-through to the blocks round them.
 for _, trophy in Gear.TrophyList do
 	Blocks[trophy.Block] = { Name = trophy.Name, Drop = trophy.Item, Hardness = 1, Breakable = true, SeeThrough = true }
+end
+
+-- Monster spawners (Monsters.luau): a cage on your island, placed for good like a node. Nobody
+-- can break one; their look is built in code (Util/SpawnerModels).
+for _, monster in Monsters.List do
+	Blocks[monster.Spawner] = {
+		Name = `{monster.Name} Spawner`,
+		Drop = nil,
+		Hardness = 100,
+		Breakable = false,
+		SeeThrough = true,
+	}
 end
 
 -- Decorations (Decorations.luau) place, break and save as blocks, but they're drawn as models

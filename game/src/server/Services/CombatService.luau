@@ -21,6 +21,7 @@ local Tools = require(ReplicatedStorage.Shared.Tools)
 local DecorModels = require(script.Parent.Parent.Util.DecorModels)
 local HeldModel = require(script.Parent.Parent.Util.HeldModel)
 local DataService = require(script.Parent.DataService)
+local KitPowerService = require(script.Parent.KitPowerService)
 local MobService = require(script.Parent.MobService)
 local SprintService = require(script.Parent.SprintService)
 local QuestService = require(script.Parent.QuestService)
@@ -96,8 +97,17 @@ local function knockbackFrom(root: BasePart, targetRoot: BasePart, speed: number
 	return away * speed + Vector3.new(0, Combat.KnockUp, 0)
 end
 
--- One hit on one character. Returns true if it landed.
-local function hit(player: Player, root: BasePart, model: Model, damage: number, speed: number, effect: string): boolean
+-- One hit on one character. Returns true if it landed. A kit's special goes through armour (`pierce`), and only swings
+-- set off armour that bites back.
+local function hit(
+	player: Player,
+	root: BasePart,
+	model: Model,
+	damage: number,
+	speed: number,
+	effect: string,
+	pierce: boolean?
+): boolean
 	local humanoid = model:FindFirstChildOfClass("Humanoid")
 	local targetRoot = model:FindFirstChild("HumanoidRootPart")
 	if not humanoid or humanoid.Health <= 0 or not targetRoot or not targetRoot:IsA("BasePart") then
@@ -105,7 +115,7 @@ local function hit(player: Player, root: BasePart, model: Model, damage: number,
 	end
 
 	if model:GetAttribute("Mob") then
-		MobService.Damage(model, player, damage)
+		MobService.Damage(model, player, damage, root)
 		Remotes.HitEffect:FireAllClients(model, effect)
 		return true
 	end
@@ -140,14 +150,20 @@ local function hit(player: Player, root: BasePart, model: Model, damage: number,
 		return false
 	end
 	local points, toughness = protection(victim)
-	local left = throughHurtTime(model, Combat.Reduce(damage, points, toughness))
+	local left = throughHurtTime(model, if pierce then damage else Combat.Reduce(damage, points, toughness))
 	if left <= 0 then
 		return false
 	end
 	humanoid:SetAttribute("LastAttacker", player.UserId)
 	humanoid:TakeDamage(left)
-	Remotes.Knockback:FireClient(victim, knockbackFrom(root, targetRoot, speed))
+	Remotes.Knockback:FireClient(
+		victim,
+		knockbackFrom(root, targetRoot, speed) * KitPowerService.KnockbackScale(victim)
+	)
 	Remotes.HitEffect:FireAllClients(model, effect)
+	if not pierce then
+		KitPowerService.Struck(victim, player, root)
+	end
 	QuestService.Record(player, "PvPHit")
 	if effect == "crit" then
 		QuestService.Record(player, "PvPCrit")
@@ -197,10 +213,15 @@ end
 local function strike(player: Player, root: BasePart, target: Model, targetRoot: BasePart, swing: Swing)
 	local full = swing.Charge >= Combat.FullCharge
 	local crit = full and swing.Falling and not swing.Sprinting
-	local damage = Combat.HitDamage(swing.Damage, swing.Charge) * (if crit then Combat.CritScale else 1)
+	local damage = Combat.HitDamage(swing.Damage, swing.Charge)
+		* (if crit then Combat.CritScale else 1)
+		* KitPowerService.DamageScale(player)
 	local sprintHit = full and swing.Sprinting
 	local speed = if sprintHit then Combat.SprintKnockback else Combat.Knockback
 	local landed = hit(player, root, target, damage, speed, if crit then "crit" else "hit")
+	if landed then
+		KitPowerService.Landed(player, target)
+	end
 	if landed and sprintHit then
 		SprintService.Stop(player)
 	end
@@ -358,6 +379,7 @@ end
 
 function CombatService.Start()
 	HeldModel.Start()
+	KitPowerService.Start(hit)
 	Remotes.Attack.OnServerEvent:Connect(onAttack)
 	Players.PlayerRemoving:Connect(function(player)
 		lastSwing[player] = nil

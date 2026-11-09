@@ -93,6 +93,7 @@ local function snapshot(data: DataService.Data)
 		XPToNext = Leveling.PlayerXPToNext(data.Level),
 		MaxLevel = Leveling.MaxPlayerLevel,
 		WarzoneLevel = Leveling.WarzoneLevel,
+		Settings = data.Settings,
 		Season = data.Season,
 		Skills = skills,
 		Items = items,
@@ -117,7 +118,16 @@ function StateService.Notify(player: Player, text: string, kind: string?)
 	Remotes.Notify:FireClient(player, text, kind or "info")
 end
 
+local function onSaveSettings(player: Player, music: unknown, effects: unknown)
+	local data = DataService.GetData(player)
+	if data and type(music) == "number" and type(effects) == "number" and music == music and effects == effects then
+		data.Settings.Music = math.clamp(music, 0, 1)
+		data.Settings.Effects = math.clamp(effects, 0, 1)
+	end
+end
+
 function StateService.Start()
+	Remotes.SaveSettings.OnServerEvent:Connect(onSaveSettings)
 	DataService.OnDataLoaded(send)
 	DataService.OnChanged(send)
 

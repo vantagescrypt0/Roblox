@@ -10,7 +10,9 @@ local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Shops = require(ReplicatedStorage.Shared.Shops)
+local Metrics = require(script.Parent.Parent.Util.Metrics)
 local Prompts = require(script.Parent.Parent.Util.Prompts)
+local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local QuestService = require(script.Parent.QuestService)
@@ -68,6 +70,8 @@ local function sellItem(player: Player, itemId: string, amount: number): number
 	end
 	local earned = amount * item.SellPrice
 	InventoryService.AddCoins(player, earned)
+	local data = DataService.GetData(player)
+	Metrics.Coins(player, earned, if data then data.Coins else 0, "Shop", itemId)
 	return earned
 end
 
@@ -126,6 +130,8 @@ local function onBuy(player: Player, shopId: unknown, itemId: unknown, amount: u
 		return
 	end
 	if InventoryService.SpendCoins(player, amount * price) then
+		local spender = DataService.GetData(player)
+		Metrics.Coins(player, -(amount * price), if spender then spender.Coins else 0, "Shop", itemId)
 		InventoryService.Add(player, itemId, amount)
 		StateService.Notify(player, `Bought {amount} {item.Name}`, "coins")
 		if needs then

@@ -17,6 +17,12 @@ local NAMES = {
 	"IslandRebuilt", -- server -> client: your island was upgraded to this level (for effects)
 	"BreakBlock", -- client -> server: break the block at grid x, y, z (your island, or the world you're in)
 	"PlaceBlock", -- client -> server: place an item's block at grid x, y, z, aimed at the block at x, y, z
+	"SaveSettings", -- client -> server: music and sound effects volumes, 0 to 1
+	"VisitOpen", -- client -> server: send me the Visit window's list and guestbook
+	"VisitState", -- server -> client: that list, and the guestbook of the island you're on
+	"VisitGo", -- client -> server: go to this player's island (user id; 0 = home)
+	"VisitRule", -- client -> server: who can visit your island (Everyone, Friends, Nobody)
+	"GuestbookSign", -- client -> server: sign the guestbook of the island you're on
 	"OpenSign", -- both ways: client asks to open its sign at grid x, y, z; server opens it (and the words)
 	"EditSign", -- client -> server: write these words on your sign at grid x, y, z
 	"MoveStack", -- client -> server: move items between inventory slots (from, to, amount)
@@ -47,7 +53,12 @@ local NAMES = {
 	"ClaimMail", -- client -> server: claim a letter in your Inbox (its id, or "*" for all of them)
 	"Equip", -- client -> server: wear a pet, armor piece or shield (item id), or take it off if worn
 	"OpenCrate", -- client -> server: open one of your Loot Crates
-	"CrateOpened", -- server -> client: what your crate gave (item id, count)
+	"CrateOpened", -- server -> client: what your crate gave (a list of item id, count, good)
+	"KitOpen", -- client -> server: send me what's for sale
+	"KitState", -- server -> client: each kit (on sale, owned, seconds until your next claim) and single crates
+	"KitClaim", -- client -> server: claim this kit's reward (kit id)
+	"KitBuy", -- client -> server: show me Roblox's purchase prompt for this kit (kit id)
+	"KitBuyCrate", -- client -> server: show me Roblox's purchase prompt for one Loot Crate
 	"TrackBoard", -- client -> server: show this Challenges board group in the quest tracker (Boards.luau id)
 	"LeaveWarzone", -- client -> server: holding the Warzone's Leave button (true), or let go (false)
 	"Block", -- client -> server: holding your shield up (true), or let go (false)
@@ -55,6 +66,8 @@ local NAMES = {
 	"Sprint", -- client -> server: sprinting (true), or stopped (false)
 	"Knockback", -- server -> client: you were hit; your character gets this velocity
 	"HitEffect", -- server -> clients: this character was hit (Model, "hit", "crit", "sweep" or "block")
+	"KitPower", -- client -> server: right-clicked with a kit's sword, at this character if one's under the aim
+	"KitFx", -- server -> clients: show a kit special going off (kind, where, and what it needs)
 }
 
 local folder: Instance
@@ -84,6 +97,12 @@ return {
 	IslandRebuilt = folder:WaitForChild("IslandRebuilt") :: RemoteEvent,
 	BreakBlock = folder:WaitForChild("BreakBlock") :: RemoteEvent,
 	PlaceBlock = folder:WaitForChild("PlaceBlock") :: RemoteEvent,
+	SaveSettings = folder:WaitForChild("SaveSettings") :: RemoteEvent,
+	VisitOpen = folder:WaitForChild("VisitOpen") :: RemoteEvent,
+	VisitState = folder:WaitForChild("VisitState") :: RemoteEvent,
+	VisitGo = folder:WaitForChild("VisitGo") :: RemoteEvent,
+	VisitRule = folder:WaitForChild("VisitRule") :: RemoteEvent,
+	GuestbookSign = folder:WaitForChild("GuestbookSign") :: RemoteEvent,
 	OpenSign = folder:WaitForChild("OpenSign") :: RemoteEvent,
 	EditSign = folder:WaitForChild("EditSign") :: RemoteEvent,
 	MoveStack = folder:WaitForChild("MoveStack") :: RemoteEvent,
@@ -115,6 +134,11 @@ return {
 	Equip = folder:WaitForChild("Equip") :: RemoteEvent,
 	OpenCrate = folder:WaitForChild("OpenCrate") :: RemoteEvent,
 	CrateOpened = folder:WaitForChild("CrateOpened") :: RemoteEvent,
+	KitOpen = folder:WaitForChild("KitOpen") :: RemoteEvent,
+	KitState = folder:WaitForChild("KitState") :: RemoteEvent,
+	KitClaim = folder:WaitForChild("KitClaim") :: RemoteEvent,
+	KitBuy = folder:WaitForChild("KitBuy") :: RemoteEvent,
+	KitBuyCrate = folder:WaitForChild("KitBuyCrate") :: RemoteEvent,
 	TrackBoard = folder:WaitForChild("TrackBoard") :: RemoteEvent,
 	LeaveWarzone = folder:WaitForChild("LeaveWarzone") :: RemoteEvent,
 	Block = folder:WaitForChild("Block") :: RemoteEvent,
@@ -122,4 +146,6 @@ return {
 	Sprint = folder:WaitForChild("Sprint") :: RemoteEvent,
 	Knockback = folder:WaitForChild("Knockback") :: RemoteEvent,
 	HitEffect = folder:WaitForChild("HitEffect") :: RemoteEvent,
+	KitPower = folder:WaitForChild("KitPower") :: RemoteEvent,
+	KitFx = folder:WaitForChild("KitFx") :: RemoteEvent,
 }

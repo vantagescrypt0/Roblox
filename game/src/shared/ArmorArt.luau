@@ -1,7 +1,8 @@
 --!strict
 -- The armour's look (ref_armour_blocky_themes in 02 Research/References/Gear; all armour, your call 2026-11-03): blocky
 -- coats modelled in Blender (art/scripts/armour.py) to fit the body's boxes, one bold colour, thick outlines and big
--- themed shoulders. Mining has crystals, Woodcutting leaves and thorny vines, Farming wheat sheaves and sunflowers.
+-- themed shoulders. Mining has crystals, Woodcutting leaves and thorny vines, Farming wheat sheaves and sunflowers, and
+-- the armour kits their own themes: Stormcaller has a storm cloud and lightning.
 -- One mesh serves every tier: each tier has a colour sheet, with the coat dark and the trim in the tier's colour.
 --   Mesh     the asset id
 --   Centre   the middle of the mesh, in its body part's space, on the avatar it was modelled for
@@ -241,6 +242,341 @@ ArmorArt.Sets = {
 			Mesh = "rbxassetid://82266235765844",
 			Centre = Vector3.new(-0.2757, -0.2, -0.25),
 			Size = Vector3.new(1.2827, 1.2113, 1.4313),
+		},
+	},
+	Stormcaller = {
+		Helmet = {
+			Mesh = "rbxassetid://82997437678848",
+			Centre = Vector3.new(0.0, 0.474, -0.0247),
+			Size = Vector3.new(1.3713, 1.9993, 1.4006),
+		},
+		Chest = {
+			Mesh = "rbxassetid://140701780686708",
+			Centre = Vector3.new(0.0, -0.2877, -0.0002),
+			Size = Vector3.new(1.7913, 3.0667, 1.416),
+		},
+		PauldronRight = {
+			Mesh = "rbxassetid://90998908634020",
+			Centre = Vector3.new(1.5131, 1.4408, 0.04),
+			Size = Vector3.new(1.8176, 1.5529, 1.0193),
+		},
+		PauldronLeft = {
+			Mesh = "rbxassetid://110245790796782",
+			Centre = Vector3.new(-1.5131, 1.4408, 0.04),
+			Size = Vector3.new(1.8176, 1.5529, 1.0193),
+		},
+		SleeveRight = {
+			Mesh = "rbxassetid://123714499199798",
+			Centre = Vector3.new(0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		SleeveLeft = {
+			Mesh = "rbxassetid://76206369791250",
+			Centre = Vector3.new(-0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		ForearmRight = {
+			Mesh = "rbxassetid://111685689137689",
+			Centre = Vector3.new(0.2127, -0.1, -0.09),
+			Size = Vector3.new(1.3566, 1.0913, 0.9513),
+		},
+		ForearmLeft = {
+			Mesh = "rbxassetid://125228885199564",
+			Centre = Vector3.new(-0.2127, -0.1, -0.09),
+			Size = Vector3.new(1.3566, 1.0913, 0.9513),
+		},
+		Hips = {
+			Mesh = "rbxassetid://75384940251645",
+			Centre = Vector3.new(0.0, -0.13, -0.02),
+			Size = Vector3.new(1.6113, 0.6313, 1.0913),
+		},
+		ThighRight = {
+			Mesh = "rbxassetid://92196189494442",
+			Centre = Vector3.new(0.105, -0.0921, -0.0413),
+			Size = Vector3.new(0.8213, 1.2355, 0.9738),
+		},
+		ThighLeft = {
+			Mesh = "rbxassetid://103829668368578",
+			Centre = Vector3.new(-0.105, -0.0921, -0.0413),
+			Size = Vector3.new(0.8213, 1.2355, 0.9738),
+		},
+		BootRight = {
+			Mesh = "rbxassetid://105035461174083",
+			Centre = Vector3.new(0.2245, -0.2, -0.25),
+			Size = Vector3.new(1.1802, 1.2113, 1.4313),
+		},
+		BootLeft = {
+			Mesh = "rbxassetid://119007405329508",
+			Centre = Vector3.new(-0.2245, -0.2, -0.25),
+			Size = Vector3.new(1.1802, 1.2113, 1.4313),
+		},
+	},
+	Sunforged = {
+		Helmet = {
+			Mesh = "rbxassetid://126220810569884",
+			Centre = Vector3.new(0.0, 0.4764, -0.0247),
+			Size = Vector3.new(1.6847, 2.0041, 1.4006),
+		},
+		Chest = {
+			Mesh = "rbxassetid://122260252023424",
+			Centre = Vector3.new(0.0, -0.2905, -0.0132),
+			Size = Vector3.new(1.7913, 3.0724, 1.3236),
+		},
+		PauldronRight = {
+			Mesh = "rbxassetid://135045695897822",
+			Centre = Vector3.new(1.439, 1.3584, 0.04),
+			Size = Vector3.new(1.6692, 1.3881, 0.9913),
+		},
+		PauldronLeft = {
+			Mesh = "rbxassetid://81000879987756",
+			Centre = Vector3.new(-1.439, 1.3584, 0.04),
+			Size = Vector3.new(1.6692, 1.3881, 0.9913),
+		},
+		SleeveRight = {
+			Mesh = "rbxassetid://111998083858849",
+			Centre = Vector3.new(0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		SleeveLeft = {
+			Mesh = "rbxassetid://119086603496274",
+			Centre = Vector3.new(-0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		ForearmRight = {
+			Mesh = "rbxassetid://124713465809481",
+			Centre = Vector3.new(0.2456, -0.1, -0.09),
+			Size = Vector3.new(1.4225, 1.0913, 0.9513),
+		},
+		ForearmLeft = {
+			Mesh = "rbxassetid://126348248733465",
+			Centre = Vector3.new(-0.2456, -0.1, -0.09),
+			Size = Vector3.new(1.4225, 1.0913, 0.9513),
+		},
+		Hips = {
+			Mesh = "rbxassetid://102232135645145",
+			Centre = Vector3.new(0.0, -0.13, -0.02),
+			Size = Vector3.new(1.6113, 0.6313, 1.0913),
+		},
+		ThighRight = {
+			Mesh = "rbxassetid://117751886539546",
+			Centre = Vector3.new(0.105, -0.0921, -0.0395),
+			Size = Vector3.new(0.8213, 1.2355, 0.9703),
+		},
+		ThighLeft = {
+			Mesh = "rbxassetid://135673216579307",
+			Centre = Vector3.new(-0.105, -0.0921, -0.0395),
+			Size = Vector3.new(0.8213, 1.2355, 0.9703),
+		},
+		BootRight = {
+			Mesh = "rbxassetid://130933297423764",
+			Centre = Vector3.new(0.2597, -0.2, -0.25),
+			Size = Vector3.new(1.2507, 1.2113, 1.4313),
+		},
+		BootLeft = {
+			Mesh = "rbxassetid://95633458332179",
+			Centre = Vector3.new(-0.2597, -0.2, -0.25),
+			Size = Vector3.new(1.2507, 1.2113, 1.4313),
+		},
+	},
+	Emberguard = {
+		Helmet = {
+			Mesh = "rbxassetid://88556203333651",
+			Centre = Vector3.new(0.0, 0.4835, -0.0247),
+			Size = Vector3.new(1.3713, 2.0182, 1.4006),
+		},
+		Chest = {
+			Mesh = "rbxassetid://89732521279360",
+			Centre = Vector3.new(0.0, -0.2905, -0.0),
+			Size = Vector3.new(1.7913, 3.0724, 1.4174),
+		},
+		PauldronRight = {
+			Mesh = "rbxassetid://94499131398359",
+			Centre = Vector3.new(1.3705, 1.3709, 0.04),
+			Size = Vector3.new(1.5324, 1.4131, 0.9913),
+		},
+		PauldronLeft = {
+			Mesh = "rbxassetid://94258693228137",
+			Centre = Vector3.new(-1.3705, 1.3709, 0.04),
+			Size = Vector3.new(1.5324, 1.4131, 0.9913),
+		},
+		SleeveRight = {
+			Mesh = "rbxassetid://84507907798025",
+			Centre = Vector3.new(0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		SleeveLeft = {
+			Mesh = "rbxassetid://87824568266931",
+			Centre = Vector3.new(-0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		ForearmRight = {
+			Mesh = "rbxassetid://117934943820384",
+			Centre = Vector3.new(0.2325, -0.1072, -0.09),
+			Size = Vector3.new(1.3962, 1.1058, 0.9513),
+		},
+		ForearmLeft = {
+			Mesh = "rbxassetid://120389042745358",
+			Centre = Vector3.new(-0.2325, -0.1072, -0.09),
+			Size = Vector3.new(1.3962, 1.1058, 0.9513),
+		},
+		Hips = {
+			Mesh = "rbxassetid://90361609115822",
+			Centre = Vector3.new(0.0, -0.13, -0.02),
+			Size = Vector3.new(1.6113, 0.6313, 1.0913),
+		},
+		ThighRight = {
+			Mesh = "rbxassetid://73799909790840",
+			Centre = Vector3.new(0.105, -0.0921, -0.0666),
+			Size = Vector3.new(0.8213, 1.2355, 1.0244),
+		},
+		ThighLeft = {
+			Mesh = "rbxassetid://121101195086711",
+			Centre = Vector3.new(-0.105, -0.0921, -0.0666),
+			Size = Vector3.new(0.8213, 1.2355, 1.0244),
+		},
+		BootRight = {
+			Mesh = "rbxassetid://121843235144387",
+			Centre = Vector3.new(0.2574, -0.2, -0.25),
+			Size = Vector3.new(1.2461, 1.2113, 1.4313),
+		},
+		BootLeft = {
+			Mesh = "rbxassetid://137263361968230",
+			Centre = Vector3.new(-0.2574, -0.2, -0.25),
+			Size = Vector3.new(1.2461, 1.2113, 1.4313),
+		},
+	},
+	Frostwarden = {
+		Helmet = {
+			Mesh = "rbxassetid://95507513013784",
+			Centre = Vector3.new(0.0, 0.4816, -0.0247),
+			Size = Vector3.new(1.739, 2.0146, 1.4006),
+		},
+		Chest = {
+			Mesh = "rbxassetid://90953093924640",
+			Centre = Vector3.new(0.0, -0.0821, 0.0203),
+			Size = Vector3.new(1.7913, 2.6555, 1.4739),
+		},
+		PauldronRight = {
+			Mesh = "rbxassetid://95889269132479",
+			Centre = Vector3.new(1.3891, 1.1946, 0.04),
+			Size = Vector3.new(1.5695, 1.8276, 0.9913),
+		},
+		PauldronLeft = {
+			Mesh = "rbxassetid://95144713193669",
+			Centre = Vector3.new(-1.3891, 1.1946, 0.04),
+			Size = Vector3.new(1.5695, 1.8276, 0.9913),
+		},
+		SleeveRight = {
+			Mesh = "rbxassetid://94803042761852",
+			Centre = Vector3.new(0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		SleeveLeft = {
+			Mesh = "rbxassetid://127524164915741",
+			Centre = Vector3.new(-0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		ForearmRight = {
+			Mesh = "rbxassetid://94978813283130",
+			Centre = Vector3.new(0.2262, -0.1, -0.09),
+			Size = Vector3.new(1.3837, 1.0913, 0.9513),
+		},
+		ForearmLeft = {
+			Mesh = "rbxassetid://135853803946129",
+			Centre = Vector3.new(-0.2262, -0.1, -0.09),
+			Size = Vector3.new(1.3837, 1.0913, 0.9513),
+		},
+		Hips = {
+			Mesh = "rbxassetid://93811821242764",
+			Centre = Vector3.new(0.0, -0.13, -0.02),
+			Size = Vector3.new(1.6113, 0.6313, 1.0913),
+		},
+		ThighRight = {
+			Mesh = "rbxassetid://99196960380996",
+			Centre = Vector3.new(0.2326, -0.212, -0.0626),
+			Size = Vector3.new(1.0766, 1.4752, 1.0165),
+		},
+		ThighLeft = {
+			Mesh = "rbxassetid://133899835883442",
+			Centre = Vector3.new(-0.2326, -0.212, -0.0626),
+			Size = Vector3.new(1.0766, 1.4752, 1.0165),
+		},
+		BootRight = {
+			Mesh = "rbxassetid://77084629307743",
+			Centre = Vector3.new(0.2615, -0.2, -0.25),
+			Size = Vector3.new(1.2543, 1.2113, 1.4313),
+		},
+		BootLeft = {
+			Mesh = "rbxassetid://118826724325052",
+			Centre = Vector3.new(-0.2615, -0.2, -0.25),
+			Size = Vector3.new(1.2543, 1.2113, 1.4313),
+		},
+	},
+	Venomfang = {
+		Helmet = {
+			Mesh = "rbxassetid://119169563759998",
+			Centre = Vector3.new(0.0, 0.2804, -0.0608),
+			Size = Vector3.new(1.3713, 2.2115, 1.473),
+		},
+		Chest = {
+			Mesh = "rbxassetid://123316223164956",
+			Centre = Vector3.new(0.0, -0.2905, 0.02),
+			Size = Vector3.new(1.7913, 3.0724, 1.7146),
+		},
+		PauldronRight = {
+			Mesh = "rbxassetid://76165746321522",
+			Centre = Vector3.new(1.4214, 1.2804, 0.04),
+			Size = Vector3.new(1.6341, 1.232, 0.9913),
+		},
+		PauldronLeft = {
+			Mesh = "rbxassetid://91338921303056",
+			Centre = Vector3.new(-1.4214, 1.2804, 0.04),
+			Size = Vector3.new(1.6341, 1.232, 0.9913),
+		},
+		SleeveRight = {
+			Mesh = "rbxassetid://84507907798025",
+			Centre = Vector3.new(0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		SleeveLeft = {
+			Mesh = "rbxassetid://87824568266931",
+			Centre = Vector3.new(-0.1, 0.02, -0.05),
+			Size = Vector3.new(0.8913, 1.0113, 0.8713),
+		},
+		ForearmRight = {
+			Mesh = "rbxassetid://130649693980445",
+			Centre = Vector3.new(0.2382, -0.1, -0.09),
+			Size = Vector3.new(1.4076, 1.0913, 0.9513),
+		},
+		ForearmLeft = {
+			Mesh = "rbxassetid://99157832882850",
+			Centre = Vector3.new(-0.2382, -0.1, -0.09),
+			Size = Vector3.new(1.4076, 1.0913, 0.9513),
+		},
+		Hips = {
+			Mesh = "rbxassetid://90361609115822",
+			Centre = Vector3.new(0.0, -0.13, -0.02),
+			Size = Vector3.new(1.6113, 0.6313, 1.0913),
+		},
+		ThighRight = {
+			Mesh = "rbxassetid://103642496113650",
+			Centre = Vector3.new(0.105, -0.0921, -0.2516),
+			Size = Vector3.new(0.8213, 1.2355, 1.3945),
+		},
+		ThighLeft = {
+			Mesh = "rbxassetid://92207364843002",
+			Centre = Vector3.new(-0.105, -0.0921, -0.2516),
+			Size = Vector3.new(0.8213, 1.2355, 1.3945),
+		},
+		BootRight = {
+			Mesh = "rbxassetid://126828536419328",
+			Centre = Vector3.new(0.2211, -0.2, -0.25),
+			Size = Vector3.new(1.1735, 1.2113, 1.4313),
+		},
+		BootLeft = {
+			Mesh = "rbxassetid://112084566901938",
+			Centre = Vector3.new(-0.2211, -0.2, -0.25),
+			Size = Vector3.new(1.1735, 1.2113, 1.4313),
 		},
 	},
 } :: { [string]: Set }

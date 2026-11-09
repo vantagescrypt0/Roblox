@@ -42,6 +42,11 @@ SWORDS = {
     "CrystalSword": dict(Length=6.4, Grip=(0, 0.333, 0), Up=DOWN, Spine=SIDE),
     "RubySword": dict(Length=6.8, Grip=(0.039, -0.36, 0), Up=(0.526, 0.85, 0), Spine=(0.85, -0.526, 0)),
     "StarsteelSword": dict(Length=7.0, Grip=(0, -0.333, 0), Up=UP, Spine=SIDE),
+    "StormcallerSword": dict(Length=6.4, Grip=(0, -0.3625, 0), Up=UP, Spine=SIDE),
+    "SunforgedSword": dict(Length=6.0, Grip=(0, -0.3708, 0), Up=UP, Spine=SIDE),
+    "EmberguardSword": dict(Length=6.4, Grip=(0, -0.3792, 0), Up=UP, Spine=SIDE),
+    "FrostwardenSword": dict(Length=6.4, Grip=(0, -0.3708, 0), Up=UP, Spine=SIDE),
+    "VenomfangSword": dict(Length=6.4, Grip=(0, 0.3542, 0), Up=DOWN, Spine=SIDE),
 }
 STRAIGHT = [name for name in SWORDS if name != "RubySword"]
 

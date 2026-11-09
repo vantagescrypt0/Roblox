@@ -32,6 +32,9 @@
 --                                                           bar; leave the number off for the full bar (Warzone)
 --   game.ServerStorage.Dev:Invoke("Dummy")                  a dummy to hit, just in front of you; hits
 --                                                           on it print what they did
+--   game.ServerStorage.Dev:Invoke("Kit", true, true, false, 0)  kits and crates as if on sale, owned, not
+--                                                           restricted, last claimed 0 s ago (add a kit's Id)
+--   game.ServerStorage.Dev:Invoke("KitReceipt", "abc")      Roblox telling us crate purchase "abc" was paid for
 --   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
 -- Acts on the first player in the server unless "As" picked another (for local tests with
 -- several players). Does nothing in live servers.
@@ -49,12 +52,20 @@ local DataService = require(script.Parent.DataService)
 local InboxService = require(script.Parent.InboxService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
+local KitService = require(script.Parent.KitService)
 local SkydropService = require(script.Parent.SkydropService)
 local WarzoneService = require(script.Parent.WarzoneService)
 
 local DevService = {}
 
 local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> ...any } = {
+	Kit = function(_player, data, onSale, owned, restricted, claimedAgo, kitId)
+		data.KitClaims[kitId or "CrateKeeper"] = if claimedAgo then os.time() - claimedAgo else nil
+		KitService.SetTest({ OnSale = onSale == true, Owned = owned == true, Restricted = restricted == true })
+	end,
+	KitReceipt = function(player, _data, purchaseId)
+		return tostring(KitService.TestReceipt(player, purchaseId))
+	end,
 	Level = function(player, data, level)
 		data.Level = level
 		data.XP = 0

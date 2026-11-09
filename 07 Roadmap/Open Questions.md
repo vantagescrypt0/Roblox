@@ -1,7 +1,17 @@
 # Open Questions
 
 ## Publishing
-- [ ] Your Roblox account is set as under 18 by mistake: fix it with ID, or publish under a group owned by an account with your real age? Decide before going public (Claude's pick: try the ID fix, then a group)
+- [x] Your Roblox account was set as under 18 by mistake: you fixed it (2026-11-08)
+
+## Loot Crates, ranks and boost gems (your notes, 2026-11-09)
+- [x] The Crate Keeper Kit is 2,500 Robux, once, for a crate a week; a single crate is 800 Robux (your call). See [[Kits]]
+- [x] Armour kits: the first look, Stormcaller, is approved and built (your call). See [[Kits]]
+- [x] How many armour kits and which themes? Five: Stormcaller, Sunforged, Emberguard, Frostwarden, Venomfang (your call). See [[Kits]]
+- [x] What does each armour kit cost? 800 to 1,800 Robux (your ranges). See [[Kits]]
+- [x] Crates give 6 things with a 33% chance of something good (your call). Built; good prizes and which pets are Claude's picks, in [[Kits]]
+- [ ] **Rank system (coming soon):** how do you get a rank, and what does it give you? Is it bought, earned, or both?
+- [ ] **Boost gems (coming soon):** what do they boost, for how long, and where do they come from?
+- [ ] If seasons ever reset pets, do pets from crates reset too? (Resets are on hold)
 
 ## Warzone
 - [x] Server sizes: Warzone 55, Town 40, each Grinding World 30, Island 25 (your call, 2026-11-04). Set on Roblox for the five live places; the Warzone's is set when it's published as a new place.

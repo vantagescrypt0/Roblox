@@ -360,7 +360,8 @@ local PART_XP = {
 	Rope = 450,
 	CaneRope = 870,
 }
--- Combat XP only comes from the Warzone, so only Crystal swords (from the Warzone too) need it
+-- Swords stay open to everyone (you need one to start training Combat); only the Warzone's Crystal
+-- swords need the skill
 
 for _, tool in Tools.List do
 	local cost = COST[tool.Kind]

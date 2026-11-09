@@ -12,8 +12,20 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local Gear = require(ReplicatedStorage.Shared.Gear)
 local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
 local Items = require(ReplicatedStorage.Shared.Items)
+local Monsters = require(ReplicatedStorage.Shared.Monsters)
+local Slivers = require(ReplicatedStorage.Shared.Slivers)
 
 local ItemIcon = {}
+
+-- Which generated model stands for each Slaying item: its monster for a spawner, its drop for a sliver
+local MonsterIcons: { [string]: string } = {}
+for _, monster in Monsters.List do
+	MonsterIcons[monster.Spawner] = monster.Model
+	local sliver = Slivers.ByOre[monster.Drop]
+	if sliver then
+		MonsterIcons[sliver.Item] = monster.Drop
+	end
+end
 
 local ICON_CELLS = ItemArt.Icons :: { [string]: number }
 
@@ -100,6 +112,13 @@ function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObje
 		image.ScaleType = Enum.ScaleType.Fit
 		image.Parent = parent
 		return image
+	end
+
+	-- Drops, slivers and spawners from the Slaying World: their generated mesh
+	local monsterModels = ReplicatedStorage:FindFirstChild("MonsterModels")
+	local monsterModel = monsterModels and monsterModels:FindFirstChild(MonsterIcons[itemId] or itemId)
+	if monsterModel and monsterModel:IsA("BasePart") then
+		return modelIcon(parent, monsterModel, size)
 	end
 
 	-- Pre-rendered picture from the icon sheet

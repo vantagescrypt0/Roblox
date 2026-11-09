@@ -10,6 +10,7 @@ local Boards = require(ReplicatedStorage.Shared.Boards)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Quests = require(ReplicatedStorage.Shared.Quests)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Metrics = require(script.Parent.Parent.Util.Metrics)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local ProgressionService = require(script.Parent.ProgressionService)
@@ -27,6 +28,8 @@ local function giveReward(player: Player, reward: Quests.Reward)
 	local parts = {}
 	if reward.Coins then
 		InventoryService.AddCoins(player, reward.Coins)
+		local data = DataService.GetData(player)
+		Metrics.Coins(player, reward.Coins, if data then data.Coins else 0, "Gameplay", "Reward")
 		table.insert(parts, `{reward.Coins} coins`)
 	end
 	if reward.Items then
@@ -50,6 +53,7 @@ end
 local function complete(player: Player, data: DataService.Data, quest: Quests.Quest)
 	data.Quest.Index += 1
 	data.Quest.Progress = 0
+	Metrics.Onboarding(player, data.Quest.Index - 1, quest.Text)
 	StateService.Notify(player, `Quest complete: {quest.Text}`, "level")
 	giveReward(player, quest.Reward)
 	if data.Quest.Index > #Quests then

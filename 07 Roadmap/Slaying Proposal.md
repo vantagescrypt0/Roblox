@@ -36,6 +36,6 @@ Your Skybounds slayer shots give each zone its own terrain and a giant statue of
 Earnings would follow the other Grinding Worlds (~2k an hour at the start, up to what the top of those pays; see [[Late-game Rule]]) and Combat would take about 25 hours to 99, fitted with `tools/balance.py`. Monsters stay blocky and cartoonish with no blood, which should help the age rating, though combat could still affect it, so check it against the maturity questionnaire before launch.
 
 ## What comes with it
-- **A Slayer shopkeeper in Town** beside the portal, who buys the drops. That's a new NPC.
+- **A Slayer shopkeeper in Town**, who buys the drops. That's a new NPC. (Beside the portal at first; you moved him to the east lane on 2026-11-08, see the Decision Log.)
 - **Combat challenges:** pet, armor and trophy tiers per monster, like the other skills, and the Slaying board opens.
 - **Spawners for your island:** slivers from the first 6 monsters craft a spawner of that monster, which you place on your island to fight it there.

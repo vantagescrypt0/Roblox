@@ -29,7 +29,9 @@ for _, pet in Gear.PetList do
 	rewardItems[pet.Item] = true
 end
 for _, armor in Gear.ArmorList do
-	rewardItems[armor.Item] = true
+	if not armor.Class then -- a kit's armour was paid for, so a reset leaves it alone
+		rewardItems[armor.Item] = true
+	end
 end
 for _, trophy in Gear.TrophyList do
 	rewardItems[trophy.Item] = true

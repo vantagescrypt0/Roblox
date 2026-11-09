@@ -10,6 +10,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Gear = require(ReplicatedStorage.Shared.Gear)
 local Items = require(ReplicatedStorage.Shared.Items)
+local Monsters = require(ReplicatedStorage.Shared.Monsters)
+local MonsterModels = require(script.Parent.MonsterModels)
 
 local SIZE = Blocks.Size
 local GOLD = Color3.fromRGB(240, 192, 64)
@@ -62,6 +64,10 @@ local function emblem(root: BasePart, trophy: Gear.Trophy)
 	local source: Instance? = if item and item.Model and models then models:FindFirstChild(item.Model) else nil
 	if not source and blocks then
 		source = blocks:FindFirstChild(trophy.Resource)
+	end
+	local monster = Monsters.ById[trophy.Resource]
+	if monster then
+		source = MonsterModels.Get(monster.Model)
 	end
 	if not source or not source:IsA("BasePart") then
 		piece(root, "Emblem", Vector3.one * 0.9, CFrame.new(0, 1.15, 0), GOLD, Enum.Material.Foil)

@@ -24,19 +24,23 @@ local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
-local Combat = require(ReplicatedStorage.Shared.Combat)
 local Foods = require(ReplicatedStorage.Shared.Foods)
 local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Items = require(ReplicatedStorage.Shared.Items)
+local KitPowers = require(ReplicatedStorage.Shared.KitPowers)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Ambience = require(script.Parent.Parent.Util.Ambience)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local KitSets = require(script.Parent.Parent.Util.KitSets)
+local Metrics = require(script.Parent.Parent.Util.Metrics)
 local Pace = require(script.Parent.Parent.Util.Pace)
 local ShieldModel = require(script.Parent.Parent.Util.ShieldModel)
 local Spawning = require(script.Parent.Parent.Util.Spawning)
+local Speed = require(script.Parent.Parent.Util.Speed)
 local Context = require(script.Parent.Parent.Worlds.Context)
 local Warzone = require(script.Parent.Parent.Worlds.Warzone)
+local AwardService = require(script.Parent.AwardService)
 local BodyService = require(script.Parent.BodyService)
 local ChestService = require(script.Parent.ChestService)
 local DataService = require(script.Parent.DataService)
@@ -73,7 +77,6 @@ local EAT_TIME = 1.2
 local POISON_TIME = 8
 local POISON_PER_SECOND = 2 -- 16 health in all; it never kills
 
-local BLOCK_SPEED = 8
 local BLOCK_SOUND = "rbxassetid://9113447467" -- Blacksmith Anvil Hammer Hits
 
 local WarzoneService = {}
@@ -98,6 +101,7 @@ local leaving: { [Player]: Sound } = {}
 local hunger: { [Player]: number } = {}
 local warned: { [Player]: boolean } = {}
 local poisonUntil: { [Player]: number } = {}
+local poisonRate: { [Player]: number } = {}
 local lastGround: { [Player]: Vector3 } = {}
 local blockingSpeed: { [Player]: boolean } = {}
 local eating: { [Player]: {} } = {}
@@ -210,9 +214,14 @@ end
 
 -- Poison ------------------------------------------------------------------------------
 
-local function poison(player: Player)
-	poisonUntil[player] = os.clock() + POISON_TIME
-	player:SetAttribute("PoisonUntil", workspace:GetServerTimeNow() + POISON_TIME)
+-- Poison never kills. A full set of Venomfang keeps it out altogether.
+function WarzoneService.Poison(player: Player, seconds: number, perSecond: number)
+	if KitSets.Wearing(player) == "Venomfang" then
+		return
+	end
+	poisonUntil[player] = os.clock() + seconds
+	poisonRate[player] = perSecond
+	player:SetAttribute("PoisonUntil", workspace:GetServerTimeNow() + seconds)
 end
 
 -- Falling: back where you left the ground, poisoned
@@ -231,8 +240,10 @@ local function onFell(player: Player, character: Model)
 		facing = Vector3.zAxis
 	end
 	character:PivotTo(CFrame.lookAt(spot + Vector3.new(0, 1, 0), spot + Vector3.new(0, 1, 0) + facing))
-	poison(player)
-	StateService.Notify(player, "You fell! Poison ticks away your health for a few seconds", "bad")
+	WarzoneService.Poison(player, POISON_TIME, POISON_PER_SECOND)
+	if KitSets.Wearing(player) ~= "Venomfang" then
+		StateService.Notify(player, "You fell! Poison ticks away your health for a few seconds", "bad")
+	end
 end
 
 -- Blocking ----------------------------------------------------------------------------
@@ -247,10 +258,7 @@ local function stopBlocking(player: Player)
 	end
 	blockingSpeed[player] = nil
 	player:SetAttribute("Blocking", nil)
-	local humanoid = humanoidOf(player)
-	if humanoid then
-		humanoid.WalkSpeed = Combat.WalkSpeed
-	end
+	Speed.Apply(player)
 	if player.Character then
 		ShieldModel.SetRaised(player.Character, false)
 	end
@@ -267,8 +275,8 @@ local function startBlocking(player: Player)
 	end
 	eating[player] = nil
 	blockingSpeed[player] = true
-	humanoid.WalkSpeed = BLOCK_SPEED
 	player:SetAttribute("Blocking", true)
+	Speed.Apply(player)
 	if player.Character then
 		ShieldModel.SetRaised(player.Character, true)
 	end
@@ -386,7 +394,7 @@ local function enter(player: Player)
 			MessagingService:PublishAsync(BACK_TOPIC, player.UserId)
 		end)
 	end
-	if data.Level < Leveling.WarzoneLevel and not returning then
+	if not Leveling.CanEnterWarzone(player, data.Level) and not returning then
 		StateService.Notify(player, `The Warzone unlocks at level {Leveling.WarzoneLevel}`, "bad")
 		TravelService.Go(player, "Town")
 		return
@@ -394,6 +402,8 @@ local function enter(player: Player)
 	data.Raid.Active = true
 	data.Raid.Bag = {}
 	player:SetAttribute("InWarzone", true)
+	Metrics.Event(player, "WarzoneEntered")
+	AwardService.Give(player, "WarzoneEntered")
 	if returning then
 		local spot = Vector3.new(back.X, back.Y, back.Z)
 		character:PivotTo(CFrame.new(spot))
@@ -478,6 +488,7 @@ local function onCharacterAdded(player: Player, character: Model)
 		if not WarzoneService.IsPlaying(player) then
 			return
 		end
+		Metrics.Event(player, "WarzoneDied")
 		local data = DataService.GetData(player)
 		local root = rootOf(player)
 		ChestService.CloseFor(player)
@@ -612,11 +623,15 @@ local function tick(player: Player, params: RaycastParams)
 	local health = humanoid.Health
 	local poisoned = os.clock() < (poisonUntil[player] or 0)
 	if poisoned then
-		health = math.max(1, health - POISON_PER_SECOND * TICK)
+		health = math.max(1, health - (poisonRate[player] or POISON_PER_SECOND) * TICK)
 	elseif food >= WELL_FED and health < humanoid.MaxHealth then
-		local gain = math.min(REGEN_PER_SECOND * TICK, humanoid.MaxHealth - health)
+		local sunBlessed = KitSets.Wearing(player) == "Sunforged"
+		local rate = REGEN_PER_SECOND * (if sunBlessed then KitPowers.RegenScale else 1)
+		local gain = math.min(rate * TICK, humanoid.MaxHealth - health)
 		health += gain
-		food -= gain * HUNGER_PER_HEALTH
+		if not sunBlessed then
+			food -= gain * HUNGER_PER_HEALTH
+		end
 	elseif food <= 0 and health > STARVE_FLOOR then
 		health = math.max(STARVE_FLOOR, health - STARVE_PER_SECOND * TICK)
 	end
@@ -626,6 +641,7 @@ local function tick(player: Player, params: RaycastParams)
 	setHunger(player, food)
 	if not poisoned and poisonUntil[player] then
 		poisonUntil[player] = nil
+		poisonRate[player] = nil
 		player:SetAttribute("PoisonUntil", nil)
 	end
 end
@@ -739,6 +755,7 @@ function WarzoneService.Start()
 			hunger[player] = nil
 			warned[player] = nil
 			poisonUntil[player] = nil
+			poisonRate[player] = nil
 			lastGround[player] = nil
 			blockingSpeed[player] = nil
 			eating[player] = nil

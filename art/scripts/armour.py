@@ -833,7 +833,623 @@ def helmet_farming():
     return p
 
 
+# The first armour kit, Stormcaller: a dark coat split by lightning, and a storm bursting off each shoulder ------
+
+# A lightning bolt in three straight chunks, as (along it, across it), so each stays a simple solid
+BOLT = (
+    ((0.0, -0.3), (0.0, 0.55), (0.52, 0.22), (0.52, -0.62)),
+    ((0.4, -0.08), (0.4, 0.7), (0.74, 0.28), (0.74, -0.34)),
+    ((0.62, -0.2), (0.62, 0.44), (1.0, -0.55)),
+)
+
+
+def bolt(piece, base, direction, length, width, face=(0, 0, -1), thick=0.05, swatch="Trim", side="Trim3"):
+    """A flat lightning bolt growing from `base`. `face` is roughly the way its flat side looks."""
+    base = Vector(base)
+    d = Vector(direction).normalized()
+    n = Vector(face)
+    n = (n - d * n.dot(d)).normalized()
+    w = n.cross(d).normalized()
+    for chunk in BOLT:
+        outline = [base + d * (length * t) + w * (width * a) for t, a in chunk]
+        count = len(outline)
+        points = [tuple(p + n * thick) for p in outline] + [tuple(p - n * thick) for p in outline]
+        faces = [(list(range(count)), swatch), (list(range(count, 2 * count)), swatch)]
+        for i in range(count):
+            j = (i + 1) % count
+            faces.append(([i, j, j + count, i + count], side))
+        piece.shape(points, faces)
+
+
+def cloud(piece, x, y, z, s=1.0):
+    """A blocky storm cloud: stacked boxes, shaded underneath and lit on top."""
+    piece.box(x - 0.48 * s, x + 0.48 * s, y - 0.12 * s, y + 0.14 * s, z - 0.44 * s, z + 0.44 * s, "Trim3", 0.03)
+    piece.box(x - 0.32 * s, x + 0.36 * s, y + 0.1 * s, y + 0.36 * s, z - 0.32 * s, z + 0.32 * s, "Trim2", 0.03)
+    piece.box(x - 0.14 * s, x + 0.2 * s, y + 0.32 * s, y + 0.5 * s, z - 0.17 * s, z + 0.17 * s, "Trim", 0.03)
+
+
+def chest_stormcaller():
+    p = Piece()
+    p.box(-0.84, 0.84, -0.66, 0.98, -0.56, 0.56, "Dark")
+    # A high collar, open at the throat
+    for s in (-1, 1):
+        p.box(s * 0.4 - 0.14, s * 0.4 + 0.14, 0.96, 1.22, -0.44, 0.44, "Trim2", 0.03)
+    p.box(-0.42, 0.42, 0.96, 1.22, 0.3, 0.54, "Trim2", 0.03)
+    # A dark yoke across the top, and one great bolt down the front
+    p.plate([(-0.82, 0.96), (0.82, 0.96), (0.82, 0.62), (0.34, 0.46), (-0.34, 0.46), (-0.82, 0.62)], -0.58, 0.04, "Dark2", "Trim3")
+    bolt(p, (0.03, 0.88, -0.64), (0, -1, 0), 1.56, 0.42, thick=0.04)
+    for s in (-1, 1):
+        # Chevrons down each side, like the storm's rain
+        for y in (0.2, -0.1, -0.4):
+            p.plate([(s * 0.5, y), (s * 0.8, y + 0.13), (s * 0.8, y + 0.01), (s * 0.5, y - 0.12)], -0.585, 0.03, "Trim2", "Trim3")
+    # The belt
+    p.box(-0.87, 0.87, -0.72, -0.54, -0.59, 0.59, "Trim2", 0.02)
+    p.hexagon(0, -0.63, 0.13, -0.63, 0.05, "Trim", "Trim3")
+    # Jagged tails at the front and the back
+    for s in (-1, 1):
+        p.plate([(s * 0.42, -0.7), (s * 0.84, -0.7), (s * 0.84, -1.42), (s * 0.7, -1.26), (s * 0.62, -1.66), (s * 0.5, -1.3), (s * 0.42, -1.4)], -0.56, 0.05, "Dark2", "Trim2")
+    p.back_plate(
+        [(-0.82, -0.7), (0.82, -0.7), (0.82, -1.44), (0.62, -1.28), (0.48, -1.74), (0.26, -1.34), (0, -1.8), (-0.26, -1.34), (-0.48, -1.74), (-0.62, -1.28), (-0.82, -1.44)],
+        0.56,
+        0.05,
+        "Dark2",
+        "Trim2",
+    )
+    # A great bolt down the back too
+    bolt(p, (0.03, 0.84, 0.64), (0, -1, 0), 1.46, 0.46, face=(0, 0, 1), thick=0.04)
+    return p
+
+
+def sleeve_stormcaller():
+    p = Piece()
+    p.box(-0.3, 0.5, -0.42, 0.5, -0.44, 0.34, "Dark")
+    p.box(-0.32, 0.52, -0.46, -0.3, -0.46, 0.36, "Trim2", 0.02)
+    return p
+
+
+def pauldron_stormcaller():
+    p = Piece()
+    # A wide shoulder under a storm cloud, with bolts bursting up and outward. It rides on the chest, like every set.
+    p.box(-0.34, 0.6, 0.44, 0.72, -0.52, 0.42, "Trim2", 0.03)
+    p.box(-0.3, 0.56, 0.68, 0.8, -0.46, 0.36, "Dark2", 0.02)
+    cloud(p, 0.3, 0.92, -0.05, 1.1)  # Kept out past the helmet
+    # No taller than the Mining set's crystals, so a raised sword clears them (art/scripts/sword_fit/check.py)
+    bolt(p, (0.34, 1.2, -0.05), (0.55, 1.0, 0.0), 0.74, 0.4, face=(0, 0, -1), thick=0.07)
+    bolt(p, (0.72, 1.0, -0.05), (1.0, 0.4, 0.0), 0.86, 0.36, face=(0, 0, -1), thick=0.07)
+    return p
+
+
+def forearm_stormcaller():
+    p = Piece()
+    p.box(-0.38, 0.34, -0.34, 0.42, -0.42, 0.3, "Dark")
+    p.box(-0.42, 0.42, -0.62, -0.28, -0.52, 0.34, "Trim2", 0.03)
+    p.box(-0.44, 0.44, -0.36, -0.28, -0.54, 0.36, "Trim", 0.015)
+    bolt(p, (0.4, -0.5, -0.1), (1, 0.55, 0.0), 0.62, 0.22, face=(0, 0, -1))
+    return p
+
+
+def thigh_stormcaller():
+    p = Piece()
+    p.box(-0.28, 0.46, -0.6, 0.5, -0.42, 0.42, "Dark")
+    # A bolt strikes down to the knee guard, with a stripe down the outside
+    p.hexagon(0.09, -0.42, 0.24, -0.45, 0.06, "Trim2", "Trim3", 1.1)
+    bolt(p, (0.1, 0.34, -0.47), (0, -1, 0), 0.74, 0.2, thick=0.03)
+    p.box(0.42, 0.49, -0.5, 0.44, -0.16, 0.16, "Trim2", 0.015)
+    return p
+
+
+def boot_stormcaller():
+    p = Piece()
+    p.box(-0.3, 0.44, -0.66, 0.34, -0.42, 0.4, "Dark")
+    p.box(-0.34, 0.48, 0.14, 0.38, -0.46, 0.44, "Trim2", 0.03)
+    p.box(-0.3, 0.44, -0.72, -0.36, -0.88, 0.4, "Dark2")
+    p.box(-0.34, 0.48, -0.78, -0.62, -0.92, 0.44, "Trim", 0.02)
+    p.box(-0.3, 0.44, -0.66, -0.4, -0.94, -0.62, "Trim2", 0.03)
+    # A bolt off the ankle, like a wing
+    bolt(p, (0.42, -0.3, 0.05), (1, 0.75, 0.15), 0.56, 0.2, face=(0, 0, -1))
+    return p
+
+
+def helmet_stormcaller():
+    p = Piece()
+    # The same square helm as the others, open at the face
+    p.box(-0.62, 0.62, 0.44, 0.66, -0.62, 0.62, "Dark")
+    p.box(-0.62, -0.5, -0.46, 0.46, -0.62, 0.62, "Dark")
+    p.box(0.5, 0.62, -0.46, 0.46, -0.62, 0.62, "Dark")
+    p.box(-0.5, 0.5, -0.46, 0.46, 0.5, 0.62, "Dark")
+    p.box(-0.65, 0.65, 0.18, 0.3, -0.5, 0.65, "Trim2", 0.02)
+    p.box(-0.65, 0.65, -0.5, -0.36, -0.5, 0.65, "Trim3", 0.02)
+    p.box(-0.66, 0.66, 0.24, 0.46, -0.68, -0.5, "Trim2", 0.03)
+    p.hexagon(0, 0.35, 0.12, -0.71, 0.05, "Trim", "Trim3")
+    for s in (-1, 1):
+        p.box(s * 0.56 - 0.09, s * 0.56 + 0.09, -0.5, 0.24, -0.68, -0.44, "Trim3", 0.03)
+    # A crown of bolts: one straight up, and one out to each side like horns
+    bolt(p, (0.02, 0.66, 0.02), (0, 1, 0.05), 0.8, 0.36, thick=0.06)
+    bolt(p, (0.3, 0.66, 0.0), (0.42, 1, 0.0), 0.56, 0.2)
+    bolt(p, (-0.3, 0.66, 0.0), (-0.42, 1, 0.0), 0.56, 0.2, face=(0, 0, 1))
+    return p
+
+
+# The other armour kits. Same blocky coat and square helm as Stormcaller, each with its own theme. They stay within
+# Stormcaller's height so a raised sword clears them (art/scripts/sword_fit/check.py).
+
+
+def frame_of(direction, face):
+    d = Vector(direction).normalized()
+    n = Vector(face)
+    n = (n - d * n.dot(d)).normalized()
+    return d, n, n.cross(d).normalized()
+
+
+def cut_out(piece, base, direction, length, width, chunks, face=(0, 0, -1), thick=0.05, swatch="Trim", side="Trim3"):
+    """A flat shape made of convex chunks of (along, across) shares, so every face turns the right way."""
+    base = Vector(base)
+    d, n, w = frame_of(direction, face)
+    for chunk in chunks:
+        outline = [base + d * (length * t) + w * (width * a) for t, a in chunk]
+        count = len(outline)
+        points = [tuple(p + n * thick) for p in outline] + [tuple(p - n * thick) for p in outline]
+        faces = [(list(range(count)), swatch), (list(range(count, 2 * count)), swatch)]
+        for i in range(count):
+            j = (i + 1) % count
+            faces.append(([i, j, j + count, i + count], side))
+        piece.shape(points, faces)
+
+
+RAY = (((0.0, -0.5), (0.0, 0.5), (0.24, 0.62), (1.0, 0.0), (0.24, -0.62)),)
+# A flame leans one way as it rises and flicks back the other way at the tip, with one lick off its side
+FLAME = (
+    ((0.0, -0.6), (0.0, 0.6), (0.3, 0.72), (0.42, -0.42), (0.2, -0.68)),
+    ((0.36, -0.44), (0.3, 0.72), (0.62, 0.52), (0.72, -0.06)),
+    ((0.6, 0.52), (0.7, -0.06), (1.0, -0.42), (0.82, 0.24)),
+    ((0.12, -0.64), (0.4, -0.42), (0.64, -0.9)),
+)
+
+
+def ray(piece, base, direction, length, width, face=(0, 0, -1), thick=0.05, swatch="Trim"):
+    cut_out(piece, base, direction, length, width, RAY, face, thick, swatch)
+
+
+def flame(piece, base, direction, length, width, face=(0, 0, -1), thick=0.05, swatch="Trim"):
+    """Two flames, one inside the other: the darker outer one and a bright heart standing a little proud of it."""
+    cut_out(piece, base, direction, length, width, FLAME, face, thick, "Trim3" if swatch == "Trim2" else "Trim2", "Trim3")
+    d = Vector(direction).normalized()
+    heart = Vector(base) + d * (length * 0.04)
+    cut_out(piece, tuple(heart), direction, length * 0.66, width * 0.56, FLAME[:3], face, thick + 0.022, swatch, "Trim2")
+
+
+def icicle(piece, base, direction, length, radius, sides=5):
+    """An icicle: widest at its root, narrowing to a point, with facets that catch the light."""
+    base = Vector(base)
+    d = Vector(direction).normalized()
+    up = Vector((0, 1, 0)) if abs(d.y) < 0.9 else Vector((1, 0, 0))
+    u = d.cross(up).normalized()
+    v = d.cross(u).normalized()
+    points, faces = [], []
+    for t, r in ((0.0, 1.0), (0.42, 0.66)):
+        for i in range(sides):
+            a = 2 * math.pi * i / sides
+            points.append(tuple(base + d * (length * t) + (u * math.cos(a) + v * math.sin(a)) * (radius * r)))
+    tip = len(points)
+    points.append(tuple(base + d * length))
+    shades = ("Trim", "Trim2", "Trim3", "Trim", "Trim2")
+    for i in range(sides):
+        j = (i + 1) % sides
+        faces.append(([i, j, j + sides, i + sides], shades[i]))
+        faces.append(([i + sides, j + sides, tip], shades[(i + 1) % sides]))
+    faces.append((list(range(sides)), "Trim3"))
+    piece.shape(points, faces)
+
+
+def fang(piece, base, direction, bend, length, radius, sides=5):
+    """A curved fang, in convex bands so its faces turn the right way, with a dark line at each band."""
+    base = Vector(base)
+    d = Vector(direction).normalized()
+    b = Vector(bend)
+    b = (b - d * b.dot(d)).normalized()
+    u = b
+    v = d.cross(b).normalized()
+    stations = (0.0, 0.34, 0.68, 1.0)
+
+    def centre(t):
+        return base + d * (length * t) + b * (length * 0.34 * t * t)
+
+    def size(t):
+        return radius * (1 - t) ** 0.75
+
+    shades = ("Trim", "Trim2", "Trim")
+    for band in range(len(stations) - 1):
+        t0, t1 = stations[band], stations[band + 1]
+        low = [centre(t0) + (u * math.cos(2 * math.pi * i / sides) + v * math.sin(2 * math.pi * i / sides)) * size(t0) for i in range(sides)]
+        if band == len(stations) - 2:
+            points = [tuple(p) for p in low] + [tuple(centre(1.0))]
+            faces = [(list(range(sides)), "Trim3")]
+            for i in range(sides):
+                faces.append(([i, (i + 1) % sides, sides], shades[i % 3]))
+        else:
+            high = [centre(t1) + (u * math.cos(2 * math.pi * i / sides) + v * math.sin(2 * math.pi * i / sides)) * size(t1) for i in range(sides)]
+            points = [tuple(p) for p in low] + [tuple(p) for p in high]
+            faces = [(list(range(sides)), "Trim3"), (list(range(sides, 2 * sides)), "Trim3")]
+            for i in range(sides):
+                j = (i + 1) % sides
+                faces.append(([i, j, j + sides, i + sides], shades[i % 3]))
+        piece.shape(points, faces)
+
+
+def kit_chest():
+    p = Piece()
+    p.box(-0.84, 0.84, -0.66, 0.98, -0.56, 0.56, "Dark")
+    for s in (-1, 1):
+        p.box(s * 0.4 - 0.14, s * 0.4 + 0.14, 0.96, 1.22, -0.44, 0.44, "Trim2", 0.03)
+    p.box(-0.42, 0.42, 0.96, 1.22, 0.3, 0.54, "Trim2", 0.03)
+    p.plate([(-0.82, 0.96), (0.82, 0.96), (0.82, 0.62), (0.34, 0.46), (-0.34, 0.46), (-0.82, 0.62)], -0.58, 0.04, "Dark2", "Trim3")
+    p.box(-0.87, 0.87, -0.72, -0.54, -0.59, 0.59, "Trim2", 0.02)
+    p.hexagon(0, -0.63, 0.13, -0.63, 0.05, "Trim", "Trim3")
+    return p
+
+
+def kit_tails(p, swatch="Dark2", side="Trim2"):
+    for s in (-1, 1):
+        p.plate([(s * 0.42, -0.7), (s * 0.84, -0.7), (s * 0.84, -1.42), (s * 0.62, -1.62), (s * 0.42, -1.4)], -0.56, 0.05, swatch, side)
+    p.back_plate([(-0.82, -0.7), (0.82, -0.7), (0.82, -1.44), (0.42, -1.72), (0, -1.8), (-0.42, -1.72), (-0.82, -1.44)], 0.56, 0.05, swatch, side)
+
+
+def kit_sleeve():
+    p = Piece()
+    p.box(-0.3, 0.5, -0.42, 0.5, -0.44, 0.34, "Dark")
+    p.box(-0.32, 0.52, -0.46, -0.3, -0.46, 0.36, "Trim2", 0.02)
+    return p
+
+
+def kit_shoulder(p):
+    p.box(-0.34, 0.6, 0.44, 0.72, -0.52, 0.42, "Trim2", 0.03)
+    p.box(-0.3, 0.56, 0.68, 0.8, -0.46, 0.36, "Dark2", 0.02)
+
+
+def kit_forearm():
+    p = Piece()
+    p.box(-0.38, 0.34, -0.34, 0.42, -0.42, 0.3, "Dark")
+    p.box(-0.42, 0.42, -0.62, -0.28, -0.52, 0.34, "Trim2", 0.03)
+    p.box(-0.44, 0.44, -0.36, -0.28, -0.54, 0.36, "Trim", 0.015)
+    return p
+
+
+def kit_thigh():
+    p = Piece()
+    p.box(-0.28, 0.46, -0.6, 0.5, -0.42, 0.42, "Dark")
+    p.box(0.42, 0.49, -0.5, 0.44, -0.16, 0.16, "Trim2", 0.015)
+    return p
+
+
+def kit_boot():
+    p = Piece()
+    p.box(-0.3, 0.44, -0.66, 0.34, -0.42, 0.4, "Dark")
+    p.box(-0.34, 0.48, 0.14, 0.38, -0.46, 0.44, "Trim2", 0.03)
+    p.box(-0.3, 0.44, -0.72, -0.36, -0.88, 0.4, "Dark2")
+    p.box(-0.34, 0.48, -0.78, -0.62, -0.92, 0.44, "Trim", 0.02)
+    p.box(-0.3, 0.44, -0.66, -0.4, -0.94, -0.62, "Trim2", 0.03)
+    return p
+
+
+def kit_helmet():
+    p = Piece()
+    p.box(-0.62, 0.62, 0.44, 0.66, -0.62, 0.62, "Dark")
+    p.box(-0.62, -0.5, -0.46, 0.46, -0.62, 0.62, "Dark")
+    p.box(0.5, 0.62, -0.46, 0.46, -0.62, 0.62, "Dark")
+    p.box(-0.5, 0.5, -0.46, 0.46, 0.5, 0.62, "Dark")
+    p.box(-0.65, 0.65, 0.18, 0.3, -0.5, 0.65, "Trim2", 0.02)
+    p.box(-0.65, 0.65, -0.5, -0.36, -0.5, 0.65, "Trim3", 0.02)
+    p.box(-0.66, 0.66, 0.24, 0.46, -0.68, -0.5, "Trim2", 0.03)
+    p.hexagon(0, 0.35, 0.12, -0.71, 0.05, "Trim", "Trim3")
+    for s in (-1, 1):
+        p.box(s * 0.56 - 0.09, s * 0.56 + 0.09, -0.5, 0.24, -0.68, -0.44, "Trim3", 0.03)
+    return p
+
+
+# Sunforged: a gold sun on the chest and a half sun blazing on each shoulder ------------------------------------
+
+
+def sun(piece, cx, cy, radius, z, rays=8, ray_length=0.34, face=(0, 0, -1), turn=0.0):
+    """A disc with rays all round it, lying flat on the front (or, with face +Z, the back)."""
+    depth = 0.05
+    for i in range(rays):
+        a = turn + 2 * math.pi * i / rays
+        out = Vector((math.cos(a), math.sin(a), 0))
+        at = Vector((cx, cy, z)) + out * (radius * 0.86)
+        ray(piece, tuple(at), tuple(out), ray_length, radius * 0.62, face=face, thick=0.028, swatch="Trim" if i % 2 == 0 else "Trim2")
+    if face[2] < 0:
+        piece.hexagon(cx, cy, radius, z - 0.03, 0.07, "Trim", "Trim3")
+        piece.hexagon(cx, cy, radius * 0.56, z - 0.06, depth, "Trim2", "Trim3")
+    else:
+        outline = [(cx + radius * math.cos(math.pi / 2 + i * math.pi / 3), cy + radius * math.sin(math.pi / 2 + i * math.pi / 3)) for i in range(6)]
+        piece.back_plate(outline, z + 0.03, 0.07, "Trim", "Trim3")
+
+
+def chest_sunforged():
+    p = kit_chest()
+    sun(p, 0, 0.1, 0.36, -0.6, turn=math.pi / 8)
+    for s in (-1, 1):
+        p.plate([(s * 0.56, 0.42), (s * 0.8, 0.42), (s * 0.8, 0.3), (s * 0.56, 0.3)], -0.585, 0.03, "Trim2", "Trim3")
+    kit_tails(p)
+    sun(p, 0, 0.1, 0.42, 0.6, face=(0, 0, 1), turn=math.pi / 8)
+    return p
+
+
+def pauldron_sunforged():
+    p = Piece()
+    kit_shoulder(p)
+    # A half sun rising off the shoulder, its rays fanning up and outward
+    for i, (direction, length) in enumerate((((-0.1, 1.0), 0.62), ((0.4, 1.0), 0.74), ((0.8, 0.75), 0.82), ((1.0, 0.3), 0.76), ((1.0, -0.14), 0.56))):
+        ray(p, (0.3 + direction[0] * 0.26, 0.84 + direction[1] * 0.26, -0.05), (direction[0], direction[1], 0), length, 0.32, thick=0.06, swatch="Trim" if i % 2 == 0 else "Trim2")
+    p.hexagon(0.3, 0.86, 0.34, -0.15, 0.2, "Trim", "Trim3")
+    p.hexagon(0.3, 0.86, 0.19, -0.2, 0.05, "Trim2", "Trim3")
+    return p
+
+
+def forearm_sunforged():
+    p = kit_forearm()
+    ray(p, (0.4, -0.5, -0.1), (1, 0.55, 0.0), 0.62, 0.24)
+    return p
+
+
+def thigh_sunforged():
+    p = kit_thigh()
+    p.hexagon(0.09, -0.42, 0.24, -0.45, 0.06, "Trim2", "Trim3", 1.1)
+    p.hexagon(0.09, -0.42, 0.12, -0.5, 0.04, "Trim", "Trim3")
+    ray(p, (0.09, -0.16, -0.47), (0, 1, 0), 0.44, 0.2, thick=0.03)
+    return p
+
+
+def boot_sunforged():
+    p = kit_boot()
+    ray(p, (0.42, -0.3, 0.05), (1, 0.75, 0.15), 0.56, 0.24)
+    return p
+
+
+def helmet_sunforged():
+    p = kit_helmet()
+    for i, (x, direction, length) in enumerate(((0.0, (0, 1, 0.05), 0.8), (0.26, (0.42, 1, 0), 0.62), (-0.26, (-0.42, 1, 0), 0.62), (0.5, (0.9, 0.8, 0), 0.44), (-0.5, (-0.9, 0.8, 0), 0.44))):
+        ray(p, (x, 0.66, 0.0), direction, length, 0.3 if i == 0 else 0.22, thick=0.06, swatch="Trim" if i % 2 == 0 else "Trim2")
+    return p
+
+
+# Emberguard: flames climbing the coat and burning off the shoulders --------------------------------------------
+
+
+def chest_emberguard():
+    p = kit_chest()
+    flame(p, (0, -0.56, -0.62), (0, 1, 0), 1.3, 0.56, thick=0.04)
+    for s in (-1, 1):
+        flame(p, (s * 0.6, -0.56, -0.6), (s * 0.12, 1, 0), 0.62, 0.22, thick=0.03, swatch="Trim2")
+    kit_tails(p)
+    flame(p, (0, -0.56, 0.62), (0, 1, 0), 1.3, 0.6, face=(0, 0, 1), thick=0.04)
+    return p
+
+
+def pauldron_emberguard():
+    p = Piece()
+    kit_shoulder(p)
+    # A brazier on the shoulder, burning up and outward
+    p.box(-0.04, 0.62, 0.78, 0.98, -0.34, 0.26, "Trim3", 0.03)
+    p.box(-0.08, 0.66, 0.94, 1.04, -0.38, 0.3, "Trim2", 0.02)
+    flame(p, (0.3, 1.0, -0.05), (0.14, 1.0, 0.0), 0.8, 0.42, thick=0.07)
+    flame(p, (0.56, 0.98, -0.05), (1.0, 0.5, 0.0), 0.74, 0.32, thick=0.07, swatch="Trim2")
+    flame(p, (0.06, 1.0, -0.02), (-0.34, 1.0, 0.0), 0.5, 0.24, thick=0.05, swatch="Trim2")
+    return p
+
+
+def forearm_emberguard():
+    p = kit_forearm()
+    flame(p, (0.4, -0.5, -0.1), (1, 0.55, 0.0), 0.66, 0.26)
+    return p
+
+
+def thigh_emberguard():
+    p = kit_thigh()
+    p.hexagon(0.09, -0.42, 0.24, -0.45, 0.06, "Trim2", "Trim3", 1.1)
+    flame(p, (0.09, -0.34, -0.5), (0, 1, 0), 0.74, 0.3, thick=0.03)
+    return p
+
+
+def boot_emberguard():
+    p = kit_boot()
+    flame(p, (0.42, -0.3, 0.05), (1, 0.75, 0.15), 0.6, 0.26)
+    return p
+
+
+def helmet_emberguard():
+    p = kit_helmet()
+    flame(p, (0.0, 0.66, 0.02), (0, 1, 0.05), 0.82, 0.44, thick=0.06)
+    flame(p, (0.34, 0.66, 0.0), (0.46, 1, 0.0), 0.54, 0.24, thick=0.05, swatch="Trim2")
+    flame(p, (-0.34, 0.66, 0.0), (-0.46, 1, 0.0), 0.54, 0.24, face=(0, 0, 1), thick=0.05, swatch="Trim2")
+    return p
+
+
+# Frostwarden: silver plate hung with icicles and crowned with ice ---------------------------------------------
+
+
+def snowflake(piece, cx, cy, z, radius):
+    """A six-armed snowflake lying flat on the front."""
+    for i in range(6):
+        a = i * math.pi / 3 + math.pi / 6
+        out = Vector((math.cos(a), math.sin(a), 0))
+        at = Vector((cx, cy, z))
+        piece.prism(tuple(at), tuple(at + out * radius), radius * 0.12, "Trim", "Trim2")
+        tip = at + out * (radius * 0.6)
+        for turn in (-1, 1):
+            b = a + turn * math.pi / 3.4
+            piece.prism(tuple(tip), tuple(tip + Vector((math.cos(b), math.sin(b), 0)) * (radius * 0.34)), radius * 0.09, "Trim", "Trim2")
+    piece.hexagon(cx, cy, radius * 0.3, z - 0.05, 0.08, "Trim", "Trim3")
+
+
+def chest_frostwarden():
+    p = kit_chest()
+    snowflake(p, 0, 0.08, -0.6, 0.5)
+    # Icicles hanging from the yoke and the belt
+    for x, length in ((-0.62, 0.34), (-0.42, 0.22), (0.42, 0.22), (0.62, 0.34)):
+        icicle(p, (x, 0.54, -0.62), (0, -1, -0.04), length, 0.07, sides=4)
+    for x, length in ((-0.7, 0.42), (-0.42, 0.54), (-0.14, 0.34), (0.14, 0.34), (0.42, 0.54), (0.7, 0.42)):
+        icicle(p, (x, -0.72, -0.57), (0, -1, -0.02), length, 0.085)
+        icicle(p, (x, -0.72, 0.57), (0, -1, 0.02), length + 0.12, 0.085)
+    # A great icicle crown across the back, with a shard running down the spine
+    for x, length in ((-0.58, 0.46), (-0.3, 0.7), (0.0, 0.94), (0.3, 0.7), (0.58, 0.46)):
+        icicle(p, (x, 0.72, 0.62), (0, -1, 0.02), length, 0.11)
+    return p
+
+
+def pauldron_frostwarden():
+    p = Piece()
+    kit_shoulder(p)
+    # A cluster of ice bursting up and out, and icicles hanging off the edge
+    for direction, length, radius in (((0.32, 1.0, -0.04), 1.04, 0.2), ((0.92, 0.62, 0.0), 1.06, 0.18), ((-0.14, 1.0, 0.22), 0.72, 0.14), ((0.34, 0.82, -0.56), 0.74, 0.13), ((0.4, 0.82, 0.6), 0.74, 0.13), ((1.0, 0.16, -0.3), 0.72, 0.12), ((1.0, 0.16, 0.34), 0.7, 0.12)):
+        icicle(p, (0.3, 0.84, -0.05), direction, length, radius)
+    for z in (-0.4, -0.12, 0.16):
+        icicle(p, (0.62, 0.46, z), (0.06, -1, 0), 0.4, 0.07, sides=4)
+    return p
+
+
+def forearm_frostwarden():
+    p = kit_forearm()
+    for y, length in ((-0.5, 0.56), (-0.26, 0.42)):
+        icicle(p, (0.38, y, -0.1), (1, 0.45, 0.0), length, 0.1)
+    return p
+
+
+def thigh_frostwarden():
+    p = kit_thigh()
+    p.hexagon(0.09, -0.42, 0.24, -0.45, 0.06, "Trim2", "Trim3", 1.1)
+    p.hexagon(0.09, -0.42, 0.12, -0.5, 0.04, "Trim", "Trim3")
+    icicle(p, (0.09, -0.62, -0.47), (0, -1, -0.05), 0.3, 0.075, sides=4)
+    icicle(p, (0.44, 0.1, 0.0), (1, -0.5, 0.0), 0.34, 0.07, sides=4)
+    return p
+
+
+def boot_frostwarden():
+    p = kit_boot()
+    icicle(p, (0.42, -0.26, 0.05), (1, 0.75, 0.15), 0.56, 0.1)
+    icicle(p, (0.42, -0.04, 0.05), (1, 0.3, 0.15), 0.36, 0.07, sides=4)
+    return p
+
+
+def helmet_frostwarden():
+    p = kit_helmet()
+    for x, z, direction, length, radius in ((0.0, 0.0, (0, 1, 0.05), 0.82, 0.16), (0.3, 0.0, (0.34, 1, 0), 0.62, 0.11), (-0.3, 0.0, (-0.34, 1, 0), 0.62, 0.11), (0.54, 0.0, (0.86, 0.8, 0), 0.42, 0.09), (-0.54, 0.0, (-0.86, 0.8, 0), 0.42, 0.09), (0.0, -0.4, (0, 1, -0.2), 0.42, 0.09)):
+        icicle(p, (x, 0.64, z), direction, length, radius)
+    return p
+
+
+# Venomfang: a serpent's head on each shoulder, its hood round the helm, and fangs everywhere --------------------
+
+
+def scales(piece, side, ys, z=-0.585):
+    """Chevrons down one side of the coat, like a snake's belly."""
+    for y in ys:
+        piece.plate([(side * 0.5, y), (side * 0.8, y + 0.13), (side * 0.8, y + 0.01), (side * 0.5, y - 0.12)], z, 0.03, "Trim2", "Trim3")
+
+
+def chest_venomfang():
+    p = kit_chest()
+    # A serpent's open mouth across the top of the chest, with two great fangs down the front
+    p.plate([(-0.58, 0.46), (0.58, 0.46), (0.3, 0.12), (-0.3, 0.12)], -0.6, 0.04, "Trim3", "Trim2")
+    for s in (-1, 1):
+        fang(p, (s * 0.25, 0.44, -0.66), (s * -0.08, -1, 0), (s * -1, 0, 0), 1.0, 0.16)
+        scales(p, s, (0.1, -0.2, -0.5))
+    kit_tails(p, "Dark2", "Trim2")
+    # Down the back, a snake's spine
+    for i, y in enumerate((0.72, 0.36, 0.0, -0.36)):
+        fang(p, (0, y, 0.58), (0, 0.4, 1), (0, 1, 0), 0.34 - i * 0.03, 0.09)
+    return p
+
+
+def pauldron_venomfang():
+    p = Piece()
+    kit_shoulder(p)
+    # A blocky serpent's head sitting on the shoulder, its hood flaring behind and two fangs out in front
+    p.box(0.0, 0.66, 0.82, 1.08, -0.3, 0.2, "Trim2", 0.03)
+    p.box(0.02, 0.64, 1.06, 1.2, -0.28, 0.14, "Trim", 0.03)
+    p.box(0.08, 0.2, 1.08, 1.24, -0.3, -0.16, "Black", 0.02)
+    p.box(0.46, 0.58, 1.08, 1.24, -0.3, -0.16, "Black", 0.02)
+    for x in (0.14, 0.52):
+        fang(p, (x, 0.84, -0.26), (0, -0.9, -0.5), (0, 0, 1), 0.34, 0.07)
+    # The hood, flared up and out behind the head
+    cut_out(p, (0.33, 0.98, 0.14), (0.0, 1.0, 0.1), 0.64, 0.56, RAY, thick=0.05, swatch="Trim3", side="Trim2")
+    cut_out(p, (0.62, 0.94, 0.14), (0.9, 0.5, 0.05), 0.72, 0.4, RAY, thick=0.05, swatch="Trim2", side="Trim3")
+    return p
+
+
+def forearm_venomfang():
+    p = kit_forearm()
+    fang(p, (0.4, -0.5, -0.1), (1, 0.3, 0.0), (0, 1, 0), 0.6, 0.11)
+    return p
+
+
+def thigh_venomfang():
+    p = kit_thigh()
+    p.hexagon(0.09, -0.42, 0.24, -0.45, 0.06, "Trim2", "Trim3", 1.1)
+    fang(p, (0.09, -0.42, -0.5), (0, 0.2, -1), (0, -1, 0), 0.4, 0.09)
+    for y in (0.3, 0.06):
+        p.plate([(-0.14, y), (0.1, y + 0.1), (0.34, y), (0.34, y - 0.08), (0.1, y + 0.02), (-0.14, y - 0.08)], -0.44, 0.03, "Trim2", "Trim3")
+    return p
+
+
+def boot_venomfang():
+    p = kit_boot()
+    fang(p, (0.42, -0.3, 0.05), (1, 0.6, 0.15), (0, 1, 0), 0.54, 0.1)
+    return p
+
+
+def helmet_venomfang():
+    p = kit_helmet()
+    # A cobra's hood flaring round the helm, and fangs down each side of your face
+    cut_out(p, (0.0, 0.66, 0.2), (0, 1, 0.1), 0.7, 0.62, RAY, thick=0.05, swatch="Trim3", side="Trim2")
+    for s in (-1, 1):
+        cut_out(p, (s * 0.3, 0.66, 0.1), (s * 0.44, 1, 0.05), 0.46, 0.26, RAY, thick=0.05, swatch="Trim2", side="Trim3")
+        fang(p, (s * 0.44, -0.3, -0.7), (0, -1, -0.12), (s * -1, 0, 0), 0.5, 0.075)
+    fang(p, (0.0, 0.74, -0.46), (0, 0.9, -0.5), (0, 1, 0), 0.34, 0.07)
+    return p
+
+
 SETS = {
+    "Sunforged": {
+        "Helmet": helmet_sunforged,
+        "Chest": chest_sunforged,
+        "Sleeve": kit_sleeve,
+        "Pauldron": pauldron_sunforged,
+        "Forearm": forearm_sunforged,
+        "Hips": lambda: hips_mining(),
+        "Thigh": thigh_sunforged,
+        "Boot": boot_sunforged,
+    },
+    "Emberguard": {
+        "Helmet": helmet_emberguard,
+        "Chest": chest_emberguard,
+        "Sleeve": kit_sleeve,
+        "Pauldron": pauldron_emberguard,
+        "Forearm": forearm_emberguard,
+        "Hips": lambda: hips_mining(),
+        "Thigh": thigh_emberguard,
+        "Boot": boot_emberguard,
+    },
+    "Frostwarden": {
+        "Helmet": helmet_frostwarden,
+        "Chest": chest_frostwarden,
+        "Sleeve": kit_sleeve,
+        "Pauldron": pauldron_frostwarden,
+        "Forearm": forearm_frostwarden,
+        "Hips": lambda: hips_mining(),
+        "Thigh": thigh_frostwarden,
+        "Boot": boot_frostwarden,
+    },
+    "Venomfang": {
+        "Helmet": helmet_venomfang,
+        "Chest": chest_venomfang,
+        "Sleeve": kit_sleeve,
+        "Pauldron": pauldron_venomfang,
+        "Forearm": forearm_venomfang,
+        "Hips": lambda: hips_mining(),
+        "Thigh": thigh_venomfang,
+        "Boot": boot_venomfang,
+    },
     "Mining": {
         "Helmet": helmet_mining,
         "Chest": chest_mining,
@@ -864,7 +1480,19 @@ SETS = {
         "Thigh": thigh_farming,
         "Boot": boot_farming,
     },
+    "Stormcaller": {
+        "Helmet": helmet_stormcaller,
+        "Chest": chest_stormcaller,
+        "Sleeve": sleeve_stormcaller,
+        "Pauldron": pauldron_stormcaller,
+        "Forearm": forearm_stormcaller,
+        "Hips": hips_mining,
+        "Thigh": thigh_stormcaller,
+        "Boot": boot_stormcaller,
+    },
 }
+# Which colour sheet the previews use; armour kits wear diamond, the top of armour
+PREVIEW_TIER = {"Stormcaller": 5, "Sunforged": 3, "Emberguard": 1, "Frostwarden": 2, "Venomfang": 4}
 # Pieces with a left and a right, as avatars' limbs mirror each other
 SIDED = ("Sleeve", "Pauldron", "Forearm", "Thigh", "Boot")
 
@@ -887,16 +1515,18 @@ def to_blender():
     return Matrix(((1, 0, 0, 0), (0, 0, -1, 0), (0, 1, 0, 0), (0, 0, 0, 1)))
 
 
-def preview(skill, objects, out_base, tint):
-    """Renders the set on boxes for the head and hands, the way the game hides the rest of the body."""
+def preview(skill, objects, out_base, tint, icon=False):
+    """Renders the set on boxes for the head and hands, the way the game hides the rest of the body. `icon` makes one
+    square picture of the top half with no background, for its game pass."""
     scene = bpy.context.scene
     engines = [e.identifier for e in bpy.types.RenderSettings.bl_rna.properties["engine"].enum_items]
     scene.render.engine = "BLENDER_EEVEE" if "BLENDER_EEVEE" in engines else "BLENDER_EEVEE_NEXT"
-    scene.render.resolution_x = 640
-    scene.render.resolution_y = 860
+    scene.render.resolution_x = 512 if icon else 640
+    scene.render.resolution_y = 512 if icon else 860
     scene.world = bpy.data.worlds.new("Sky")
     scene.world.use_nodes = True
     scene.world.node_tree.nodes["Background"].inputs[0].default_value = (0.45, 0.47, 0.5, 1)
+    scene.render.film_transparent = icon  # art/scripts/pass_icons.ps1 puts it on a background
     sun = bpy.data.lights.new("Sun", "SUN")
     sun.energy = 2.5
     sun_obj = bpy.data.objects.new("Sun", sun)
@@ -942,13 +1572,13 @@ def preview(skill, objects, out_base, tint):
 
     data = bpy.data.cameras.new("Camera")
     data.type = "ORTHO"
-    data.ortho_scale = 7.6
+    data.ortho_scale = 5.4 if icon else 7.6
     camera = bpy.data.objects.new("Camera", data)
     bpy.context.collection.objects.link(camera)
     scene.camera = camera
-    for label, angle in (("front", 25), ("back", 205)):
+    for label, angle in (("icon", 25),) if icon else (("front", 25), ("back", 205)):
         a = math.radians(angle)
-        at = Vector((0, 0, -0.3))
+        at = Vector((0, 0, 0.45 if icon else -0.3))
         pos = at + Vector((math.sin(a) * 14, math.cos(a) * 14, 2.5))
         camera.location = pos
         camera.rotation_euler = (at - pos).to_track_quat("-Z", "Y").to_euler()
@@ -958,11 +1588,38 @@ def preview(skill, objects, out_base, tint):
 
 def main():
     args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else ["Mining"]
-    skill = args[0]
     bpy.ops.wm.read_factory_settings(use_empty=True)
     os.makedirs(os.path.join(ROOT, "textures", "armour"), exist_ok=True)
     for number, tier in enumerate(TIERS, 1):
         write_palette(os.path.join(ROOT, "textures", "armour", f"tier_{number}.png"), tier)
+    # Several sets at once, "A,B,C", go into one Armour_Kits.fbx, so they take a single Import 3D
+    names = args[0].split(",")
+    if len(names) > 1:
+        chosen = {}
+        for skill in names:
+            for piece, build in SETS[skill].items():
+                model = build()
+                if piece in SIDED:
+                    chosen[f"{skill}_{piece}Right"] = model.build(f"{skill}_{piece}Right", 1)
+                    chosen[f"{skill}_{piece}Left"] = model.build(f"{skill}_{piece}Left", -1)
+                else:
+                    chosen[f"{skill}_{piece}"] = model.build(f"{skill}_{piece}", 1)
+        bpy.ops.object.select_all(action="DESELECT")
+        for obj in chosen.values():
+            obj.select_set(True)
+        bpy.ops.export_scene.fbx(
+            filepath=os.path.join(ROOT, "export", "Armour_Kits.fbx"),
+            use_selection=True,
+            apply_unit_scale=True,
+            global_scale=1.0,
+            axis_forward="-Z",
+            axis_up="Y",
+            bake_space_transform=False,
+            mesh_smooth_type="FACE",
+        )
+        print("EXPORTED", len(chosen), flush=True)
+        return
+    skill = names[0]
     objects = {}
     for piece, build in SETS[skill].items():
         model = build()
@@ -992,8 +1649,12 @@ def main():
     with open(os.path.join(ROOT, "export", f"Armour_{skill}.json"), "w") as out:
         json.dump(info, out, indent=1)
 
-    if "preview" in args:
-        preview(skill, objects, os.path.join(ROOT, "renders", f"Armour_{skill}"), 7)
+    if "icon" in args:
+        os.makedirs(os.path.join(ROOT, "marketing"), exist_ok=True)
+        preview(skill, objects, os.path.join(ROOT, "marketing", f"Pass_{skill}"), PREVIEW_TIER.get(skill, 7), icon=True)
+        print("ICON", flush=True)
+    elif "preview" in args:
+        preview(skill, objects, os.path.join(ROOT, "renders", f"Armour_{skill}"), PREVIEW_TIER.get(skill, 7))
         print("PREVIEWED", flush=True)
     else:
         bpy.ops.object.select_all(action="DESELECT")

@@ -167,7 +167,9 @@ local function renderChallenges()
 		need.Size = UDim2.fromOffset(70, 20)
 		need.TextXAlignment = Enum.TextXAlignment.Right
 		local sub = if open
-			then `{resource.XP} XP each · {Theme.formatNumber(count)} gathered`
+			then `{resource.XP} XP each · {Theme.formatNumber(count)} {if selected == "Combat"
+				then "defeated"
+				else "gathered"}`
 			else `Needs {Skills.ById[selected].Name} {resource.Level}`
 		if resource.Note then
 			sub ..= ` · {resource.Note}`

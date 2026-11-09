@@ -31,6 +31,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Liquids = require(ReplicatedStorage.Shared.Liquids)
 local Mining = require(ReplicatedStorage.Shared.Mining)
+local Monsters = require(ReplicatedStorage.Shared.Monsters)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Slivers = require(ReplicatedStorage.Shared.Slivers)
 local Tools = require(ReplicatedStorage.Shared.Tools)
@@ -336,8 +337,12 @@ local function onPlace(
 
 	if item.Node then
 		IslandService.PlaceNode(player, cx, cy, cz, item.Block)
-		StateService.Notify(player, `Placed your {item.Name}: mine it and it grows back`, "good")
-		QuestService.Record(player, "PlaceNode")
+		if Monsters.BySpawner[itemId] then
+			StateService.Notify(player, `Placed your {item.Name}: its monster will appear beside it`, "good")
+		else
+			StateService.Notify(player, `Placed your {item.Name}: mine it and it grows back`, "good")
+			QuestService.Record(player, "PlaceNode")
+		end
 	else
 		if turn then
 			DecorService.SetTurn(player, world, cx, cy, cz, turn)

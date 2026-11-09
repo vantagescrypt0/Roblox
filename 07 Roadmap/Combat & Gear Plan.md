@@ -39,10 +39,8 @@ Minecraft's formula: damage x (1 - min(20, max(armour / 5, armour - damage / (2 
 | Amethyst | 3 / 6 / 5 / 2 | 16 | 0 | |
 | Sapphire | 3 / 7 / 6 / 2 | 18 | 4 | |
 | **Kit armour** (your call) | 3 / 8 / 6 / 3 | 20 | 8 | diamond |
-| Ruby | 3 / 8 / 6 / 3 | 20 | 8 | diamond |
-| Starsteel | 3 / 8 / 6 / 3 | 20 | 12 | netherite, plus 10% less knockback a piece |
 
-Claude's picks for the rest. Ruby matches a kit, so it can be earned; Starsteel beats a kit, which fits "capped below the best Warzone loot" in [[06 Monetization/Kits]]. **Iron and up don't exist as items yet:** they come with their art, and where you get them is your call.
+**Armour stops at diamond (your call, 2026-11-09):** "things only come in armor up to diamond... There's only late game tools etc just not armour." The Ruby and Starsteel armour that used to be on this list is gone; nothing had been made from it. Claude's picks for the rows between leather and diamond. **Iron, Amethyst and Sapphire armour don't exist as items yet:** they come with their art, and where you get them is your call.
 
 ## The sword system
 - Each sword has its own generated mesh. `shared/SwordArt.luau` lists them by asset id; the server loads them when it starts.

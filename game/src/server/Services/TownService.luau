@@ -14,7 +14,8 @@
 --                shopkeeper behind the counter (Shops.luau, Util/Npc):
 --                Market (Merchant) and Lumber Yard (Lumberjack) on the west side, Builder
 --                and Miner on the east, each built in its own materials with its own
---                goods outside
+--                goods outside. Lots along the lanes wait for more shops (LOTS); the Slayer,
+--                who buys monster drops, has the first, on the east lane
 --   Lanes        lanes west to a garden with a well and east to a park with a pond, lined
 --                with cottages; streams run down both sides of town and pour off the rim
 --   Portal Plaza at the north end: the runestone portals to the Grinding Worlds
@@ -35,6 +36,7 @@ local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local Build = require(script.Parent.Parent.Util.Build)
 local Decor = require(script.Parent.Parent.Util.Decor)
 local Logo = require(script.Parent.Parent.Util.Logo)
+local MonsterModels = require(script.Parent.Parent.Util.MonsterModels)
 local Npc = require(script.Parent.Parent.Util.Npc)
 local Pace = require(script.Parent.Parent.Util.Pace)
 local Portal = require(script.Parent.Parent.Util.Portal)
@@ -98,7 +100,13 @@ local WORLD_PORTALS: { { Kind: Places.Kind, Name: string, X: number, Color: Colo
 	{ Kind = "Farming", Name = "Farming World", X = -24, Color = Color3.fromRGB(250, 206, 84), Open = true },
 	{ Kind = "Woodcutting", Name = "Woodcutting World", X = -8, Color = Color3.fromRGB(112, 208, 92), Open = true },
 	{ Kind = "Mining", Name = "Mining World", X = 8, Color = Color3.fromRGB(255, 92, 36), Open = true },
-	{ Kind = "Slaying", Name = "Slaying World", X = 24, Color = Color3.fromRGB(120, 36, 40), Open = false },
+	{
+		Kind = "Slaying",
+		Name = "Slaying World",
+		X = 24,
+		Color = Color3.fromRGB(120, 36, 40),
+		Open = Places.Ids.Slaying ~= 0,
+	},
 }
 
 local TownService = {}
@@ -669,12 +677,31 @@ local function chimney(site: Build.Site, hw: number, height: number, u: number, 
 	Decor.Smoke(decor, site:Pos(u, topY + 0.6, v))
 end
 
+-- Room for more shops along the two lanes off Market Square, filled in this order. A shop claims
+-- one with `Lot = n` instead of its own X, Z and Front, and the cottage standing there (COTTAGES)
+-- gives way, so adding a shop is one more SHOPS entry and the lanes don't look empty meanwhile.
+-- Each lot is a shop's width and depth with its door on the lane; z = 3 is the lane's edge.
+-- The east ends of lots 5 and 7 come near the park pond's sand, at about x = 71: fine while
+-- they're unused, but look at it when one is claimed.
+type Lot = { X: number, Z: number, Front: Vector3 }
+local LOTS: { Lot } = {
+	{ X = 49, Z = 6, Front = -Vector3.zAxis },
+	{ X = -49, Z = 6, Front = -Vector3.zAxis },
+	{ X = 49, Z = -6, Front = Vector3.zAxis },
+	{ X = -49, Z = -6, Front = Vector3.zAxis },
+	{ X = 65, Z = 6, Front = -Vector3.zAxis },
+	{ X = -65, Z = 6, Front = -Vector3.zAxis },
+	{ X = 65, Z = -6, Front = Vector3.zAxis },
+	{ X = -65, Z = -6, Front = Vector3.zAxis },
+}
+
 type ShopInfo = {
 	Shop: string,
 	Sign: string,
-	X: number,
-	Z: number,
-	Front: Vector3,
+	X: number?, -- where it stands, unless it claims a Lot
+	Z: number?,
+	Front: Vector3?,
+	Lot: number?,
 	Style: Style,
 	Shelf: Build.Pattern,
 	Counter: string,
@@ -684,7 +711,15 @@ type ShopInfo = {
 
 local function shop(info: ShopInfo)
 	local hw, depth, height = SHOP_HALF_WIDTH, SHOP_DEPTH, SHOP_HEIGHT
-	local site = Build.Site(world, info.X, info.Z, info.Front)
+	local lot = if info.Lot then LOTS[info.Lot] else nil
+	local x = if lot then lot.X else info.X :: number
+	local z = if lot then lot.Z else info.Z :: number
+	local front = if lot then lot.Front else info.Front :: Vector3
+	local site = Build.Site(world, x, z, front)
+	if lot then
+		-- A short path from the lane to the door
+		site:Fill(-1, 0, -3, 1, 0, -1, "Path")
+	end
 	building(site, hw, depth, height, info.Style, 1, 4)
 	windows(site, hw, depth, height, { -5, 4 })
 	-- A round window in the gable, and the shop's name above the door
@@ -885,6 +920,36 @@ local SHOPS: { ShopInfo } = {
 			site:Set(-6, 1, -2, "Crate")
 		end,
 	},
+	{
+		Shop = "Slayer",
+		Sign = "SLAYER",
+		Lot = 1,
+		Style = {
+			Wall = function(_x, y, _z)
+				return if y <= 1 then "Cobblestone" else "DarkPlanks"
+			end,
+			Corner = "Obsidian",
+			Beam = "DarkPlanks",
+			Roof = "RoofSlate",
+			Gable = "DarkPlanks",
+			Floor = "DarkPlanks",
+		},
+		Shelf = function(x, y, z)
+			local choices = { "Barrel", "Crate", "Bookshelf", "Barrel" }
+			return choices[(x * 3 + y + z * 7) % #choices + 1]
+		end,
+		Counter = "DarkPlanks",
+		Goods = { "Crate", "Barrel" },
+		Extras = function(site)
+			-- Trophies of what he's bought: a little Slime and a Thornling on barrels out front
+			site:Set(5, 1, -2, "Barrel")
+			site:Set(-5, 1, -2, "Barrel")
+			MonsterModels.Prop(decor, "Slime", site:Pos(5, 1.5, -2), 3.5, math.pi)
+			MonsterModels.Prop(decor, "Thornling", site:Pos(-5, 1.5, -2), 4.5, math.pi)
+			Decor.Lantern(decor, site:Pos(6, 1.5, -1), false, 16)
+			Decor.Lantern(decor, site:Pos(-6, 1.5, -1), false, 16)
+		end,
+	},
 }
 
 -- Cottages -------------------------------------------------------------------------
@@ -956,16 +1021,18 @@ local function cottage(x: number, z: number, front: Vector3, roof: string, pathT
 	end
 end
 
--- The cottages: along the lanes either side of the square, and by the main street north
-local COTTAGES = {
-	{ X = -48, Z = -8, Front = Vector3.zAxis, Roof = "Thatch", To = { -48, -2 } },
-	{ X = -62, Z = -8, Front = Vector3.zAxis, Roof = "RoofRed", To = { -62, -2 } },
-	{ X = -48, Z = 8, Front = -Vector3.zAxis, Roof = "RoofRed", To = { -48, 2 } },
-	{ X = -62, Z = 8, Front = -Vector3.zAxis, Roof = "Thatch", To = { -62, 2 } },
-	{ X = 48, Z = -8, Front = Vector3.zAxis, Roof = "RoofRed", To = { 48, -2 } },
-	{ X = 62, Z = -8, Front = Vector3.zAxis, Roof = "Thatch", To = { 62, -2 } },
-	{ X = 48, Z = 8, Front = -Vector3.zAxis, Roof = "Thatch", To = { 48, 2 } },
-	{ X = 62, Z = 8, Front = -Vector3.zAxis, Roof = "RoofRed", To = { 62, 2 } },
+-- The cottages: along the lanes either side of the square, and by the main street north. A lane
+-- cottage stands on a shop lot (LOTS) and is left out once a shop has claimed it.
+type Cottage = { X: number, Z: number, Front: Vector3, Roof: string, To: { number }, Lot: number? }
+local COTTAGES: { Cottage } = {
+	{ X = -48, Z = -8, Front = Vector3.zAxis, Roof = "Thatch", To = { -48, -2 }, Lot = 4 },
+	{ X = -62, Z = -8, Front = Vector3.zAxis, Roof = "RoofRed", To = { -62, -2 }, Lot = 8 },
+	{ X = -48, Z = 8, Front = -Vector3.zAxis, Roof = "RoofRed", To = { -48, 2 }, Lot = 2 },
+	{ X = -62, Z = 8, Front = -Vector3.zAxis, Roof = "Thatch", To = { -62, 2 }, Lot = 6 },
+	{ X = 48, Z = -8, Front = Vector3.zAxis, Roof = "RoofRed", To = { 48, -2 }, Lot = 3 },
+	{ X = 62, Z = -8, Front = Vector3.zAxis, Roof = "Thatch", To = { 62, -2 }, Lot = 7 },
+	{ X = 48, Z = 8, Front = -Vector3.zAxis, Roof = "Thatch", To = { 48, 2 }, Lot = 1 },
+	{ X = 62, Z = 8, Front = -Vector3.zAxis, Roof = "RoofRed", To = { 62, 2 }, Lot = 5 },
 	{ X = -16, Z = 34, Front = Vector3.xAxis, Roof = "RoofRed", To = { -5, 34 } },
 	{ X = 16, Z = 34, Front = -Vector3.xAxis, Roof = "Thatch", To = { 5, 34 } },
 	{ X = -30, Z = -46, Front = Vector3.xAxis, Roof = "Thatch", To = { -17, -46 } },
@@ -1316,7 +1383,7 @@ local function voidField()
 			return
 		end
 		busy[player] = true
-		if data.Level < Leveling.WarzoneLevel then
+		if not Leveling.CanEnterWarzone(player, data.Level) then
 			StateService.Notify(
 				player,
 				`The Warzone unlocks at level {Leveling.WarzoneLevel}. You're level {data.Level}`,
@@ -1466,11 +1533,17 @@ local function build()
 	end
 	squareSeats()
 	voidPit()
+	local claimed: { [number]: boolean } = {}
 	for _, info in SHOPS do
 		shop(info)
+		if info.Lot then
+			claimed[info.Lot] = true
+		end
 	end
 	for _, c in COTTAGES do
-		cottage(c.X, c.Z, c.Front, c.Roof, c.To)
+		if not c.Lot or not claimed[c.Lot] then
+			cottage(c.X, c.Z, c.Front, c.Roof, c.To)
+		end
 	end
 	garden()
 	park()

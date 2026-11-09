@@ -36,7 +36,13 @@ local List: { Skill } = {
 		Trains = "Craft and smelt anything",
 		Bonus = false,
 	},
-	{ Id = "Combat", Name = "Combat", Icon = "IronSword", Trains = "Defeat monsters in the Warzone", Bonus = false },
+	{
+		Id = "Combat",
+		Name = "Combat",
+		Icon = "IronSword",
+		Trains = "Defeat monsters in the Slaying World",
+		Bonus = false,
+	},
 }
 
 local byId: { [string]: Skill } = {}

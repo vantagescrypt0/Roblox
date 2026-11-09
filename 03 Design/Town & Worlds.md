@@ -47,7 +47,7 @@ Rebuilt 2026-10-26 after your Skybounds spawn screenshots. A big floating island
   | Farming | gold | farmland with crops, hay | open |
   | Woodcutting | green | log-and-leaf posts | open |
   | Mining | orange | stone with coal and iron ore | open |
-  | Slaying | dark red, boarded up | obsidian | "Coming soon" (until PvE) |
+  | Slaying | dark red | obsidian | opens once the Slaying World is published (`Places.Ids.Slaying`); until then it reads "Coming soon". The **Slayer**, who buys monster drops, has a shop on the east lane off Market Square (lot 1; the plaza stays clear) |
 - Oaks round the edge, flowers and tall grass in the lawns. Player trading happens here (level 5, see [[Economy & Values]]).
 
 ## The 4x pass (2026-10-28): the Grinding Worlds and Town
@@ -94,13 +94,13 @@ Each world is **its own place** with its own servers (like Town), about **230 bl
 - **Mine walls** are stone nobody can break, set with ore that grows back (2026-10-27: stone is never a node, so nothing in the cave is destroyed for good). A mined ore turns into a pale Empty Ore block until it fills back in (coal 20s, iron 45s, gold 90s), and an ore only breaks with a pickaxe that can collect it. Floors can't be broken. The mine is longer and lower than before (your note: "all the ore is kind of squished in, doesn't have to be as high"), and caves stay inside the rock.
 - **Crops** grow wild in the open (no fences, no plots): click a ripe one to harvest it and it grows back. Ripe pumpkins and melons show as their block with a leaf. Only the two veggie rows have small crop signs.
 - **Level gates:** chopping or mining a zone's resource below its level does nothing but tell you the level ("Birch Wood needs Woodcutting level 10"). Placed blocks are never gated. New items, prices and shops: see [[Economy & Values]].
-- **Slaying World**: not built (waits for PvE); its zones will be themed the same way.
+- **Slaying World** (built 2026-11-08, see [[Slaying Proposal]] and the Decision Log): six zones in a ring joined by stone bridges, each with its own land and a giant statue of its monster.
 - **Sizes** (Studio, 2026-10-26): Woodcutting ~25.5k block parts, Farming ~19k, Mining ~27k (+2–4k decor parts each), built in 3–5 seconds on server start. Ground, rock and other unbreakable scenery are drawn as **merged pieces** (a mesh several blocks big that looks exactly like those blocks; `ReplicatedStorage.Blocks.Merged`), and islands only store their outer shell. Merged farmland is still clickable (the client works out the block from where you clicked). Worth checking on a phone.
 - **Flying** (2026-10-26, your call): only you (koiopio) can fly, in every place: double-tap Space (or the jump button), Space/E up, Ctrl/Q down. The list is `Config.Flyers`.
 
 ## Not done yet
 - Published: the first versions 2026-10-25; the Skybounds-scale worlds and flying 2026-10-26 afternoon; this second pass (signs, open farms, mine sections) 2026-10-26 ~21:00 (all 5 places); the Skyblox Town 2026-10-26 evening (Town place). Their names in Creator Hub are still Roblox's defaults ("koiopio's Place: 10262026_1/2/3" = Mining/Woodcutting/Farming; "…10242026_1" = Town). See [[Roadmap]].
-- **Slaying World** zones (your PvE reference: dead trees, brown and terracotta ground, grey boulders, torches, mobs): with PvE.
+- **Slaying World** zones (your PvE reference: dead trees, brown and terracotta ground, grey boulders, torches, mobs): Slime Meadow, Bramble Woods, Rust Canyon, Bone Flats, Sporewood Bog, Frostfang Peaks.
 - Node items (an Iron Node you buy, place and mine forever): later, with rare ores. See [[Decision Log]].
 
 Related: [[Islands (Roblox)]] · [[Skybounds (Minecraft)]] · [[Economy & Values]] · [[Skills & Levels]] · [[Warzone]]

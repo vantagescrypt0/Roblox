@@ -140,6 +140,8 @@ local function render()
 	Window.setTitle(window, if #mail > 0 then `Inbox ({#mail})` else "Inbox")
 end
 
+InboxWindow.Ago = ago
+
 function InboxWindow.SetState(newState: any)
 	state = newState
 	if window.IsOpen then

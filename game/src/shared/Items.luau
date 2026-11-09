@@ -18,6 +18,7 @@
 local Blocks = require(script.Parent.Blocks)
 local Decorations = require(script.Parent.Decorations)
 local Gear = require(script.Parent.Gear)
+local Monsters = require(script.Parent.Monsters)
 local Slivers = require(script.Parent.Slivers)
 local Tools = require(script.Parent.Tools)
 
@@ -389,12 +390,21 @@ local Items: { [string]: Item } = {
 		Block = "StarstoneOre",
 		Node = true,
 	},
+	-- What monsters drop (Monsters.luau; tools/balance.py prices). The Slayer in Town buys them
+	SlimeGel = { Name = "Slime Gel", Icon = "🟢", Value = 12, SellPrice = 6 },
+	Thorn = { Name = "Thorn", Icon = "🌵", Value = 74, SellPrice = 37 },
+	ToughHide = { Name = "Tough Hide", Icon = "🟤", Value = 290, SellPrice = 145 },
+	OldBone = { Name = "Old Bone", Icon = "🦴", Value = 996, SellPrice = 498 },
+	Glowcap = { Name = "Glowcap", Icon = "🍄", Value = 3984, SellPrice = 1992 },
+	FrostFur = { Name = "Frost Fur", Icon = "❄️", Value = 20624, SellPrice = 10312 },
+	EmberCore = { Name = "Ember Core", Icon = "🔥", Value = 30000, SellPrice = 15000 },
+	VoidShard = { Name = "Void Shard", Icon = "🔮", Value = 100000, SellPrice = 50000 },
 	-- Warzone materials
 	Scrap = { Name = "Scrap", Icon = "⚙️", Value = 6, SellPrice = 0, Model = "Scrap" },
 	Crystal = { Name = "Crystal", Icon = "💎", Value = 60, SellPrice = 0, Model = "Crystal" },
 }
--- The skill challenges' rewards (Gear.luau): pets, armor sets and trophies. They're earned,
--- not bought, and the shops don't buy them; players can still trade them.
+-- The skill challenges' rewards (Gear.luau): pets, armor sets and trophies. They're earned or
+-- found (some pets come from Loot Crates), the shops don't buy them, and players can trade them.
 for _, itemId in Decorations.Items do
 	local decor = Decorations.ByItem[itemId]
 	Items[itemId] = {
@@ -432,6 +442,20 @@ for _, sliver in Slivers.List do
 		Model = sliver.Item,
 	}
 end
+-- Monster spawners for your island (Monsters.luau): place one and its monster keeps appearing
+-- beside it to fight. Crafted from slivers, except the late game's two, which only come from
+-- loot crates and Warzone chests and are priced like the late game's nodes.
+local LATE_SPAWNER_VALUE: { [string]: number } = { CinderkinSpawner = 8000000, VoidlingSpawner = 30000000 }
+for _, monster in Monsters.List do
+	Items[monster.Spawner] = {
+		Name = `{monster.Name} Spawner`,
+		Icon = "🥚",
+		Value = LATE_SPAWNER_VALUE[monster.Spawner],
+		SellPrice = 0,
+		Block = monster.Spawner,
+		Node = true,
+	}
+end
 -- Every tool from Tools.luau is an item too, e.g. "StonePickaxe" -> "Stone Pickaxe"
 local KIND_ICONS = { Sword = "🗡️", Pickaxe = "⛏️", Axe = "🔨", Shovel = "🥄", Hoe = "🌱" }
 for _, tool in Tools.List do
@@ -440,6 +464,15 @@ for _, tool in Tools.List do
 		Icon = KIND_ICONS[tool.Kind] or "🛠️",
 		SellPrice = 0,
 		Model = tool.Item,
+	}
+end
+-- The armour kits' swords: a kit's, so no shop buys them. Their look is in SwordArt.luau.
+for _, tool in Tools.KitSwords do
+	Items[tool.Item] = {
+		Name = `{tool.TierName} Sword`,
+		Icon = KIND_ICONS.Sword,
+		Value = 5000 * tool.Tier,
+		SellPrice = 0,
 	}
 end
 

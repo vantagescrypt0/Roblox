@@ -55,10 +55,12 @@ No dates — quality over speed.
    - [x] UI restyle (2026-10-31): "Sky" style on every screen and a single Menu button in the HUD — see [[UI Study]]. Playtested in Studio
    - [ ] **Late-game tiers (approved 2026-10-29), phase 1 Mining built and playtested 2026-11-01:** the deep cave (Silver Tunnels, Amethyst Geode, Sapphire Lake), 5 ores, slivers → nodes, Amethyst and Sapphire tools, the Gem Bench — see [[Mining Phase Plan]]. **Reworked 2026-11-02 by the [[Late-game Rule]]:** each world keeps its first 6 resources (Maple, Redwood and Sugarcane added; Magma Depths and Star Vault removed), the rest come from loot crates and Warzone chests. Ruby and Starsteel tools, island levels 5–7, tree saplings, Loot Crates, the refit and the billion coin scale are built and playtested in Studio, not published. Part counts: Mining 139k, Woodcutting 177k, Farming 107k: check on real devices
    - [ ] Phone performance check of the bigger worlds (part counts printed as "[World] ..." on server start)
-   - [ ] Slaying World ([[Slaying Proposal]] approved 2026-11-02): six zones, spawners from slivers, bosses later — its Town portal is boarded up until then
+   - [x] Slaying World ([[Slaying Proposal]] approved 2026-11-02): built 2026-11-08, six zones, monster meshes, gates, the Slayer in Town, Combat challenges, spawners. Published 2026-11-09 and its Town portal is open; played live except for seeing a kill pay out. Bosses later
    - [ ] The Warzone in Town (void pit and its own place built and playtested in Studio 2026-11-02; the teleport needs publishing it as a new place)
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?
+   - [ ] **Coming soon (your notes, 2026-11-09; not designed yet):** a rank system and boost gems. See [[Open Questions]]
+   - [ ] **Armour kits:** five built 2026-11-09 (Stormcaller, Sunforged, Emberguard, Frostwarden, Venomfang), each with its own sword, right-click special and set bonus; published and on sale at 800 to 1,800 Robux, in a game that's still Private (see [[Kits]]). Armour stops at diamond
    - Future ideas (your list, 2026-10-26; not started): **Enchants**, **Pets**, **Warzone** and the ideas that come with it, **Auction House**, **Coinflip** (check Roblox's gambling rules and our [[Monetization Principles]] first: if coins can be bought with Robux, a coinflip counts as paid gambling, which is off-limits for our young audience). At the very end: **Gamepasses and other Robux income** (see [[Monetization Principles]])
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.
 4. **Soft launch:** small audience, measure retention, fix.

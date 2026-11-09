@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Combat = require(ReplicatedStorage.Shared.Combat)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Speed = require(script.Parent.Parent.Util.Speed)
 local WarzoneService = require(script.Parent.WarzoneService)
 
 local HUNGER_PER_SECOND = 0.3 -- on top of what running burns
@@ -29,10 +30,7 @@ end
 function SprintService.Stop(player: Player)
 	if player:GetAttribute("Sprinting") then
 		player:SetAttribute("Sprinting", nil)
-		local humanoid = humanoidOf(player)
-		if humanoid and not WarzoneService.IsBlocking(player) then
-			humanoid.WalkSpeed = Combat.WalkSpeed
-		end
+		Speed.Apply(player)
 	end
 end
 
@@ -44,7 +42,7 @@ local function onSprint(player: Player, on: unknown)
 	local humanoid = humanoidOf(player)
 	if humanoid and humanoid.Health > 0 and not WarzoneService.IsBlocking(player) and not tooHungry(player) then
 		player:SetAttribute("Sprinting", true)
-		humanoid.WalkSpeed = Combat.SprintSpeed
+		Speed.Apply(player)
 	end
 end
 

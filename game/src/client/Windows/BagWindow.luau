@@ -19,6 +19,7 @@ local Foods = require(ReplicatedStorage.Shared.Foods)
 local Gear = require(ReplicatedStorage.Shared.Gear)
 local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Items = require(ReplicatedStorage.Shared.Items)
+local KitPowers = require(ReplicatedStorage.Shared.KitPowers)
 local Recipes = require(ReplicatedStorage.Shared.Recipes)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Rig = require(ReplicatedStorage.Shared.Rig)
@@ -121,10 +122,16 @@ local function describe(itemId: string): (string, string)
 	local sells = if item.SellPrice > 0 then ` Sells for {Theme.formatNumber(item.SellPrice)} coins.` else ""
 	local tool = Tools.ByItem[itemId]
 	local pet, armor = Gear.Pets[itemId], Gear.Armors[itemId]
-	if tool then
+	local special = KitPowers.Swords[itemId]
+	if special then
+		return `Sword · {special.Name}`, `Right-click while holding it: {special.Text}`
+	elseif tool then
 		return `Tool · {tool.Kind}`, `{tool.TierName} tier. Put it on your hotbar and hold it to use it.`
 	elseif pet then
 		return `Pet · {pet.Skill}`, `+{percent(pet.XPBonus)}% {pet.Skill} XP while it follows you.`
+	elseif armor and armor.Class then
+		local bonus = KitPowers.Sets[armor.Skill]
+		return `Armour · {armor.Skill} Kit`, `Protects like diamond. All four worn, {bonus.Name}: {bonus.Text}`
 	elseif armor then
 		return `Armour · {armor.Skill}`, `+{percent(armor.DropBonus)}% chance of double {armor.Skill} drops.`
 	elseif item.Equip == "Shield" then
@@ -183,7 +190,7 @@ local function bonusText(): string
 		local itemId = worn(entry.Slot)
 		local armor = itemId and Gear.Armors[itemId]
 		local pet = itemId and Gear.Pets[itemId]
-		if armor then
+		if armor and armor.DropBonus > 0 then
 			drops[armor.Skill] = (drops[armor.Skill] or 0) + armor.DropBonus
 		elseif pet then
 			xp[pet.Skill] = pet.XPBonus

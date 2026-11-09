@@ -9,6 +9,7 @@ local Combat = {}
 
 Combat.WalkSpeed = 16
 Combat.SprintSpeed = 21
+Combat.BlockSpeed = 8 -- with your shield up
 Combat.SprintHunger = 30 -- no sprinting at or below this hunger, as in Minecraft (6 of 20)
 
 Combat.Reach = 9
@@ -29,15 +30,14 @@ Combat.BlockedPush = 12
 
 export type Protection = { Helmet: number, Chest: number, Legs: number, Boots: number, Toughness: number }
 
--- How well each kind of armour covers you. Only Leather is on real items so far (all skill armour).
+-- How well each kind of armour covers you. Armour stops at diamond: only tools go on into the late game (your call,
+-- 2026-11-09). An armour piece says which of these it is (Gear.luau); skill armour is Leather.
 Combat.ArmorClasses = {
 	Leather = { Helmet = 1, Chest = 3, Legs = 2, Boots = 1, Toughness = 0 } :: Protection,
 	Iron = { Helmet = 2, Chest = 6, Legs = 5, Boots = 2, Toughness = 0 } :: Protection,
 	Amethyst = { Helmet = 3, Chest = 6, Legs = 5, Boots = 2, Toughness = 0 } :: Protection,
 	Sapphire = { Helmet = 3, Chest = 7, Legs = 6, Boots = 2, Toughness = 4 } :: Protection,
-	Kit = { Helmet = 3, Chest = 8, Legs = 6, Boots = 3, Toughness = 8 } :: Protection, -- diamond
-	Ruby = { Helmet = 3, Chest = 8, Legs = 6, Boots = 3, Toughness = 8 } :: Protection,
-	Starsteel = { Helmet = 3, Chest = 8, Legs = 6, Boots = 3, Toughness = 12 } :: Protection, -- netherite
+	Kit = { Helmet = 3, Chest = 8, Legs = 6, Boots = 3, Toughness = 8 } :: Protection, -- diamond, the top
 }
 
 -- How charged a swing is, 0 to 1, this long after your last one
@@ -63,7 +63,7 @@ function Combat.Armor(equipped: { [string]: string }): (number, number)
 	for slot, itemId in equipped do
 		local worn = Gear.Armors[itemId]
 		if worn then
-			local class = Combat.ArmorClasses.Leather :: any
+			local class = (Combat.ArmorClasses :: any)[worn.Class or "Leather"]
 			points += class[slot] or 0
 			toughness += class.Toughness / 4
 		end

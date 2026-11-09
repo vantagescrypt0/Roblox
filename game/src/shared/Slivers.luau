@@ -6,10 +6,11 @@
 -- drop them, and only what's in the worlds has them: the late game (Ruby, Starstone, Mangrove,
 -- Starwood, Strawberry, Dragonfruit, Starfruit) comes from loot crates and Warzone chests
 -- instead (your call, 2026-11-02). Chances are flat (no level or armor bonus). Items.luau makes
--- the sliver items, Recipes.luau the recipes, BlockService and FarmService roll them.
+-- the sliver items, Recipes.luau the recipes, BlockService and FarmService roll them, and
+-- MobService the Slaying World's monsters, whose slivers craft a spawner for your island.
 
 export type Sliver = {
-	Ore: string, -- the block or crop that drops it
+	Ore: string, -- the block or crop that drops it (for a monster: its drop item)
 	Item: string, -- the sliver's item id
 	Name: string,
 	Chance: number, -- per one gathered
@@ -50,6 +51,14 @@ add("MapleWood", "Maple", 900, "MapleSapling", 15)
 add("Redwood", "Redwood", 1300, "RedwoodSapling", 15)
 -- One in `every` crops harvested; the Merchant sells the earlier crops' seeds
 add("Sugarcane", "Sugarcane", 900, "SugarcaneSeeds", 15)
+-- One in `every` monsters of the Slaying World. As many hours to a spawner as the node of the
+-- same rank takes (tools/balance.py)
+add("SlimeGel", "Slime", 50, "SlimeSpawner", 10)
+add("Thorn", "Thornling", 70, "ThornlingSpawner", 10)
+add("ToughHide", "BoarBrute", 95, "BoarBruteSpawner", 12)
+add("OldBone", "Rattlebones", 115, "RattlebonesSpawner", 12)
+add("Glowcap", "Sporeling", 135, "SporelingSpawner", 15)
+add("FrostFur", "FrostYeti", 150, "FrostYetiSpawner", 15)
 
 return table.freeze({
 	List = table.freeze(List),

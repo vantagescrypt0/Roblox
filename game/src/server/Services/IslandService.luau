@@ -28,6 +28,7 @@ local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local Metrics = require(script.Parent.Parent.Util.Metrics)
 local Portal = require(script.Parent.Parent.Util.Portal)
 local Trees = require(script.Parent.Parent.Util.Trees)
 local DataService = require(script.Parent.DataService)
@@ -646,9 +647,33 @@ function IslandService.SendHome(player: Player)
 	end
 end
 
+-- Whose island plot this spot is on (nil: an empty plot)
+function IslandService.OwnerAt(position: Vector3): Player?
+	local half = ISLAND.Spacing / 2
+	for player, island in islands do
+		local offset = position - island.Center
+		if math.abs(offset.X) <= half and math.abs(offset.Z) <= half then
+			return player
+		end
+	end
+	return nil
+end
+
 local function onPlayerRemoving(player: Player)
 	local island = islands[player]
 	if island then
+		-- Anyone visiting goes home before the island goes
+		local half = ISLAND.Spacing / 2
+		for other, own in islands do
+			local root = other ~= player and other.Character and other.Character:FindFirstChild("HumanoidRootPart")
+			if root and root:IsA("BasePart") then
+				local offset = root.Position - island.Center
+				if math.abs(offset.X) <= half and math.abs(offset.Z) <= half then
+					(other.Character :: Model):PivotTo(own.Spawn.CFrame + Vector3.new(0, 4, 0))
+					StateService.Notify(other, `{player.DisplayName} left, so you're back on your island`, "info")
+				end
+			end
+		end
 		islands[player] = nil
 		usedPlots[island.Plot] = nil
 		BlockWorld.destroy(island.World)
@@ -879,6 +904,7 @@ local function onExpand(player: Player)
 		StateService.Notify(player, `You need {nextTier.Cost} coins to upgrade`, "bad")
 		return
 	end
+	Metrics.Coins(player, -nextTier.Cost, data.Coins, "Gameplay", "IslandUpgrade")
 	data.Island.Tier += 1
 	island.Tier = clampTier(data.Island.Tier)
 	island.Model:SetAttribute("Tier", island.Tier)

@@ -1,15 +1,16 @@
 --!strict
--- Opening Loot Crates (LootCrates.luau). A crate is used up and its one prize goes straight into
--- your Bag; your screen is told what it was. Works in every place.
+-- Opening Loot Crates (LootCrates.luau). A crate is used up and its 6 things go straight into
+-- your Bag; your screen is told what they were and shows it (client/CrateOpening). Works in every place.
 
+local AssetService = game:GetService("AssetService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Items = require(ReplicatedStorage.Shared.Items)
+local CrateArt = require(ReplicatedStorage.Shared.CrateArt)
 local LootCrates = require(ReplicatedStorage.Shared.LootCrates)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local AwardService = require(script.Parent.AwardService)
 local InventoryService = require(script.Parent.InventoryService)
-local StateService = require(script.Parent.StateService)
 
 local COOLDOWN = 0.5
 
@@ -27,14 +28,47 @@ local function onOpen(player: Player)
 	if not InventoryService.Remove(player, LootCrates.Item, 1) then
 		return
 	end
-	local prize = LootCrates.Roll(rng:NextNumber())
-	local count = rng:NextInteger(prize.Min, prize.Max)
-	InventoryService.Add(player, prize.Item, count)
-	StateService.Notify(player, `Loot Crate: {count} {Items[prize.Item].Name}!`, "level")
-	Remotes.CrateOpened:FireClient(player, prize.Item, count)
+	local results = {}
+	for _ = 1, LootCrates.Slots do
+		local prize = LootCrates.Roll(rng:NextNumber(), rng:NextNumber())
+		local result = { Item = prize.Item, Count = rng:NextInteger(prize.Min, prize.Max), Good = prize.Good }
+		InventoryService.Add(player, result.Item, result.Count) -- what doesn't fit arrives by letter
+		table.insert(results, result)
+	end
+	Remotes.CrateOpened:FireClient(player, results)
+	AwardService.Give(player, "FirstCrate")
+end
+
+-- The opening scene's meshes, loaded up front and kept where every screen can copy them
+local function loadModels()
+	local folder = Instance.new("Folder")
+	folder.Name = "CrateModels"
+	for name, art in CrateArt.Parts do
+		task.spawn(function()
+			local ok, part = pcall(function()
+				return AssetService:CreateMeshPartAsync(art.Mesh)
+			end)
+			if not ok then
+				warn(`[CrateService] {name} didn't load: {part}`)
+				return
+			end
+			part.Name = name
+			part.Size = art.Size
+			part.Anchored = true
+			part.CanCollide = false
+			part.CanQuery = false
+			part.CanTouch = false
+			if art.Textured then
+				part.TextureID = CrateArt.Texture
+			end
+			part.Parent = folder
+		end)
+	end
+	folder.Parent = ReplicatedStorage
 end
 
 function CrateService.Start()
+	loadModels()
 	Remotes.OpenCrate.OnServerEvent:Connect(onOpen)
 	Players.PlayerRemoving:Connect(function(player)
 		lastOpen[player] = nil

@@ -77,7 +77,8 @@ local function id(n: number): string
 	return `rbxassetid://{n}`
 end
 
-function Sfx.play(name: string, position: Vector3?)
+-- `pitch` plays it at exactly that speed, for sounds that climb
+function Sfx.play(name: string, position: Vector3?, exactPitch: number?)
 	local def = DEFS[name]
 	if not def then
 		return
@@ -92,7 +93,7 @@ function Sfx.play(name: string, position: Vector3?)
 	sound.SoundId = id(def.Ids[rng:NextInteger(1, #def.Ids)])
 	sound.Volume = def.Volume
 	local pitch = def.Pitch
-	sound.PlaybackSpeed = if pitch then rng:NextNumber(pitch[1], pitch[2]) else 1
+	sound.PlaybackSpeed = exactPitch or if pitch then rng:NextNumber(pitch[1], pitch[2]) else 1
 	sound.SoundGroup = effects
 	local holder: Instance = sound
 	if position then

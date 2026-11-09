@@ -16,17 +16,21 @@ local function spawnCharacter(player: Player, spawnPoint: SpawnLocation)
 		player:RequestStreamAroundAsync(spawnPoint.Position)
 	end)
 	if player.Parent == Players then
+		player.RespawnLocation = spawnPoint
 		player:LoadCharacterAsync()
 	end
 end
 
 -- `fallY`: anyone below this height is put back (or `onFell` decides what happens to them).
 -- `onArrived` runs once per player, after their first character spawns.
+-- `spawnFor` says where someone comes back after dying, if it depends on them (the Slaying World:
+-- the start of the zone they were in).
 function Spawning.Start(
 	spawnPoint: SpawnLocation,
 	fallY: number,
 	onArrived: ((Player) -> ())?,
-	onFell: ((Player, Model) -> ())?
+	onFell: ((Player, Model) -> ())?,
+	spawnFor: ((Player) -> SpawnLocation)?
 )
 	Players.CharacterAutoLoads = false
 
@@ -36,7 +40,7 @@ function Spawning.Start(
 			humanoid.Died:Connect(function()
 				task.wait(Players.RespawnTime)
 				if player.Character == character then
-					spawnCharacter(player, spawnPoint)
+					spawnCharacter(player, if spawnFor then spawnFor(player) else spawnPoint)
 				end
 			end)
 		end)

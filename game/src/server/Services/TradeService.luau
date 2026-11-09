@@ -21,7 +21,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Economy = require(ReplicatedStorage.Shared.Economy)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
+local LootCrates = require(ReplicatedStorage.Shared.LootCrates)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Policy = require(script.Parent.Parent.Util.Policy)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
 local StateService = require(script.Parent.StateService)
@@ -274,9 +276,25 @@ local function levelsOk(player: Player, other: Player): boolean
 	return true
 end
 
+-- Roblox turns trading off for some accounts. This can wait on Roblox, so it comes before every other check.
+local function mayTrade(player: Player, other: Player): boolean
+	if not Policy.TradingAllowed(player) then
+		StateService.Notify(player, "Trading isn't available on your account", "bad")
+		return false
+	end
+	if not Policy.TradingAllowed(other) then
+		StateService.Notify(player, `{other.DisplayName} can't trade`, "bad")
+		return false
+	end
+	return true
+end
+
 local function onRequest(player: Player, target: unknown)
 	local other = asPlayer(target)
-	if not other or other == player or other.Parent ~= Players or sessions[player] then
+	if not other or other == player or not mayTrade(player, other) then
+		return
+	end
+	if other.Parent ~= Players or sessions[player] then
 		return
 	end
 	if not levelsOk(player, other) then
@@ -359,6 +377,12 @@ local function onOffer(player: Player, itemId: unknown, count: unknown)
 		return
 	end
 	if type(count) ~= "number" or count ~= count then
+		return
+	end
+	-- A crate may have been bought with Robux, so it can't reach someone Roblox bars from paid random items
+	local partner = partnerOf(session, player)
+	if itemId == LootCrates.Item and Policy.PaidRandomRestricted(partner) then
+		StateService.Notify(player, `{partner.DisplayName} can't take Loot Crates`, "bad")
 		return
 	end
 	local offer = session.Offers[player]

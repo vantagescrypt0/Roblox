@@ -280,13 +280,67 @@ def waterfall(x, y, top, bottom, width, seed=1, mat=None, foam=None):
 # The hero ---------------------------------------------------------------------------------
 
 
-def hero(assets, location, yaw=0, shirt="#2f6fdc", pants="#27324f", skin="#f4c38f", hair="#4b2e1e", hat=None, tool=None, swing=-115, scale=1.0, tool_scale=1.25, off_arm=-18):
+def face_parts(root, face, gaze, dark, white):
+    """The hero's expression, on the front of the head"""
+    gx, gz = gaze
+    red = flat("Tongue", "#c8343c", 0.5)
+
+    def part(name, size, x, z, mat, tilt=0, y=-0.74):
+        box(name, size, (x, y, z), mat, rotation=(0, tilt, 0), parent=root)
+
+    for sx in (-0.33, 0.33):
+        side = 1 if sx > 0 else -1
+        if face == "friendly":
+            part("EyeW", (0.34, 0.04, 0.42), sx, 4.85, white)
+            part("Eye", (0.2, 0.05, 0.3), sx + 0.03, 4.82, dark, y=-0.765)
+            part("GrinEnd", (0.09, 0.04, 0.12), sx, 4.5, dark)
+        elif face == "shock":
+            part("EyeW", (0.46, 0.04, 0.6), sx, 4.93, white)
+            part("Eye", (0.15, 0.05, 0.19), sx + gx, 4.91 + gz, dark, y=-0.765)
+            part("Brow", (0.5, 0.05, 0.11), sx, 5.32, dark, tilt=14 * side)
+        elif face == "huge":
+            part("EyeW", (0.42, 0.04, 0.5), sx, 4.94, white)
+            part("Eye", (0.23, 0.05, 0.31), sx + gx, 4.91 + gz, dark, y=-0.765)
+            part("Shine", (0.08, 0.06, 0.08), sx + gx + 0.05, 5.0 + gz, white, y=-0.785)
+            part("Brow", (0.46, 0.05, 0.1), sx, 5.3, dark, tilt=-10 * side)
+            part("SmileEnd", (0.11, 0.04, 0.14), sx * 1.52, 4.53, dark)
+        elif face == "angry":
+            part("EyeW", (0.44, 0.04, 0.3), sx, 4.88, white)
+            part("Eye", (0.16, 0.05, 0.22), sx + gx, 4.86 + gz, dark, y=-0.765)
+            part("Brow", (0.58, 0.06, 0.17), sx, 5.08, dark, tilt=-22 * side, y=-0.77)
+        elif face == "worried":
+            part("EyeW", (0.42, 0.04, 0.52), sx, 4.9, white)
+            part("Eye", (0.15, 0.05, 0.2), sx + gx, 4.86 + gz, dark, y=-0.765)
+            part("Brow", (0.46, 0.05, 0.1), sx, 5.28, dark, tilt=18 * side)
+            part("FrownEnd", (0.09, 0.04, 0.1), sx * 0.76, 4.36, dark)
+    if face == "friendly":
+        part("Grin", (0.62, 0.04, 0.09), 0, 4.42, dark)
+    elif face == "shock":
+        part("Mouth", (0.6, 0.04, 0.5), 0, 4.33, dark)
+        part("Tongue", (0.4, 0.05, 0.15), 0, 4.16, red, y=-0.765)
+        part("Teeth", (0.52, 0.05, 0.1), 0, 4.52, white, y=-0.765)
+    elif face == "huge":
+        part("Mouth", (0.92, 0.04, 0.36), 0, 4.38, dark)
+        part("Teeth", (0.84, 0.05, 0.14), 0, 4.49, white, y=-0.765)
+        part("Tongue", (0.5, 0.05, 0.12), 0, 4.27, red, y=-0.765)
+    elif face == "angry":
+        part("Mouth", (0.76, 0.04, 0.32), 0, 4.36, dark)
+        part("Teeth", (0.68, 0.05, 0.22), 0, 4.36, white, y=-0.765)
+        part("TeethLine", (0.68, 0.055, 0.03), 0, 4.36, dark, y=-0.78)
+        for x in (-0.22, 0, 0.22):
+            part("TeethGap", (0.03, 0.055, 0.22), x, 4.36, dark, y=-0.78)
+    elif face == "worried":
+        part("Frown", (0.46, 0.04, 0.09), 0, 4.42, dark)
+        part("Sweat", (0.14, 0.06, 0.26), 0.66, 5.14, glow("Sweat", "#8fdcff", 1.2), y=-0.77)
+
+
+def hero(assets, location, yaw=0, shirt="#2f6fdc", pants="#27324f", skin="#f4c38f", hair="#4b2e1e", hat=None, tool=None, swing=-115, scale=1.0, tool_scale=1.25, off_arm=-18, face="friendly", gaze=(0, 0), shoulders=None, mirror=False):
     """A blocky adventurer (facing -Y before `yaw`), one arm raised with a tool"""
     root = bpy.data.objects.new("Hero", None)
     bpy.context.scene.collection.objects.link(root)
     root.location = location
     root.rotation_euler = (0, 0, math.radians(yaw))
-    root.scale = (scale, scale, scale)
+    root.scale = (-scale if mirror else scale, scale, scale)
     skin_m, shirt_m, pants_m = flat("Skin", skin), flat("Shirt", shirt), flat("Pants", pants)
     dark = flat("Dark", "#1c1a24", 0.3)
     white = flat("EyeWhite", "#ffffff", 0.4)
@@ -298,13 +352,12 @@ def hero(assets, location, yaw=0, shirt="#2f6fdc", pants="#27324f", skin="#f4c38
     box("Torso", (2.05, 1.0, 2.0), (0, 0, 3.0), shirt_m, parent=root, bevel=0.08)
     box("Belt", (2.08, 1.04, 0.25), (0, 0, 2.15), dark, parent=root)
     box("Head", (1.5, 1.45, 1.4), (0, 0, 4.75), skin_m, parent=root, bevel=0.14)
-    # The face: big friendly eyes and a grin
-    for sx in (-0.33, 0.33):
-        box("EyeW", (0.34, 0.04, 0.42), (sx, -0.74, 4.85), white, parent=root)
-        box("Eye", (0.2, 0.05, 0.3), (sx + 0.03, -0.765, 4.82), dark, parent=root)
-    box("Grin", (0.62, 0.04, 0.09), (0, -0.74, 4.42), dark, parent=root)
-    for sx in (-0.33, 0.33):
-        box("GrinEnd", (0.09, 0.04, 0.12), (sx, -0.74, 4.5), dark, parent=root)
+    face_parts(root, face, gaze, dark, white)
+    if shoulders:
+        plate, trim = flat("Plate" + shoulders, shoulders, 0.35), flat("PlateTrim", "#f4c542", 0.3)
+        for sx in (-1.52, 1.52):
+            box("Shoulder", (1.3, 1.3, 0.62), (sx, 0, 4.12), plate, parent=root, bevel=0.08)
+            box("ShoulderTrim", (1.34, 1.34, 0.14), (sx, 0, 3.86), trim, parent=root)
     if hat == "miner":
         box("Helmet", (1.68, 1.62, 0.62), (0, 0, 5.5), flat("Helmet", "#f6c21c", 0.35), parent=root, bevel=0.14)
         box("Brim", (1.8, 0.45, 0.14), (0, -0.9, 5.25), flat("HelmetDark", "#d99a10", 0.35), parent=root)
@@ -528,6 +581,17 @@ FONT = {
     "Z": "###### ###### ....## ...##. ..##.. .##... ##.... ##.... ###### ######",
     "&": ".###.. ##.##. ##.##. .###.. .##... ###.## ##.### ##..## ###### .###.#",
     "!": "..##.. ..##.. ..##.. ..##.. ..##.. ..##.. ...... ...... ..##.. ..##..",
+    "?": ".####. ###### ##..## ....## ...##. ..##.. ..##.. ...... ..##.. ..##..",
+    "0": ".####. ###### ##..## ##.### ##.### ###.## ###.## ##..## ###### .####.",
+    "1": "..##.. .###.. ####.. ..##.. ..##.. ..##.. ..##.. ..##.. ###### ######",
+    "2": ".####. ###### ##..## ....## ...##. ..##.. .##... ##.... ###### ######",
+    "3": "#####. ###### ....## ....## .####. .####. ....## ....## ###### #####.",
+    "4": "##..## ##..## ##..## ##..## ###### ###### ....## ....## ....## ....##",
+    "5": "###### ###### ##.... ##.... #####. ###### ....## ....## ###### #####.",
+    "6": ".##### ###### ##.... ##.... #####. ###### ##..## ##..## ###### .####.",
+    "7": "###### ###### ....## ...##. ...##. ..##.. ..##.. ..##.. ..##.. ..##..",
+    "8": ".####. ###### ##..## ##..## .####. .####. ##..## ##..## ###### .####.",
+    "9": ".####. ###### ##..## ##..## ###### .##### ....## ....## ###### #####.",
 }
 FONT = {letter: rows.split(" ") for letter, rows in FONT.items()}
 GLYPH_W, GLYPH_H, GAP, SPACE = 6, 10, 2, 4
@@ -1326,6 +1390,231 @@ def words_world(image, unit):
     caption(image, [("MINE & FARM & CHOP & BUILD", *WHITE, 0.9)], image.shape[1] // 2, image.shape[0] - unit * 13, unit, align="center")
 
 
+def motes(seed, count, center, spread, height, colors, size=(0.2, 0.5), strength=3.0):
+    """Little lit cubes hanging or rising in the air"""
+    rng = random.Random(seed)
+    for i in range(count):
+        color = colors[i % len(colors)]
+        r = rng.uniform(*size)
+        at = (center[0] + rng.uniform(-spread, spread), center[1] + rng.uniform(-spread, spread), center[2] + rng.uniform(0, height))
+        box("Mote", (r, r, r), at, glow("Mote" + color, color, strength), rotation=(rng.uniform(0, 90), rng.uniform(0, 90), 0))
+
+
+def castle(v, cx, cy, z):
+    """A proper keep: curtain walls, four round-the-corner towers and a tall middle tower"""
+    half_x, half_y = 13, 9
+    for x in range(cx - half_x, cx + half_x + 1):
+        for y in range(cy - half_y, cy + half_y + 1):
+            edge = abs(x - cx) == half_x or abs(y - cy) == half_y
+            v.set(x, y, z, "SmoothStone")
+            if edge:
+                for dz in range(1, 8):
+                    v.set(x, y, z + dz, "StoneBricks")
+                if (x + y) % 2 == 0:
+                    v.set(x, y, z + 8, "StoneBricks")
+
+    def tower(tx, ty, r, height, roof):
+        for x in range(tx - r, tx + r + 1):
+            for y in range(ty - r, ty + r + 1):
+                for dz in range(1, height + 1):
+                    v.set(x, y, z + dz, "StoneBricks" if (dz % 5 or max(abs(x - tx), abs(y - ty)) < r) else "SmoothStone")
+        for i in range(r + 3):
+            spread = r + 1 - i
+            for x in range(tx - spread, tx + spread + 1):
+                for y in range(ty - spread, ty + spread + 1):
+                    v.set(x, y, z + height + 1 + i, roof)
+
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            tower(cx + sx * half_x, cy + sy * half_y, 3, 13, "RoofSlate")
+    tower(cx, cy, 6, 21, "RoofRed")
+
+
+def split_frame(left, right, w, h, unit):
+    """Two renders side by side, with a slanted white bar where they meet"""
+    lw = left.shape[1]
+    yy, xx = np.mgrid[0:h, 0:w]
+    edge = w / 2 + (yy - h / 2) * -0.09
+    out = np.zeros((h, w, 4), dtype=np.float32)
+    out[:, :lw] = left
+    behind = np.zeros_like(out)
+    behind[:, w - lw:] = right
+    out = np.where((xx >= edge)[..., None], behind, out)
+    band = np.abs(xx - edge)
+    out[band < unit * 3.0] = (*OUTLINE, 1)
+    out[band < unit * 1.9] = (1, 1, 1, 1)
+    return out
+
+
+def scene_day100(w, h, samples, tmp):
+    """Day 1 against day 100: the same player, a dirt speck next to a castle in the sky"""
+    lw = int(w * 0.58)
+    # Day 1
+    s = Stage()
+    v, a = s.v, s.assets
+    tops = island(v, -13, 0, 4, depth=5, seed=21, base=7)
+    tree(v, -13, 0, tops[(-13, 0)], height=2, leaf="Leaves", radius=1, seed=3)
+    v.build()
+    grey = flat("CloudGrey", "#8a93a8", 0.95)
+    for loc, r, seed in (((-90, 90, -40), 46, 11), ((60, 70, 70), 34, 12), ((-20, 120, -70), 60, 13), ((120, 150, -20), 50, 14)):
+        puff(loc, r, grey, seed=seed)
+    hero(a, (3, -116, -12), yaw=-8, shirt="#7d6a55", pants="#4d463f", face="worried", gaze=(-0.08, -0.03), tool="WoodenPickaxe", swing=-160, scale=7.5, tool_scale=1.5)
+    lamp((12, -96, 36), "#a9c4ff", 7000, 8)
+    sky("#39425e", "#7b859c", below="#454c60", strength=0.95)
+    sun((-0.5, -0.6, 0.7), color="#c6d1ea", energy=1.8)
+    camera((0, -150, 20), (0, 0, 20), lens=38)
+    render(tmp, lw, h, samples)
+    left = finish(read_image(tmp), bloom=0.2, vignette=0.32, saturation=0.72)
+    # Day 100
+    s = Stage()
+    v, a = s.v, s.assets
+    tops = island(v, 26, 0, 34, depth=30, seed=6, hill=2, ores=(("GoldOre", 0.06), ("IronOre", 0.03), ("RubyOre", 0.02)))
+    castle(v, 28, 8, max(tops.get((28, 8), 0), 2))
+    for x, y, h_, log, leaf, r in (
+        (3, -14, 7, "CherryWood", "CherryLeaves", 4),
+        (52, -18, 8, "Wood", "Leaves", 4),
+        (10, 20, 7, "BirchWood", "BirchLeaves", 3),
+        (46, 26, 7, "CherryWood", "CherryLeaves", 4),
+    ):
+        if (x, y) in tops:
+            tree(v, x, y, tops[(x, y)], h_, log, leaf, r, seed=x + y)
+    v.build()
+    edge_y = min(y for (x, y) in tops if x == 18)
+    waterfall(18 * SIZE, edge_y * SIZE - 1.5, 2, -200, 12, seed=4, mat=s.water, foam=s.foam)
+    window = glow("Window", "#ffd88a", 3.0)
+    for i in range(-2, 3):
+        box("Window", (3, 0.5, 5), ((28 + i * 4) * SIZE, -1 * SIZE - 3.1, 13 * SIZE), window)
+    motes(5, 90, (0, -160, -30), 110, 150, ["#ffe08a", "#fff3c4", "#7fe6ff"], size=(0.25, 0.7), strength=4.0)
+    for loc, r, seed in (((260, 70, -120), 60, 1), ((-40, 80, -130), 54, 2), ((190, 140, 170), 44, 3), ((-90, 160, 130), 40, 4)):
+        puff(loc, r, s.white, seed=seed)
+    hero(a, (-3, -196, -2), yaw=8, shirt="#23c4dc", pants="#20305c", face="huge", gaze=(0.05, 0.02), tool="StarsteelSword", swing=-158, scale=7.5, tool_scale=2.1, shoulders="#1a8fb0", mirror=True, hair="#3a2415")
+    lamp((-14, -176, 44), "#ffd27a", 9000, 8)
+    sky("#0a4ad0", "#39a6ff", below="#8fdcff", strength=1.05)
+    sun((-0.45, -0.7, 0.72), energy=4.4)
+    camera((0, -230, 30), (0, 0, 30), lens=38)
+    render(tmp, lw, h, samples)
+    right = finish(read_image(tmp), bloom=0.5, vignette=0.12, saturation=1.28)
+    return split_frame(left, right, w, h, w // 240)
+
+
+def scene_chest(w, h, samples, tmp):
+    """The Warzone's Legendary Skydrop with two players about to fight for it and everyone else running in"""
+    s = Stage()
+    v, a = s.v, s.assets
+    tops = island(v, 0, 12, 28, top="DuskGrass", soil="Dirt", rock="DarkStone", depth=22, seed=31, hill=1)
+    for side in (-1, 1):
+        for i in range(0, 34):
+            for k in (-1, 0, 1):
+                v.set(side * (26 + i), 30 + k, 0, "DarkPlanks")
+    v.build()
+    far = Vox(a)
+    island(far, -86, 62, 16, top="DuskGrass", soil="Dirt", rock="DarkStone", depth=16, seed=32, base=1)
+    island(far, 86, 58, 17, top="DuskGrass", soil="Dirt", rock="DarkStone", depth=16, seed=33, base=-1)
+    island(far, 0, 150, 26, top="DuskGrass", soil="Dirt", rock="DarkStone", depth=20, seed=34, base=14, hill=4)
+    far.build()
+    ground = tops.get((0, 0), 0) * SIZE + 1.5
+    mesh = a.blocks.get("LootChest") or a.blocks.get("Chest")
+    if mesh:
+        chest = bpy.data.objects.new("Legendary", mesh)
+        bpy.context.scene.collection.objects.link(chest)
+        chest.location = (0, -6, ground + 7.8)
+        chest.scale = (5.2, 5.2, 5.2)
+    else:
+        print("no chest mesh")
+        box("Legendary", (15, 12, 12), (0, -6, ground + 6), flat("ChestWood", "#8a5a2c"), bevel=0.4)
+    # Its health bar, part mined away
+    box("BarBack", (30, 0.6, 3.2), (0, -8, ground + 23), flat("BarBack", "#14102a", 0.5), bevel=0.2)
+    box("BarFill", (19, 0.8, 2.1), (-4.9, -8.4, ground + 23), glow("BarFill", "#c060ff", 5))
+    lamp((0, -28, ground + 12), "#b65cff", 42000, 10)
+    motes(7, 170, (0, -10, ground), 19, 34, ["#d08cff", "#b65cff", "#ffd27a", "#ffffff"], size=(0.18, 0.5), strength=5.0)
+    # The two fighting over it, swords crossing above the chest
+    hero(a, (-23, -60, ground - 5), yaw=38, shirt="#d8362c", pants="#3a1a20", face="angry", gaze=(0.07, 0), tool="RubySword", swing=-142, scale=7.2, tool_scale=2.2, shoulders="#7a1f1f", mirror=True)
+    hero(a, (23, -60, ground - 5), yaw=-38, shirt="#2f6fdc", pants="#1a2a55", face="angry", gaze=(-0.07, 0), tool="SapphireSword", swing=-142, scale=7.2, tool_scale=2.2, shoulders="#1c3f8f", hair="#d7a94a")
+    lamp((-40, -40, 44), "#ff8a6a", 9000, 8)
+    lamp((40, -40, 44), "#7ab8ff", 9000, 8)
+    # Everyone else, running in over the island and the bridges
+    rng = random.Random(44)
+    shirts = ["#e8452c", "#2f6fdc", "#2fbf71", "#f4b92c", "#a65cff", "#e4e7ef", "#f27fb3"]
+    for i in range(46):
+        x, y = rng.uniform(-110, 110), rng.uniform(16, 110)
+        cell = (round(x / SIZE), round(y / SIZE))
+        z = (tops.get(cell, 0) if cell in tops else 0) * SIZE + 1.5
+        toward = math.degrees(math.atan2(-x, y))
+        hero(a, (x, y, z), yaw=toward, shirt=shirts[i % len(shirts)], tool="IronSword" if i % 2 else None, swing=-90, scale=rng.uniform(1.0, 1.25))
+    motes(9, 240, (0, 700, -100), 1100, 760, ["#ffffff", "#c9d8ff"], size=(1.2, 3.4), strength=4.0)
+    plum = glow("Plum", "#3a2a78", 0.5)
+    for loc, r, seed in (((-280, 260, -60), 80, 1), ((300, 280, -50), 90, 2), ((-60, 420, -120), 120, 3)):
+        puff(loc, r, plum, seed=seed)
+    sky("#050a24", "#1c2a6a", below="#0a1030", strength=0.9)
+    sun((-0.2, -0.6, 0.75), color="#c7d4ff", energy=1.8)
+    camera((0, -114, 32), (0, 0, 20), lens=30)
+    render(tmp, w, h, samples)
+    return finish(read_image(tmp), bloom=0.75, threshold=0.7, vignette=0.32, saturation=1.25)
+
+
+def scene_pit(w, h, samples, tmp):
+    """The void pit in Town's square: a player at the edge, looking back, and others already falling"""
+    s = Stage()
+    v, a = s.v, s.assets
+    for x in range(-26, 27):
+        for y in range(-26, 27):
+            ring = max(abs(x), abs(y))
+            if ring <= 4:
+                continue
+            if ring == 5:
+                roll = (x * 7 + y * 13) % 9
+                brick = "MossyStoneBricks" if roll == 0 else ("CrackedStoneBricks" if roll <= 2 else "StoneBricks")
+                if not (abs(x) == 5 and abs(y) == 5):
+                    v.set(x, y, 1, brick)
+                for z in range(0, -9, -1):
+                    v.set(x, y, z, brick)
+            else:
+                v.set(x, y, 0, "StoneBricks" if ring <= 6 or ring == 15 else ("SmoothStone" if ring <= 9 else "Cobblestone"))
+    v.build()
+    across = 9 * SIZE
+    surface = -2 * SIZE
+    box("Void", (across + 1, across + 1, 0.4), (0, 0, surface), glow("Void", "#0b0620", 0.8))
+    motes(3, 190, (0, 0, surface + 0.5), across / 2 - 1, 13, ["#efe6ff", "#a766ff", "#96f0d7"], size=(0.14, 0.42), strength=7.0)
+    flame = shard_mesh(glow("Flame", "#a45cff", 5.0))
+    rng = random.Random(8)
+    for i in range(18):
+        crystals(flame, (rng.uniform(-11, 11), rng.uniform(-11, 11), surface), 3, rng.uniform(9, 26), seed=i, spread=0.25, scatter=1.6)
+    motes(4, 260, (0, 0, surface), across / 2 + 1, 80, ["#d08cff", "#a766ff", "#f0c8ff", "#ffffff"], size=(0.18, 0.55), strength=5.0)
+    lamp((0, 0, 8), "#9a50ff", 52000, 14)
+    # Others already falling in, arms up
+    for x, y, z, yaw, shirt in ((-6, 4, 6, 40, "#e8452c"), (5, -3, 1, -30, "#2fbf71"), (2, 7, 13, 170, "#f4b92c"), (-3, -5, -2, 90, "#2f6fdc")):
+        hero(a, (x, y, z), yaw=yaw, shirt=shirt, swing=-172, off_arm=-172, scale=1.05)
+    # The dark town behind
+    wall = Vox(a)
+    for x in range(-60, 61):
+        tall = 8 + int(5 * (1 + math.sin(x * 0.7)) + 3 * (1 + math.sin(x * 0.23)))
+        for z in range(1, tall):
+            wall.set(x, 34, z, "Bricks" if x % 24 < 12 else "StoneBricks")
+    wall.build()
+    # The one who hasn't jumped yet, looking back at you
+    hero(a, (-15, -40, 1.5), yaw=30, shirt="#f4b92c", pants="#27324f", face="shock", gaze=(0.11, -0.03), scale=5.2, off_arm=-26, swing=-30)
+    lamp((-24, -62, 34), "#ffe2b8", 5200, 9)
+    lamp((-6, -30, 24), "#9a50ff", 6000, 7)
+    sky("#120a30", "#3a1a6a", below="#100826", strength=0.75)
+    sun((-0.3, -0.7, 0.7), color="#b9a8ff", energy=1.1)
+    camera((-3, -66, 31), (4, 0, 2), lens=31)
+    render(tmp, w, h, samples)
+    return finish(read_image(tmp), bloom=0.8, threshold=0.68, vignette=0.34, saturation=1.25)
+
+
+def words_day100(image, unit):
+    caption(image, [("DAY 1", "#ffffff", "#c9d3e6", 2.6)], unit * 3, unit * 3, unit)
+    caption(image, [("DAY 100", CORE_TOP, CORE_BOTTOM, 2.6)], unit * 3, unit * 3, unit, align="right")
+
+
+def words_chest(image, unit):
+    caption(image, [("55 PLAYERS", "#ffffff", "#c9d8ff", 1.7), ("1 CHEST", CORE_TOP, CORE_BOTTOM, 2.7)], image.shape[1] // 2, unit * 3, unit, align="center", gap=unit * 3)
+
+
+def words_pit(image, unit):
+    caption(image, [("JUMP IN?", "#f0d4ff", "#b65cff", 2.5)], unit * 3, unit * 3, unit, align="right")
+
+
 THUMBS = {
     "thumb1": ("thumb1_world", scene_world, words_world),
     "thumb2": ("thumb2_island", scene_island, words_island),
@@ -1333,6 +1622,10 @@ THUMBS = {
     "thumb4": ("thumb4_forge", scene_forge, words_forge),
     "thumb5": ("thumb5_farm", scene_farm, words_farm),
     "thumb6": ("thumb6_forest", scene_forest, words_forest),
+    # The click-tested set: one clear idea, a big reacting face, two or three words at the top
+    "thumb7": ("thumb7_day100", scene_day100, words_day100),
+    "thumb8": ("thumb8_chest", scene_chest, words_chest),
+    "thumb9": ("thumb9_pit", scene_pit, words_pit),
 }
 
 
@@ -1362,4 +1655,5 @@ def main():
         os.remove(temp)
 
 
-main()
+if __name__ == "__main__":
+    main()

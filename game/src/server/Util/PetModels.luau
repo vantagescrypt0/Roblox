@@ -5,6 +5,11 @@
 -- little with each tier; the top tiers sparkle. Every part is welded to an invisible root ("Root", the PrimaryPart),
 -- which GearService floats along beside its owner.
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Monsters = require(ReplicatedStorage.Shared.Monsters)
+local MonsterModels = require(script.Parent.MonsterModels)
+
 local PetModels = {}
 
 local TIER_COLORS = {
@@ -89,8 +94,57 @@ local KINDS: { [string]: Builder } = {
 	end,
 }
 
--- Builds a pet of `kind` ("Chicken", "Beaver", "Mole") at `tier`, standing at `at`
+-- A small copy of the monster the tier came from, on the same invisible root as the others
+local function buildMonster(tier: number, at: CFrame): Model
+	local model = Instance.new("Model")
+	model.Name = "Pet"
+	local root = Instance.new("Part")
+	root.Name = "Root"
+	root.Size = Vector3.one
+	root.CFrame = at
+	root.Transparency = 1
+	root.CanCollide = false
+	root.CanQuery = false
+	root.CanTouch = false
+	root.Parent = model
+	model.PrimaryPart = root
+	local monster = Monsters.List[math.clamp(tier, 1, #Monsters.List)]
+	local source = MonsterModels.Get(monster.Model)
+	local body = source:Clone()
+	body.Size = source.Size * ((2.2 + 0.1 * tier) / source.Size.Y)
+	body.Name = "Body"
+	body.CFrame = root.CFrame * CFrame.new(0, 0.2, 0)
+	body.Anchored = false
+	body.Massless = true
+	body.CanCollide = false
+	body.CanQuery = false
+	body.CanTouch = false
+	body.Parent = model
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = root
+	weld.Part1 = body
+	weld.Parent = body
+	if tier >= 4 then
+		local color = TIER_COLORS[math.clamp(tier, 1, #TIER_COLORS)]
+		local sparkles = Instance.new("ParticleEmitter")
+		sparkles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		sparkles.Color = ColorSequence.new(color)
+		sparkles.LightEmission = 0.6
+		sparkles.Size = NumberSequence.new(0.25, 0)
+		sparkles.Lifetime = NumberRange.new(0.6, 1)
+		sparkles.Rate = 6
+		sparkles.Speed = NumberRange.new(0.5, 1.5)
+		sparkles.SpreadAngle = Vector2.new(180, 180)
+		sparkles.Parent = body
+	end
+	return model
+end
+
+-- Builds a pet of `kind` ("Chicken", "Beaver", "Mole", "Monster") at `tier`, standing at `at`
 function PetModels.Build(kind: string, tier: number, at: CFrame): Model
+	if kind == "Monster" then
+		return buildMonster(tier, at)
+	end
 	local model = Instance.new("Model")
 	model.Name = "Pet"
 	local root = Instance.new("Part")

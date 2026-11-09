@@ -93,7 +93,8 @@ local function renderSell()
 		for _, itemId in shop.Buys do
 			total += (state.Items[itemId] or 0) * Items[itemId].SellPrice
 		end
-		sellAll.SetText(if total > 0 then `Sell all crops for {Theme.coins(total)}` else "No crops to sell yet")
+		local goods = if shop.Id == "Slayer" then "drops" else "crops"
+		sellAll.SetText(if total > 0 then `Sell all {goods} for {Theme.coins(total)}` else `No {goods} to sell yet`)
 		sellAll.SetEnabled(total > 0)
 	end
 

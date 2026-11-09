@@ -257,7 +257,8 @@ function ArmorModels.Apply(character: Model, pieces: { Piece }): Folder
 	local covered: { [string]: boolean } = {}
 	for _, piece in pieces do
 		wornSlots[piece.Slot] = true
-		local set = ArmorArt.Sets[piece.Skill]
+		-- Combat has no coat of its own yet: it wears Mining's, in the tier's colours
+		local set = ArmorArt.Sets[piece.Skill] or ArmorArt.Sets.Mining
 		if set then
 			for _, place in PLACES do
 				local body = if place.Slot == piece.Slot then bodyPartOf(character, place) else nil

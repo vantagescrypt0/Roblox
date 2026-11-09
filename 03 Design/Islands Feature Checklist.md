@@ -8,14 +8,14 @@ Mark each: **Keep / Improve / Skip**. Add anything missing.
 | Farming crops | | |
 | Chopping trees, mining | | |
 | Crafting stations, smelting | | |
-| Automation (machines, conveyors) | | |
+| Automation (machines, conveyors) | Skip for the beta | Your call, 2026-11-08: for later |
 | Animals / livestock | | |
 | Fishing | | |
 | Combat islands, mobs, bosses | | |
 | Shared hub with shops / NPC vendors | | |
 | Trading between players | | |
 | Co-op building on your island | | |
-| Visiting other islands | | |
+| Visiting other islands | Keep | Built 2026-11-08, with guestbooks: `VisitService`, `VisitWindow` |
 | Quests / progression goals | | |
 | Decorative blocks, furniture | | |
 | **Warzone (from Skybounds)** | Keep | Your favorite moment |
