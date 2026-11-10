@@ -1,7 +1,8 @@
 --!strict
 -- A shopkeeper's window (Shops.luau): a Sell tab for what they buy and a Buy tab for what
 -- they sell (a shop with only one of those shows just that tab). The Merchant's Sell tab
--- also has "Sell all crops". The server checks every sale and purchase.
+-- also has "Sell all crops". A search box beside the tabs narrows both lists to the items whose
+-- name has what you type in it. The server checks every sale and purchase.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -25,6 +26,7 @@ local sellList: ScrollingFrame
 local buyList: ScrollingFrame
 local tabs: Frame
 local tabButtons: { [string]: Theme.Button } = {}
+local searchBox: TextBox
 local shop: Shops.Shop = Shops.List[1]
 local currentTab = "Sell"
 local state: any = nil
@@ -33,6 +35,20 @@ local state: any = nil
 local cropOfSeed: { [string]: Crops.Crop } = {}
 for _, crop in Crops.List do
 	cropOfSeed[crop.Seed] = crop
+end
+
+-- What's typed in the search box, trimmed and in lower case ("" = show everything)
+local function searchText(): string
+	return string.lower((string.gsub(searchBox.Text, "^%s*(.-)%s*$", "%1")))
+end
+
+-- Whether an item belongs in the list for that search. Seeds also match the crop they grow.
+local function matches(itemId: string, wanted: string): boolean
+	if wanted == "" or string.find(string.lower(Items[itemId].Name), wanted, 1, true) then
+		return true
+	end
+	local crop = cropOfSeed[itemId]
+	return crop ~= nil and string.find(string.lower(Items[crop.Product].Name), wanted, 1, true) ~= nil
 end
 
 local function row(parent: Instance, order: number): Frame
@@ -98,11 +114,15 @@ local function renderSell()
 		sellAll.SetEnabled(total > 0)
 	end
 
-	local shown = 0
+	local wanted = searchText()
+	local owned, shown = 0, 0
 	for index, itemId in shop.Buys do
 		local count = state.Items[itemId] or 0
 		local item = Items[itemId]
 		if count > 0 then
+			owned += 1
+		end
+		if count > 0 and matches(itemId, wanted) then
 			shown += 1
 			local frame = row(sellList, index)
 			iconBox(frame, itemId)
@@ -114,7 +134,9 @@ local function renderSell()
 			end, true, true)
 		end
 	end
-	if shown == 0 then
+	if owned > 0 and shown == 0 then
+		emptyNote(sellList, `Nothing you can sell here matches "{searchBox.Text}".`)
+	elseif shown == 0 then
 		local names = {}
 		for _, itemId in shop.Buys do
 			table.insert(names, Items[itemId].Name)
@@ -135,12 +157,15 @@ end
 local function renderBuy()
 	Window.clear(buyList)
 	local farmingLevel = state.Skills.Farming and state.Skills.Farming.Level or 1
+	local wanted = searchText()
+	local shown = 0
 	for index, itemId in shop.Sells do
 		local item = Items[itemId]
 		local price = item.BuyPrice
-		if not price then
+		if not price or not matches(itemId, wanted) then
 			continue
 		end
+		shown += 1
 		local crop = cropOfSeed[itemId]
 		local unlocked = not crop or farmingLevel >= crop.FarmingLevel
 		local subtitle
@@ -162,6 +187,9 @@ local function renderBuy()
 		end, function()
 			Remotes.Buy:FireServer(shop.Id, itemId, many)
 		end, unlocked and state.Coins >= price, unlocked and state.Coins >= price * many)
+	end
+	if shown == 0 and wanted ~= "" then
+		emptyNote(buyList, `The {shop.Name} doesn't sell anything called "{searchBox.Text}".`)
 	end
 end
 
@@ -206,6 +234,7 @@ function ShopWindow.Open(shopId: string)
 		shop = found
 		currentTab = "Sell"
 	end
+	searchBox.Text = ""
 	Window.setTitle(window, shop.Name)
 	Window.open(window)
 end
@@ -231,6 +260,28 @@ function ShopWindow.Start()
 		tabButtons[tab[1]] = button
 	end
 
+	-- The search box sits on the right of the tabs
+	searchBox = Theme.make("TextBox", {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.new(1, -10, 0, 2),
+		Size = UDim2.fromOffset(230, 40),
+		BackgroundColor3 = C.SlotBottom,
+		BackgroundTransparency = 0.1,
+		Text = "",
+		PlaceholderText = "Search",
+		TextColor3 = C.Ink,
+		PlaceholderColor3 = C.Muted,
+		TextSize = 17,
+		FontFace = Theme.Font.Bold,
+		ClearTextOnFocus = false,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextTruncate = Enum.TextTruncate.AtEnd,
+		Parent = window.Body,
+	})
+	Theme.corner(searchBox, 10)
+	Theme.padding(searchBox, 12, 12, 0, 0)
+	Theme.stroke(searchBox, C.Edge, 1, 0.85)
+
 	sellPage = Theme.make("Frame", {
 		Position = UDim2.fromOffset(0, 52),
 		Size = UDim2.new(1, 0, 1, -52),
@@ -251,6 +302,15 @@ function ShopWindow.Start()
 		Parent = window.Body,
 	})
 	buyList = Window.scrollList(buyPage, UDim2.fromScale(1, 1))
+
+	-- Narrow the list as you type, starting from the top of it
+	searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+		if window.IsOpen then
+			sellList.CanvasPosition = Vector2.zero
+			buyList.CanvasPosition = Vector2.zero
+			render()
+		end
+	end)
 end
 
 return ShopWindow

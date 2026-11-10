@@ -84,9 +84,9 @@
     "semantic_hash": ""
   },
   "game/src/client/UI/ItemIcon.luau": {
-    "mtime": 1794277564.8883066,
-    "seen": 1794277886.327021,
-    "ast_hash": "5d75c014bb111700a308c8cf6216f5fc",
+    "mtime": 1794288351.8265524,
+    "seen": 1794316101.016585,
+    "ast_hash": "b7b86f88b68dbd140f4314368d5b31bf",
     "semantic_hash": ""
   },
   "game/src/client/UI/Theme.luau": {
@@ -420,21 +420,21 @@
     "semantic_hash": "a2bae3de7a2250cf4ff14767c54293da"
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1794244521.5805383,
-    "seen": 1794244558.5756478,
-    "ast_hash": "6b1bdc533520043a0e8b317e248399d0",
+    "mtime": 1794316444.8902075,
+    "seen": 1794318152.782137,
+    "ast_hash": "a4f21acdfc67ce9fa1569afb9c280f27",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
-    "mtime": 1794244522.945009,
-    "seen": 1794244558.5756586,
-    "ast_hash": "e456e924f3f24a193d3ccb60fcbfb822",
+    "mtime": 1794316448.6444507,
+    "seen": 1794318152.7821465,
+    "ast_hash": "ff968762397aeaa637a9de41af601545",
     "semantic_hash": ""
   },
   "07 Roadmap/Roadmap.md": {
-    "mtime": 1794244537.7897642,
-    "seen": 1794244558.5756602,
-    "ast_hash": "b055f6152d7570bee39e149679ce5ce1",
+    "mtime": 1794316448.6134903,
+    "seen": 1794318152.7821484,
+    "ast_hash": "579f3f6f5b9d8289d34e127012010dcf",
     "semantic_hash": ""
   },
   "Home.md": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1794284278.855911,
-    "seen": 1794285813.9365113,
-    "ast_hash": "b4dd914c186127de3bd8742fc4e44f63",
+    "mtime": 1794316454.2531662,
+    "seen": 1794318152.78208,
+    "ast_hash": "7e9bb7c9f5f2d26e648858c2d44af3ae",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -582,9 +582,9 @@
     "semantic_hash": ""
   },
   "game/src/client/Windows/ShopWindow.luau": {
-    "mtime": 1794199754.6092324,
-    "seen": 1794200808.8095458,
-    "ast_hash": "0da0192fa00fc313aa8bde0ffd5f8cf6",
+    "mtime": 1794316493.549897,
+    "seen": 1794318152.7818089,
+    "ast_hash": "a5925c70c9921af803ebc7879454484f",
     "semantic_hash": ""
   },
   "game/src/server/Services/ShopService.luau": {
@@ -1368,9 +1368,9 @@
     "semantic_hash": ""
   },
   "06 Monetization/Kits.md": {
-    "mtime": 1794244518.537443,
-    "seen": 1794244558.5756397,
-    "ast_hash": "125e13722856ba074b745ce216495fe9",
+    "mtime": 1794316431.0530777,
+    "seen": 1794318152.7821288,
+    "ast_hash": "c6febda21bea485fa0ed505d27dc9312",
     "semantic_hash": ""
   },
   "07 Roadmap/Farming Phase Plan.md": {
@@ -1944,9 +1944,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/Kits.luau": {
-    "mtime": 1794243831.098522,
-    "seen": 1794244558.575513,
-    "ast_hash": "32622f3c72c25df06df14754d712d05d",
+    "mtime": 1794316418.8455136,
+    "seen": 1794318152.7820258,
+    "ast_hash": "f280ee4d99f2181643535873d4af6286",
     "semantic_hash": ""
   },
   "game/src/server/Util/Policy.luau": {

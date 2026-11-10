@@ -60,7 +60,7 @@ No dates — quality over speed.
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?
    - [ ] **Coming soon (your notes, 2026-11-09; not designed yet):** a rank system and boost gems. See [[Open Questions]]
-   - [ ] **Armour kits:** five built 2026-11-09 (Stormcaller, Sunforged, Emberguard, Frostwarden, Venomfang), each with its own sword, right-click special and set bonus; published and on sale at 800 to 1,800 Robux, in a game that's still Private (see [[Kits]]). Armour stops at diamond
+   - [ ] **Armour kits:** five built 2026-11-09 (Stormcaller, Sunforged, Emberguard, Frostwarden, Venomfang), each with its own sword, right-click special and set bonus; published and on sale at 399 to 799 Robux (lowered from 800 to 1,800 on 2026-11-10), in a game that's still Private (see [[Kits]]). Armour stops at diamond
    - Future ideas (your list, 2026-10-26; not started): **Enchants**, **Pets**, **Warzone** and the ideas that come with it, **Auction House**, **Coinflip** (check Roblox's gambling rules and our [[Monetization Principles]] first: if coins can be bought with Robux, a coinflip counts as paid gambling, which is off-limits for our young audience). At the very end: **Gamepasses and other Robux income** (see [[Monetization Principles]])
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.
 4. **Soft launch:** small audience, measure retention, fix.

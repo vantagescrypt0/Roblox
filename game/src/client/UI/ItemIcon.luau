@@ -5,6 +5,9 @@
 -- and armour shows its own meshes put together as worn, in its tier's colours. Without one, block items show a
 -- live 3D block, items with a model show that model, and anything else its emoji.
 -- A block type that isn't an item (e.g. "CraftingTable") also works.
+-- Swords and the Slaying World's items show models the server loads as it starts (Util/HeldModel,
+-- Util/MonsterModels). An icon made before its model has arrived shows the plain picture, then swaps to the
+-- model the moment it's there.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -13,20 +16,40 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local Gear = require(ReplicatedStorage.Shared.Gear)
 local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
 local Items = require(ReplicatedStorage.Shared.Items)
+local MonsterArt = require(ReplicatedStorage.Shared.MonsterArt)
 local Monsters = require(ReplicatedStorage.Shared.Monsters)
 local Slivers = require(ReplicatedStorage.Shared.Slivers)
+local SwordArt = require(ReplicatedStorage.Shared.SwordArt)
 
 local ItemIcon = {}
 
--- Which generated model stands for each Slaying item: its monster for a spawner, its drop for a sliver
+-- Which generated model stands for each Slaying item: its monster for a spawner, its drop for a sliver, and the
+-- drop's own (only those MonsterModels makes)
 local MonsterIcons: { [string]: string } = {}
 for _, monster in Monsters.List do
 	MonsterIcons[monster.Spawner] = monster.Model
+	MonsterIcons[monster.Drop] = monster.Drop
 	local sliver = Slivers.ByOre[monster.Drop]
 	if sliver then
 		MonsterIcons[sliver.Item] = monster.Drop
 	end
 end
+for name in MonsterArt do
+	if Items[name] and not MonsterIcons[name] then
+		MonsterIcons[name] = name
+	end
+end
+for itemId, model in MonsterIcons do
+	if not MonsterArt[model] then
+		MonsterIcons[itemId] = nil
+	end
+end
+
+local LATE_WAIT = 120 -- seconds an icon keeps waiting for its model to arrive
+-- A sword lies corner to corner, its tip at the top right (the camera looks along +Z, so +X is the picture's left)
+local SWORD_TIP = Vector3.new(-1, 1, 0)
+-- Lying corner to corner, a sword's box is mostly empty at the sides of the blade: it can fill more of the picture
+local SWORD_FILL = 0.86
 
 local ICON_CELLS = ItemArt.Icons :: { [string]: number }
 
@@ -71,18 +94,19 @@ local function halfExtents(part: BasePart): Vector3
 	)
 end
 
--- A model seen from the front, centered, turned toward the camera and filling the icon
-local function modelIcon(parent: Instance, model: BasePart, size: UDim2): ViewportFrame
+-- A model seen from the front, centered, turned toward the camera and filling the icon. `turn` replaces the usual
+-- turn (a sword's tilt), and `fill` how much of its box must fit (below 1, a little of the box's corners may go).
+local function modelIcon(parent: Instance, model: BasePart, size: UDim2, turn: CFrame?, fill: number?): ViewportFrame
 	local frame = viewport(parent, size)
 	-- Light from the camera side (upper left), so the faces we see are lit
 	frame.Ambient = Color3.fromRGB(200, 200, 200)
 	frame.LightDirection = Vector3.new(-0.5, -0.7, 1)
 	local clone = model:Clone()
 	-- Keep the mesh's own rotation
-	clone.CFrame = MODEL_TURN:Inverse() * model.CFrame.Rotation
+	clone.CFrame = turn or MODEL_TURN:Inverse() * model.CFrame.Rotation
 	clone.Parent = frame
 	local extents = halfExtents(clone)
-	local radius = math.max(extents.X, extents.Y) * 1.08
+	local radius = math.max(extents.X, extents.Y) * (fill or 1.08)
 	local distance = radius / math.tan(math.rad(FIELD_OF_VIEW / 2)) + extents.Z
 	addCamera(frame, CFrame.lookAt(Vector3.new(0, 0, -distance), Vector3.zero))
 	return frame
@@ -99,7 +123,8 @@ local function armorIcon(parent: Instance, armor: Gear.Armor, size: UDim2): View
 	local palette = ArmorArt.Palettes[math.clamp(armor.Tier, 1, #ArmorArt.Palettes)]
 	local turn = if armor.Slot == "Boots" then BOOTS_TURN else ARMOR_TURN
 	local low, high = Vector3.one * math.huge, -Vector3.one * math.huge
-	for _, name in ArmorArt.SlotPieces[armor.Slot] or {} do
+	local pieces: { string } = ArmorArt.SlotPieces[armor.Slot] or {}
+	for _, name in pieces do
 		local art = set[name]
 		if art then
 			local part = Instance.new("Part")
@@ -129,32 +154,9 @@ local function armorIcon(parent: Instance, armor: Gear.Armor, size: UDim2): View
 	return frame
 end
 
-function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObject
+-- The plain picture: the icon sheet's, or an item's pixel-art model, a block, or its emoji
+local function picture(parent: Instance, itemId: string, size: UDim2): GuiObject
 	local item = Items[itemId]
-
-	local shields = ReplicatedStorage:FindFirstChild("ShieldModels")
-	local shield = shields and shields:FindFirstChild(itemId)
-	if shield and shield:IsA("BasePart") then
-		return modelIcon(parent, shield, size)
-	end
-
-	local swords = ReplicatedStorage:FindFirstChild("SwordModels")
-	local sword = swords and swords:FindFirstChild(itemId)
-	if sword and sword:IsA("BasePart") then
-		return modelIcon(parent, sword, size)
-	end
-
-	local armor = Gear.Armors[itemId]
-	if armor then
-		return armorIcon(parent, armor, size)
-	end
-
-	-- Drops, slivers and spawners from the Slaying World: their generated mesh
-	local monsterModels = ReplicatedStorage:FindFirstChild("MonsterModels")
-	local monsterModel = monsterModels and monsterModels:FindFirstChild(MonsterIcons[itemId] or itemId)
-	if monsterModel and monsterModel:IsA("BasePart") then
-		return modelIcon(parent, monsterModel, size)
-	end
 
 	-- Pre-rendered picture from the icon sheet
 	local cell = ICON_CELLS[itemId]
@@ -206,6 +208,72 @@ function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObje
 	label.TextColor3 = Color3.new(1, 1, 1)
 	label.Parent = parent
 	return label
+end
+
+-- A model the server loads as it starts: shown now if it's there, otherwise the plain picture until it comes
+type Draw = (parent: Instance, model: BasePart, size: UDim2) -> GuiObject
+
+local function lateModel(
+	parent: Instance,
+	itemId: string,
+	size: UDim2,
+	folderName: string,
+	name: string,
+	draw: Draw
+): GuiObject
+	local folder = ReplicatedStorage:FindFirstChild(folderName)
+	local model = folder and folder:FindFirstChild(name)
+	if model and model:IsA("BasePart") then
+		return draw(parent, model, size)
+	end
+	local holder = Instance.new("Frame")
+	holder.Size = size
+	holder.AnchorPoint = Vector2.new(0.5, 0.5)
+	holder.Position = UDim2.fromScale(0.5, 0.5)
+	holder.BackgroundTransparency = 1
+	holder.Parent = parent
+	local standIn = picture(holder, itemId, UDim2.fromScale(1, 1))
+	task.spawn(function()
+		local arrivedFolder = folder or ReplicatedStorage:WaitForChild(folderName, LATE_WAIT)
+		local arrived = arrivedFolder and arrivedFolder:WaitForChild(name, LATE_WAIT)
+		if arrived and arrived:IsA("BasePart") and holder.Parent then
+			standIn:Destroy()
+			draw(holder, arrived, UDim2.fromScale(1, 1))
+		end
+	end)
+	return holder
+end
+
+function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObject
+	local shields = ReplicatedStorage:FindFirstChild("ShieldModels")
+	local shield = shields and shields:FindFirstChild(itemId)
+	if shield and shield:IsA("BasePart") then
+		return modelIcon(parent, shield, size)
+	end
+
+	local armor = Gear.Armors[itemId]
+	if armor then
+		return armorIcon(parent, armor, size)
+	end
+
+	-- The generated swords, kits' too, tilted corner to corner
+	local art = SwordArt.List[itemId]
+	if art then
+		return lateModel(parent, itemId, size, "SwordModels", itemId, function(holder, model, area)
+			local base = MODEL_TURN:Inverse() * model.CFrame.Rotation
+			local tip = base:VectorToWorldSpace(art.Up)
+			local roll = math.atan2(SWORD_TIP.Y, SWORD_TIP.X) - math.atan2(tip.Y, tip.X)
+			return modelIcon(holder, model, area, CFrame.Angles(0, 0, roll) * base, SWORD_FILL)
+		end)
+	end
+
+	-- Drops, slivers and spawners from the Slaying World: their generated mesh
+	local monster = MonsterIcons[itemId]
+	if monster then
+		return lateModel(parent, itemId, size, "MonsterModels", monster, modelIcon)
+	end
+
+	return picture(parent, itemId, size)
 end
 
 return ItemIcon

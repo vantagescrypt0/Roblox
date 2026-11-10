@@ -2,7 +2,7 @@
 
 **Your call (2026-11-02):** copy the Skybounds **Looter** kit and rebrand it as the **Crate Keeper Kit**. No shards: if you buy the kit, you own it. Probably nerf it.
 
-**Built 2026-11-09 and switched off** until the game pass and the crate's product exist on Roblox: the Crate Keeper Kit's `PassId` in `shared/Kits.luau` and `CrateProductId` are 0, and while they are, nothing in the game mentions them. (The armour kits below are on sale.) Tested in Studio with stand-ins; the real purchase can't be tested before they exist. To turn them on: make the pass at 2,500 Robux and the product at 800, put their ids in `shared/Kits.luau`, publish all seven places.
+**Built 2026-11-09 and switched off** until the game pass and the crate's product exist on Roblox: the Crate Keeper Kit's `PassId` in `shared/Kits.luau` and `CrateProductId` are 0, and while they are, nothing in the game mentions them. (The armour kits below are on sale.) Tested in Studio with stand-ins; the real purchase can't be tested before they exist. To turn them on: make the pass at 1,499 Robux and the product at 299, put their ids in `shared/Kits.luau`, publish all seven places.
 
 ## What Looter was in Skybounds
 An Immortal Kit: claim it every 5 days to summon a random Loot Crate and open it for goodies. It stayed on your account through season resets, like a rank.
@@ -42,15 +42,15 @@ Kit armour protects like diamond, which is the top: armour stops there, and only
 
 **Five armour kits are built and on sale in the published game (2026-11-09; the game itself is still Private):** you asked for "four other kits" and said the special goes on the armour and the sword. Each is its own game pass, bought once, and pays out every week. You lose what you carry if you die in the Warzone, so the weekly claim is what makes it worth owning. Skybounds' kits are only the idea here: the names, themes and models are ours.
 
-**Prices** (your ranges, 2026-11-09: "800-1000 robux range for the weaker ones and 1000-2000 for the more op ones"; where each sits is Claude's pick, from how much each one wins a fight). Managed pricing is off, so the price is the same everywhere. Change one on Creator Hub > Monetization > Passes, and the game picks it up by itself.
+**Prices, lowered 2026-11-10 (your pick, "Card-friendly"):** every kit fits one $10 card (800 Robux) and Venomfang fits a $5 card (400). Set on Creator Hub and read back from Roblox the same day. Before that they were 800, 1,000, 1,300, 1,600 and 1,800 (your ranges, 2026-11-09: "800-1000 robux range for the weaker ones and 1000-2000 for the more op ones"). Why lower: kids mostly buy with $5 and $10 cards, so most kits couldn't be bought with one card, and ABOVE's passes are all 120 to 400. The order is still Claude's pick, from how much each one wins a fight. Managed pricing is off, so the price is the same everywhere. Change one on Creator Hub > Monetization > Passes, and the game picks it up by itself.
 
 | Kit | Price | Pass id | Why there |
 |---|---|---|---|
-| **Venomfang** | 800 | 2075032826 | Poison can't finish anyone, and Antivenom only matters when poison's about |
-| **Sunforged** | 1,000 | 2076094707 | Keeps you alive for longer but doesn't kill faster |
-| **Stormcaller** | 1,300 | 2075536668 | The shortest cooldown, hits three people through armour, and the best supplies |
-| **Emberguard** | 1,600 | 2075836643 | Rage is the biggest damage swing in the game, and Burning Blood adds to it |
-| **Frostwarden** | 1,800 | 2078084502 | A 2.5 second freeze on everyone near you is free hits, and halved knockback keeps you on top of them |
+| **Venomfang** | 399 | 2075032826 | Poison can't finish anyone, and Antivenom only matters when poison's about |
+| **Sunforged** | 499 | 2076094707 | Keeps you alive for longer but doesn't kill faster |
+| **Stormcaller** | 599 | 2075536668 | The shortest cooldown, hits three people through armour, and the best supplies |
+| **Emberguard** | 699 | 2075836643 | Rage is the biggest damage swing in the game, and Burning Blood adds to it |
+| **Frostwarden** | 799 | 2078084502 | A 2.5 second freeze on everyone near you is free hits, and halved knockback keeps you on top of them |
 
 You created the passes, so Roblox counts your own account as owning all five: you see Claim, not Buy, and it won't let you buy your own.
 
@@ -91,10 +91,10 @@ A kit bought with Robux that pays out random crates may count as a **paid random
 
 ## Still to decide
 - [x] **The name:** Crate Keeper Kit (your pick). You turned down Scavenger because it didn't say the kit gives a loot crate.
-- [x] **The kit's price: 2,500 Robux,** bought once, a crate every week (your call, 2026-11-09): "Weekly gets a crate, that's why it's expensive because it's overpowered."
-- [x] **A single Loot Crate: 800 Robux,** bought separately, as often as you like (your call, 2026-11-09).
+- [x] **The kit's price: 1,499 Robux,** bought once, a crate every week (your call, 2026-11-10; it was 2,500 from 2026-11-09: "Weekly gets a crate, that's why it's expensive because it's overpowered." It still costs about five single crates).
+- [x] **A single Loot Crate: 299 Robux,** bought separately, as often as you like (your call, 2026-11-10; it was 800).
 - [x] **How many armour kits, and their themes:** five (your call, 2026-11-09). Their contents and specials are Claude's picks, above.
-- [x] **Each armour kit's price:** 800 to 1,800 Robux, above.
+- [x] **Each armour kit's price:** 399 to 799 Robux, above (lowered 2026-11-10 from 800 to 1,800).
 - [ ] **The nerf:** a claim every 7 days is Claude's pick. Is that enough?
 
 ## What the Skybounds kits came with (your list, sent 2026-11-02)

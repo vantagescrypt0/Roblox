@@ -2,13 +2,13 @@
 -- What's sold with Robux ([[Kits]]). KitService runs it, and each price is set on Roblox, on the
 -- pass or product itself. An id of 0 means it hasn't been made on Roblox yet, and nothing in the
 -- game mentions it.
---   Crate Keeper Kit   2,500 Robux once, then a Loot Crate every week (your call, 2026-11-09)
---   A single crate     800 Robux, as often as you like (your call, 2026-11-09)
+--   Crate Keeper Kit   1,499 Robux once, then a Loot Crate every week (your call, 2026-11-10; was 2,500)
+--   A single crate     299 Robux, as often as you like (your call, 2026-11-10; was 800)
 --   Armour kits        bought once, then every week a full set, its sword, a shield and supplies. Nothing in them is
 --                      random, so Roblox's paid random item rules don't apply. Armour stops at diamond, and none of it
 --                      is late-game (Late-game Rule): what's in each is Claude's pick. Their specials are in KitPowers.
---                      Priced by how strong they are (your ranges, 2026-11-09: 800-1,000 for the weaker, 1,000-2,000 for
---                      the stronger): Venomfang 800, Sunforged 1,000, Stormcaller 1,300, Emberguard 1,600, Frostwarden 1,800
+--                      Priced by how strong they are, each within one $10 card (your call, 2026-11-10): Venomfang 399,
+--                      Sunforged 499, Stormcaller 599, Emberguard 699, Frostwarden 799
 
 export type Reward = { Item: string, Count: number }
 export type Kit = {
