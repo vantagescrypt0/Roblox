@@ -84,9 +84,9 @@
     "semantic_hash": ""
   },
   "game/src/client/UI/ItemIcon.luau": {
-    "mtime": 1794199754.6082296,
-    "seen": 1794200808.80951,
-    "ast_hash": "bc22894896758ff9b36d2930f344b2f7",
+    "mtime": 1794277564.8883066,
+    "seen": 1794277886.327021,
+    "ast_hash": "5d75c014bb111700a308c8cf6216f5fc",
     "semantic_hash": ""
   },
   "game/src/client/UI/Theme.luau": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1794276420.0625656,
-    "seen": 1794276461.7102654,
-    "ast_hash": "4eb376a39f5e2f1e150db5939a77d95e",
+    "mtime": 1794276487.941755,
+    "seen": 1794277886.3273044,
+    "ast_hash": "b07b5da45a7bf06f4dd817e31d1a97a1",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -1620,9 +1620,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/ArmorArt.luau": {
-    "mtime": 1794241405.4490447,
-    "seen": 1794243140.413572,
-    "ast_hash": "0d866ec7b1a19affb743c31a2a1f4ac7",
+    "mtime": 1794277225.6140647,
+    "seen": 1794277886.327214,
+    "ast_hash": "bfd7b6e1721ef51c30d1abcc02de69ea",
     "semantic_hash": ""
   },
   "game/src/shared/WarzoneLoot.luau": {

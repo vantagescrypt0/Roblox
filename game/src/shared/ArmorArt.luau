@@ -38,6 +38,33 @@ ArmorArt.Reference = {
 	Boot = Vector3.new(0.61, 1.27, 0.77),
 } :: { [string]: Vector3 }
 
+-- The meshes that make each armour item: a chestplate is the coat, both shoulders, both sleeves and both forearms
+ArmorArt.SlotPieces = {
+	Helmet = { "Helmet" },
+	Chest = { "Chest", "PauldronRight", "PauldronLeft", "SleeveRight", "SleeveLeft", "ForearmRight", "ForearmLeft" },
+	Legs = { "Hips", "ThighRight", "ThighLeft" },
+	Boots = { "BootRight", "BootLeft" },
+} :: { [string]: { string } }
+
+-- Where each mesh's body part sits on that avatar, from the middle of its chest (BODY in art/scripts/armour.py; a
+-- shoulder's Centre is already from the chest). On a player the real body places them (Util/ArmorModels.luau); this
+-- puts a piece together on its own, for its picture (UI/ItemIcon.luau).
+ArmorArt.BodyAt = {
+	Helmet = Vector3.new(0, 1.47, 0.01),
+	Chest = Vector3.zero,
+	PauldronRight = Vector3.zero,
+	PauldronLeft = Vector3.zero,
+	SleeveRight = Vector3.new(0.97, 0.25, 0.09),
+	SleeveLeft = Vector3.new(-0.97, 0.25, 0.09),
+	ForearmRight = Vector3.new(1.18, -0.27, 0.02),
+	ForearmLeft = Vector3.new(-1.18, -0.27, 0.02),
+	Hips = Vector3.new(0, -0.70, 0.04),
+	ThighRight = Vector3.new(0.34, -1.45, 0.03),
+	ThighLeft = Vector3.new(-0.34, -1.45, 0.03),
+	BootRight = Vector3.new(0.36, -2.26, 0.03),
+	BootLeft = Vector3.new(-0.36, -2.26, 0.03),
+} :: { [string]: Vector3 }
+
 -- Import 3D stores them in centimetres, with their axes turned: their X is our -X, their Y our Z, their Z our Y
 ArmorArt.MeshTurn = CFrame.fromMatrix(Vector3.zero, Vector3.new(-1, 0, 0), Vector3.new(0, 0, 1), Vector3.new(0, 1, 0))
 ArmorArt.MeshScale = 100

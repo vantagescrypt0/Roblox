@@ -1,13 +1,14 @@
 --!strict
 -- Item icons. Normally a pre-rendered picture cut from an icon sheet (Config.ItemIconSheets,
 -- cells listed in ItemArt.luau, rendered by art/scripts/items3d.py; cell numbers run on from
--- one sheet to the next, PerSheet to a sheet). The shield and generated swords show their model
--- and armor pieces their slot's picture in their tier's colour. Without one, block items show a live 3D
--- block, items with a model show that model, and anything else its emoji.
+-- one sheet to the next, PerSheet to a sheet). The shield and generated swords show their model,
+-- and armour shows its own meshes put together as worn, in its tier's colours. Without one, block items show a
+-- live 3D block, items with a model show that model, and anything else its emoji.
 -- A block type that isn't an item (e.g. "CraftingTable") also works.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local ArmorArt = require(ReplicatedStorage.Shared.ArmorArt)
 local Config = require(ReplicatedStorage.Shared.Config)
 local Gear = require(ReplicatedStorage.Shared.Gear)
 local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
@@ -34,6 +35,9 @@ local BLOCK_CAMERA = CFrame.lookAt(Vector3.new(1, 0.82, 1).Unit * 10.5, Vector3.
 local FIELD_OF_VIEW = 30
 -- Item models are seen from the front, turned a little so their pixel depth shows
 local MODEL_TURN = CFrame.Angles(math.rad(-8), math.rad(22), 0)
+-- Armour is seen from the front, turned a little so its sides and shoulders show; boots further, so their toes do
+local ARMOR_TURN = CFrame.Angles(math.rad(8), math.rad(-25), 0)
+local BOOTS_TURN = CFrame.Angles(math.rad(10), math.rad(-55), 0)
 
 local function viewport(parent: Instance, size: UDim2): ViewportFrame
 	local frame = Instance.new("ViewportFrame")
@@ -84,6 +88,47 @@ local function modelIcon(parent: Instance, model: BasePart, size: UDim2): Viewpo
 	return frame
 end
 
+-- An armour item as it looks worn: every mesh of its slot (a chestplate is the coat, shoulders, sleeves and
+-- forearms), placed as on the avatar it was modelled for, in its tier's colour sheet
+local function armorIcon(parent: Instance, armor: Gear.Armor, size: UDim2): ViewportFrame
+	local frame = viewport(parent, size)
+	frame.Ambient = Color3.fromRGB(200, 200, 200)
+	frame.LightDirection = Vector3.new(-0.5, -0.7, 1)
+	-- Combat has no coat of its own yet: it wears Mining's, as on a body (Util/ArmorModels.luau)
+	local set = ArmorArt.Sets[armor.Skill] or ArmorArt.Sets.Mining
+	local palette = ArmorArt.Palettes[math.clamp(armor.Tier, 1, #ArmorArt.Palettes)]
+	local turn = if armor.Slot == "Boots" then BOOTS_TURN else ARMOR_TURN
+	local low, high = Vector3.one * math.huge, -Vector3.one * math.huge
+	for _, name in ArmorArt.SlotPieces[armor.Slot] or {} do
+		local art = set[name]
+		if art then
+			local part = Instance.new("Part")
+			part.Anchored = true
+			part.Size = Vector3.new(art.Size.X, art.Size.Z, art.Size.Y)
+			part.CFrame = turn * CFrame.new(ArmorArt.BodyAt[name] + art.Centre) * ArmorArt.MeshTurn
+			local mesh = Instance.new("SpecialMesh")
+			mesh.MeshType = Enum.MeshType.FileMesh
+			mesh.MeshId = art.Mesh
+			mesh.TextureId = palette
+			mesh.Scale = Vector3.one / ArmorArt.MeshScale
+			mesh.Parent = part
+			part.Parent = frame
+			local extents = halfExtents(part)
+			low = low:Min(part.Position - extents)
+			high = high:Max(part.Position + extents)
+		end
+	end
+	if low.X > high.X then
+		return frame
+	end
+	local centre, extents = (low + high) / 2, (high - low) / 2
+	-- A turned mesh's box is bigger than the mesh, so this fills the picture without cutting anything off
+	local radius = math.max(extents.X, extents.Y) * 0.9
+	local distance = radius / math.tan(math.rad(FIELD_OF_VIEW / 2)) + extents.Z
+	addCamera(frame, CFrame.lookAt(centre - Vector3.new(0, 0, distance), centre))
+	return frame
+end
+
 function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObject
 	local item = Items[itemId]
 
@@ -100,18 +145,8 @@ function ItemIcon.create(parent: Instance, itemId: string, size: UDim2): GuiObje
 	end
 
 	local armor = Gear.Armors[itemId]
-	local slotIcon = armor and Config.SlotIcons[armor.Slot]
-	if armor and slotIcon then
-		local image = Instance.new("ImageLabel")
-		image.Size = size
-		image.AnchorPoint = Vector2.new(0.5, 0.5)
-		image.Position = UDim2.fromScale(0.5, 0.5)
-		image.BackgroundTransparency = 1
-		image.Image = slotIcon
-		image.ImageColor3 = Gear.TierColors[armor.Tier]
-		image.ScaleType = Enum.ScaleType.Fit
-		image.Parent = parent
-		return image
+	if armor then
+		return armorIcon(parent, armor, size)
 	end
 
 	-- Drops, slivers and spawners from the Slaying World: their generated mesh
