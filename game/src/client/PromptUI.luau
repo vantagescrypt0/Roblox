@@ -9,10 +9,16 @@ local UserInputService = game:GetService("UserInputService")
 
 local Glass = require(script.Parent.UI.Glass)
 local Theme = require(script.Parent.UI.Theme)
+local Window = require(script.Parent.UI.Window)
 
 local C = Glass.Color
 
 local PromptUI = {}
+
+-- The cards showing now. They switch off while a window is open: a card is drawn behind the window but, being a
+-- 3D label, it can still catch clicks meant for the window's buttons (the Auction House's Cancel sat right where
+-- the Auctioneer's card was, live, 2026-11-10)
+local showing: { [BillboardGui]: boolean } = {}
 
 local GAMEPAD_LABELS: { [Enum.KeyCode]: string } = {
 	[Enum.KeyCode.ButtonX] = "X",
@@ -49,8 +55,10 @@ local function show(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInpu
 		AlwaysOnTop = true,
 		Active = true,
 		Adornee = adornee,
+		Enabled = not Window.anyOpen(),
 		Parent = gui,
 	})
+	showing[billboard] = true
 	local card = Theme.make("TextButton", {
 		Size = UDim2.new(1, -8, 1, -8),
 		Position = UDim2.fromOffset(4, 4),
@@ -160,11 +168,17 @@ local function show(prompt: ProximityPrompt, inputType: Enum.ProximityPromptInpu
 		for _, connection in connections do
 			connection:Disconnect()
 		end
+		showing[billboard] = nil
 		billboard:Destroy()
 	end)
 end
 
 function PromptUI.Start()
+	Window.watchOpen(function(open)
+		for billboard in showing do
+			billboard.Enabled = not open
+		end
+	end)
 	-- BillboardGuis only render and take input when parented straight to PlayerGui
 	local playerGui = (Players.LocalPlayer :: Player):WaitForChild("PlayerGui")
 	ProximityPromptService.PromptShown:Connect(function(prompt, inputType)

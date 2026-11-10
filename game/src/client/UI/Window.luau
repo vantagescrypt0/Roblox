@@ -30,6 +30,22 @@ local Window = {}
 local current: Window? = nil
 local switching = false -- opening another window closes this one: no closing whoosh then
 local hud: { Instance } = {} -- ScreenGuis and frames that hide while a window would cover part of them
+local watchers: { (open: boolean) -> () } = {} -- told when the first window opens and the last one closes
+
+local function tellWatchers()
+	for _, watcher in watchers do
+		task.spawn(watcher, current ~= nil)
+	end
+end
+
+-- Calls `watcher(true)` when a window opens and `watcher(false)` when none is left open
+function Window.watchOpen(watcher: (open: boolean) -> ())
+	table.insert(watchers, watcher)
+end
+
+function Window.anyOpen(): boolean
+	return current ~= nil
+end
 
 -- Two empty ScreenGuis that measure the screen. A phone's camera size leaves out the notch's margins, so it can't be
 -- used to place things: these say where the true edges are, and where the free part of Roblox's top bar begins.
@@ -86,6 +102,9 @@ function Window.close(window: Window)
 	if not current then
 		setBlur(false)
 		showHud(true)
+		if not switching then
+			tellWatchers()
+		end
 	end
 	if not switching then
 		Sfx.play("Close")
@@ -96,6 +115,7 @@ function Window.close(window: Window)
 end
 
 function Window.open(window: Window)
+	local wasClosed = current == nil
 	if current and current ~= window then
 		switching = true
 		Window.close(current)
@@ -104,6 +124,9 @@ function Window.open(window: Window)
 	Sfx.play("Open")
 	current = window
 	window.IsOpen = true
+	if wasClosed then
+		tellWatchers()
+	end
 	if window.OnOpen then
 		window.OnOpen()
 	end

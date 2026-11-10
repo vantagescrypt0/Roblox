@@ -4,6 +4,8 @@
 -- game mentions it.
 --   Crate Keeper Kit   1,499 Robux once, then a Loot Crate every week (your call, 2026-11-10; was 2,500)
 --   A single crate     299 Robux, as often as you like (your call, 2026-11-10; was 800)
+--                      Both on sale since 2026-11-10: "the same thing as a paid egg in any other roblox game, theres
+--                      odds and its for an ingame item". Their odds are in their descriptions on Roblox and in the game.
 --   Armour kits        bought once, then every week a full set, its sword, a shield and supplies. Nothing in them is
 --                      random, so Roblox's paid random item rules don't apply. Armour stops at diamond, and none of it
 --                      is late-game (Late-game Rule): what's in each is Claude's pick. Their specials are in KitPowers.
@@ -53,7 +55,7 @@ local List: { Kit } = {
 		Id = "CrateKeeper",
 		Name = "Crate Keeper Kit",
 		Text = "Buy it once and it's yours for good: one Loot Crate every week.",
-		PassId = 0,
+		PassId = 2074781079,
 		Cooldown = WEEK,
 		Rewards = { { Item = "LootCrate", Count = 1 } },
 		Random = true,
@@ -91,7 +93,7 @@ for _, kit in List do
 end
 
 return table.freeze({
-	CrateProductId = 0, -- the developer product for one Loot Crate; 0 = not on sale yet
+	CrateProductId = 3730224176, -- the developer product for one Loot Crate; 0 = not on sale yet
 	List = table.freeze(List),
 	ById = table.freeze(ById),
 	-- What someone gets instead of a random crate if Roblox doesn't allow them paid random items
