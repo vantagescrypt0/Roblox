@@ -143,16 +143,17 @@ local function roughBoard(
 end
 
 -- A plank sign `width` blocks wide, centered at `position`, readable from `front`. Text
--- can have two lines ("BIRCH GROVE\nWOODCUTTING 10").
+-- can have two lines ("BIRCH GROVE\nWOODCUTTING 10"). `height` (studs) makes a taller board, with bigger letters.
 function Signs.Board(
 	parent: Instance,
 	name: string,
 	text: string,
 	position: Vector3,
 	front: Vector3,
-	width: number
+	width: number,
+	height: number?
 ): Part
-	local size = Vector3.new(width * SIZE, boardHeight(text), 0.4)
+	local size = Vector3.new(width * SIZE, height or boardHeight(text), 0.4)
 	local frame = CFrame.lookAt(position, position + front)
 	plank(parent, size, frame, Color3.fromRGB(162, 130, 78)).CanCollide = true
 	-- The words go on a clear plain part, so they stay upright whichever way the mesh was made

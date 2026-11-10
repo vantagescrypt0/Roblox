@@ -39,6 +39,7 @@
 --                                                           Island), crystals on sale; nil leaves one as it is.
 --                                                           "reset" as the first lets you reassign again
 --   game.ServerStorage.Dev:Invoke("BoostReceipt", "abc")    Roblox telling us crystal purchase "abc" was paid for
+--   game.ServerStorage.Dev:Invoke("AuctionEnd")             every Auction House listing ends now and is settled
 --   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
 -- Acts on the first player in the server unless "As" picked another (for local tests with
 -- several players). Does nothing in live servers.
@@ -49,6 +50,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Boards = require(ReplicatedStorage.Shared.Boards)
+local AuctionService = require(script.Parent.AuctionService)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local BodyService = require(script.Parent.BodyService)
 local BoostService = require(script.Parent.BoostService)
@@ -90,6 +92,9 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	end,
 	BoostReceipt = function(player, _data, purchaseId)
 		return tostring(BoostService.TestReceipt(player, purchaseId))
+	end,
+	AuctionEnd = function()
+		return `{AuctionService.EndAll()} listings ended and settled`
 	end,
 	Level = function(player, data, level)
 		data.Level = level

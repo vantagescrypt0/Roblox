@@ -349,6 +349,15 @@ local function addNameTag(head: BasePart, name: string, tagline: string)
 	)
 end
 
+-- The same name tag for someone who isn't built here (the Auction House's Auctioneer, a generated model)
+function Npc.NameTag(part: BasePart, name: string, tagline: string, height: number)
+	addNameTag(part, name, tagline)
+	local gui = part:FindFirstChild("NameTag")
+	if gui and gui:IsA("BillboardGui") then
+		gui.StudsOffsetWorldSpace = Vector3.new(0, height, 0)
+	end
+end
+
 -- Builds the shopkeeper for a shop in Shops.luau, standing at `feet` and facing `facing`.
 -- Its "Head" model turns to look at players (on the client).
 function Npc.Build(shopId: string, feet: Vector3, facing: Vector3, parent: Instance): Model

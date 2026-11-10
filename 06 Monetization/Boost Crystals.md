@@ -8,8 +8,9 @@
 - **Getting them (your call):** **399 Robux** each (developer product `3730196955`, managed pricing off), or found as a **rare prize**:
   - **Loot Crates:** a "good" prize, as rare as a tier VII pet: about 0.19% a slot, **about 1 crate in 89**. It shows in the crate odds like every other prize.
   - **Legendary Skydrops:** weight 1.2 in the Legendary table, **about 1 Legendary in 5** (Claude's pick).
-- **A found crystal is an item** until you shift-click it in the Bag (or press "Add the crystal from your Bag" in Menu > Boosts). It can't be traded, and it can't be added inside the Warzone: get it out alive, or it's in your body with everything else. With all 15 placed, a found one stays in the Bag for boosts added later. A bought one goes straight onto your account.
-- **Buy** is hidden once you have 15.
+- **Every crystal is an item you hold and right-click to redeem** (your call, 2026-11-10: "make sure the boost crystal is a holdable item you have to right click to redeem"). Bought ones arrive in your Bag too (the Inbox if it's full). Put it on your hotbar, select it (it shows in your hand as the crystal), right-click (tap on a phone) and it joins your crystals. It can't be traded or sold at the Auction House, and it can't be redeemed inside the Warzone: get it out alive, or it's in your body with everything else. With all 15 redeemed, one you find stays in the Bag for boosts added later.
+- **How many you have free** shows straight after redeeming one ("Crystal Redeemed! · 2 crystals available to place · Menu > Boosts") and after taking them all back out of the trees ("Crystals Back Out!"), and as a count on the Boosts button in the Menu. "Reset" was taken to mean taking them back out; say if you meant something else.
+- **Buy** is hidden once crystals redeemed plus crystals carried reach 15.
 
 ## The boosts (your list, with the leave at 5 s)
 Where Skycore has no match for a Skybounds boost, the replacement is Claude's: our Warzone has no monsters, nothing wears out, and there are no hoppers yet.

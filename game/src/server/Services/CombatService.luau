@@ -15,6 +15,7 @@ local ItemArt = require(ReplicatedStorage.Shared.ItemArt)
 local Decorations = require(ReplicatedStorage.Shared.Decorations)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Knockback = require(ReplicatedStorage.Shared.Knockback)
+local MonsterArt = require(ReplicatedStorage.Shared.MonsterArt)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local SwordArt = require(ReplicatedStorage.Shared.SwordArt)
 local Tools = require(ReplicatedStorage.Shared.Tools)
@@ -35,6 +36,7 @@ local HOLD_POINT = Vector3.new(1.0, -1.0, 0)
 local HANDLE_TO_HEAD = Vector3.new(-1, 1, 0).Unit
 local MODEL_GRIPS = ItemArt.Models :: { [string]: { Grip: Vector3, Up: Vector3 } }
 local BLOCK_IN_HAND = 0.9 -- studs
+local GENERATED_IN_HAND = 1.5 -- studs: the longest side of a generated mesh (the Boost Crystal) in a hand
 local QUICKEST_SWING = 0.05 -- faster clicks than this aren't real
 local GROUND_BELOW = 3.6 -- from the middle of a character to just under their feet
 local FRONT = -0.2 -- how far round a target can be and still count as in front of you
@@ -283,6 +285,22 @@ local function makeHandle(itemId: string): (BasePart, CFrame)
 		local back = rotation:VectorToObjectSpace(Vector3.zAxis)
 		local right = up:Cross(back).Unit
 		return handle, CFrame.fromMatrix(rotation:PointToObjectSpace(holdPoint), right, up, back)
+	end
+
+	-- A generated mesh of its own (MonsterArt: the Boost Crystal, the Slaying World's drops), held near its bottom,
+	-- its top pointing up
+	local generated = ReplicatedStorage:FindFirstChild("MonsterModels")
+	local mesh = MonsterArt[itemId] and generated and generated:FindFirstChild(itemId)
+	if mesh and mesh:IsA("BasePart") then
+		local handle = mesh:Clone()
+		handle:ClearAllChildren()
+		handle.Size = mesh.Size * (GENERATED_IN_HAND / math.max(mesh.Size.X, mesh.Size.Y, mesh.Size.Z))
+		local rotation = mesh.CFrame.Rotation
+		local up = rotation:VectorToObjectSpace(Vector3.yAxis)
+		local back = rotation:VectorToObjectSpace(Vector3.zAxis)
+		local right = up:Cross(back).Unit
+		local tall = math.abs(up:Dot(handle.Size))
+		return handle, CFrame.fromMatrix(-up * tall * 0.3, right, up, back)
 	end
 
 	local decor = item and item.Block and Decorations.ByBlock[item.Block]

@@ -2,7 +2,7 @@
 -- Server entry point. Starts each service once, depending on which place this server is
 -- running (Places.luau):
 --   Island   everyone's islands: blocks, farming, crafting, island expansion
---   Town     the hub: shopkeepers, player trading and the portals to the worlds
+--   Town     the hub: shopkeepers, the Auction House and the portals to the worlds
 --   Mining / Woodcutting / Farming   a shared resource world (WorldService), where
 --            BlockService breaks blocks in the world instead of on islands
 --   Warzone  PvP across floating islands (WarzoneService, Worlds/Warzone)
@@ -15,6 +15,7 @@ local Services = script.Parent.Services
 
 local AdminService = require(Services.AdminService)
 local AntiCheatService = require(Services.AntiCheatService)
+local AuctionService = require(Services.AuctionService)
 local AwardService = require(Services.AwardService)
 local BlockService = require(Services.BlockService)
 local BodyService = require(Services.BodyService)
@@ -35,6 +36,7 @@ local KitService = require(Services.KitService)
 local Leaderstats = require(Services.Leaderstats)
 local LiquidService = require(Services.LiquidService)
 local LootChestService = require(Services.LootChestService)
+local ProfileService = require(Services.ProfileService)
 local QuestService = require(Services.QuestService)
 local SeasonService = require(Services.SeasonService)
 local ShopService = require(Services.ShopService)
@@ -57,7 +59,6 @@ StateService.Start()
 if kind == "Town" then
 	TownService.Start()
 	ShopService.Start()
-	TradeService.Start()
 elseif Places.IsWorld(kind) then
 	WorldService.Start()
 	BlockService.Start(WorldService.AreaFor)
@@ -76,6 +77,12 @@ else
 	CraftingService.Start()
 	TreeService.Start()
 	SpawnerService.Start()
+end
+if kind ~= "Warzone" then
+	-- Trading and profiles everywhere but the Warzone; every one of these servers also settles ended auctions
+	TradeService.Start()
+	ProfileService.Start()
+	AuctionService.Start()
 end
 TravelService.Start()
 ChestService.Start()

@@ -64,7 +64,16 @@ local NAMES = {
 	"BoostAdd", -- client -> server: put one of my free crystals into this tree (tree id)
 	"BoostReset", -- client -> server: take all my crystals out of the trees (once a season)
 	"BoostBuy", -- client -> server: show me Roblox's purchase prompt for one boost crystal
-	"BoostUse", -- client -> server: add a Boost Crystal from my Bag to my crystals
+	"BoostUse", -- client -> server: redeem the Boost Crystal I'm holding (right-click)
+	"BoostRedeemed", -- server -> client: "redeemed" or "reset", and how many crystals are free to place now
+	"ProfileOpen", -- client -> server: show me this player's profile (Player)
+	"ProfileShow", -- server -> client: a player's profile (ProfileService snapshot)
+	"AuctionOpen", -- client -> server: send me what's for sale in the Auction House
+	"AuctionState", -- server -> client: what's for sale, your own listings, the server's clock
+	"AuctionList", -- client -> server: put this up for sale (item, count, "BuyNow"/"Auction", price, hours)
+	"AuctionBuy", -- client -> server: buy this Buy Now listing (listing id)
+	"AuctionBid", -- client -> server: bid on this auction (listing id, coins)
+	"AuctionCancel", -- client -> server: take my listing off the market (listing id)
 	"TrackBoard", -- client -> server: show this Challenges board group in the quest tracker (Boards.luau id)
 	"LeaveWarzone", -- client -> server: holding the Warzone's Leave button (true), or let go (false)
 	"Block", -- client -> server: holding your shield up (true), or let go (false)
@@ -155,6 +164,15 @@ return {
 	BoostReset = folder:WaitForChild("BoostReset") :: RemoteEvent,
 	BoostBuy = folder:WaitForChild("BoostBuy") :: RemoteEvent,
 	BoostUse = folder:WaitForChild("BoostUse") :: RemoteEvent,
+	BoostRedeemed = folder:WaitForChild("BoostRedeemed") :: RemoteEvent,
+	ProfileOpen = folder:WaitForChild("ProfileOpen") :: RemoteEvent,
+	ProfileShow = folder:WaitForChild("ProfileShow") :: RemoteEvent,
+	AuctionOpen = folder:WaitForChild("AuctionOpen") :: RemoteEvent,
+	AuctionState = folder:WaitForChild("AuctionState") :: RemoteEvent,
+	AuctionList = folder:WaitForChild("AuctionList") :: RemoteEvent,
+	AuctionBuy = folder:WaitForChild("AuctionBuy") :: RemoteEvent,
+	AuctionBid = folder:WaitForChild("AuctionBid") :: RemoteEvent,
+	AuctionCancel = folder:WaitForChild("AuctionCancel") :: RemoteEvent,
 	TrackBoard = folder:WaitForChild("TrackBoard") :: RemoteEvent,
 	LeaveWarzone = folder:WaitForChild("LeaveWarzone") :: RemoteEvent,
 	Block = folder:WaitForChild("Block") :: RemoteEvent,

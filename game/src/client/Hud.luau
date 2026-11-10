@@ -56,6 +56,7 @@ local menuStroke: UIStroke
 local menuPanel: Frame
 local menuOpen = false
 local kitsEntry: TextButton
+local boostsBadge: TextLabel
 local lastCoins: number? = nil
 local lastLevel: number? = nil
 local lastMail: number? = nil
@@ -297,7 +298,7 @@ local function buildMenu(group: Frame, callbacks: Callbacks)
 	entry(2, "Island", "Grass", callbacks.OnIsland)
 	entry(3, "Skills", "IronPickaxe", callbacks.OnSkills)
 	entry(4, "Challenges", "IconTrophy", callbacks.OnChallenges)
-	entry(5, "Boosts", "BoostCrystal", callbacks.OnBoosts)
+	local boosts = entry(5, "Boosts", "BoostCrystal", callbacks.OnBoosts)
 	local inbox = entry(6, "Inbox", "IconMail", callbacks.OnInbox)
 	entry(7, "Visit", "Sign", callbacks.OnVisit)
 	entry(8, "Settings", nil, callbacks.OnSettings)
@@ -306,6 +307,9 @@ local function buildMenu(group: Frame, callbacks: Callbacks)
 	kitsEntry.Visible = false
 	-- Red badge on the corner: how many letters are waiting
 	inboxBadge = Theme.badge(inbox)
+	-- And on Boosts: how many redeemed crystals are still free to place
+	boostsBadge = Theme.badge(boosts)
+	boostsBadge.Visible = false
 
 	-- A click or tap on the game itself (not on a button) shuts the menu
 	UserInputService.InputBegan:Connect(function(input, processed)
@@ -442,6 +446,24 @@ end
 local toastCount = 0
 function Hud.ShowKits(visible: boolean)
 	kitsEntry.Visible = visible
+end
+
+-- The count on Menu > Boosts: redeemed crystals not yet in a tree
+function Hud.SetFreeCrystals(free: number)
+	boostsBadge.Visible = free > 0
+	boostsBadge.Text = tostring(free)
+end
+
+-- Straight after redeeming a crystal, or taking them all back out of the trees: how many you can place now
+function Hud.CrystalsAvailable(kind: string, free: number)
+	local count = `{free} {if free == 1 then "crystal" else "crystals"} available to place · Menu > Boosts`
+	if kind == "reset" then
+		Hud.Celebrate("Crystals Back Out!", count, C.Teal, 4)
+	else
+		Hud.Celebrate("Crystal Redeemed!", count, C.Teal, 4)
+	end
+	Hud.SetFreeCrystals(free)
+	Theme.pop(boostsBadge, 1.5)
 end
 
 function Hud.Toast(text: string, kind: string)

@@ -1,8 +1,10 @@
 --!strict
--- Boost crystals (Boosts.luau): yours for good, bought with Robux or found (Loot Crates, Legendary Skydrops). From
--- Menu > Boosts you put each one into a tree, which unlocks that tree's next boost; once a season you can take them
--- all back out and place them again. A crystal you find is an item until you shift-click it in your Bag, and in the
--- Warzone you have to get it out first: die carrying it and it's in your body like everything else.
+-- Boost crystals (Boosts.luau): yours for good, bought with Robux or found (Loot Crates, Legendary Skydrops). Every
+-- crystal arrives as an item: hold it and right-click (tap on a phone) to redeem it (your call, 2026-11-10), and the
+-- screen then shows how many you have free to place, as it does after taking them all back out. From Menu > Boosts
+-- you put each free one into a tree, which unlocks that tree's next boost; once a season you can take them all back
+-- out and place them again. In the Warzone you have to get a crystal out first: die carrying it and it's in your body
+-- like everything else.
 --
 -- Other services read the boosts straight from the save (Boosts.Has). This one also puts each tree's level on the
 -- player as an attribute (BoostWarzone, BoostPlayer, BoostIsland) for screens and for WarzoneService's hearts, and
@@ -53,6 +55,11 @@ local function apply(player: Player)
 	player:SetAttribute("CanFly", Boosts.Has(data, "Player", 5) and Places.Current() ~= "Warzone")
 end
 
+-- Crystals redeemed plus the ones they're carrying: buying stops once that would max every tree
+local function owned(player: Player, data: DataService.Data): number
+	return data.Boosts.Crystals + InventoryService.Count(player, Boosts.Item)
+end
+
 local function sendState(player: Player)
 	local data = DataService.GetData(player)
 	if not data or player.Parent ~= Players then
@@ -66,9 +73,16 @@ local function sendState(player: Player)
 		Island = saved.Island,
 		Free = Boosts.Free(data),
 		CanReset = canReset(data),
-		OnSale = onSale() and saved.Crystals < Boosts.Most,
+		OnSale = onSale() and owned(player, data) < Boosts.Most,
 		ProductId = Boosts.ProductId,
 	})
+end
+
+-- Is the crystal what's in their hand (the selected hotbar slot, CombatService's Tool)?
+local function holding(player: Player): boolean
+	local character = player.Character
+	local tool = character and character:FindFirstChildOfClass("Tool")
+	return tool ~= nil and tool:GetAttribute("Held") == Boosts.Item
 end
 
 local function changed(player: Player)
@@ -116,22 +130,22 @@ local function onReset(player: Player)
 	local saved = data.Boosts
 	saved.Warzone, saved.Player, saved.Island = 0, 0, 0
 	saved.ResetSeason = data.Season
-	StateService.Notify(player, "Your crystals are back out. Put them where you like", "good")
 	changed(player)
+	Remotes.BoostRedeemed:FireClient(player, "reset", Boosts.Free(data))
 end
 
 local function onBuy(player: Player)
 	local data = DataService.GetData(player)
-	if not data or tooSoon(player) or Boosts.ProductId == 0 or data.Boosts.Crystals >= Boosts.Most then
+	if not data or tooSoon(player) or Boosts.ProductId == 0 or owned(player, data) >= Boosts.Most then
 		return
 	end
 	MarketplaceService:PromptProductPurchase(player, Boosts.ProductId)
 end
 
--- A crystal from the Bag joins the ones you own
+-- Right-clicking with a crystal in your hand redeems it: it joins the crystals you can put into trees
 local function onUse(player: Player)
 	local data = DataService.GetData(player)
-	if not data or tooSoon(player) or InventoryService.Count(player, Boosts.Item) <= 0 then
+	if not data or tooSoon(player) or InventoryService.Count(player, Boosts.Item) <= 0 or not holding(player) then
 		return
 	end
 	if player:GetAttribute("InWarzone") == true then
@@ -146,19 +160,22 @@ local function onUse(player: Player)
 		return
 	end
 	data.Boosts.Crystals += 1
-	StateService.Notify(player, "A Boost Crystal is yours! Put it in a tree in Menu > Boosts", "level")
 	changed(player)
+	Remotes.BoostRedeemed:FireClient(player, "redeemed", Boosts.Free(data))
 end
 
--- One bought crystal (paid out once through KitService's receipts)
+-- One bought crystal (paid out once through KitService's receipts): it comes as the item, to hold and redeem
 local function giveBought(player: Player)
 	local data = DataService.GetData(player)
 	if not data then
 		return
 	end
-	data.Boosts.Crystals += 1
-	StateService.Notify(player, "Thanks! A Boost Crystal is yours. Put it in a tree in Menu > Boosts", "level")
-	apply(player)
+	InventoryService.Add(player, Boosts.Item, 1)
+	StateService.Notify(
+		player,
+		"Thanks! Your Boost Crystal is in your Bag. Hold it and right-click to redeem it",
+		"level"
+	)
 	sendState(player)
 end
 

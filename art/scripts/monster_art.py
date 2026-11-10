@@ -11,7 +11,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 assets = json.load(open(os.path.join(ROOT, "art", "generated", "monster_assets.json"), encoding="utf-8"))
 HEADER = '''--!strict
 -- The Slaying World's generated meshes: the monsters, what they drop, the spawner cage and the big
--- props, plus the Boost Crystal, as generate_mesh made them (art/generated/). Written by
+-- props, plus the Boost Crystal and the Auction House's Auctioneer, as generate_mesh made them (art/generated/). Written by
 -- art/scripts/monster_art.py; don't edit by hand. Util/MonsterModels makes them at server start.
 
 export type Art = { Mesh: string, Texture: string, Size: Vector3, Turn: CFrame }

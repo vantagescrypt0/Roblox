@@ -48,7 +48,8 @@ Rebuilt 2026-10-26 after your Skybounds spawn screenshots. A big floating island
   | Woodcutting | green | log-and-leaf posts | open |
   | Mining | orange | stone with coal and iron ore | open |
   | Slaying | dark red | obsidian | opens once the Slaying World is published (`Places.Ids.Slaying`); until then it reads "Coming soon". The **Slayer**, who buys monster drops, has a shop on the east lane off Market Square (lot 1; the plaza stays clear) |
-- Oaks round the edge, flowers and tall grass in the lawns. Player trading happens here (level 5, see [[Economy & Values]]).
+- **The Auction House** (2026-11-10, your call: "make it pretty prominent"): a grand hall across the head of Market Square, facing the arch over the void pit, the main street running through its great arch on the way to the portals. Two wings with an Auctioneer each, a tower with AUCTION HOUSE in big letters and a blue dome. It took the place of the two cottages by the main street, and the "THE WORLDS / HOME" signpost moved to where the street comes out of the arch. See [[Auction House & Profiles]].
+- Oaks round the edge, flowers and tall grass in the lawns. Players can trade anywhere but the Warzone (level 5, see [[Economy & Values]]).
 
 ## The 4x pass (2026-10-28): the Grinding Worlds and Town
 You asked for everything 4x ("Bigger town, bigger grinding worlds"; the Grinding Worlds are Mining, Woodcutting and Farming) and sent 12 shots plus five albums of the Skybounds worlds (`02 Research/References/Skybounds/`, described in its README). Every island is now about **twice as wide each way (4x the ground)** and everything tall is much taller. The tables below still name the zones; their sizes and extra details are:

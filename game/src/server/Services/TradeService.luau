@@ -1,6 +1,7 @@
 --!strict
--- Player trading in Town. Walk up to another player and use their Trade prompt (made on
--- the client, see TradeWindow) to ask; if they say yes, you both get the trade window.
+-- Player trading, everywhere but the Warzone, with anyone on your server however far away (your call,
+-- 2026-11-10): press Trade on their profile (click them, ProfileWindow), or in Town use the Trade prompt over
+-- them (made on the client, see TradeWindow). If they say yes, you both get the trade window.
 --
 --   1. Each side puts items in. The server keeps both offers and checks every change
 --      against what you actually own; the client only ever asks.
@@ -31,7 +32,6 @@ local StateService = require(script.Parent.StateService)
 local INVITE_TIME = 20 -- seconds an invite stays open
 local INVITE_COOLDOWN = 3 -- seconds between invites from the same player
 local DECLINED_COOLDOWN = 20 -- after a "no thanks", seconds before you can ask them again
-local MAX_DISTANCE = 24 -- studs: how close you must be to ask (and to say yes)
 local COUNTDOWN = 3
 local MAX_KINDS = 12 -- different items per side
 local LOG_SIZE = 30 -- trades kept in each player's data
@@ -64,15 +64,6 @@ local function asPlayer(value: unknown): Player?
 		return value :: Player
 	end
 	return nil
-end
-
-local function distance(a: Player, b: Player): number
-	local rootA = a.Character and a.Character:FindFirstChild("HumanoidRootPart")
-	local rootB = b.Character and b.Character:FindFirstChild("HumanoidRootPart")
-	if not rootA or not rootB or not rootA:IsA("BasePart") or not rootB:IsA("BasePart") then
-		return math.huge
-	end
-	return (rootA.Position - rootB.Position).Magnitude
 end
 
 -- One side of the trade as the window shows it: a row per item with what it's worth
@@ -304,10 +295,6 @@ local function onRequest(player: Player, target: unknown)
 		StateService.Notify(player, `{other.DisplayName} is already trading`, "bad")
 		return
 	end
-	if distance(player, other) > MAX_DISTANCE then
-		StateService.Notify(player, `Walk closer to {other.DisplayName} to trade`, "bad")
-		return
-	end
 
 	-- They already asked you: that's a yes from both
 	local theirs = invites[other]
@@ -360,12 +347,6 @@ local function onRespond(player: Player, sender: unknown, accepted: unknown)
 	end
 	if not levelsOk(player, from) then
 		withdraw(from)
-		return
-	end
-	if distance(player, from) > MAX_DISTANCE * 1.5 then
-		-- Keep the invite open: walk over and say yes again
-		StateService.Notify(player, `Walk closer to {from.DisplayName} to trade`, "bad")
-		Remotes.TradeInvite:FireClient(player, from, true)
 		return
 	end
 	startSession(from, player)

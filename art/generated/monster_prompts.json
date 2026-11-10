@@ -175,5 +175,16 @@
       ],
       "prompt": "a cluster of tall sharp pale blue ice crystals"
     }
+  },
+  "npcs": {
+    "Auctioneer": {
+      "size": [
+        3,
+        6,
+        2
+      ],
+      "prompt": "stylized low-poly blocky game character, chunky rectangular shapes, bright hand-painted cartoon colours, friendly, facing forward, standing upright, full body: a cheerful auctioneer man with a square blocky head, a tall black top hat with a gold band, a big curly brown mustache, a round gold monocle, a crimson red waistcoat with shiny gold buttons over a white shirt with a black bow tie, black trousers and black shoes, holding a wooden auction gavel up in his right hand",
+      "made": "2026-11-10, Studio generate_mesh, segmentation none, maxTriangles 6000"
+    }
   }
 }

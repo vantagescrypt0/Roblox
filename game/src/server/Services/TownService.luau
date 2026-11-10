@@ -36,6 +36,7 @@ local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local Build = require(script.Parent.Parent.Util.Build)
 local Decor = require(script.Parent.Parent.Util.Decor)
 local Logo = require(script.Parent.Parent.Util.Logo)
+local MonsterArt = require(ReplicatedStorage.Shared.MonsterArt)
 local MonsterModels = require(script.Parent.Parent.Util.MonsterModels)
 local Move = require(script.Parent.Parent.Util.Move)
 local Npc = require(script.Parent.Parent.Util.Npc)
@@ -72,6 +73,8 @@ local PORTAL_Z = 64 -- the row of world portals
 local PORTAL_PLAZA = { Z1 = 46, Z2 = 78, Half = 42 }
 local SQUARE = 26 -- half-width of the Market Square
 local PIT = { X = 0, Z = 0, Half = 4 } -- the Warzone's entrance, in the middle of Market Square
+-- The Auction House: a grand hall across the head of Market Square, the main street running through its arch
+local HALL = { Z1 = 28, Z2 = 44, Half = 19, Height = 9 }
 local PIT_BOTTOM = -2 -- the void's surface, three blocks below the top of the frame
 local PIT_DEEP = 8 -- how far the shaft goes on under it, for anyone falling through
 local STREET_HALF = 16 -- the market street, kerb to kerb
@@ -118,11 +121,17 @@ local decor: Folder
 local npcs: Folder
 local rng = Random.new(SEED)
 local shopkeepers: { [string]: Model } = {}
+local auctioneers: { Model } = {}
 
 -- The shopkeeper models by shop id (see Shops.luau). Their "Head" model turns to look at
 -- players (on the client).
 function TownService.GetShopkeepers(): { [string]: Model }
 	return shopkeepers
+end
+
+-- The Auction House's Auctioneers (AuctionService)
+function TownService.GetAuctioneers(): { Model }
+	return auctioneers
 end
 
 local function set(x: number, y: number, z: number, block: Build.Pattern?)
@@ -1034,11 +1043,235 @@ local COTTAGES: { Cottage } = {
 	{ X = 62, Z = -8, Front = Vector3.zAxis, Roof = "Thatch", To = { 62, -2 }, Lot = 7 },
 	{ X = 48, Z = 8, Front = -Vector3.zAxis, Roof = "Thatch", To = { 48, 2 }, Lot = 1 },
 	{ X = 62, Z = 8, Front = -Vector3.zAxis, Roof = "RoofRed", To = { 62, 2 }, Lot = 5 },
-	{ X = -16, Z = 34, Front = Vector3.xAxis, Roof = "RoofRed", To = { -5, 34 } },
-	{ X = 16, Z = 34, Front = -Vector3.xAxis, Roof = "Thatch", To = { 5, 34 } },
 	{ X = -30, Z = -46, Front = Vector3.xAxis, Roof = "Thatch", To = { -17, -46 } },
 	{ X = 30, Z = -46, Front = -Vector3.xAxis, Roof = "RoofRed", To = { 17, -46 } },
 }
+
+-- The Auction House -----------------------------------------------------------------------
+-- A grand hall across the head of Market Square, facing the arch over the void pit (your call, 2026-11-10). The
+-- main street to the portals runs straight through a great arch in its middle, so everyone passes under it. Two
+-- wings either side, each with its own door, a red carpet up to a long counter and an Auctioneer behind it, display
+-- pedestals, bookshelves and hanging lanterns. Smooth stone and sandstone with a red band under the cornice, a flat
+-- roof with a parapet and corner turrets, and over the arch a tower with a round window under a blue dome, a gold
+-- banner flying from its top. AUCTION HOUSE over the arch on both sides.
+
+local HALL_RED = Color3.fromRGB(150, 30, 40)
+local HALL_GOLD = Color3.fromRGB(236, 184, 64)
+local PEDESTAL_GOODS = { "AmethystOre", "SapphireOre", "RubyOre", "GoldOre" }
+
+local function hallFloor(x: number, _y: number, z: number): string
+	return if (x + z) % 2 == 0 then "SmoothStone" else "Sandstone"
+end
+
+local function hallWall(_x: number, y: number, _z: number): string
+	if y <= 1 then
+		return "Sandstone"
+	elseif y == HALL.Height - 1 then
+		return "RedTerracotta"
+	end
+	return "SmoothStone"
+end
+
+-- The Auctioneer: a generated character (MonsterArt "Auctioneer") behind a counter, clicked or prompted like a
+-- shopkeeper (AuctionService)
+local function auctioneer(feet: Vector3, facing: Vector3)
+	if not MonsterArt.Auctioneer then
+		return
+	end
+	local model = Instance.new("Model")
+	model.Name = "Auctioneer"
+	model:SetAttribute("Shop", "Auctioneer")
+	model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+	local body = MonsterModels.Prop(model, "Auctioneer", feet, 5.8, math.atan2(-facing.X, -facing.Z))
+	body.CanQuery = true
+	body.CanCollide = true
+	model.PrimaryPart = body
+	Npc.NameTag(body, "Auctioneer", "Buy and sell with everyone", body.Size.Y / 2 + 1.6)
+	model.Parent = npcs
+	table.insert(auctioneers, model)
+end
+
+local function auctionHouse()
+	local site = Build.Site(world, 0, HALL.Z1, -Vector3.zAxis)
+	local hw, depth, height = HALL.Half, HALL.Z2 - HALL.Z1, HALL.Height
+	local pass = 3 -- half the main street, which runs through the middle
+	local front = site.Front
+	local out = SIZE / 2 + 0.3
+
+	-- Footing and floors, the street running on through, and a pale step along the front
+	site:Fill(-hw, 0, 0, hw, 0, depth, "StoneBricks")
+	site:Fill(-hw, 0, -1, hw, 0, -1, "SmoothStone")
+	site:Fill(-pass, 0, -1, pass, 0, depth + 1, "Cobblestone")
+
+	for _, s in { -1, 1 } do
+		local inner, outer = s * (pass + 1), s * hw
+		local function u(n: number): number
+			return s * n
+		end
+		site:Fill(u(pass + 2), 0, 1, u(hw - 1), 0, depth - 1, hallFloor)
+		site:Walls(inner, 1, 0, outer, height, depth, hallWall)
+		-- Flat roof, a parapet round it, and a turret on each outer corner
+		site:Fill(inner, height + 1, 0, outer, height + 1, depth, "SmoothStone")
+		for n = pass + 1, hw do
+			for _, v in { 0, depth } do
+				if n % 2 == 0 then
+					site:Set(u(n), height + 2, v, "Sandstone")
+				end
+			end
+		end
+		for v = 0, depth, 2 do
+			site:Set(outer, height + 2, v, "Sandstone")
+		end
+		for _, v in { 0, depth - 1 } do
+			site:Fill(u(hw - 1), height + 1, v, outer, height + 5, v + 1, "Sandstone")
+			site:Fill(u(hw - 1), height + 6, v, outer, height + 6, v + 1, "RoofSlate")
+		end
+
+		-- Pillars standing out from the front and back, framing the windows and the door
+		for _, n in { pass + 1, 8, 15, hw } do
+			site:Fill(u(n), 1, -1, u(n), height, -1, "Sandstone")
+			site:Fill(u(n), 1, depth + 1, u(n), height, depth + 1, "Sandstone")
+		end
+		-- Tall windows each side of the door, and along the outer wall
+		for _, v in { 0, depth } do
+			site:Fill(u(5), 3, v, u(7), 6, v, "Glass")
+			site:Fill(u(16), 3, v, u(18), 6, v, "Glass")
+		end
+		for _, v in { 3, 7, 11 } do
+			site:Fill(outer, 3, v, outer, 6, v + 1, "Glass")
+		end
+		-- The door: four wide, its top stepped like an arch
+		site:Clear(u(10), 1, 0, u(13), 4, 0)
+		site:Clear(u(11), 5, 0, u(12), 5, 0)
+		site:Fill(u(10), 0, -1, u(13), 0, -1, "Sandstone")
+		Signs.Board(
+			decor,
+			"AuctionDoorSign",
+			"AUCTIONEER",
+			site:Pos(s * 11.5, 6.6, 0) + front * (SIZE / 2 + 0.25),
+			front,
+			4
+		)
+		for _, n in { 9, 14 } do
+			Decor.WallLantern(decor, site:Pos(u(n), 4.4, 0) + front * (SIZE / 2), front)
+		end
+		-- Banners down the pillars
+		for _, n in { 8, 15 } do
+			Decor.Banner(decor, site:Pos(u(n), height - 0.4, -1) + front * out, front, HALL_RED, 12)
+		end
+
+		-- Inside: a red carpet from the door to a long counter, the Auctioneer behind it
+		site:Fill(u(10), 0, 1, u(13), 0, 10, "RedWool")
+		site:Fill(u(7), 1, 11, u(16), 1, 11, "DarkPlanks")
+		auctioneer(site:Pos(s * 11.5, 1, 13) - Vector3.new(0, SIZE / 2, 0), front)
+		site:Fill(u(pass + 2), 1, depth - 1, u(hw - 1), 3, depth - 1, "Bookshelf")
+		for i, spot in { { 6, 3 }, { 6, 7 }, { 17, 3 }, { 17, 7 } } do
+			site:Set(u(spot[1]), 1, spot[2], "Sandstone")
+			local at = site:Pos(u(spot[1]), 1.5, spot[2])
+			Decor.Piece(
+				decor,
+				PEDESTAL_GOODS[i],
+				Vector3.one * 1.4,
+				CFrame.new(at + Vector3.new(0, 0.7, 0)) * CFrame.Angles(0, 0.6 * i, 0)
+			)
+		end
+		for _, spot in { { 8, 4 }, { 15, 4 }, { 8, 9 }, { 15, 9 } } do
+			Decor.Lantern(decor, site:Pos(u(spot[1]), height - 0.8, spot[2]), true, 30)
+		end
+		Decor.Lantern(decor, site:Pos(u(9), 1.5, 11), false, 16)
+		Decor.Lantern(decor, site:Pos(u(14), 1.5, 11), false, 16)
+
+		-- Lanterns along the arch's walls
+		for _, v in { 3, 8, 13 } do
+			Decor.WallLantern(decor, site:Pos(inner, 4.4, v) + site:Dir(-s, 0) * (SIZE / 2), site:Dir(-s, 0))
+		end
+		-- Lamp posts at the front corners
+		local cx, cz = site:Cell(u(hw + 2), -1)
+		lampPost(cx, cz)
+	end
+
+	-- The arch over the street: a stepped vault, sandstone at the springing, a floor above
+	site:Fill(-pass, height - 1, 0, pass, height + 1, depth, "SmoothStone")
+	site:Fill(-pass, height - 2, 0, -pass, height - 2, depth, "Sandstone")
+	site:Fill(pass, height - 2, 0, pass, height - 2, depth, "Sandstone")
+	for _, v in { 0, depth } do
+		site:Fill(-pass, height + 1, v, pass, height + 1, v, "Sandstone")
+	end
+	Decor.Lantern(decor, site:Pos(0, height - 2.8, 4), true, 26)
+	Decor.Lantern(decor, site:Pos(0, height - 2.8, 12), true, 26)
+	local ways: { { V: number, Facing: Vector3 } } = { { V = 0, Facing = front }, { V = depth, Facing = -front } }
+	for _, way in ways do
+		local v, facing = way.V, way.Facing
+		for _, n in { -(pass + 1), pass + 1 } do
+			local face = if v == 0 then -1 else depth + 1
+			Decor.Banner(decor, site:Pos(n, height - 0.4, face) + facing * out, facing, HALL_GOLD, 12)
+		end
+	end
+	-- Over the arch on the portals' side; the square's side has the big one on the tower
+	Signs.Board(
+		decor,
+		"AuctionSign",
+		"AUCTION HOUSE",
+		site:Pos(0, height, depth) - front * (SIZE / 2 + 0.25),
+		-front,
+		7
+	)
+
+	-- The tower over the arch: the name in big letters facing the square, a round window over it, and the dome
+	local towerHalf, towerDepth = 6, 12
+	local base = height + 2
+	local towerTop = base + 7
+	site:Walls(-towerHalf, base, 0, towerHalf, towerTop, towerDepth, function(x, y, z)
+		local cu = math.abs(x)
+		return if cu == towerHalf or y == towerTop then "Sandstone" else "SmoothStone"
+	end)
+	for _, n in { -towerHalf, towerHalf } do
+		for _, v in { 0, towerDepth } do
+			site:Fill(n, base, v, n, towerTop + 1, v, "Sandstone")
+		end
+	end
+	Signs.Board(
+		decor,
+		"AuctionSign",
+		"AUCTION HOUSE",
+		site:Pos(0, base + 0.6, 0) + front * (SIZE / 2 + 0.25),
+		front,
+		11,
+		SIZE * 1.7
+	)
+	-- The round window: glass in a sandstone ring
+	local middle = base + 4
+	for du = -3, 3 do
+		for dy = -3, 3 do
+			local d = du * du + dy * dy
+			if d <= 5 then
+				site:Set(du, middle + dy, 0, "Glass")
+			elseif d <= 9 then
+				site:Set(du, middle + dy, 0, "Sandstone")
+			end
+		end
+	end
+	for _, n in { -towerHalf, towerHalf } do
+		site:Fill(n, base + 2, 4, n, base + 5, 8, "Glass")
+	end
+	site:Fill(-towerHalf - 1, towerTop + 1, -1, towerHalf + 1, towerTop + 1, towerDepth + 1, "Sandstone")
+	local domeBase = towerTop + 2
+	local cv = towerDepth / 2
+	local radius = towerHalf + 0.6
+	for k = 0, 7 do
+		local r = radius * math.cos(math.asin(math.min(1, k / 7.2)))
+		for du = -towerHalf - 1, towerHalf + 1 do
+			for dv = -towerHalf - 1, towerHalf + 1 do
+				local d = math.sqrt(du * du + dv * dv)
+				if d <= r and (d > r - 1.6 or k >= 6) then
+					site:Set(du, domeBase + k, cv + dv, "RoofSlate")
+				end
+			end
+		end
+	end
+	site:Fill(0, domeBase + 8, cv, 0, domeBase + 10, cv, "Sandstone")
+	Decor.Banner(decor, site:Pos(0, domeBase + 10, cv) + front * out, front, HALL_GOLD, 8)
+end
 
 -- The garden and the park ------------------------------------------------------------------
 
@@ -1546,22 +1779,19 @@ local function build()
 			cottage(c.X, c.Z, c.Front, c.Roof, c.To)
 		end
 	end
+	auctionHouse()
 	garden()
 	park()
 	streams(town)
 
-	-- A signpost at the square's north edge points the way
-	Signs.Arrows(decor, top(7, 0, SQUARE + 4), -Vector3.xAxis, {
+	-- A signpost where the street comes out of the Auction House's arch points the way
+	Signs.Arrows(decor, top(7, 0, HALL.Z2 + 1), -Vector3.xAxis, {
 		{ Text = "THE WORLDS", Toward = Vector3.zAxis },
 		{ Text = "HOME", Toward = -Vector3.zAxis },
 	})
 	for z = NORTH_FACE + 4, -SQUARE - 2, 8 do
 		lampPost(-6, z)
 		lampPost(6, z)
-	end
-	for z = SQUARE + 4, PORTAL_PLAZA.Z1 - 2, 8 do
-		lampPost(-5, z)
-		lampPost(5, z)
 	end
 	for _, corner in { { -20, -20 }, { 20, -20 }, { -20, 20 }, { 20, 20 } } do
 		lampPost(corner[1], corner[2])

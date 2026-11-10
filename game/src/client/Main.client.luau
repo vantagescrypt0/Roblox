@@ -26,6 +26,8 @@ local NpcController = require(script.Parent.NpcController)
 local PromptUI = require(script.Parent.PromptUI)
 local QuestTracker = require(script.Parent.QuestTracker)
 local AdminWindow = require(script.Parent.Windows.AdminWindow)
+local AuctionWindow = require(script.Parent.Windows.AuctionWindow)
+local ProfileWindow = require(script.Parent.Windows.ProfileWindow)
 local BagWindow = require(script.Parent.Windows.BagWindow)
 local ChallengesWindow = require(script.Parent.Windows.ChallengesWindow)
 local ChestWindow = require(script.Parent.Windows.ChestWindow)
@@ -67,6 +69,8 @@ InboxWindow.Start()
 CrateWindow.Start()
 KitsWindow.Start()
 BoostWindow.Start()
+AuctionWindow.Start()
+ProfileWindow.Start()
 CrateOpening.Start(CrateWindow.Count, KitsWindow.CrateOnSale, KitsWindow.OpenCrate)
 ChestWindow.Start()
 SignWindow.Start()
@@ -102,9 +106,19 @@ Hotbar.Start()
 VitalsHud.Start()
 WarzoneHud.Start()
 task.spawn(SkydropController.Start)
+-- A shopkeeper's window, or the Auction House's for the Auctioneer
+local function openShop(shopId: string)
+	if shopId == "Auctioneer" then
+		AuctionWindow.Open()
+	else
+		ShopWindow.Open(shopId)
+	end
+end
+
 BlockController.Start({
 	OpenCrafting = CraftingWindow.Open,
-	OpenShop = ShopWindow.Open,
+	OpenShop = openShop,
+	OpenProfile = ProfileWindow.Open,
 })
 NpcController.Start()
 MobController.Start()
@@ -117,7 +131,11 @@ CombatController.Start()
 SprintController.Start()
 FirstPersonController.Start()
 
-Remotes.BoostState.OnClientEvent:Connect(BoostWindow.SetState)
+Remotes.BoostState.OnClientEvent:Connect(function(state)
+	BoostWindow.SetState(state)
+	Hud.SetFreeCrystals(state.Free)
+end)
+Remotes.BoostRedeemed.OnClientEvent:Connect(Hud.CrystalsAvailable)
 
 Remotes.KitState.OnClientEvent:Connect(function(state)
 	-- Only in the Menu for someone who owns a kit or can buy something
@@ -139,12 +157,14 @@ Remotes.State.OnClientEvent:Connect(function(state)
 	InboxWindow.SetState(state)
 	CrateWindow.SetState(state)
 	BoostWindow.SetGameState(state)
+	AuctionWindow.SetState(state)
+	ProfileWindow.SetState(state)
 	ChestWindow.SetState(state)
 	ChallengesWindow.SetState(state)
 end)
 Remotes.Notify.OnClientEvent:Connect(Hud.Toast)
 Remotes.OpenCrafting.OnClientEvent:Connect(CraftingWindow.Open)
-Remotes.OpenShop.OnClientEvent:Connect(ShopWindow.Open)
+Remotes.OpenShop.OnClientEvent:Connect(openShop)
 Remotes.Travel.OnClientEvent:Connect(Hud.Travel)
 Remotes.IslandRebuilt.OnClientEvent:Connect(function(tier: number)
 	IslandWindow.Close()

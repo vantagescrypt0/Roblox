@@ -60,9 +60,10 @@ No dates — quality over speed.
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?
    - [ ] **Coming soon (your notes, 2026-11-09; not designed yet):** a rank system. See [[Open Questions]]
-   - [ ] **Boost crystals:** built and tested in Studio 2026-11-10 (three trees of five boosts, 399 Robux, rare in crates and Legendary Skydrops); see [[Boost Crystals]]. Not published yet
+   - [x] **Boost crystals:** three trees of five boosts, 399 Robux, rare in crates and Legendary Skydrops; see [[Boost Crystals]]. Live on all seven places 2026-11-10 (still Private). Since then (not published): every crystal is an item you hold and right-click to redeem, with the free count shown after
+   - [ ] **Auction House, player profiles, trading anywhere:** built and tested in Studio 2026-11-10 (two players); see [[Auction House & Profiles]]. Not published yet; the live DataStore/MemoryStore path is untested until it's published
    - [ ] **Armour kits:** five built 2026-11-09 (Stormcaller, Sunforged, Emberguard, Frostwarden, Venomfang), each with its own sword, right-click special and set bonus; published and on sale at 399 to 799 Robux (lowered from 800 to 1,800 on 2026-11-10), in a game that's still Private (see [[Kits]]). Armour stops at diamond
-   - Future ideas (your list, 2026-10-26; not started): **Enchants**, **Pets**, **Warzone** and the ideas that come with it, **Auction House**, **Coinflip** (check Roblox's gambling rules and our [[Monetization Principles]] first: if coins can be bought with Robux, a coinflip counts as paid gambling, which is off-limits for our young audience). At the very end: **Gamepasses and other Robux income** (see [[Monetization Principles]])
+   - Future ideas (your list, 2026-10-26; not started): **Enchants**, **Pets**, **Warzone** and the ideas that come with it, **Auction House** (built 2026-11-10), **Coinflip** (check Roblox's gambling rules and our [[Monetization Principles]] first: if coins can be bought with Robux, a coinflip counts as paid gambling, which is off-limits for our young audience). At the very end: **Gamepasses and other Robux income** (see [[Monetization Principles]])
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.
 4. **Soft launch:** small audience, measure retention, fix.
 5. **Launch + ads.**

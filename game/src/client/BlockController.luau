@@ -27,6 +27,7 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Decorations = require(ReplicatedStorage.Shared.Decorations)
 local Mining = require(ReplicatedStorage.Shared.Mining)
@@ -128,6 +129,7 @@ type Target = {
 export type Callbacks = {
 	OpenCrafting: (station: Recipes.Station) -> (),
 	OpenShop: (shopId: string) -> (),
+	OpenProfile: (other: Player) -> (),
 }
 
 local BlockController = {}
@@ -303,6 +305,28 @@ local function aimedShop(): string?
 	return if type(shopId) == "string" then shopId else nil
 end
 
+-- Another player (or their pet) right under the pointer, with nothing in front of them: clicking them opens their
+-- profile, anywhere but the Warzone
+local function aimedPlayer(): Player?
+	local ray = screenRay()
+	if IN_WARZONE or not ray then
+		return nil
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = if player.Character then { player.Character } else {}
+	local hit = Workspace:Raycast(ray.Origin, ray.Direction * 300, params)
+	local model = hit and hit.Instance:FindFirstAncestorWhichIsA("Model")
+	while model do
+		local owner = Players:GetPlayerFromCharacter(model)
+		if owner then
+			return if owner ~= player then owner else nil
+		end
+		model = model:FindFirstAncestorWhichIsA("Model")
+	end
+	return nil
+end
+
 local function burst(position: Vector3, color: Color3)
 	for _ = 1, 8 do
 		local bit = Instance.new("Part")
@@ -344,6 +368,15 @@ local function swing()
 	if track then
 		track:Play(0.05)
 	end
+end
+
+-- A right click or tap with a Boost Crystal in your hand redeems it (BoostService). Returns true if it did.
+local function redeemHeld(): boolean
+	if Hotbar.SelectedItem() ~= Boosts.Item then
+		return false
+	end
+	Remotes.BoostUse:FireServer()
+	return true
 end
 
 local function place()
@@ -564,6 +597,11 @@ function BlockController.Start(handlers: Callbacks)
 		end
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			pointer = nil
+			local other = aimedPlayer()
+			if other then
+				callbacks.OpenProfile(other)
+				return
+			end
 			target = aim()
 			if not interact(false) then
 				breaking = true
@@ -600,7 +638,7 @@ function BlockController.Start(handlers: Callbacks)
 			-- held down, it's your shield.
 			if start and (UserInputService:GetMouseLocation() - start).Magnitude <= CLICK_SLOP then
 				target = aim()
-				if not interact(true) then
+				if not interact(true) and not redeemHeld() then
 					local quick = os.clock() - rightDownAt <= KitPowerController.QuickClick
 					if not (quick and KitPowerController.RightClick()) then
 						place()
@@ -612,8 +650,13 @@ function BlockController.Start(handlers: Callbacks)
 			touchStart = nil
 			breaking = false
 			if start and os.clock() - start.Time < TAP_TIME then
+				local other = aimedPlayer()
+				if other then
+					callbacks.OpenProfile(other)
+					return
+				end
 				target = aim()
-				if not interact(true) then
+				if not interact(true) and not redeemHeld() then
 					place()
 				end
 			end

@@ -152,7 +152,7 @@ Island expansion: level 2 **3,000**, level 3 **40,000**, level 4 **1,000,000**, 
 Built 2026-10-24 (code: `TradeService.luau` on the server, `TradeWindow.luau` on the client). Screenshot: `art/renders/ui-trade-window.png`.
 
 **How it plays**
-1. In Town, walk up to another player. A **Trade** prompt shows over them (press **T**, or tap it). They get a "wants to trade" card with Trade / No thanks for 20 seconds. If you both ask each other, the trade just opens.
+1. **Anywhere but the Warzone, at any distance** (your call, 2026-11-10): left-click (tap) another player to open their profile and press **Trade**. In Town a **Trade** prompt also shows over players near you (press **T**, or tap it). They get a "wants to trade" card with Trade / No thanks for 20 seconds. If you both ask each other, the trade just opens.
 2. The trade window shows **You give** and **They give**, each with its total value, and your bag. Click an item in your bag to put one in (click it under You give to take one back), or pick it and use -1 / +1 / +10 / All / None.
 3. Both press **Accept**. A 3-second countdown runs ("Trading in 3... press to stop"), then everything swaps at once.
 4. Closing the window (X, Cancel trade, clicking outside, or opening another window) ends the trade for both.
@@ -171,5 +171,8 @@ Built 2026-10-24 (code: `TradeService.luau` on the server, `TradeWindow.luau` on
 **Coins:** not tradable for now, items only (your call 2026-10-25: "hold off on coins"). Coins would be simpler for players but make coin-selling scams easier.
 
 **Level 5 to trade** (2026-10-25, `Leveling.TradeLevel`): both players need player level 5. Below it, the Trade prompt over other players reads "Trade at level 5", and asking says "Trading unlocks at level 5. You're level N, keep going!" (or that the other player needs level 5). Level 5 takes the beginner quests plus a little play, so brand-new and throwaway accounts can't be used for scams.
+
+## The Auction House (2026-11-10)
+One market for every server, at the Auctioneer in Town: Buy Now or auctions with bids, coins only, payouts through the Inbox. **5% of every sale is taken as tax**, so coins leave the game. Same rules as trading: level 5, nobody Roblox bars from trading, and untradeable items (Boost Crystals) can't be listed. See [[Auction House & Profiles]].
 
 Related: [[Content Index]], [[Monetization Principles]], [[Core Loop]]

@@ -59,7 +59,7 @@ for _, tree in Trees do
 end
 
 local Boosts = {
-	Item = "BoostCrystal", -- the crystal you find (Loot Crates, Legendary Skydrops): shift-click it in the Bag
+	Item = "BoostCrystal", -- every crystal, bought or found, is this item: hold it and right-click to redeem it
 	Price = 399, -- Robux, set on the product itself (Creator Hub); this is only what the notes say
 	ProductId = 3730196955, -- the developer product for one crystal (made 2026-11-10); 0 = not on sale
 	PerTree = PER_TREE,

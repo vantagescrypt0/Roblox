@@ -1,7 +1,8 @@
 --!strict
 -- Boost crystals (Menu > Boosts, see Boosts.luau and BoostService): how many you have and how many are free, then the
 -- three trees side by side, each with its five boosts lit up to where your crystals reach and a button to put a free
--- crystal in. Buying one, adding one you found from your Bag, and the once-a-season reassign are along the top.
+-- crystal in. Buying one, how many you're carrying still to redeem (hold one and right-click), and the once-a-season
+-- reassign are along the top.
 
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -47,7 +48,7 @@ local BoostWindow = {}
 local window: Window.Window
 local summary: TextLabel
 local buyButton: Theme.Button
-local useButton: Theme.Button
+local carryHint: TextLabel
 local resetButton: Theme.Button
 local columns: { [string]: Column } = {}
 local state: State? = nil
@@ -73,8 +74,8 @@ local function refresh()
 
 	buyButton.Holder.Visible = now.OnSale
 	buyButton.SetText(if price then `Buy a crystal · {price} Robux` else "Buy a crystal")
-	useButton.Holder.Visible = inBag > 0
-	useButton.SetText(`Add {if inBag == 1 then "the crystal" else "a crystal"} from your Bag`)
+	carryHint.Visible = inBag > 0
+	carryHint.Text = `{plural(inBag, "crystal", "crystals")} in your Bag: hold one and right-click to redeem it`
 	resetButton.Holder.Visible = now.CanReset
 	resetButton.SetText(if os.clock() < confirmUntil then "Sure? Press again" else "Take them all back out")
 
@@ -224,10 +225,10 @@ function BoostWindow.Start()
 		Remotes.BoostBuy:FireServer()
 	end)
 	buyButton.Holder.LayoutOrder = 1
-	useButton = Theme.button(actions, "Add a crystal from your Bag", C.Purple, UDim2.fromOffset(270, 44), function()
-		Remotes.BoostUse:FireServer()
-	end)
-	useButton.Holder.LayoutOrder = 2
+	carryHint = Theme.text(actions, "", 15, Theme.Font.Bold, C.Purple)
+	carryHint.Size = UDim2.fromOffset(300, 44)
+	carryHint.TextWrapped = true
+	carryHint.LayoutOrder = 2
 	resetButton = Theme.button(actions, "Take them all back out", C.Orange, UDim2.fromOffset(240, 44), function()
 		if os.clock() < confirmUntil then
 			confirmUntil = 0
@@ -252,7 +253,7 @@ function BoostWindow.Start()
 		makeColumn(trees, tree, order)
 	end
 	buyButton.Holder.Visible = false
-	useButton.Holder.Visible = false
+	carryHint.Visible = false
 	resetButton.Holder.Visible = false
 end
 
