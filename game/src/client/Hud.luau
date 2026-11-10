@@ -16,6 +16,7 @@ local Glass = require(script.Parent.UI.Glass)
 local ItemIcon = require(script.Parent.UI.ItemIcon)
 local Sfx = require(script.Parent.UI.Sfx)
 local Theme = require(script.Parent.UI.Theme)
+local Window = require(script.Parent.UI.Window)
 
 local C = Glass.Color
 local localPlayer = Players.LocalPlayer :: Player
@@ -87,6 +88,7 @@ local TOAST_COLORS: { [string]: Color3 } = {
 local BUTTON = 62 -- the Menu button and the buttons in its panel are square
 local CARD_WIDTH = 270
 local STATUS_HEIGHT = 98 -- the coins over the card
+local TOUCH_GUI_WAIT = 30 -- seconds to wait for Roblox's touch controls to appear
 
 -- Coins over a card with your level, name and XP, right of the Menu
 local function buildStatus(group: Frame, onSkills: () -> ())
@@ -529,12 +531,13 @@ function Hud.Start(callbacks: Callbacks)
 	-- together on phones), clear of Roblox's chat window in the top-left
 	local group = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.new(0, 14, 1, -14),
+		Position = UDim2.new(0, Theme.edge(), 1, -14),
 		Size = UDim2.fromOffset(BUTTON + 10 + CARD_WIDTH, STATUS_HEIGHT),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	})
 	Theme.autoScale(group)
+	Window.hideWhenCovered(group)
 	buildMenu(group, callbacks)
 	buildStatus(group, callbacks.OnSkills)
 	buildToasts(gui)
@@ -548,7 +551,7 @@ function Hud.Start(callbacks: Callbacks)
 
 	-- Full-screen fade for portal travel
 	local fadeGui = Theme.screen("Fade", 20)
-	fadeGui.IgnoreGuiInset = true
+	fadeGui.ScreenInsets = Enum.ScreenInsets.None
 	fadeFrame = Theme.make("Frame", {
 		Size = UDim2.fromScale(1, 1),
 		BackgroundColor3 = C.Well,
@@ -560,6 +563,16 @@ function Hud.Start(callbacks: Callbacks)
 	fadeTitle.Position = UDim2.fromScale(0, 0.42)
 	fadeTitle.TextXAlignment = Enum.TextXAlignment.Center
 	fadeLabel(fadeTitle, nil, 1)
+
+	-- Roblox's jump button and thumbstick go out to the real edges with everything else
+	if Theme.isPhone() then
+		task.spawn(function()
+			local touch = localPlayer:WaitForChild("PlayerGui"):WaitForChild("TouchGui", TOUCH_GUI_WAIT)
+			if touch and touch:IsA("ScreenGui") then
+				touch.ScreenInsets = Enum.ScreenInsets.None
+			end
+		end)
+	end
 end
 
 return Hud

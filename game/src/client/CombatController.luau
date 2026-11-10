@@ -135,7 +135,7 @@ end
 
 local function buildGui()
 	local gui = Theme.screen("Crosshair", 3)
-	gui.IgnoreGuiInset = true
+	gui.ScreenInsets = Enum.ScreenInsets.None
 	gui.ResetOnSpawn = false
 	crosshair = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),

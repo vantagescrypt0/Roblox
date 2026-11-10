@@ -11,6 +11,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Glass = require(script.Parent.UI.Glass)
 local Theme = require(script.Parent.UI.Theme)
+local Window = require(script.Parent.UI.Window)
 
 local C = Glass.Color
 
@@ -116,6 +117,7 @@ end
 
 function Hotbar.Start()
 	local gui = Theme.screen("Hotbar", 3)
+	Window.hideWhenCovered(gui)
 	local width = SLOTS * SLOT + (SLOTS - 1) * GAP
 	bar = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 1),

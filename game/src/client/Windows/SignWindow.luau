@@ -1,7 +1,10 @@
 --!strict
 -- Writing on a sign on your island: it opens when you place one, and when you right-click one.
 -- The server runs the words through Roblox's filter before they go on the sign.
+-- The words on signs only show for players Roblox lets read what others write (SeesPlayerWords, from DecorService).
 
+local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
@@ -10,6 +13,9 @@ local Theme = require(script.Parent.Parent.UI.Theme)
 local Window = require(script.Parent.Parent.UI.Window)
 
 local MAX_LENGTH = 48
+local WORDS_TAG = "PlayerWords"
+
+local localPlayer = Players.LocalPlayer :: Player
 
 local SignWindow = {}
 
@@ -33,7 +39,23 @@ local function open(x: number, y: number, z: number, text: string)
 	box:CaptureFocus()
 end
 
+local function showOrHide(words: Instance)
+	if words:IsA("SurfaceGui") then
+		words.Enabled = localPlayer:GetAttribute("SeesPlayerWords") == true
+	end
+end
+
+local function showOrHideAll()
+	for _, words in CollectionService:GetTagged(WORDS_TAG) do
+		showOrHide(words)
+	end
+end
+
 function SignWindow.Start()
+	CollectionService:GetInstanceAddedSignal(WORDS_TAG):Connect(showOrHide)
+	localPlayer:GetAttributeChangedSignal("SeesPlayerWords"):Connect(showOrHideAll)
+	showOrHideAll()
+
 	window = Window.new("Sign", "Write on the sign", Vector2.new(460, 280))
 	local body = window.Body
 	box = Theme.make("TextBox", {

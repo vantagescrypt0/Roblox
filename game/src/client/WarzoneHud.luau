@@ -13,9 +13,11 @@ local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Glass = require(script.Parent.UI.Glass)
 local Theme = require(script.Parent.UI.Theme)
+local Window = require(script.Parent.UI.Window)
 
 local C = Glass.Color
 local LEAVE_HOLD = 7 -- seconds; the server's LEAVE_HOLD
+local PHONE_RIGHT = 103 -- Roblox's jump button on a phone takes the last 95 pixels
 
 local WarzoneHud = {}
 
@@ -26,6 +28,9 @@ function WarzoneHud.Start()
 		return
 	end
 	local gui = Theme.screen("WarzoneHud", 4)
+	Window.hideWhenCovered(gui)
+	-- On a phone these two stack left of Roblox's jump button instead of underneath it
+	local phone = Theme.isPhone()
 
 	local top = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0),
@@ -47,7 +52,7 @@ function WarzoneHud.Start()
 	local leave = Glass.button(gui, "Hold to Leave", UDim2.fromOffset(170, 50))
 	local button = leave.Face
 	button.AnchorPoint = Vector2.new(1, 1)
-	button.Position = UDim2.new(1, -18, 1, -18)
+	button.Position = if phone then UDim2.new(1, -PHONE_RIGHT, 1, -98) else UDim2.new(1, -18, 1, -18)
 	button.ClipsDescendants = true
 	Theme.autoScale(button)
 	local fill = Theme.make("Frame", {
@@ -99,7 +104,7 @@ function WarzoneHud.Start()
 		local block = Glass.button(gui, "Hold to Block", UDim2.fromOffset(170, 50))
 		local blockButton = block.Face
 		blockButton.AnchorPoint = Vector2.new(1, 1)
-		blockButton.Position = UDim2.new(1, -18, 1, -78)
+		blockButton.Position = if phone then UDim2.new(1, -PHONE_RIGHT, 1, -62) else UDim2.new(1, -18, 1, -78)
 		Theme.autoScale(blockButton)
 		blockButton.MouseButton1Down:Connect(function()
 			setBlocking(true)

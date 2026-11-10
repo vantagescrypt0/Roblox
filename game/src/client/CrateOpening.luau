@@ -510,7 +510,7 @@ end
 function CrateOpening.Start(left: () -> number, forSale: () -> boolean, buyMore: () -> ())
 	cratesLeft, onSale, onBuy = left, forSale, buyMore
 	gui = Theme.screen("CrateOpening", 100)
-	gui.IgnoreGuiInset = true
+	gui.ScreenInsets = Enum.ScreenInsets.None
 	gui.Enabled = false
 
 	backdrop = Theme.make("TextButton", {

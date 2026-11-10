@@ -7,6 +7,7 @@ local Players = game:GetService("Players")
 
 local Glass = require(script.Parent.UI.Glass)
 local Theme = require(script.Parent.UI.Theme)
+local Window = require(script.Parent.UI.Window)
 
 local C = Glass.Color
 local localPlayer = Players.LocalPlayer :: Player
@@ -24,11 +25,17 @@ local lastQuest: number? = nil
 
 local function build(onOpen: () -> ())
 	local gui = Theme.screen("Quests", 1)
+	Window.hideWhenCovered(gui)
 
 	card = Glass.card(gui, UDim2.fromOffset(270, 0))
-	-- Right side, below Roblox's player list
-	card.AnchorPoint = Vector2.new(1, 0.5)
-	card.Position = UDim2.new(1, -14, 0.5, 0)
+	-- Right side, below Roblox's player list. On a phone, up in the corner: halfway down is where the notch can be
+	if Theme.isPhone() then
+		card.AnchorPoint = Vector2.new(1, 0)
+		card.Position = UDim2.new(1, -Theme.edge(), 0, 12)
+	else
+		card.AnchorPoint = Vector2.new(1, 0.5)
+		card.Position = UDim2.new(1, -14, 0.5, 0)
+	end
 	card.AutomaticSize = Enum.AutomaticSize.Y
 	card.Visible = false
 	Theme.autoScale(card)

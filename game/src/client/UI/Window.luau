@@ -10,6 +10,9 @@ local Sfx = require(script.Parent.Sfx)
 local Theme = require(script.Parent.Theme)
 
 local HEADER = 68
+local GAP = 8 -- kept clear around a window that's up against something
+local HUD_HEIGHT = 130 -- how much of the bottom of the screen the hotbar, hearts and Menu take, at full size
+local PREFER_CENTRED = 0.95 -- moves beside Roblox's buttons only if that makes the window at least this much bigger
 
 export type Window = {
 	Gui: ScreenGui,
@@ -19,12 +22,36 @@ export type Window = {
 	IsOpen: boolean,
 	OnOpen: (() -> ())?,
 	OnClose: (() -> ())?,
+	Fit: () -> (),
 }
 
 local Window = {}
 
 local current: Window? = nil
 local switching = false -- opening another window closes this one: no closing whoosh then
+local hud: { Instance } = {} -- ScreenGuis and frames that hide while a window would cover part of them
+
+-- Two empty ScreenGuis that measure the screen. A phone's camera size leaves out the notch's margins, so it can't be
+-- used to place things: these say where the true edges are, and where the free part of Roblox's top bar begins.
+local wholeScreen = Theme.screen("WholeScreen")
+wholeScreen.ScreenInsets = Enum.ScreenInsets.None
+local topBar = Theme.screen("TopBarSpace")
+topBar.ScreenInsets = Enum.ScreenInsets.TopbarSafeInsets
+
+local function showHud(visible: boolean)
+	for _, item in hud do
+		if item:IsA("ScreenGui") then
+			item.Enabled = visible
+		elseif item:IsA("GuiObject") then
+			item.Visible = visible
+		end
+	end
+end
+
+-- For the HUD's pieces: on a small screen a window reaches them, and half a hotbar poking out looks broken
+function Window.hideWhenCovered(item: Instance)
+	table.insert(hud, item)
+end
 
 -- One blur for all windows, on while any window is open (Lighting changes from a client stay local)
 local blur = Instance.new("BlurEffect")
@@ -58,6 +85,7 @@ function Window.close(window: Window)
 	window.Gui.Enabled = false
 	if not current then
 		setBlur(false)
+		showHud(true)
 	end
 	if not switching then
 		Sfx.play("Close")
@@ -79,6 +107,7 @@ function Window.open(window: Window)
 	if window.OnOpen then
 		window.OnOpen()
 	end
+	window.Fit()
 	window.Gui.Enabled = true
 	setBlur(true)
 	local scale = window.Root:FindFirstChild("OpenScale") :: UIScale
@@ -99,7 +128,7 @@ function Window.new(name: string, title: string, size: Vector2): Window
 	local window: Window
 	local gui = Theme.screen(name, 10)
 	gui.Enabled = false
-	gui.IgnoreGuiInset = true
+	gui.ScreenInsets = Enum.ScreenInsets.None
 
 	-- The dim behind it closes it when clicked. Modal frees the mouse while you're in first person.
 	local dim = Theme.make("TextButton", {
@@ -115,7 +144,7 @@ function Window.new(name: string, title: string, size: Vector2): Window
 		Window.close(window)
 	end)
 
-	-- Outer holder shrinks on phones; the panel inside does the open animation
+	-- Outer holder is sized and placed for the screen; the panel inside does the open animation
 	local holder = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
@@ -124,7 +153,40 @@ function Window.new(name: string, title: string, size: Vector2): Window
 		BackgroundTransparency = 1,
 		Parent = gui,
 	})
-	Theme.autoScale(holder)
+	local fitScale = Theme.make("UIScale", { Parent = holder })
+
+	-- Centred, unless that runs it under Roblox's buttons at the top left. Then it drops just below them, or
+	-- if it's too tall to fit there at a good size, it moves to their right.
+	local function fit()
+		local view = wholeScreen.AbsoluteSize
+		local origin = wholeScreen.AbsolutePosition
+		local barRight = topBar.AbsolutePosition.X - origin.X
+		local top = topBar.AbsolutePosition.Y + topBar.AbsoluteSize.Y - origin.Y + GAP
+		local largest = math.min(Theme.screenScale(), (view.X - GAP * 2) / size.X)
+		local under = math.min(largest, (view.Y - top - GAP) / size.Y)
+		local beside = math.min(largest, (view.Y - GAP * 2) / size.Y, (view.X - barRight - GAP * 2) / size.X)
+		local x, y = view.X / 2, view.Y / 2
+		local scale = under
+		if under >= beside * PREFER_CENTRED then
+			y = math.max(y, top + size.Y * scale / 2)
+		else
+			scale = beside
+			x = math.max(x, barRight + GAP + size.X * scale / 2)
+		end
+		fitScale.Scale = scale
+		holder.Position = UDim2.fromOffset(x, y)
+		if current == window then
+			showHud(y + size.Y * scale / 2 <= view.Y - HUD_HEIGHT * Theme.screenScale())
+		end
+	end
+	local function refit()
+		if window.IsOpen then
+			fit()
+		end
+	end
+	wholeScreen:GetPropertyChangedSignal("AbsoluteSize"):Connect(refit)
+	topBar:GetPropertyChangedSignal("AbsolutePosition"):Connect(refit)
+	topBar:GetPropertyChangedSignal("AbsoluteSize"):Connect(refit)
 
 	local root = Glass.panel(holder, UDim2.fromScale(1, 1))
 	root.Name = "Root"
@@ -161,6 +223,7 @@ function Window.new(name: string, title: string, size: Vector2): Window
 		IsOpen = false,
 		OnOpen = nil,
 		OnClose = nil,
+		Fit = fit,
 	}
 	return window
 end

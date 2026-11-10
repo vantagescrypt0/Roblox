@@ -13,6 +13,7 @@ local Decorations = require(ReplicatedStorage.Shared.Decorations)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local DecorModels = require(script.Parent.Parent.Util.DecorModels)
+local Policy = require(script.Parent.Parent.Util.Policy)
 local Signs = require(script.Parent.Parent.Util.Signs)
 local DataService = require(script.Parent.DataService)
 local InventoryService = require(script.Parent.InventoryService)
@@ -126,7 +127,8 @@ local function drawWords(world: BlockWorld.World, x: number, y: number, z: numbe
 	holder.CanTouch = false
 	holder.CastShadow = false
 	holder.Parent = part
-	Signs.Label(holder, words, frame.LookVector, INK)
+	-- SignWindow hides these for anyone Roblox says can't read what other players write
+	Signs.Label(holder, words, frame.LookVector, INK):AddTag("PlayerWords")
 end
 
 -- Runs words through Roblox's filter. Yields. Words that can't be checked don't show.
@@ -141,6 +143,9 @@ local function filtered(text: string, userId: number): string
 end
 
 local function setWords(player: Player, world: BlockWorld.World, x: number, y: number, z: number, text: string)
+	if not Policy.ContentSharingAllowed(player) then
+		return
+	end
 	local checked = filtered(text, player.UserId)
 	-- It could have been broken while the filter ran
 	if owners[world] ~= player or not SIGN_FACES[BlockWorld.get(world, x, y, z) or ""] then
@@ -161,7 +166,7 @@ local function onEditSign(player: Player, x: unknown, y: unknown, z: unknown, te
 		return
 	end
 	local world = island.World
-	if not SIGN_FACES[BlockWorld.get(world, x, y, z) or ""] then
+	if not SIGN_FACES[BlockWorld.get(world, x, y, z) or ""] or not Policy.ContentSharingAllowed(player) then
 		return
 	end
 	lastEdit[player] = now
@@ -179,7 +184,18 @@ local function onOpenSign(player: Player, x: unknown, y: unknown, z: unknown)
 	local island = IslandService.GetIsland(player)
 	local data = DataService.GetData(player)
 	if island and data and SIGN_FACES[BlockWorld.get(island.World, x, y, z) or ""] then
-		Remotes.OpenSign:FireClient(player, x, y, z, data.Island.Signs[BlockWorld.key(x, y, z)] or "")
+		if Policy.ContentSharingAllowed(player) then
+			Remotes.OpenSign:FireClient(player, x, y, z, data.Island.Signs[BlockWorld.key(x, y, z)] or "")
+		else
+			StateService.Notify(player, "Your account settings don't allow writing on signs", "bad")
+		end
+	end
+end
+
+-- A sign that's just been placed opens for writing, for anyone allowed to write on one. Yields.
+function DecorService.OpenNewSign(player: Player, x: number, y: number, z: number)
+	if Policy.ContentSharingAllowed(player) then
+		Remotes.OpenSign:FireClient(player, x, y, z, "")
 	end
 end
 
@@ -354,10 +370,19 @@ local function attach(player: Player, island: IslandService.Island)
 	end
 end
 
+-- Tells the client whether to show what other players wrote. Until it says so, nothing shows.
+local function checkSharing(player: Player)
+	player:SetAttribute("SeesPlayerWords", Policy.ContentSharingAllowed(player))
+end
+
 function DecorService.Start()
 	IslandService.OnIslandCreated(attach)
 	Remotes.EditSign.OnServerEvent:Connect(onEditSign)
 	Remotes.OpenSign.OnServerEvent:Connect(onOpenSign)
+	Players.PlayerAdded:Connect(checkSharing)
+	for _, player in Players:GetPlayers() do
+		task.spawn(checkSharing, player)
+	end
 	Players.PlayerRemoving:Connect(function(player)
 		lastEdit[player] = nil
 		for world, owner in owners do

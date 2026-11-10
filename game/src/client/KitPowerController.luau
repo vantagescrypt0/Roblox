@@ -17,6 +17,7 @@ local Hotbar = require(script.Parent.Hotbar)
 local Glass = require(script.Parent.UI.Glass)
 local Sfx = require(script.Parent.UI.Sfx)
 local Theme = require(script.Parent.UI.Theme)
+local Window = require(script.Parent.UI.Window)
 
 local C = Glass.Color
 local player = Players.LocalPlayer
@@ -143,6 +144,7 @@ end
 
 local function build()
 	local gui = Theme.screen("KitPower", 3)
+	Window.hideWhenCovered(gui)
 	local holder = Theme.make("Frame", {
 		AnchorPoint = Vector2.new(0, 1),
 		Position = UDim2.new(0.5, FROM_MIDDLE, 1, -14),
@@ -151,6 +153,13 @@ local function build()
 		Parent = gui,
 	})
 	Theme.autoScale(holder)
+	-- The hotbar shrinks with the screen, so its neighbour has to come in with it or it lands on the jump button
+	local shrink = holder:FindFirstChildOfClass("UIScale") :: UIScale
+	local function followHotbar()
+		holder.Position = UDim2.new(0.5, FROM_MIDDLE * shrink.Scale, 1, -14)
+	end
+	shrink:GetPropertyChangedSignal("Scale"):Connect(followHotbar)
+	followHotbar()
 	local button = Glass.button(holder, "", UDim2.fromScale(1, 1), fire)
 	face = button.Face
 	face.Visible = false

@@ -8,6 +8,7 @@
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Sfx = require(script.Parent.Sfx)
@@ -471,17 +472,34 @@ function Theme.pop(object: GuiObject, amount: number?)
 		:Play()
 end
 
+-- A touch screen small enough to be a phone and not a tablet
+function Theme.isPhone(): boolean
+	local camera = Workspace.CurrentCamera
+	local size = if camera then camera.ViewportSize else Vector2.one
+	return UserInputService.TouchEnabled and math.min(size.X, size.Y) <= 500
+end
+
+-- How far the HUD keeps from the side of the screen. A phone's corners are round, so a little more there.
+function Theme.edge(): number
+	return if Theme.isPhone() then 22 else 14
+end
+
+-- How much panels shrink on this screen
+function Theme.screenScale(): number
+	local camera = Workspace.CurrentCamera
+	if not camera then
+		return 1
+	end
+	local size = camera.ViewportSize
+	return math.clamp(math.min(size.X / 1280, size.Y / 760), 0.62, 1)
+end
+
 -- Shrinks a panel on small (phone) screens. It scales around the panel's AnchorPoint,
 -- so anchor panels to the screen edge they sit on.
 function Theme.autoScale(object: GuiObject)
 	local scale = object:FindFirstChildOfClass("UIScale") or Theme.make("UIScale", { Parent = object })
 	local function update()
-		local camera = Workspace.CurrentCamera
-		if not camera then
-			return
-		end
-		local size = camera.ViewportSize
-		scale.Scale = math.clamp(math.min(size.X / 1280, size.Y / 760), 0.62, 1)
+		scale.Scale = Theme.screenScale()
 	end
 	update()
 	local camera = Workspace.CurrentCamera
@@ -497,6 +515,10 @@ function Theme.screen(name: string, order: number?): ScreenGui
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		DisplayOrder = order or 0,
 	})
+	-- Left alone, a phone's GUIs stop level with the notch all the way down both sides. Nothing of ours is beside it
+	if Theme.isPhone() then
+		gui.ScreenInsets = Enum.ScreenInsets.None
+	end
 	gui.Parent = (Players.LocalPlayer :: Player):WaitForChild("PlayerGui")
 	return gui
 end

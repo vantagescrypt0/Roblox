@@ -16,6 +16,7 @@ local TextService = game:GetService("TextService")
 local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local Metrics = require(script.Parent.Parent.Util.Metrics)
+local Policy = require(script.Parent.Parent.Util.Policy)
 local DataService = require(script.Parent.DataService)
 local AwardService = require(script.Parent.AwardService)
 local IslandService = require(script.Parent.IslandService)
@@ -92,11 +93,14 @@ local function sendState(player: Player)
 	end)
 	-- The book of the island they're on: their own when they're at home
 	local hostData = if host then DataService.GetData(host) else nil
+	-- Yields the first time it's asked for a player
+	local sharing = Policy.ContentSharingAllowed(player)
 	Remotes.VisitState:FireClient(player, {
 		Rows = rows,
 		Rule = data.Island.VisitRule,
 		HostName = if host then host.DisplayName else nil,
-		Book = (hostData or data).Island.Guestbook,
+		Book = if sharing then (hostData or data).Island.Guestbook else {},
+		Sharing = sharing,
 	})
 end
 
@@ -198,6 +202,10 @@ end
 
 local function onSign(player: Player, text: unknown)
 	if type(text) ~= "string" then
+		return
+	end
+	if not Policy.ContentSharingAllowed(player) then
+		StateService.Notify(player, "Your account settings don't allow signing guestbooks", "bad")
 		return
 	end
 	local words = string.match(string.sub(text, 1, MAX_WORDS), "^%s*(.-)%s*$") or ""

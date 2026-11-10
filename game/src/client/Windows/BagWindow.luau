@@ -796,7 +796,10 @@ function BagWindow.Start()
 	buildCrafting(body)
 	buildInfo(body)
 	buildSlots(body)
-	hint("Click a stack to pick it up. Right-click takes half. Shift-click sends it across.")
+	local howTo = if Theme.isPhone()
+		then "Tap a stack to pick it up, then tap where it goes."
+		else "Click a stack to pick it up. Right-click takes half. Shift-click sends it across."
+	hint(howTo)
 
 	-- What's in your hand follows the mouse
 	floating = Theme.make("Frame", {
@@ -828,7 +831,7 @@ function BagWindow.Start()
 	-- The character turns gently from side to side while the Bag is open
 	local stepping: RBXScriptConnection? = nil
 	window.OnOpen = function()
-		hint("Click a stack to pick it up. Right-click takes half. Shift-click sends it across.")
+		hint(howTo)
 		carried = nil
 		cells = {}
 		shownEquipped = equippedKey()

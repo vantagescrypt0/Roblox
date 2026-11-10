@@ -41,7 +41,7 @@ Signs.Woods = table.freeze({
 
 -- Writes `text` on the face of `part` that points toward `front`. Without `ink` the
 -- letters are cream with a dark outline; with it they're that colour, burnt or carved in.
-function Signs.Label(part: BasePart, text: string, front: Vector3, ink: Color3?)
+function Signs.Label(part: BasePart, text: string, front: Vector3, ink: Color3?): SurfaceGui
 	local gui = Instance.new("SurfaceGui")
 	gui.Face = Props.FaceToward(part, front)
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
@@ -67,6 +67,7 @@ function Signs.Label(part: BasePart, text: string, front: Vector3, ink: Color3?)
 	padding.PaddingLeft = UDim.new(0, 12)
 	padding.PaddingRight = UDim.new(0, 12)
 	padding.Parent = label
+	return gui
 end
 
 -- How tall a board is for its text: taller for two lines

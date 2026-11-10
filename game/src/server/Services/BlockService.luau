@@ -350,7 +350,7 @@ local function onPlace(
 		BlockWorld.set(world, cx, cy, cz, block)
 		IslandService.RecordChange(player, cx, cy, cz, block)
 		if itemId == "Sign" then
-			Remotes.OpenSign:FireClient(player, cx, cy, cz, "")
+			task.spawn(DecorService.OpenNewSign, player, cx, cy, cz)
 		end
 		if item.Block == "Chest" then
 			ChestService.Placed(player, world, cx, cy, cz)

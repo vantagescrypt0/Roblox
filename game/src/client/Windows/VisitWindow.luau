@@ -132,11 +132,12 @@ local function render()
 		bookEntry(entry, index)
 	end
 	noEntries.Visible = #state.Book == 0
-	noEntries.Text = if state.HostName
-		then "Nobody has signed yet. Be the first."
+	noEntries.Text = if not state.Sharing
+		then "Your account settings don't allow guestbooks."
+		elseif state.HostName then "Nobody has signed yet. Be the first."
 		else "No signatures yet. Visitors can sign your book."
 	bookTitle.Text = if state.HostName then `{state.HostName}'s guestbook` else "Your guestbook"
-	signRow.Visible = state.HostName ~= nil
+	signRow.Visible = state.HostName ~= nil and state.Sharing
 	ruleButton.SetText(`Who can visit: {state.Rule}`)
 end
 

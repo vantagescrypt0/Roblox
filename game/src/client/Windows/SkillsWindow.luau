@@ -193,7 +193,10 @@ local function renderChallenges()
 			end
 			local bar = Theme.bar(strip, if done then C.Gold else C.Leaf, UDim2.new(1 / 3, -4, 1, 0))
 			bar.Track.LayoutOrder = index
-			bar.Label.TextSize = 11
+			-- "Armor III 12.5k/25k" only just fits: shrink rather than run into the next one
+			bar.Label.TextScaled = true
+			Theme.make("UITextSizeConstraint", { MaxTextSize = 11, Parent = bar.Label })
+			Theme.padding(bar.Label, 4, 4, 0, 0)
 			bar.Set(
 				count / milestone.Count,
 				if done then `{label} ✓` else `{label} {short(count)}/{short(milestone.Count)}`
@@ -228,7 +231,7 @@ local function renderDetail()
 	detailTrains.Text = `Train it: {skill.Trains}`
 	if skill.Id == "Farming" then
 		local chance = math.floor(Leveling.BonusChance(current.Level) * 100 + 0.5)
-		detailBonus.Text = `Double crops: {chance}% · hoe grass anywhere into farmland`
+		detailBonus.Text = `Double crops: {chance}% · hoe any grass`
 	elseif skill.Id == "Woodcutting" then
 		local chance = math.floor(Leveling.BonusChance(current.Level) * 100 + 0.5)
 		detailBonus.Text = `Double logs: {chance}% · plant up to {Leveling.PlantedTrees(current.Level)} trees`
@@ -479,7 +482,9 @@ end
 function SkillsWindow.Start()
 	window = Window.new("SkillsWindow", "Skills", Vector2.new(800, 616))
 	window.OnOpen = function()
-		info.Text = "Point at a milestone or an unlock to see what it needs"
+		info.Text = if Theme.isPhone()
+			then "Tap a milestone to see what it needs"
+			else "Point at a milestone or an unlock to see what it needs"
 		render()
 	end
 	buildPlayerCard(window.Body)

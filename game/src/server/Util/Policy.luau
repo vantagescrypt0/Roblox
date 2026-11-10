@@ -6,7 +6,7 @@
 local PolicyService = game:GetService("PolicyService")
 local RunService = game:GetService("RunService")
 
-type Rules = { RandomItemsRestricted: boolean, TradingAllowed: boolean }
+type Rules = { RandomItemsRestricted: boolean, TradingAllowed: boolean, ContentSharingAllowed: boolean }
 
 local Policy = {}
 
@@ -26,6 +26,7 @@ local function rulesFor(player: Player): Rules?
 	local fresh: Rules = {
 		RandomItemsRestricted = info.ArePaidRandomItemsRestricted == true,
 		TradingAllowed = info.IsPaidItemTradingAllowed == true,
+		ContentSharingAllowed = info.IsContentSharingAllowed == true,
 	}
 	known[player] = fresh
 	return fresh
@@ -47,6 +48,16 @@ function Policy.TradingAllowed(player: Player): boolean
 	end
 	local rules = rulesFor(player)
 	return rules ~= nil and rules.TradingAllowed
+end
+
+-- May this player write words others can read, and read words others wrote? Signs and guestbooks need this.
+-- A Studio test plays someone who may not by setting the attribute TestNoSharing on them.
+function Policy.ContentSharingAllowed(player: Player): boolean
+	if RunService:IsStudio() then
+		return player:GetAttribute("TestNoSharing") ~= true
+	end
+	local rules = rulesFor(player)
+	return rules ~= nil and rules.ContentSharingAllowed
 end
 
 return Policy
