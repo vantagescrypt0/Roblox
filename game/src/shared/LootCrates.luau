@@ -6,7 +6,8 @@
 --
 -- Each of the 6 slots is rolled on its own. Your call (2026-11-09): a crate has a 33% chance of
 -- holding something good, so sometimes there's nothing good in it, and no good thing is extremely
--- rare. Which prizes count as good, and their shares, are Claude's picks.
+-- rare. Which prizes count as good, and their shares, are Claude's picks. A Boost Crystal is one of
+-- them (your call, 2026-11-10: "rare in crates"), as rare as a tier VII pet: about 1 crate in 90.
 --
 -- Roblox's rules say every outcome and its real odds must be shown before anyone pays, so Chance
 -- is worked out here from the same numbers the rolls use, and the windows only show it ([[Kits]]).
@@ -62,6 +63,7 @@ local Good = list({
 	{ "WoodcuttingPet7", 1, 1, 3 },
 	{ "FarmingPet7", 1, 1, 3 },
 	{ "CombatPet7", 1, 1, 3 },
+	{ "BoostCrystal", 1, 1, 3 },
 }, true)
 
 local Common = list({

@@ -1,7 +1,7 @@
 --!strict
 -- The Slaying World's generated meshes: the monsters, what they drop, the spawner cage and the big
--- props, as generate_mesh made them (art/generated/). Written by art/scripts/monster_art.py; don't
--- edit by hand. Util/MonsterModels makes them at server start.
+-- props, plus the Boost Crystal, as generate_mesh made them (art/generated/). Written by
+-- art/scripts/monster_art.py; don't edit by hand. Util/MonsterModels makes them at server start.
 
 export type Art = { Mesh: string, Texture: string, Size: Vector3, Turn: CFrame }
 
@@ -10,6 +10,12 @@ local MonsterArt: { [string]: Art } = {
 		Mesh = "rbxassetid://78911242334942",
 		Texture = "rbxassetid://121874900488733",
 		Size = Vector3.new(8, 8.4659, 4.9586),
+		Turn = CFrame.identity,
+	},
+	BoostCrystal = {
+		Mesh = "rbxassetid://118201613627082",
+		Texture = "rbxassetid://133779928065989",
+		Size = Vector3.new(1.5432, 4, 1.5483),
 		Turn = CFrame.identity,
 	},
 	Cinderkin = {

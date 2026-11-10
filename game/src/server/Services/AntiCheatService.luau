@@ -4,7 +4,8 @@
 -- Autoclickers are fine (the server already caps how fast blocks break), so there's no bot hunting.
 --   Movement   faster than they can walk or sprint (allowing for lag catching up), higher than a jump, hanging in
 --              the air, or into or through solid blocks. Water, knockback and the server's own moves
---              (Util/Move.luau) are allowed for, and Config.Flyers aren't checked.
+--              (Util/Move.luau) are allowed for, and Config.Flyers aren't checked. Someone with the flying boost
+--              (CanFly, BoostService) may go as fast as flying and stay up, but still not through blocks.
 --   Requests   each player can only send so many requests a second, of each kind and in all.
 -- Admins see strikes and catches, and kick, ban and unban, through AdminService (its panel and chat commands).
 -- Every catch counts in the player's save (data.AntiCheat), which /flags shows.
@@ -55,6 +56,7 @@ local ALL_KINDS = { Burst = 150, PerSecond = 60 }
 local FLOOD = 400 -- requests in one second: no real player sends this many, so it's a kick at once
 
 type Track = {
+	Player: Player,
 	Character: Model,
 	Root: BasePart,
 	Humanoid: Humanoid,
@@ -153,7 +155,8 @@ local function jumpHeight(humanoid: Humanoid): number
 end
 
 local function speedOf(track: Track): number
-	return math.max(track.TopSpeed, track.Humanoid.WalkSpeed) * SPEED_SCALE
+	local flies = if track.Player:GetAttribute("CanFly") == true then Config.FlySpeed else 0
+	return math.max(track.TopSpeed, track.Humanoid.WalkSpeed, flies) * SPEED_SCALE
 end
 
 local function budgetCap(track: Track): number
@@ -349,7 +352,7 @@ local function check(player: Player, track: Track, overlap: OverlapParams, rays:
 		track.Ground = root.CFrame
 		track.GroundY = at.Y
 		track.AirMarkY = nil
-	elseif inWater(at, rays) then
+	elseif player:GetAttribute("CanFly") == true or inWater(at, rays) then
 		track.GroundY = at.Y
 		track.AirMarkY = nil
 	else
@@ -393,6 +396,7 @@ local function watch(player: Player, character: Model)
 	feet.FilterDescendantsInstances = { character }
 	feet.RespectCanCollide = true
 	local track: Track = {
+		Player = player,
 		Character = character,
 		Root = root,
 		Humanoid = humanoid,

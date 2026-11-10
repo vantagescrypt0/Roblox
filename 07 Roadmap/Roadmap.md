@@ -59,7 +59,8 @@ No dates — quality over speed.
    - [ ] The Warzone in Town (void pit and its own place built and playtested in Studio 2026-11-02; the teleport needs publishing it as a new place)
    - [ ] Warzone arena art (still greybox)
    - [ ] Playtest with real people: is the loop fun?
-   - [ ] **Coming soon (your notes, 2026-11-09; not designed yet):** a rank system and boost gems. See [[Open Questions]]
+   - [ ] **Coming soon (your notes, 2026-11-09; not designed yet):** a rank system. See [[Open Questions]]
+   - [ ] **Boost crystals:** built and tested in Studio 2026-11-10 (three trees of five boosts, 399 Robux, rare in crates and Legendary Skydrops); see [[Boost Crystals]]. Not published yet
    - [ ] **Armour kits:** five built 2026-11-09 (Stormcaller, Sunforged, Emberguard, Frostwarden, Venomfang), each with its own sword, right-click special and set bonus; published and on sale at 399 to 799 Robux (lowered from 800 to 1,800 on 2026-11-10), in a game that's still Private (see [[Kits]]). Armour stops at diamond
    - Future ideas (your list, 2026-10-26; not started): **Enchants**, **Pets**, **Warzone** and the ideas that come with it, **Auction House**, **Coinflip** (check Roblox's gambling rules and our [[Monetization Principles]] first: if coins can be bought with Robux, a coinflip counts as paid gambling, which is off-limits for our young audience). At the very end: **Gamepasses and other Robux income** (see [[Monetization Principles]])
 3. **Vertical slice:** one polished island tier + one Warzone map, real UI, saving.

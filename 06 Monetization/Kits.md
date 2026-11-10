@@ -22,7 +22,7 @@ An Immortal Kit: claim it every 5 days to summon a random Loot Crate and open it
 ## Why it costs this much (your words, 2026-11-09)
 "Loot crates are very useful so they should be at 1000+": they give pets (some pets could go for 100 million+), they give expensive nodes, and a rank system and boost gems are coming soon.
 
-**Not in the game yet:** crates hold nodes, spawners, seeds, saplings and ores (`shared/LootCrates.luau`), but **no pets**. Pets only come from skill challenges so far. Adding them means choosing which pets and their odds, and the odds table has to keep adding up to 100.
+**Not in the game yet:** crates hold nodes, spawners, seeds, saplings and ores (`shared/LootCrates.luau`), and since 2026-11-10 a rare [[Boost Crystals|Boost Crystal]], but **no pets**. Pets only come from skill challenges so far. Adding them means choosing which pets and their odds, and the odds table has to keep adding up to 100.
 
 ## How crates should roll (your call, 2026-11-09)
 A crate gives **6 things** and has a **33% chance of giving something good** ("I kind of want a 33 change of a crate giving something good"). That replaces the 10-15% per slot you said first. Sometimes you get nothing good, sometimes something, and no good thing should be extremely rare.

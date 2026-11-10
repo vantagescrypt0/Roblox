@@ -379,6 +379,10 @@ local function onOffer(player: Player, itemId: unknown, count: unknown)
 	if type(count) ~= "number" or count ~= count then
 		return
 	end
+	if Items[itemId].NoTrade then
+		StateService.Notify(player, `{Items[itemId].Name}s can't be traded`, "bad")
+		return
+	end
 	-- A crate may have been bought with Robux, so it can't reach someone Roblox bars from paid random items
 	local partner = partnerOf(session, player)
 	if itemId == LootCrates.Item and Policy.PaidRandomRestricted(partner) then

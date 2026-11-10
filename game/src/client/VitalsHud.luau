@@ -2,7 +2,8 @@
 -- Over the hotbar, the way Minecraft does it (your call, 2026-11-03): ten hearts on the left, your armour
 -- above them while you wear any, and in the Warzone ten drumsticks of hunger on the right, emptying from
 -- the left. Half an icon counts. A hit makes the hearts blink, low health makes them shake and poison
--- turns them green. The icons are our own drawings (art/scripts/vitals_icons.py). The server decides all
+-- turns them green. Health past 100 (the Warzone tree's +3 hearts, Boosts.luau) shows as a second row of
+-- hearts above the first, lost first, as in Minecraft. The icons are our own drawings (art/scripts/vitals_icons.py). The server decides all
 -- of it; this shows it.
 
 local Players = game:GetService("Players")
@@ -52,7 +53,13 @@ local function setCell(icon: ImageLabel, cell: number)
 	icon.ImageRectOffset = Vector2.new(cell * CELL_SIZE, 0)
 end
 
-local function makeRow(parent: Instance, name: string, fromRight: boolean, y: number): (Frame, { ImageLabel })
+local function makeRow(
+	parent: Instance,
+	name: string,
+	fromRight: boolean,
+	y: number,
+	count: number?
+): (Frame, { ImageLabel })
 	local row = Instance.new("Frame")
 	row.Name = name
 	row.BackgroundTransparency = 1
@@ -61,7 +68,7 @@ local function makeRow(parent: Instance, name: string, fromRight: boolean, y: nu
 	row.Size = UDim2.fromOffset(STEP * 10, ICON)
 	row.Parent = parent
 	local icons = {}
-	for index = 1, 10 do
+	for index = 1, count or 10 do
 		local icon = Instance.new("ImageLabel")
 		icon.BackgroundTransparency = 1
 		icon.Size = UDim2.fromOffset(ICON, ICON)
@@ -99,8 +106,12 @@ end
 function VitalsHud.Start()
 	local bar = Hotbar.Bar()
 	local _, hearts = makeRow(bar, "Hearts", false, -RAISE)
+	-- Hearts past the first ten: up to 10 more, shown only as many as their health reaches
+	local bonusRow, bonusHearts = makeRow(bar, "BonusHearts", false, -RAISE - ICON - ROW_GAP)
+	bonusRow.Visible = false
 	armourRow, armourIcons = makeRow(bar, "Armour", false, -RAISE - ICON - ROW_GAP)
 	armourRow.Visible = false
+	local shownExtra = 0
 	local foods: { ImageLabel }? = nil
 	if Places.Current() == "Warzone" then
 		local _, row = makeRow(bar, "Hunger", true, -RAISE)
@@ -122,6 +133,7 @@ function VitalsHud.Start()
 		local character = player.Character
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 		local share = 1
+		local halves = 20
 		if humanoid then
 			local hp, max = humanoid.Health, humanoid.MaxHealth
 			share = if max > 0 then hp / max else 0
@@ -129,22 +141,35 @@ function VitalsHud.Start()
 				blinkUntil = now + BLINK_TIME
 			end
 			lastHealth = hp
+			-- Ten health a heart. Up to 100 the hearts show what share is left, as they always have.
+			local extra = math.clamp(math.ceil((max - 100) / 10), 0, #bonusHearts)
+			halves = if extra > 0 then math.ceil(hp / 5) else math.ceil(share * 20)
+			if extra ~= shownExtra then
+				shownExtra = extra
+				lastHalves = -1
+				bonusRow.Visible = extra > 0
+				for index, icon in bonusHearts do
+					icon.Visible = index <= extra
+				end
+				-- Armour sits above whichever heart row is on top
+				local rows = if extra > 0 then 2 else 1
+				armourRow.Position = UDim2.fromOffset(0, -RAISE - (ICON + ROW_GAP) * rows)
+			end
 		end
 
 		local until_ = player:GetAttribute("PoisonUntil")
 		local poisoned = type(until_) == "number" and until_ > workspace:GetServerTimeNow()
 		local blinking = now < blinkUntil
-		local halves = math.ceil(share * 20)
 		if halves ~= lastHalves or poisoned ~= wasPoisoned or blinking or wasBlinking then
 			lastHalves, wasPoisoned, wasBlinking = halves, poisoned, blinking
 			local lit = blinking and (blinkUntil - now) % (BLINK_EVERY * 2) > BLINK_EVERY
-			fill(
-				hearts,
-				halves,
-				if poisoned then Cell.PoisonFull else Cell.HeartFull,
-				if poisoned then Cell.PoisonHalf else Cell.HeartHalf,
-				if lit then Cell.HeartBlink else Cell.HeartEmpty
-			)
+			local full = if poisoned then Cell.PoisonFull else Cell.HeartFull
+			local half = if poisoned then Cell.PoisonHalf else Cell.HeartHalf
+			local empty = if lit then Cell.HeartBlink else Cell.HeartEmpty
+			fill(hearts, math.min(halves, 20), full, half, empty)
+			if shownExtra > 0 then
+				fill(bonusHearts, math.max(0, halves - 20), full, half, empty)
+			end
 		end
 
 		-- Near death they shake

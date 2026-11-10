@@ -24,6 +24,7 @@ local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Foods = require(ReplicatedStorage.Shared.Foods)
 local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Items = require(ReplicatedStorage.Shared.Items)
@@ -173,18 +174,42 @@ local function setHunger(player: Player, value: number)
 	end
 end
 
+-- Of all the hunger they lose: the Warzone tree's second boost halves it
+local function hungerScale(player: Player): number
+	return if Boosts.Has(DataService.GetData(player), "Warzone", 2) then Boosts.HungerScale else 1
+end
+
 -- Swinging a sword makes you hungrier
 function WarzoneService.Exert(player: Player)
 	if hunger[player] then
-		setHunger(player, hunger[player] - HUNGER_PER_SWING)
+		setHunger(player, hunger[player] - HUNGER_PER_SWING * hungerScale(player))
 	end
 end
 
 -- Burning hunger on anything else that tires you, like sprinting
 function WarzoneService.Burn(player: Player, amount: number)
 	if hunger[player] then
-		setHunger(player, hunger[player] - amount)
+		setHunger(player, hunger[player] - amount * hungerScale(player))
 	end
+end
+
+-- Health: 100, or 130 with the Warzone tree's last boost (three more hearts)
+local function maxHealthOf(player: Player): number
+	return 100 + (if Boosts.Has(DataService.GetData(player), "Warzone", 5) then Boosts.ExtraHealth else 0)
+end
+
+local function fitHealth(player: Player, refill: boolean)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not humanoid or humanoid.Health <= 0 then
+		return
+	end
+	local most = maxHealthOf(player)
+	local wasFull = humanoid.Health >= humanoid.MaxHealth
+	if humanoid.MaxHealth ~= most then
+		humanoid.MaxHealth = most
+	end
+	humanoid.Health = if refill or wasFull then most else math.min(humanoid.Health, most)
 end
 
 -- Clicking with food in your hand: a moment later it's eaten, if nothing interrupted you
@@ -365,8 +390,10 @@ local function startLeaving(player: Player)
 	sound.Parent = root
 	sound:Play()
 	leaving[player] = sound
-	player:SetAttribute("LeavingUntil", workspace:GetServerTimeNow() + LEAVE_HOLD)
-	task.delay(LEAVE_HOLD, function()
+	local hold = if Boosts.Has(DataService.GetData(player), "Warzone", 1) then Boosts.LeaveSeconds else LEAVE_HOLD
+	player:SetAttribute("LeavingFor", hold)
+	player:SetAttribute("LeavingUntil", workspace:GetServerTimeNow() + hold)
+	task.delay(hold, function()
 		if leaving[player] == sound then
 			finishLeaving(player)
 		end
@@ -483,6 +510,7 @@ end
 
 local function onCharacterAdded(player: Player, character: Model)
 	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
+	fitHealth(player, true)
 	-- Your body's laid down from a copy, so it needs its joints
 	humanoid.BreakJointsOnDeath = false
 	humanoid.Died:Connect(function()
@@ -620,18 +648,22 @@ local function tick(player: Player, params: RaycastParams)
 	end
 
 	local moving = (root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)).Magnitude > 2
-	local food = (hunger[player] or 100) - (if moving then HUNGER_MOVING else HUNGER_STILL) * TICK
+	local scale = hungerScale(player)
+	local food = (hunger[player] or 100) - (if moving then HUNGER_MOVING else HUNGER_STILL) * TICK * scale
 	local health = humanoid.Health
 	local poisoned = os.clock() < (poisonUntil[player] or 0)
 	if poisoned then
 		health = math.max(1, health - (poisonRate[player] or POISON_PER_SECOND) * TICK)
 	elseif food >= WELL_FED and health < humanoid.MaxHealth then
 		local sunBlessed = KitSets.Wearing(player) == "Sunforged"
-		local rate = REGEN_PER_SECOND * (if sunBlessed then KitPowers.RegenScale else 1)
+		local boosted = Boosts.Has(DataService.GetData(player), "Warzone", 3)
+		local rate = REGEN_PER_SECOND
+			* (if sunBlessed then KitPowers.RegenScale else 1)
+			* (if boosted then Boosts.RegenScale else 1)
 		local gain = math.min(rate * TICK, humanoid.MaxHealth - health)
 		health += gain
 		if not sunBlessed then
-			food -= gain * HUNGER_PER_HEALTH
+			food -= gain * HUNGER_PER_HEALTH * scale
 		end
 	elseif food <= 0 and health > STARVE_FLOOR then
 		health = math.max(STARVE_FLOOR, health - STARVE_PER_SECOND * TICK)
@@ -708,6 +740,10 @@ function WarzoneService.Start()
 
 	local function track(player: Player)
 		player:SetAttribute("InWarzone", false)
+		-- Their crystals arrive with their save, and can move while they're here
+		player:GetAttributeChangedSignal("BoostWarzone"):Connect(function()
+			fitHealth(player, false)
+		end)
 		player.CharacterAdded:Connect(function(character)
 			onCharacterAdded(player, character)
 			-- Back on your feet after dying: that's your run over

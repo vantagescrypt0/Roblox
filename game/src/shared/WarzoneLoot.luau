@@ -71,7 +71,8 @@ local Tables: { [Kind]: LootTable } = {
 		{ Item = "VoidlingSpawner", Min = 1, Max = 1, Weight = 0.35 },
 	}),
 	-- Worth the wait and the fight: no food or scrap, and the late game's best things are far likelier. Nodes last
-	-- for ever on your island, so even here you'd expect about one good one in each.
+	-- for ever on your island, so even here you'd expect about one good one in each. A Boost Crystal is in about one
+	-- Legendary in five (your call, 2026-11-10: "legendary skydrops"; how often is Claude's pick).
 	Legendary = make(14, 18, {
 		{ Item = "GoldIngot", Min = 8, Max = 16, Weight = 10 },
 		{ Item = "Crystal", Min = 4, Max = 8, Weight = 10 },
@@ -89,6 +90,7 @@ local Tables: { [Kind]: LootTable } = {
 		{ Item = "StarwoodSapling", Min = 1, Max = 2, Weight = 3 },
 		{ Item = "CinderkinSpawner", Min = 1, Max = 1, Weight = 2.5 },
 		{ Item = "VoidlingSpawner", Min = 1, Max = 1, Weight = 1.5 },
+		{ Item = "BoostCrystal", Min = 1, Max = 1, Weight = 1.2 },
 	}),
 }
 

@@ -1,6 +1,7 @@
 --!strict
 -- What's sold with Robux ([[Kits]]): kits, game passes that are yours for good and pay out every week from Menu > Kits,
--- and single Loot Crates. Anything whose id is still 0 isn't on sale, and nothing in the game mentions it.
+-- and single Loot Crates. Anything whose id is still 0 isn't on sale, and nothing in the game mentions it. Every
+-- developer product's receipt comes through here (boost crystals add theirs with HandleProduct).
 --
 -- Crates are random, so Roblox's rules on paid random items apply. Anyone PolicyService says can't have those isn't
 -- offered them, and if they already own the Crate Keeper Kit they get a fixed reward instead of a crate. Everyone else
@@ -182,9 +183,17 @@ local function forgetOldReceipts(data: DataService.Data)
 	end
 end
 
--- Pays out one bought crate, once however often Roblox asks, and only says it's done when that's really saved: the
--- Robux can't be taken for a crate that gets lost, and asking again can't give a second one.
-local function grantCrate(player: Player?, purchaseId: string): Enum.ProductPurchaseDecision
+-- What each developer product gives: the crate here, and anything another service adds (HandleProduct)
+local products: { [number]: (player: Player) -> () } = {}
+
+local function giveCrate(player: Player)
+	InventoryService.Add(player, LootCrates.Item, 1)
+	StateService.Notify(player, "Thanks! A Loot Crate is in your Bag", "level")
+end
+
+-- Pays out one purchase, once however often Roblox asks, and only says it's done when that's really saved: the
+-- Robux can't be taken for something that gets lost, and asking again can't give a second one.
+local function grant(player: Player?, purchaseId: string, give: (player: Player) -> ()): Enum.ProductPurchaseDecision
 	local data = if player then DataService.GetData(player) else nil
 	if not player or not data then
 		return Enum.ProductPurchaseDecision.NotProcessedYet -- Roblox asks again when they're next in a server
@@ -192,9 +201,8 @@ local function grantCrate(player: Player?, purchaseId: string): Enum.ProductPurc
 	if not data.Receipts[purchaseId] then
 		data.Receipts[purchaseId] = os.time()
 		forgetOldReceipts(data)
-		InventoryService.Add(player, LootCrates.Item, 1)
+		give(player)
 		DataService.MarkChanged(player)
-		StateService.Notify(player, "Thanks! A Loot Crate is in your Bag", "level")
 	end
 	return if DataService.SaveNow(player)
 		then Enum.ProductPurchaseDecision.PurchaseGranted
@@ -202,10 +210,19 @@ local function grantCrate(player: Player?, purchaseId: string): Enum.ProductPurc
 end
 
 local function onReceipt(info: any): Enum.ProductPurchaseDecision
-	if info.ProductId ~= Kits.CrateProductId then
+	local give = if info.ProductId == Kits.CrateProductId then giveCrate else products[info.ProductId]
+	if info.ProductId == 0 or not give then
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
-	return grantCrate(Players:GetPlayerByUserId(info.PlayerId), info.PurchaseId)
+	return grant(Players:GetPlayerByUserId(info.PlayerId), info.PurchaseId, give)
+end
+
+-- Another service's developer product: what one purchase gives. Roblox allows only one receipt handler in a game,
+-- so every product is paid out through this one.
+function KitService.HandleProduct(productId: number, give: (player: Player) -> ())
+	if productId ~= 0 then
+		products[productId] = give
+	end
 end
 
 -- For tests in Studio only (DevService); nil goes back to asking Roblox
@@ -216,8 +233,13 @@ function KitService.SetTest(state: Test?)
 	end
 end
 
-function KitService.TestReceipt(player: Player, purchaseId: string): Enum.ProductPurchaseDecision
-	return grantCrate(player, purchaseId)
+-- Roblox telling us a purchase was paid for: a crate, or what `give` gives (tests in Studio only)
+function KitService.TestReceipt(
+	player: Player,
+	purchaseId: string,
+	give: ((player: Player) -> ())?
+): Enum.ProductPurchaseDecision
+	return grant(player, purchaseId, give or giveCrate)
 end
 
 function KitService.Start()

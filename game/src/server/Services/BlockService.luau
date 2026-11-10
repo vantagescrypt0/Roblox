@@ -23,6 +23,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Decorations = require(ReplicatedStorage.Shared.Decorations)
 local Gathering = require(ReplicatedStorage.Shared.Gathering)
 local Gear = require(ReplicatedStorage.Shared.Gear)
@@ -38,6 +39,7 @@ local Tools = require(ReplicatedStorage.Shared.Tools)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local ChallengeService = require(script.Parent.ChallengeService)
 local ChestService = require(script.Parent.ChestService)
+local DataService = require(script.Parent.DataService)
 local DecorService = require(script.Parent.DecorService)
 local GearService = require(script.Parent.GearService)
 local HotbarService = require(script.Parent.HotbarService)
@@ -222,7 +224,9 @@ local function onBreak(player: Player, x: unknown, y: unknown, z: unknown)
 		StateService.Notify(player, `You need {toolNeeded(def)} to collect {def.Name}`, "bad")
 	end
 	if gather then
-		ProgressionService.AddSkillXP(player, gather.Skill, gather.XP)
+		-- On your own island, the Island tree's last boost adds to the XP
+		local boosted = onIsland and Boosts.Has(DataService.GetData(player), "Island", 5)
+		ProgressionService.AddSkillXP(player, gather.Skill, gather.XP * (if boosted then Boosts.IslandXPScale else 1))
 		ProgressionService.AddPlayerXP(player, gather.PlayerXP)
 		ChallengeService.Count(player, blockType)
 	end

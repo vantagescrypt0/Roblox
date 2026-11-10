@@ -23,6 +23,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Config = require(ReplicatedStorage.Shared.Config)
 local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local Items = require(ReplicatedStorage.Shared.Items)
@@ -232,8 +233,10 @@ local function addTree(
 	return tree
 end
 
-local function grown(tree: { PlantedAt: number, Kind: string? }): boolean
-	return os.time() >= tree.PlantedAt + (TREE_KINDS[tree.Kind or "Oak"].Seconds or SAPLING_GROW_TIME)
+-- Whether a planted tree has finished growing. `data` is the island owner's save: the Island tree's boosts make it quicker.
+local function grown(tree: { PlantedAt: number, Kind: string? }, data: any): boolean
+	local seconds = TREE_KINDS[tree.Kind or "Oak"].Seconds or SAPLING_GROW_TIME
+	return os.time() >= tree.PlantedAt + Boosts.GrowTime(data, seconds)
 end
 
 type Generated = {
@@ -259,7 +262,7 @@ end
 -- `island` is the player's saved island data: their planted trees (the grown ones stand
 -- here), the island trees they've felled, and their block changes (planted trees grow
 -- around their blocks)
-local function generate(island: DataService.IslandData): Generated
+local function generate(island: DataService.IslandData, data: DataService.Data): Generated
 	local spec = STARTER
 	local radius = spec.Radius
 	local cells: { [string]: string } = {}
@@ -333,7 +336,7 @@ local function generate(island: DataService.IslandData): Generated
 		return protected[cellKey] == true or (change ~= nil and change ~= "Air")
 	end
 	for groundKey, tree in island.Trees do
-		if grown(tree) then
+		if grown(tree, data) then
 			local x, y, z = BlockWorld.unkey(groundKey)
 			trees[groundKey] = addTree(cells, x, y, z, tree.Height, true, blocked, tree.Kind)
 		end
@@ -486,7 +489,7 @@ end
 
 local function build(player: Player, data: DataService.Data, tier: number, plot: number): Island
 	local center = plotCenter(plot)
-	local generated = generate(data.Island)
+	local generated = generate(data.Island, data)
 	local world = BlockWorld.new(center - Vector3.new(0, SIZE / 2, 0), `Island_{player.UserId}`, islandsFolder)
 	world.Model:SetAttribute("OwnerUserId", player.UserId)
 	world.Model:SetAttribute("Tier", tier)
@@ -544,7 +547,7 @@ local function build(player: Player, data: DataService.Data, tier: number, plot:
 	BlockWorld.drawAll(world)
 
 	for groundKey, tree in data.Island.Trees do
-		if not grown(tree) then
+		if not grown(tree, data) then
 			local x, y, z = BlockWorld.unkey(groundKey)
 			protectTrunk(world, x, y, z, tree.Height, true)
 			makeSapling(island, groundKey)
@@ -731,7 +734,7 @@ function IslandService.Broken(player: Player, x: number, y: number, z: number): 
 	local cellKey = key(x, y, z)
 	local node = island.Nodes[cellKey]
 	if node then
-		node.RespawnAt = os.clock() + (Blocks.Types[node.Block].NodeRespawn or 30)
+		node.RespawnAt = os.clock() + Boosts.NodeTime(data, Blocks.Types[node.Block].NodeRespawn or 30)
 		return nil
 	end
 	IslandService.RecordChange(player, x, y, z, nil)
@@ -766,9 +769,9 @@ function IslandService.TreeLog(kind: string): string
 	return TREE_KINDS[kind].Log
 end
 
--- How many minutes a kind of tree takes to grow from a sapling
-function IslandService.TreeMinutes(kind: string): number
-	return math.round((TREE_KINDS[kind].Seconds or SAPLING_GROW_TIME) / 60)
+-- How many minutes a kind of tree takes to grow from a sapling (on the island of the player whose save this is)
+function IslandService.TreeMinutes(kind: string, data: any?): number
+	return math.max(1, math.round(Boosts.GrowTime(data, TREE_KINDS[kind].Seconds or SAPLING_GROW_TIME) / 60))
 end
 
 function IslandService.PlantSapling(player: Player, x: number, y: number, z: number, kind: string): (boolean, string?)
@@ -861,7 +864,7 @@ local function growSaplings()
 		end
 		for groundKey in island.Saplings do
 			local tree = data.Island.Trees[groundKey]
-			if tree and grown(tree) then
+			if tree and grown(tree, data) then
 				growTree(island, data, groundKey, tree)
 			end
 		end

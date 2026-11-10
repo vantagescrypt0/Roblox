@@ -32,6 +32,7 @@ export type Callbacks = {
 	OnVisit: () -> (),
 	OnSettings: () -> (),
 	OnKits: () -> (),
+	OnBoosts: () -> (),
 }
 
 local levelNumber: TextLabel
@@ -261,7 +262,7 @@ local function buildMenu(group: Frame, callbacks: Callbacks)
 	-- The menu's own badge counts the mail waiting too, so it shows while the menu is shut
 	menuBadge = Theme.badge(menuFace)
 
-	local columns, rows, gap, pad = 4, 2, 8, 12
+	local columns, rows, gap, pad = 5, 2, 8, 12
 	menuPanel = Glass.panel(
 		group,
 		UDim2.fromOffset(columns * BUTTON + (columns - 1) * gap + pad * 2, rows * BUTTON + (rows - 1) * gap + pad * 2)
@@ -296,11 +297,12 @@ local function buildMenu(group: Frame, callbacks: Callbacks)
 	entry(2, "Island", "Grass", callbacks.OnIsland)
 	entry(3, "Skills", "IronPickaxe", callbacks.OnSkills)
 	entry(4, "Challenges", "IconTrophy", callbacks.OnChallenges)
-	local inbox = entry(5, "Inbox", "IconMail", callbacks.OnInbox)
-	entry(6, "Visit", "Sign", callbacks.OnVisit)
-	entry(7, "Settings", nil, callbacks.OnSettings)
+	entry(5, "Boosts", "BoostCrystal", callbacks.OnBoosts)
+	local inbox = entry(6, "Inbox", "IconMail", callbacks.OnInbox)
+	entry(7, "Visit", "Sign", callbacks.OnVisit)
+	entry(8, "Settings", nil, callbacks.OnSettings)
 	-- Hidden unless the server says the Crate Keeper Kit is on sale to you, or you own it
-	kitsEntry = entry(8, "Kits", "LootCrate", callbacks.OnKits)
+	kitsEntry = entry(9, "Kits", "LootCrate", callbacks.OnKits)
 	kitsEntry.Visible = false
 	-- Red badge on the corner: how many letters are waiting
 	inboxBadge = Theme.badge(inbox)

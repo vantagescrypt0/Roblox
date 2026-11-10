@@ -1,5 +1,6 @@
 --!strict
--- Flying, for the players in Config.Flyers only (the game's owner), in every place.
+-- Flying: for the players in Config.Flyers (the game's owner) in every place, and for anyone with the Player tree's
+-- last boost everywhere but the Warzone (the server says so with the CanFly attribute, BoostService).
 --   Double-tap Space (or the jump button) to take off; double-tap again to land.
 --   While flying: move as usual (WASD / thumbstick, toward where the camera looks),
 --   Space or E to go up, Ctrl or Q to go down. The character stays upright and turns to
@@ -122,8 +123,15 @@ local function takeOff()
 	end)
 end
 
+local function canFly(): boolean
+	return Config.Flyers[player.UserId] == true or player:GetAttribute("CanFly") == true
+end
+
 -- One press of jump: a second one soon after toggles flying
 local function jumpPressed()
+	if not canFly() then
+		return
+	end
 	local now = os.clock()
 	if now - lastTap <= DOUBLE_TAP then
 		lastTap = 0
@@ -138,9 +146,12 @@ local function jumpPressed()
 end
 
 function FlightController.Start()
-	if not Config.Flyers[player.UserId] then
-		return
-	end
+	-- Losing it (crystals taken back out of the tree) brings them down
+	player:GetAttributeChangedSignal("CanFly"):Connect(function()
+		if flying and not canFly() then
+			land()
+		end
+	end)
 	UserInputService.InputBegan:Connect(function(input)
 		-- (Space counts as "processed" by Roblox's own jump controls, so only skip typing)
 		if UserInputService:GetFocusedTextBox() then

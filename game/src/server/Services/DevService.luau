@@ -35,6 +35,10 @@
 --   game.ServerStorage.Dev:Invoke("Kit", true, true, false, 0)  kits and crates as if on sale, owned, not
 --                                                           restricted, last claimed 0 s ago (add a kit's Id)
 --   game.ServerStorage.Dev:Invoke("KitReceipt", "abc")      Roblox telling us crate purchase "abc" was paid for
+--   game.ServerStorage.Dev:Invoke("Boost", 15, 5, 5, 5, true)  15 crystals, 5 in each tree (Warzone, Player,
+--                                                           Island), crystals on sale; nil leaves one as it is.
+--                                                           "reset" as the first lets you reassign again
+--   game.ServerStorage.Dev:Invoke("BoostReceipt", "abc")    Roblox telling us crystal purchase "abc" was paid for
 --   game.ServerStorage.Dev:Invoke("As", "Player2")          later commands act on Player2
 -- Acts on the first player in the server unless "As" picked another (for local tests with
 -- several players). Does nothing in live servers.
@@ -47,6 +51,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Boards = require(ReplicatedStorage.Shared.Boards)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local BodyService = require(script.Parent.BodyService)
+local BoostService = require(script.Parent.BoostService)
 local ChallengeService = require(script.Parent.ChallengeService)
 local DataService = require(script.Parent.DataService)
 local InboxService = require(script.Parent.InboxService)
@@ -65,6 +70,26 @@ local commands: { [string]: (player: Player, data: DataService.Data, ...any) -> 
 	end,
 	KitReceipt = function(player, _data, purchaseId)
 		return tostring(KitService.TestReceipt(player, purchaseId))
+	end,
+	Boost = function(player, data, crystals, warzone, playerTree, island, onSale)
+		local saved = data.Boosts
+		if crystals == "reset" then
+			saved.ResetSeason = 0
+		else
+			saved.Crystals = crystals or saved.Crystals
+			saved.Warzone = warzone or saved.Warzone
+			saved.Player = playerTree or saved.Player
+			saved.Island = island or saved.Island
+		end
+		DataService.MarkChanged(player)
+		if onSale ~= nil then
+			BoostService.SetTest(onSale == true)
+		end
+		BoostService.Refresh(player)
+		return `crystals {saved.Crystals}, warzone {saved.Warzone}, player {saved.Player}, island {saved.Island}`
+	end,
+	BoostReceipt = function(player, _data, purchaseId)
+		return tostring(BoostService.TestReceipt(player, purchaseId))
 	end,
 	Level = function(player, data, level)
 		data.Level = level

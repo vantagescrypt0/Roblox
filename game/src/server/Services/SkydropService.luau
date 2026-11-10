@@ -209,6 +209,7 @@ function SkydropService.Drop(kind: Kind, cracks: number?): boolean
 	chest = {
 		Id = id,
 		Title = if kind == "Legendary" then "Legendary Skydrop" else "Skydrop",
+		Loot = kind,
 		Slots = slots,
 		Part = part,
 		Position = spot.Position,

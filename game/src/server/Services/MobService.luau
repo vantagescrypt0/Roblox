@@ -16,6 +16,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Combat = require(ReplicatedStorage.Shared.Combat)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Monsters = require(ReplicatedStorage.Shared.Monsters)
@@ -103,9 +104,16 @@ end
 -- The reward for the kill
 local function reward(mob: Mob, killer: Player)
 	local monster = mob.Monster
-	ProgressionService.AddSkillXP(killer, "Combat", monster.XP)
+	local data = DataService.GetData(killer)
+	-- The Player tree's first and third boosts: more Combat XP, and sometimes a second drop
+	local xpScale = if Boosts.Has(data, "Player", 1) then Boosts.MonsterXPScale else 1
+	ProgressionService.AddSkillXP(killer, "Combat", monster.XP * xpScale)
 	ProgressionService.AddPlayerXP(killer, monster.PlayerXP)
 	InventoryService.AddGathered(killer, monster.Drop, 1)
+	if Boosts.Has(data, "Player", 3) and rng:NextNumber() < Boosts.ExtraDropChance then
+		InventoryService.AddGathered(killer, monster.Drop, 1)
+		StateService.Notify(killer, `Extra drop! +1 {Items[monster.Drop].Name} (Player boost)`, "good")
+	end
 	ChallengeService.Count(killer, monster.Id)
 	QuestService.Record(killer, "Kill")
 	QuestService.Record(killer, `Kill:{monster.Id}`)
@@ -468,6 +476,10 @@ function MobService.Damage(model: Model, attacker: Player, amount: number, from:
 	end
 	mob.LastHitBy = attacker
 	mob.AngryUntil = os.clock() + ANGRY_TIME
+	-- The Player tree's fourth boost: harder hits on monsters, from swords and specials alike
+	if Boosts.Has(DataService.GetData(attacker), "Player", 4) then
+		amount *= Boosts.MonsterDamageScale
+	end
 	mob.Humanoid:TakeDamage(amount)
 	if mob.Humanoid.Health > 0 and from and mob.Awake then
 		local flat = (mob.Root.Position - from.Position) * Vector3.new(1, 0, 1)

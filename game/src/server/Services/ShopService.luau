@@ -6,6 +6,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
@@ -68,9 +69,13 @@ local function sellItem(player: Player, itemId: string, amount: number): number
 	if amount <= 0 or not InventoryService.Remove(player, itemId, amount) then
 		return 0
 	end
-	local earned = amount * item.SellPrice
-	InventoryService.AddCoins(player, earned)
 	local data = DataService.GetData(player)
+	local earned = amount * item.SellPrice
+	-- The Player tree's second boost (whole coins, rounded down)
+	if Boosts.Has(data, "Player", 2) then
+		earned = math.floor(earned * Boosts.SellScale)
+	end
+	InventoryService.AddCoins(player, earned)
 	Metrics.Coins(player, earned, if data then data.Coins else 0, "Shop", itemId)
 	return earned
 end

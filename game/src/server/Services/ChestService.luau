@@ -32,6 +32,8 @@ export type Chest = {
 	-- Warzone chests: whether this player can open it now, and the first time each player does
 	CanOpen: ((player: Player) -> boolean)?,
 	OnFirstOpen: ((player: Player) -> ())?,
+	-- A Warzone chest or Skydrop: which loot table filled it ("Chest", "Skydrop", "Legendary"; WarzoneLoot)
+	Loot: string?,
 }
 
 local ChestService = {}

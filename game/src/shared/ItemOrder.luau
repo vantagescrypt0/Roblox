@@ -133,6 +133,7 @@ local ORDER = {
 	"MangroveSapling",
 	"StarwoodSapling",
 	"LootCrate",
+	"BoostCrystal",
 	"Wheat",
 	"Carrot",
 	"Potato",

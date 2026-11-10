@@ -140,6 +140,14 @@
         3
       ],
       "prompt": "a square iron cage with thick black bars and a glowing blue rune on its stone base, open and empty inside"
+    },
+    "BoostCrystal": {
+      "size": [
+        2.4,
+        4,
+        2.4
+      ],
+      "prompt": "one tall upright magic crystal with sharp flat facets and pointed ends, very bright glowing aqua and mint with white sparkles, wrapped with a shiny gold metal band around its middle"
     }
   },
   "props": {

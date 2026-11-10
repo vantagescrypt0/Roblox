@@ -16,7 +16,7 @@ local Theme = require(script.Parent.UI.Theme)
 local Window = require(script.Parent.UI.Window)
 
 local C = Glass.Color
-local LEAVE_HOLD = 7 -- seconds; the server's LEAVE_HOLD
+local LEAVE_HOLD = 7 -- seconds; the server's LEAVE_HOLD (it says on the player when a boost makes it shorter)
 local PHONE_RIGHT = 103 -- Roblox's jump button on a phone takes the last 95 pixels
 
 local WarzoneHud = {}
@@ -163,7 +163,9 @@ function WarzoneHud.Start()
 		local leaveUntil = player:GetAttribute("LeavingUntil")
 		local leaveLeft = if type(leaveUntil) == "number" then leaveUntil - now else nil
 		if leaveLeft then
-			fill.Size = UDim2.fromScale(math.clamp(1 - leaveLeft / LEAVE_HOLD, 0, 1), 1)
+			local holdFor = player:GetAttribute("LeavingFor")
+			local hold = if typeof(holdFor) == "number" then holdFor else LEAVE_HOLD
+			fill.Size = UDim2.fromScale(math.clamp(1 - leaveLeft / hold, 0, 1), 1)
 			label.Text = `Leaving in {math.max(1, math.ceil(leaveLeft))}...`
 		else
 			fill.Size = UDim2.fromScale(0, 1)

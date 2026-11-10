@@ -17,6 +17,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
+local DataService = require(script.Parent.DataService)
 local HotbarService = require(script.Parent.HotbarService)
 local InventoryService = require(script.Parent.InventoryService)
 local IslandService = require(script.Parent.IslandService)
@@ -85,7 +86,11 @@ local function onPlant(player: Player, x: unknown, y: unknown, z: unknown)
 		return
 	end
 	InventoryService.Remove(player, held, 1)
-	StateService.Notify(player, `Planted! It grows into a tree in {IslandService.TreeMinutes(tree)} minutes`, "good")
+	StateService.Notify(
+		player,
+		`Planted! It grows into a tree in {IslandService.TreeMinutes(tree, DataService.GetData(player))} minutes`,
+		"good"
+	)
 	QuestService.Record(player, "PlantSapling")
 end
 

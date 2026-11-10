@@ -10,7 +10,7 @@
 - [x] What does each armour kit cost? 399 to 799 Robux (your pick, 2026-11-10; it was 800 to 1,800). See [[Kits]]
 - [x] Crates give 6 things with a 33% chance of something good (your call). Built; good prizes and which pets are Claude's picks, in [[Kits]]
 - [ ] **Rank system (coming soon):** how do you get a rank, and what does it give you? Is it bought, earned, or both?
-- [ ] **Boost gems (coming soon):** what do they boost, for how long, and where do they come from?
+- [x] **Boost gems:** answered 2026-11-10: boost crystals like Skybounds' Boost Gems, three trees of five permanent boosts, 399 Robux, rare in crates and Legendary Skydrops. See [[Boost Crystals]]
 - [ ] If seasons ever reset pets, do pets from crates reset too? (Resets are on hold)
 
 ## Warzone

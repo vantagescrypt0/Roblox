@@ -7,12 +7,15 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Inventory = require(ReplicatedStorage.Shared.Inventory)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local WarzoneLoot = require(ReplicatedStorage.Shared.WarzoneLoot)
 local Warzone = require(script.Parent.Parent.Worlds.Warzone)
 local ChestService = require(script.Parent.ChestService)
+local DataService = require(script.Parent.DataService)
 local QuestService = require(script.Parent.QuestService)
+local StateService = require(script.Parent.StateService)
 
 local SIZE = Blocks.Size
 local LIVE_CHESTS = 24
@@ -121,6 +124,7 @@ function spawnOne()
 				local chest: ChestService.Chest = {
 					Id = id,
 					Title = "Warzone Chest",
+					Loot = "Chest",
 					Slots = slots,
 					Part = part,
 					Position = spot.Position,
@@ -141,6 +145,25 @@ function spawnOne()
 	warn("[LootChests] no free spot found")
 end
 
+-- The Warzone tree's fourth boost: the first time they open a chest or Skydrop, sometimes one more thing from its table
+local function luckyFind(player: Player, chest: ChestService.Chest)
+	if not chest.Loot or not Boosts.Has(DataService.GetData(player), "Warzone", 4) then
+		return
+	end
+	local kind: WarzoneLoot.Kind = chest.Loot :: any
+	if rng:NextNumber() >= Boosts.ExtraLootChance then
+		return
+	end
+	for index, stack in chest.Slots do
+		if stack.Count <= 0 then
+			local entry = WarzoneLoot.Roll(kind, rng:NextNumber())
+			chest.Slots[index] = { Item = entry.Item, Count = rng:NextInteger(entry.Min, entry.Max) }
+			StateService.Notify(player, "Lucky find! One more thing in here (Warzone boost)", "good")
+			return
+		end
+	end
+end
+
 local function onOpen(player: Player, id: unknown)
 	local chest = if type(id) == "string" then chests[id] else nil
 	if not chest or player:GetAttribute("InWarzone") ~= true then
@@ -158,7 +181,6 @@ local function onOpen(player: Player, id: unknown)
 	if chest.CanOpen and not chest.CanOpen(player) then
 		return
 	end
-	ChestService.Open(player, chest)
 	local seen = openedBy[chest]
 	if not seen then
 		seen = {}
@@ -166,10 +188,12 @@ local function onOpen(player: Player, id: unknown)
 	end
 	if not seen[player] then
 		seen[player] = true
+		luckyFind(player, chest)
 		if chest.OnFirstOpen then
 			chest.OnFirstOpen(player)
 		end
 	end
+	ChestService.Open(player, chest)
 end
 
 -- Something else that opens the same way: a body (BodyService) or a Skydrop (SkydropService)

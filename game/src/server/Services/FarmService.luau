@@ -17,6 +17,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Crops = require(ReplicatedStorage.Shared.Crops)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Leveling = require(ReplicatedStorage.Shared.Leveling)
@@ -95,7 +96,8 @@ local function plotState(data: DataService.Data, key: string): (Crops.Crop?, num
 	if not planted or not crop then
 		return nil, 0
 	end
-	return crop, math.clamp((os.time() - planted.PlantedAt) / crop.GrowTime, 0, 1)
+	-- The Island tree's boosts grow crops on your own island faster
+	return crop, math.clamp((os.time() - planted.PlantedAt) / Boosts.GrowTime(data, crop.GrowTime), 0, 1)
 end
 
 -- Swaps the crop model shown in the planter when the growth stage changes
@@ -226,7 +228,9 @@ function FarmService.Harvest(player: Player, crop: Crops.Crop, tool: Tools.Tool,
 		InventoryService.AddGathered(player, sliver.Item, 1)
 		StateService.Notify(player, `Found a {sliver.Name}! {sliver.Need} craft {Items[sliver.Node].Name}`, "level")
 	end
-	ProgressionService.AddSkillXP(player, "Farming", crop.FarmingXP)
+	-- On your own island, the Island tree's last boost adds to the XP
+	local onIsland = not public and Boosts.Has(DataService.GetData(player), "Island", 5)
+	ProgressionService.AddSkillXP(player, "Farming", crop.FarmingXP * (if onIsland then Boosts.IslandXPScale else 1))
 	ProgressionService.AddPlayerXP(player, crop.PlayerXP)
 	StateService.Notify(player, `+{amount} {Items[crop.Product].Name}`, "harvest")
 	QuestService.Record(player, "Harvest")

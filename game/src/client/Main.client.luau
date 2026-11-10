@@ -39,6 +39,7 @@ local InboxWindow = require(script.Parent.Windows.InboxWindow)
 local IslandWindow = require(script.Parent.Windows.IslandWindow)
 local KitPowerController = require(script.Parent.KitPowerController)
 local KitsWindow = require(script.Parent.Windows.KitsWindow)
+local BoostWindow = require(script.Parent.Windows.BoostWindow)
 local ShopWindow = require(script.Parent.Windows.ShopWindow)
 local SkillsWindow = require(script.Parent.Windows.SkillsWindow)
 local TradeWindow = require(script.Parent.Windows.TradeWindow)
@@ -65,6 +66,7 @@ SkillsWindow.Start()
 InboxWindow.Start()
 CrateWindow.Start()
 KitsWindow.Start()
+BoostWindow.Start()
 CrateOpening.Start(CrateWindow.Count, KitsWindow.CrateOnSale, KitsWindow.OpenCrate)
 ChestWindow.Start()
 SignWindow.Start()
@@ -80,6 +82,7 @@ Hud.Start({
 	OnInbox = InboxWindow.Toggle,
 	OnSettings = SettingsWindow.Toggle,
 	OnKits = KitsWindow.Toggle,
+	OnBoosts = BoostWindow.Toggle,
 	OnVisit = function()
 		if Places.Current() ~= "Island" then
 			Hud.Toast("Visit islands from your own island", "info")
@@ -114,6 +117,8 @@ CombatController.Start()
 SprintController.Start()
 FirstPersonController.Start()
 
+Remotes.BoostState.OnClientEvent:Connect(BoostWindow.SetState)
+
 Remotes.KitState.OnClientEvent:Connect(function(state)
 	-- Only in the Menu for someone who owns a kit or can buy something
 	Hud.ShowKits(KitsWindow.SetState(state))
@@ -133,6 +138,7 @@ Remotes.State.OnClientEvent:Connect(function(state)
 	SkillsWindow.SetState(state)
 	InboxWindow.SetState(state)
 	CrateWindow.SetState(state)
+	BoostWindow.SetGameState(state)
 	ChestWindow.SetState(state)
 	ChallengesWindow.SetState(state)
 end)

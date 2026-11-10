@@ -59,6 +59,12 @@ local NAMES = {
 	"KitClaim", -- client -> server: claim this kit's reward (kit id)
 	"KitBuy", -- client -> server: show me Roblox's purchase prompt for this kit (kit id)
 	"KitBuyCrate", -- client -> server: show me Roblox's purchase prompt for one Loot Crate
+	"BoostOpen", -- client -> server: send me my boost crystals
+	"BoostState", -- server -> client: your crystals, how many are in each tree, whether you can reassign, on sale
+	"BoostAdd", -- client -> server: put one of my free crystals into this tree (tree id)
+	"BoostReset", -- client -> server: take all my crystals out of the trees (once a season)
+	"BoostBuy", -- client -> server: show me Roblox's purchase prompt for one boost crystal
+	"BoostUse", -- client -> server: add a Boost Crystal from my Bag to my crystals
 	"TrackBoard", -- client -> server: show this Challenges board group in the quest tracker (Boards.luau id)
 	"LeaveWarzone", -- client -> server: holding the Warzone's Leave button (true), or let go (false)
 	"Block", -- client -> server: holding your shield up (true), or let go (false)
@@ -143,6 +149,12 @@ return {
 	KitClaim = folder:WaitForChild("KitClaim") :: RemoteEvent,
 	KitBuy = folder:WaitForChild("KitBuy") :: RemoteEvent,
 	KitBuyCrate = folder:WaitForChild("KitBuyCrate") :: RemoteEvent,
+	BoostOpen = folder:WaitForChild("BoostOpen") :: RemoteEvent,
+	BoostState = folder:WaitForChild("BoostState") :: RemoteEvent,
+	BoostAdd = folder:WaitForChild("BoostAdd") :: RemoteEvent,
+	BoostReset = folder:WaitForChild("BoostReset") :: RemoteEvent,
+	BoostBuy = folder:WaitForChild("BoostBuy") :: RemoteEvent,
+	BoostUse = folder:WaitForChild("BoostUse") :: RemoteEvent,
 	TrackBoard = folder:WaitForChild("TrackBoard") :: RemoteEvent,
 	LeaveWarzone = folder:WaitForChild("LeaveWarzone") :: RemoteEvent,
 	Block = folder:WaitForChild("Block") :: RemoteEvent,

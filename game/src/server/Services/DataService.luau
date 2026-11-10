@@ -39,6 +39,9 @@ local TEMPLATE = {
 	Settings = { Music = 1, Effects = 1 },
 	KitClaims = {} :: { [string]: number }, -- kit id -> os.time() of its last claim (KitService)
 	Receipts = {} :: { [string]: number }, -- Robux purchases already paid out: purchase id -> when (KitService)
+	-- Boost crystals (Boosts.luau, BoostService): how many you own, how many are in each tree, and the season you
+	-- last took them out to reassign
+	Boosts = { Crystals = 0, Warzone = 0, Player = 0, Island = 0, ResetSeason = 0 },
 	-- What the anti-cheat caught (AntiCheatService): times pulled back, times kicked, and the last one and when
 	AntiCheat = { Flags = 0, Kicks = 0, Last = "", LastAt = 0 },
 	Island = {

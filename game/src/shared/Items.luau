@@ -38,6 +38,7 @@ export type Item = {
 	Model: string?, -- 3D model in ReplicatedStorage.ItemModels (icons and holding)
 	Tree: string?, -- a sapling: which tree it grows (IslandService)
 	Crate: boolean?, -- opened from the Bag (LootCrates.luau)
+	NoTrade: boolean?, -- can't be offered in a trade
 }
 
 local Items: { [string]: Item } = {
@@ -370,6 +371,9 @@ local Items: { [string]: Item } = {
 
 	-- A random prize when opened from the Bag (LootCrates.luau)
 	LootCrate = { Name = "Loot Crate", Icon = "🎁", Value = 500000, SellPrice = 0, Model = "LootCrate", Crate = true },
+	-- A boost crystal you found (Boosts.luau): shift-click it in the Bag to add it to your crystals. Its picture is a
+	-- generated mesh (MonsterArt). Lose it like anything else if you die carrying it in the Warzone.
+	BoostCrystal = { Name = "Boost Crystal", Icon = "💎", Value = 1000000, SellPrice = 0, NoTrade = true },
 
 	-- Nodes for your island: place one and it's ore that turns pale when mined and grows back,
 	-- like the worlds' ore. Once placed, it stays. Crafted from slivers (Slivers.luau), never

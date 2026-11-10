@@ -14,6 +14,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
+local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Config = require(ReplicatedStorage.Shared.Config)
 local Foods = require(ReplicatedStorage.Shared.Foods)
 local Gear = require(ReplicatedStorage.Shared.Gear)
@@ -138,6 +139,8 @@ local function describe(itemId: string): (string, string)
 		return "Shield", "Hold right-click in the Warzone to block hits from the front."
 	elseif item.Crate then
 		return "Loot crate", "Shift-click it to open it."
+	elseif itemId == Boosts.Item then
+		return "Boost crystal", "Shift-click it to add it to your crystals (Menu > Boosts). It can't be traded."
 	elseif Foods[itemId] then
 		return "Food", `Fills {Foods[itemId]} hunger in the Warzone.{sells}`
 	elseif itemId == "Chest" then
@@ -442,6 +445,8 @@ local function onSlot(index: number, how: How)
 				Remotes.Equip:FireServer(stack.Item)
 			elseif item.Crate then
 				CrateWindow.Open()
+			elseif stack.Item == Boosts.Item then
+				Remotes.BoostUse:FireServer()
 			elseif Inventory.QuickMove(state.Slots, index) then
 				Remotes.QuickMove:FireServer(index)
 			end
