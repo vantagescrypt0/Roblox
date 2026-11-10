@@ -42,9 +42,9 @@
     "semantic_hash": "fac5de9747788b1d98f97ef29863696b"
   },
   "game/default.project.json": {
-    "mtime": 1794195652.812414,
-    "seen": 1794196794.2018566,
-    "ast_hash": "dcf755705756a046d556c71e4355ad15",
+    "mtime": 1794282249.9409711,
+    "seen": 1794284252.04071,
+    "ast_hash": "e96dd25e8bb2504791fee9d5ff8b818d",
     "semantic_hash": ""
   },
   "game/src/client/BlockController.luau": {
@@ -60,15 +60,15 @@
     "semantic_hash": ""
   },
   "game/src/client/Hud.luau": {
-    "mtime": 1794269699.4878457,
-    "seen": 1794270616.2164905,
-    "ast_hash": "c7526398a4ced8ecef7ed865a874a99e",
+    "mtime": 1794285308.7941325,
+    "seen": 1794285813.9361184,
+    "ast_hash": "892deb97756424bc07a82c1caeba1737",
     "semantic_hash": ""
   },
   "game/src/client/Main.client.luau": {
-    "mtime": 1794241360.492602,
-    "seen": 1794243140.4131238,
-    "ast_hash": "0b596cce085b782846a451cbf12ca136",
+    "mtime": 1794285308.7953432,
+    "seen": 1794285813.9361246,
+    "ast_hash": "aeeda78c20579a30e3b17bfe3df806d6",
     "semantic_hash": ""
   },
   "game/src/client/PromptUI.luau": {
@@ -120,9 +120,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Main.server.luau": {
-    "mtime": 1794231997.6154296,
-    "seen": 1794233292.6637993,
-    "ast_hash": "22514c70eb7ecc201a7689aa86f52ca9",
+    "mtime": 1794284754.7770863,
+    "seen": 1794285813.936203,
+    "ast_hash": "375e0110d612ed72fafd3efed8cc3f9d",
     "semantic_hash": ""
   },
   "game/src/server/Services/BlockService.luau": {
@@ -132,9 +132,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/CombatService.luau": {
-    "mtime": 1794241406.1635945,
-    "seen": 1794243140.4132972,
-    "ast_hash": "1bfc13f687cfbaaf86ded0e942007bfa",
+    "mtime": 1794281855.423972,
+    "seen": 1794284252.040845,
+    "ast_hash": "8166a67ea39db3920da7c9f9e76119db",
     "semantic_hash": ""
   },
   "game/src/server/Services/CraftingService.luau": {
@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/DataService.luau": {
-    "mtime": 1794236568.2415044,
-    "seen": 1794237005.156081,
-    "ast_hash": "5379d63877a00b930ba914d5c680d34c",
+    "mtime": 1794281643.4472764,
+    "seen": 1794284252.0408509,
+    "ast_hash": "7989c3e6eb2ef0db30c891534254615f",
     "semantic_hash": ""
   },
   "game/src/server/Services/DevService.luau": {
@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/IslandService.luau": {
-    "mtime": 1794194554.955134,
-    "seen": 1794196794.201998,
-    "ast_hash": "85077bdfcc469c66953d056200e10e7f",
+    "mtime": 1794281632.8284812,
+    "seen": 1794284252.040871,
+    "ast_hash": "19950441c140d3433947f64318ca8821",
     "semantic_hash": ""
   },
   "game/src/server/Services/Leaderstats.luau": {
@@ -186,9 +186,9 @@
     "semantic_hash": "71cb76c30993232beb17c31c075c667a"
   },
   "game/src/server/Services/MobService.luau": {
-    "mtime": 1794240721.3321884,
-    "seen": 1794243140.413381,
-    "ast_hash": "23aa6b4f9799c4d885c0fc68c1c109fa",
+    "mtime": 1794281632.8337529,
+    "seen": 1794284252.0408866,
+    "ast_hash": "65088b593629af0c3ae6cc8245dcc4d8",
     "semantic_hash": ""
   },
   "game/src/server/Services/ProgressionService.luau": {
@@ -210,15 +210,15 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/TownService.luau": {
-    "mtime": 1794199755.100881,
-    "seen": 1794200808.809626,
-    "ast_hash": "3a53a3186d758af779b04cd41aed99d6",
+    "mtime": 1794281632.8306763,
+    "seen": 1794284252.0409148,
+    "ast_hash": "70cd9776aa996e809d0767a7da9e9aeb",
     "semantic_hash": ""
   },
   "game/src/server/Services/WarzoneService.luau": {
-    "mtime": 1794241420.320506,
-    "seen": 1794243140.4134343,
-    "ast_hash": "a94a1391772e0f1441721879c90037f6",
+    "mtime": 1794281632.8327498,
+    "seen": 1794284252.0409257,
+    "ast_hash": "1cd11e659b1c1c47d62e5e719a10e2c8",
     "semantic_hash": ""
   },
   "game/src/server/Util/BlockWorld.luau": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/Config.luau": {
-    "mtime": 1794241319.763909,
-    "seen": 1794243140.4135916,
-    "ast_hash": "d5a494778304bae60fefe5d59a7fa98e",
+    "mtime": 1794281595.8213398,
+    "seen": 1794284252.041033,
+    "ast_hash": "b68286b1ead1551d98e54ba5c19f9259",
     "semantic_hash": ""
   },
   "game/src/shared/Crops.luau": {
@@ -294,9 +294,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/Remotes.luau": {
-    "mtime": 1794240716.3879583,
-    "seen": 1794243140.4136806,
-    "ast_hash": "c42a6ad6c7537da1e9f80985246f6f88",
+    "mtime": 1794284702.6936316,
+    "seen": 1794285813.9364724,
+    "ast_hash": "bdc87014a17aac7200f69bfa6932ca49",
     "semantic_hash": ""
   },
   "game/src/shared/Tools.luau": {
@@ -498,9 +498,9 @@
     "semantic_hash": ""
   },
   "game/town.project.json": {
-    "mtime": 1794195652.814922,
-    "seen": 1794196794.2022219,
-    "ast_hash": "14342f5364627fde08e40dda85de0149",
+    "mtime": 1794282249.956644,
+    "seen": 1794284252.0411248,
+    "ast_hash": "8dad1e4847de224ab3877fd703cb4ee7",
     "semantic_hash": ""
   },
   "game/src/shared/Economy.luau": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1794276487.941755,
-    "seen": 1794277886.3273044,
-    "ast_hash": "b07b5da45a7bf06f4dd817e31d1a97a1",
+    "mtime": 1794284278.855911,
+    "seen": 1794285813.9365113,
+    "ast_hash": "b4dd914c186127de3bd8742fc4e44f63",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -564,15 +564,15 @@
     "semantic_hash": ""
   },
   "game/farming.project.json": {
-    "mtime": 1794195652.8129194,
-    "seen": 1794196794.2018602,
-    "ast_hash": "824d6d4589428e849789c6575e186f37",
+    "mtime": 1794282249.9430857,
+    "seen": 1794284252.0407138,
+    "ast_hash": "23b65a80452409e21bac0d43c35c6bc8",
     "semantic_hash": ""
   },
   "game/mining.project.json": {
-    "mtime": 1794195652.81392,
-    "seen": 1794196794.2018628,
-    "ast_hash": "ec8d764ff2e2952eb9c2138047abe97c",
+    "mtime": 1794282249.945502,
+    "seen": 1794284252.0407157,
+    "ast_hash": "20dc0841a592240f1f06062022c3ccd9",
     "semantic_hash": ""
   },
   "game/src/client/NpcController.luau": {
@@ -612,9 +612,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Util/Spawning.luau": {
-    "mtime": 1794199754.616295,
-    "seen": 1794200808.8096855,
-    "ast_hash": "8957b7f9efb00604c527009146ee7602",
+    "mtime": 1794281632.834757,
+    "seen": 1794284252.0409865,
+    "ast_hash": "3b1fa950074bb3abe9e6f0b9d57ac173",
     "semantic_hash": ""
   },
   "game/src/server/Util/Trees.luau": {
@@ -630,9 +630,9 @@
     "semantic_hash": ""
   },
   "game/woodcutting.project.json": {
-    "mtime": 1794195652.8164022,
-    "seen": 1794196794.2022266,
-    "ast_hash": "931934b1f63ea7222856ad09fc6219e2",
+    "mtime": 1794282249.9692702,
+    "seen": 1794284252.041129,
+    "ast_hash": "67c03b149994fe70455fbe647add07f3",
     "semantic_hash": ""
   },
   "03 Design/Town & Worlds.md": {
@@ -1410,9 +1410,9 @@
     "semantic_hash": ""
   },
   "game/warzone.project.json": {
-    "mtime": 1794195652.814922,
-    "seen": 1794196794.202224,
-    "ast_hash": "9dbf754def6342580e56d8ed1abbedc3",
+    "mtime": 1794282249.9586895,
+    "seen": 1794284252.0411272,
+    "ast_hash": "bd528802e0a76cd0864229536a9e4065",
     "semantic_hash": ""
   },
   "tools/studio_mcp.py": {
@@ -1836,9 +1836,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/VisitService.luau": {
-    "mtime": 1794267641.6451764,
-    "seen": 1794268135.9928215,
-    "ast_hash": "c2c2228527495eb3f74b4370feac8b09",
+    "mtime": 1794281632.831731,
+    "seen": 1794284252.0409238,
+    "ast_hash": "c96dc8e2c6583c51f4df2541ade17527",
     "semantic_hash": ""
   },
   "game/src/server/Util/Metrics.luau": {
@@ -1866,9 +1866,9 @@
     "semantic_hash": ""
   },
   "game/slaying.project.json": {
-    "mtime": 1794199783.9865503,
-    "seen": 1794200808.8094609,
-    "ast_hash": "9d765976e2516ea2fa324d1c29743fef",
+    "mtime": 1794282249.9546301,
+    "seen": 1794284252.0407178,
+    "ast_hash": "4a81ed68010384e4f05645e835d61f2a",
     "semantic_hash": ""
   },
   "game/src/client/MobController.luau": {
@@ -1878,9 +1878,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/SlayingService.luau": {
-    "mtime": 1794194600.0365436,
-    "seen": 1794200808.8096175,
-    "ast_hash": "7ae3a63aacf05138f0abe8e13b363da8",
+    "mtime": 1794281632.829488,
+    "seen": 1794284252.040905,
+    "ast_hash": "09c87e7ae9ccc463fa35d2bc8ff66472",
     "semantic_hash": ""
   },
   "game/src/server/Services/SpawnerService.luau": {
@@ -2013,6 +2013,30 @@
     "mtime": 1794243564.7399662,
     "seen": 1794244558.5750542,
     "ast_hash": "7a025dd68fc59f6e4fa71c6716c869d7",
+    "semantic_hash": ""
+  },
+  "game/src/server/Services/AntiCheatService.luau": {
+    "mtime": 1794284865.858299,
+    "seen": 1794285813.9362087,
+    "ast_hash": "e8d65d920ac39072b6c589c95ffa6ace",
+    "semantic_hash": ""
+  },
+  "game/src/server/Util/Move.luau": {
+    "mtime": 1794281605.8799546,
+    "seen": 1794284252.0409582,
+    "ast_hash": "0b18c54f051ea0fd086e118e06f18a15",
+    "semantic_hash": ""
+  },
+  "game/src/client/Windows/AdminWindow.luau": {
+    "mtime": 1794285149.0822704,
+    "seen": 1794285813.936165,
+    "ast_hash": "b3c8dcafd93d10993d81028c37d99162",
+    "semantic_hash": ""
+  },
+  "game/src/server/Services/AdminService.luau": {
+    "mtime": 1794284865.8735235,
+    "seen": 1794285813.9362056,
+    "ast_hash": "73461884afd455748e730ca3e2fb6aee",
     "semantic_hash": ""
   }
 }

@@ -10,6 +10,7 @@ local RunService = game:GetService("RunService")
 
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Monsters = require(ReplicatedStorage.Shared.Monsters)
+local Move = require(script.Parent.Parent.Util.Move)
 local Spawning = require(script.Parent.Parent.Util.Spawning)
 local SlayingWorld = require(script.Parent.Parent.Worlds.Slaying)
 local MobService = require(script.Parent.MobService)
@@ -61,7 +62,7 @@ end
 local function turnBack(player: Player, character: Model, root: BasePart, zone: Zone)
 	notice(player, `{zone.Zone.Name} needs Combat level {zone.Zone.Level}`)
 	root.AssemblyLinearVelocity = Vector3.zero
-	character:PivotTo(lastSafe[player] or (current[player] or zones[1]).Spawn.CFrame + Vector3.new(0, 4, 0))
+	Move.To(character, lastSafe[player] or (current[player] or zones[1]).Spawn.CFrame + Vector3.new(0, 4, 0))
 end
 
 local function checkPlayer(player: Player, centreY: number)
@@ -89,7 +90,7 @@ local function onFell(player: Player, character: Model)
 	local root = character:FindFirstChild("HumanoidRootPart")
 	if root and root:IsA("BasePart") then
 		root.AssemblyLinearVelocity = Vector3.zero
-		character:PivotTo(spawnFor(player).CFrame + Vector3.new(0, 4, 0))
+		Move.To(character, spawnFor(player).CFrame + Vector3.new(0, 4, 0))
 	end
 end
 

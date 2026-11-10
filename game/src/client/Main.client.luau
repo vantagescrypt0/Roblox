@@ -3,6 +3,9 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterGui = game:GetService("StarterGui")
+local TextChatService = game:GetService("TextChatService")
+
+local ANNOUNCE_SECONDS = 6 -- an admin's announcement stays on screen this long
 
 local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
@@ -22,6 +25,7 @@ local MobController = require(script.Parent.MobController)
 local NpcController = require(script.Parent.NpcController)
 local PromptUI = require(script.Parent.PromptUI)
 local QuestTracker = require(script.Parent.QuestTracker)
+local AdminWindow = require(script.Parent.Windows.AdminWindow)
 local BagWindow = require(script.Parent.Windows.BagWindow)
 local ChallengesWindow = require(script.Parent.Windows.ChallengesWindow)
 local ChestWindow = require(script.Parent.Windows.ChestWindow)
@@ -52,6 +56,7 @@ end)
 Sfx.preload()
 MusicController.Start()
 BagWindow.Start()
+AdminWindow.Start()
 IslandWindow.Start()
 ShopWindow.Start()
 CraftingWindow.Start()
@@ -140,5 +145,24 @@ Remotes.IslandRebuilt.OnClientEvent:Connect(function(tier: number)
 	local info = IslandTiers[tier]
 	local across = if info then info.Border * 2 + 1 else 0
 	Hud.Celebrate("Island Upgraded!", `Build up to {across} x {across} blocks`, Color3.fromRGB(150, 214, 110))
+end)
+-- A line in your own chat, from the game
+local function systemMessage(text: string)
+	local channels = TextChatService:FindFirstChild("TextChannels")
+	local system = channels and channels:FindFirstChild("RBXSystem")
+	if system and system:IsA("TextChannel") then
+		for _, line in string.split(text, "\n") do
+			-- Chat reads < and > as formatting, and "/kick <player>" would break it
+			local plain = string.gsub(string.gsub(string.gsub(line, "&", "&amp;"), "<", "&lt;"), ">", "&gt;")
+			system:DisplaySystemMessage(plain)
+		end
+	end
+end
+-- The answer to an admin's command or panel action, in their own chat only (server/Services/AdminService)
+Remotes.AdminReply.OnClientEvent:Connect(systemMessage)
+-- An admin's announcement to everyone in the server: across the screen, and kept in chat
+Remotes.Announce.OnClientEvent:Connect(function(text: string)
+	Hud.Celebrate("Announcement", text, nil, ANNOUNCE_SECONDS)
+	systemMessage(`[Announcement] {text}`)
 end)
 Remotes.Ready:FireServer()

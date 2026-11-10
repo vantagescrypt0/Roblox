@@ -7,6 +7,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local DataService = require(script.Parent.Parent.Services.DataService)
+local Move = require(script.Parent.Move)
 
 local Spawning = {}
 
@@ -65,7 +66,7 @@ function Spawning.Start(
 					onFell(player, character)
 				else
 					root.AssemblyLinearVelocity = Vector3.zero
-					character:PivotTo(spawnPoint.CFrame + Vector3.new(0, 4, 0))
+					Move.To(character, spawnPoint.CFrame + Vector3.new(0, 4, 0))
 				end
 			end
 		end

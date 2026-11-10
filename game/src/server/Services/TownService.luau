@@ -37,6 +37,7 @@ local Build = require(script.Parent.Parent.Util.Build)
 local Decor = require(script.Parent.Parent.Util.Decor)
 local Logo = require(script.Parent.Parent.Util.Logo)
 local MonsterModels = require(script.Parent.Parent.Util.MonsterModels)
+local Move = require(script.Parent.Parent.Util.Move)
 local Npc = require(script.Parent.Parent.Util.Npc)
 local Pace = require(script.Parent.Parent.Util.Pace)
 local Portal = require(script.Parent.Parent.Util.Portal)
@@ -1398,7 +1399,7 @@ local function voidField()
 		end
 		if player.Parent and root.Parent then
 			root.AssemblyLinearVelocity = Vector3.zero
-			character:PivotTo(CFrame.new(rim))
+			Move.To(character, CFrame.new(rim))
 		end
 		-- Every limb touches it, so stay busy for a moment or the message comes once for each
 		task.wait(1.5)

@@ -68,6 +68,10 @@ local NAMES = {
 	"HitEffect", -- server -> clients: this character was hit (Model, "hit", "crit", "sweep" or "block")
 	"KitPower", -- client -> server: right-clicked with a kit's sword, at this character if one's under the aim
 	"KitFx", -- server -> clients: show a kit special going off (kind, where, and what it needs)
+	"AdminReply", -- server -> client: the answer to an admin's command or panel action, shown in their chat
+	"AdminAction", -- client -> server: an admin panel action (name, then its arguments; AdminService)
+	"AdminState", -- server -> client: who's in the server, for the admin panel
+	"Announce", -- server -> clients: an admin's announcement (already filtered)
 }
 
 local folder: Instance
@@ -148,4 +152,8 @@ return {
 	HitEffect = folder:WaitForChild("HitEffect") :: RemoteEvent,
 	KitPower = folder:WaitForChild("KitPower") :: RemoteEvent,
 	KitFx = folder:WaitForChild("KitFx") :: RemoteEvent,
+	AdminReply = folder:WaitForChild("AdminReply") :: RemoteEvent,
+	AdminAction = folder:WaitForChild("AdminAction") :: RemoteEvent,
+	AdminState = folder:WaitForChild("AdminState") :: RemoteEvent,
+	Announce = folder:WaitForChild("Announce") :: RemoteEvent,
 }

@@ -34,6 +34,7 @@ local Ambience = require(script.Parent.Parent.Util.Ambience)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local KitSets = require(script.Parent.Parent.Util.KitSets)
 local Metrics = require(script.Parent.Parent.Util.Metrics)
+local Move = require(script.Parent.Parent.Util.Move)
 local Pace = require(script.Parent.Parent.Util.Pace)
 local ShieldModel = require(script.Parent.Parent.Util.ShieldModel)
 local Spawning = require(script.Parent.Parent.Util.Spawning)
@@ -232,14 +233,14 @@ local function onFell(player: Player, character: Model)
 	end
 	local spot = lastGround[player]
 	if not spot or not WarzoneService.IsPlaying(player) then
-		character:PivotTo(arrival)
+		Move.To(character, arrival)
 		return
 	end
 	local facing = if root then root.CFrame.LookVector * Vector3.new(1, 0, 1) else Vector3.zAxis
 	if facing.Magnitude < 0.1 then
 		facing = Vector3.zAxis
 	end
-	character:PivotTo(CFrame.lookAt(spot + Vector3.new(0, 1, 0), spot + Vector3.new(0, 1, 0) + facing))
+	Move.To(character, CFrame.lookAt(spot + Vector3.new(0, 1, 0), spot + Vector3.new(0, 1, 0) + facing))
 	WarzoneService.Poison(player, POISON_TIME, POISON_PER_SECOND)
 	if KitSets.Wearing(player) ~= "Venomfang" then
 		StateService.Notify(player, "You fell! Poison ticks away your health for a few seconds", "bad")
@@ -329,7 +330,7 @@ local function finishLeaving(player: Player)
 		StateService.Notify(player, "You'd be back in Town now (Studio can't travel)", "info")
 		local character = player.Character
 		if character then
-			character:PivotTo(arrival)
+			Move.To(character, arrival)
 		end
 	else
 		leftOnPurpose[player] = true
@@ -406,12 +407,12 @@ local function enter(player: Player)
 	AwardService.Give(player, "WarzoneEntered")
 	if returning then
 		local spot = Vector3.new(back.X, back.Y, back.Z)
-		character:PivotTo(CFrame.new(spot))
+		Move.To(character, CFrame.new(spot))
 		lastGround[player] = spot
 		setHunger(player, back.Hunger)
 		StateService.Notify(player, "You're back where you left off", "level")
 	else
-		character:PivotTo(arrival)
+		Move.To(character, arrival)
 		setHunger(player, 100)
 		StateService.Notify(player, "Welcome to the Warzone! The citadel is safe. Everywhere else isn't.", "level")
 	end
@@ -595,7 +596,7 @@ function WarzoneService.TestQuit(player: Player, away: number?)
 	data.Rejoin = saved
 	local character = player.Character
 	if character then
-		character:PivotTo(arrival)
+		Move.To(character, arrival)
 	end
 	task.delay(away or 1, enter, player)
 end

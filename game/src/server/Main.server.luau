@@ -13,6 +13,8 @@ local Places = require(ReplicatedStorage.Shared.Places)
 local StationModels = require(script.Parent.Util.StationModels)
 local Services = script.Parent.Services
 
+local AdminService = require(Services.AdminService)
+local AntiCheatService = require(Services.AntiCheatService)
 local AwardService = require(Services.AwardService)
 local BlockService = require(Services.BlockService)
 local BodyService = require(Services.BodyService)
@@ -90,5 +92,7 @@ QuestService.Start()
 SeasonService.Start()
 Leaderstats.Start()
 DevService.Start()
+AntiCheatService.Start()
+AdminService.Start()
 -- Last, so every service is listening before player data loads
 DataService.Start()

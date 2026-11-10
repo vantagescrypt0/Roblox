@@ -29,6 +29,7 @@ local InventoryService = require(script.Parent.InventoryService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local QuestService = require(script.Parent.QuestService)
 local StateService = require(script.Parent.StateService)
+local Move = require(script.Parent.Parent.Util.Move)
 
 local TICK = 0.25
 local WAKE_RANGE = 140 -- nobody this close and it goes to sleep (anchored, thinking nothing)
@@ -169,7 +170,7 @@ local function hurt(mob: Mob, player: Player, humanoid: Humanoid, root: BasePart
 	humanoid:TakeDamage(damage)
 	local flat = (root.Position - mob.Root.Position) * Vector3.new(1, 0, 1)
 	local away = if flat.Magnitude > 0.01 then flat.Unit else mob.Root.CFrame.LookVector
-	Remotes.Knockback:FireClient(player, away * KNOCK_AWAY + Vector3.new(0, KNOCK_UP, 0))
+	Move.Push(player, away * KNOCK_AWAY + Vector3.new(0, KNOCK_UP, 0))
 	Remotes.HitEffect:FireAllClients(root.Parent, "hit")
 end
 

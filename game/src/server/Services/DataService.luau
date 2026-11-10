@@ -39,6 +39,8 @@ local TEMPLATE = {
 	Settings = { Music = 1, Effects = 1 },
 	KitClaims = {} :: { [string]: number }, -- kit id -> os.time() of its last claim (KitService)
 	Receipts = {} :: { [string]: number }, -- Robux purchases already paid out: purchase id -> when (KitService)
+	-- What the anti-cheat caught (AntiCheatService): times pulled back, times kicked, and the last one and when
+	AntiCheat = { Flags = 0, Kicks = 0, Last = "", LastAt = 0 },
 	Island = {
 		Tier = 1,
 		-- Blocks the player changed: "x,y,z" -> block type, or "Air" where they broke one

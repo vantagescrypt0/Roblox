@@ -52,6 +52,11 @@ Config.ItemIconSheets = table.freeze({
 Config.Flyers = table.freeze({
 	[545120355] = true,
 })
+-- Who can use the admin chat commands (/kick, /ban, /unban, /flags; Services/AntiCheatService): user ids. In
+-- Studio everyone can, to test them.
+Config.Admins = table.freeze({
+	[545120355] = true,
+})
 Config.FlySpeed = 70 -- studs per second, across
 Config.FlyClimb = 45 -- studs per second, up and down
 

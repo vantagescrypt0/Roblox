@@ -29,6 +29,7 @@ local Items = require(ReplicatedStorage.Shared.Items)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local BlockWorld = require(script.Parent.Parent.Util.BlockWorld)
 local Metrics = require(script.Parent.Parent.Util.Metrics)
+local Move = require(script.Parent.Parent.Util.Move)
 local Portal = require(script.Parent.Parent.Util.Portal)
 local Trees = require(script.Parent.Parent.Util.Trees)
 local DataService = require(script.Parent.DataService)
@@ -643,7 +644,7 @@ function IslandService.SendHome(player: Player)
 	local island = islands[player]
 	local character = player.Character
 	if island and character then
-		character:PivotTo(island.Spawn.CFrame + Vector3.new(0, 4, 0))
+		Move.To(character, island.Spawn.CFrame + Vector3.new(0, 4, 0))
 	end
 end
 
@@ -669,7 +670,7 @@ local function onPlayerRemoving(player: Player)
 			if root and root:IsA("BasePart") then
 				local offset = root.Position - island.Center
 				if math.abs(offset.X) <= half and math.abs(offset.Z) <= half then
-					(other.Character :: Model):PivotTo(own.Spawn.CFrame + Vector3.new(0, 4, 0))
+					Move.To(other.Character :: Model, own.Spawn.CFrame + Vector3.new(0, 4, 0))
 					StateService.Notify(other, `{player.DisplayName} left, so you're back on your island`, "info")
 				end
 			end
@@ -924,7 +925,7 @@ local function catchFallers()
 		local root = character:FindFirstChild("HumanoidRootPart")
 		if root and root:IsA("BasePart") and root.Position.Y < ISLAND.Height - ISLAND.FallLimit then
 			root.AssemblyLinearVelocity = Vector3.zero
-			character:PivotTo(island.Spawn.CFrame + Vector3.new(0, 4, 0))
+			Move.To(character, island.Spawn.CFrame + Vector3.new(0, 4, 0))
 		end
 	end
 end

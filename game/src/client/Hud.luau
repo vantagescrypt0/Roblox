@@ -365,7 +365,8 @@ local function fadeLabel(label: TextLabel, info: TweenInfo?, transparency: numbe
 end
 
 local celebrateToken = 0
-function Hud.Celebrate(title: string, subtitle: string, color: Color3?)
+-- A big title across the screen (level ups, admin announcements); `seconds` is how long it stays, 2.2 if not given
+function Hud.Celebrate(title: string, subtitle: string, color: Color3?, seconds: number?)
 	celebrateToken += 1
 	local token = celebrateToken
 	Sfx.play("Stinger")
@@ -380,7 +381,7 @@ function Hud.Celebrate(title: string, subtitle: string, color: Color3?)
 	scale.Scale = 0.4
 	TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 })
 		:Play()
-	task.delay(2.2, function()
+	task.delay(seconds or 2.2, function()
 		if token ~= celebrateToken then
 			return
 		end

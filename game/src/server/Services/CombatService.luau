@@ -26,6 +26,7 @@ local MobService = require(script.Parent.MobService)
 local SprintService = require(script.Parent.SprintService)
 local QuestService = require(script.Parent.QuestService)
 local WarzoneService = require(script.Parent.WarzoneService)
+local Move = require(script.Parent.Parent.Util.Move)
 
 -- Where the hand holds each item model and which way its head points come from
 -- ItemArt.luau (generated with the models). These are the fallback for models without
@@ -145,7 +146,7 @@ local function hit(
 	WarzoneService.Tag(victim)
 	if WarzoneService.Blocks(victim, root.Position) then
 		-- Bouncing off a shield pushes you back a little
-		Remotes.Knockback:FireClient(player, knockbackFrom(targetRoot, root, Combat.BlockedPush))
+		Move.Push(player, knockbackFrom(targetRoot, root, Combat.BlockedPush))
 		Remotes.HitEffect:FireAllClients(model, "block")
 		return false
 	end
@@ -156,10 +157,7 @@ local function hit(
 	end
 	humanoid:SetAttribute("LastAttacker", player.UserId)
 	humanoid:TakeDamage(left)
-	Remotes.Knockback:FireClient(
-		victim,
-		knockbackFrom(root, targetRoot, speed) * KitPowerService.KnockbackScale(victim)
-	)
+	Move.Push(victim, knockbackFrom(root, targetRoot, speed) * KitPowerService.KnockbackScale(victim))
 	Remotes.HitEffect:FireAllClients(model, effect)
 	if not pierce then
 		KitPowerService.Struck(victim, player, root)
