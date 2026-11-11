@@ -13,6 +13,7 @@
 --   right click / tap grass or dirt while holding a sapling -> plant it
 --   click a growing sapling -> dig it up
 --   click / tap the crafting table or a shopkeeper in Town -> open crafting / their shop
+--   right click / tap anywhere while holding a Loot Crate -> put it down there and open it
 --   right click / tap a furnace -> smelting (left click breaks it, so you can move it)
 --   water and lava: you aim straight through them (so blocks go into them and behind
 --     them); holding a full bucket, right click pours it; holding an empty Bucket, you aim
@@ -29,6 +30,7 @@ local Workspace = game:GetService("Workspace")
 local Blocks = require(ReplicatedStorage.Shared.Blocks)
 local Boosts = require(ReplicatedStorage.Shared.Boosts)
 local Items = require(ReplicatedStorage.Shared.Items)
+local LootCrates = require(ReplicatedStorage.Shared.LootCrates)
 local Decorations = require(ReplicatedStorage.Shared.Decorations)
 local Mining = require(ReplicatedStorage.Shared.Mining)
 local Places = require(ReplicatedStorage.Shared.Places)
@@ -130,6 +132,7 @@ export type Callbacks = {
 	OpenCrafting: (station: Recipes.Station) -> (),
 	OpenShop: (shopId: string) -> (),
 	OpenProfile: (other: Player) -> (),
+	PlaceCrate: (ray: Ray?) -> (),
 }
 
 local BlockController = {}
@@ -368,6 +371,16 @@ local function swing()
 	if track then
 		track:Play(0.05)
 	end
+end
+
+-- A right click or tap with a Loot Crate in your hand puts it down there and opens it, anywhere at all
+-- (client/CrateOpening). Returns true if it did.
+local function placeHeldCrate(): boolean
+	if Hotbar.SelectedItem() ~= LootCrates.Item then
+		return false
+	end
+	callbacks.PlaceCrate(screenRay())
+	return true
 end
 
 -- A right click or tap with a Boost Crystal in your hand redeems it (BoostService). Returns true if it did.
@@ -637,6 +650,9 @@ function BlockController.Start(handlers: Callbacks)
 			-- A right click (not a camera drag) uses or places. Quick, with a kit's sword, it fires the sword's special;
 			-- held down, it's your shield.
 			if start and (UserInputService:GetMouseLocation() - start).Magnitude <= CLICK_SLOP then
+				if placeHeldCrate() then
+					return
+				end
 				target = aim()
 				if not interact(true) and not redeemHeld() then
 					local quick = os.clock() - rightDownAt <= KitPowerController.QuickClick
@@ -650,6 +666,9 @@ function BlockController.Start(handlers: Callbacks)
 			touchStart = nil
 			breaking = false
 			if start and os.clock() - start.Time < TAP_TIME then
+				if placeHeldCrate() then
+					return
+				end
 				local other = aimedPlayer()
 				if other then
 					callbacks.OpenProfile(other)

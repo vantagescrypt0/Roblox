@@ -119,6 +119,7 @@ BlockController.Start({
 	OpenCrafting = CraftingWindow.Open,
 	OpenShop = openShop,
 	OpenProfile = ProfileWindow.Open,
+	PlaceCrate = CrateOpening.Place,
 })
 NpcController.Start()
 MobController.Start()

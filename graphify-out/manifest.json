@@ -48,9 +48,9 @@
     "semantic_hash": ""
   },
   "game/src/client/BlockController.luau": {
-    "mtime": 1794325466.1019452,
-    "seen": 1794328808.3139954,
-    "ast_hash": "e7d5d14b58163d3c484f44df4e684ce7",
+    "mtime": 1794361664.4298277,
+    "seen": 1794362367.2376275,
+    "ast_hash": "347dc7c7ad94a6ab21f8c509af1e293e",
     "semantic_hash": ""
   },
   "game/src/client/Hotbar.luau": {
@@ -66,9 +66,9 @@
     "semantic_hash": ""
   },
   "game/src/client/Main.client.luau": {
-    "mtime": 1794325615.13862,
-    "seen": 1794328808.3140168,
-    "ast_hash": "561e1bcce5b81e2771289b16cbfe0e56",
+    "mtime": 1794361664.5663168,
+    "seen": 1794362367.2376478,
+    "ast_hash": "567b823d29488c4ceb7f4223ea766871",
     "semantic_hash": ""
   },
   "game/src/client/PromptUI.luau": {
@@ -96,15 +96,15 @@
     "semantic_hash": ""
   },
   "game/src/client/UI/Window.luau": {
-    "mtime": 1794341931.8568237,
-    "seen": 1794342201.8720057,
-    "ast_hash": "b7f224ad7f61f63b196a3a43663fec52",
+    "mtime": 1794362145.0630655,
+    "seen": 1794362367.2376745,
+    "ast_hash": "597a6144f22f7f2e3879506489ac7084",
     "semantic_hash": ""
   },
   "game/src/client/Windows/BagWindow.luau": {
-    "mtime": 1794326020.1435304,
-    "seen": 1794328808.3140614,
-    "ast_hash": "b7e9d023abe6e075886d51d704f4b952",
+    "mtime": 1794361687.7890358,
+    "seen": 1794362367.2376852,
+    "ast_hash": "f000b039f8ffacf80c70d172d262d2bc",
     "semantic_hash": ""
   },
   "game/src/client/Windows/CraftingWindow.luau": {
@@ -294,9 +294,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/Remotes.luau": {
-    "mtime": 1794325333.4080706,
-    "seen": 1794328808.314358,
-    "ast_hash": "e134155b248e6e9da11267ba7099b5da",
+    "mtime": 1794361506.567409,
+    "seen": 1794362367.2379563,
+    "ast_hash": "1b85451ed0f1221a32cca1d952b9fa16",
     "semantic_hash": ""
   },
   "game/src/shared/Tools.luau": {
@@ -420,9 +420,9 @@
     "semantic_hash": ""
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1794332935.669853,
-    "seen": 1794332986.53794,
-    "ast_hash": "3723d143270d7b6d8131a1472c51c00b",
+    "mtime": 1794343846.434927,
+    "seen": 1794362367.2380512,
+    "ast_hash": "e2a193dc782574de17415d0cc55d6c15",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
@@ -432,9 +432,9 @@
     "semantic_hash": ""
   },
   "07 Roadmap/Roadmap.md": {
-    "mtime": 1794332938.550197,
-    "seen": 1794332986.5379555,
-    "ast_hash": "f141aafe298efad03efeb87283e1e953",
+    "mtime": 1794359107.1856894,
+    "seen": 1794362367.2380626,
+    "ast_hash": "19de2b4a2a7ee4a1975cb1c337e90953",
     "semantic_hash": ""
   },
   "Home.md": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1794342191.473019,
-    "seen": 1794342201.872294,
-    "ast_hash": "caa4987fd99631dd96e704c753124f3b",
+    "mtime": 1794360125.1928146,
+    "seen": 1794362367.2379875,
+    "ast_hash": "60154fb0291a0f74605d5ba5ab5a8a39",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -1392,15 +1392,15 @@
     "semantic_hash": ""
   },
   "game/src/client/Windows/CrateWindow.luau": {
-    "mtime": 1794241420.3195002,
-    "seen": 1794243140.4132085,
-    "ast_hash": "c1c806397905dbb576672dbfdf0cc6cf",
+    "mtime": 1794361678.139178,
+    "seen": 1794362367.237695,
+    "ast_hash": "4bc8d01d5c0f8ad4ab224ac334fd8bd2",
     "semantic_hash": ""
   },
   "game/src/server/Services/CrateService.luau": {
-    "mtime": 1794240811.7320814,
-    "seen": 1794243140.4133108,
-    "ast_hash": "0989ba3d1a3fa84f3bf69f26711924b4",
+    "mtime": 1794362145.2281132,
+    "seen": 1794362367.237741,
+    "ast_hash": "8606b8f3262ced7e5f95fc788983f3b9",
     "semantic_hash": ""
   },
   "game/src/shared/LootCrates.luau": {
@@ -1932,9 +1932,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/KitService.luau": {
-    "mtime": 1794319144.8591928,
-    "seen": 1794323059.9059901,
-    "ast_hash": "45abccc6daf017e3cdddc07135bc01ce",
+    "mtime": 1794361694.9890947,
+    "seen": 1794362367.2377658,
+    "ast_hash": "cf061e7a3a580fc6ff304816e853037e",
     "semantic_hash": ""
   },
   "game/src/shared/Badges.luau": {
@@ -1968,9 +1968,9 @@
     "semantic_hash": ""
   },
   "game/src/client/CrateOpening.luau": {
-    "mtime": 1794269700.6916845,
-    "seen": 1794270616.2164755,
-    "ast_hash": "234a02d6cd913f107a1b80de21e1a2fe",
+    "mtime": 1794362158.8669205,
+    "seen": 1794362367.2376335,
+    "ast_hash": "3acff6b83bd38b2bfef49193d36c67f4",
     "semantic_hash": ""
   },
   "game/src/client/KitPowerController.luau": {

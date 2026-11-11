@@ -52,8 +52,10 @@ local NAMES = {
 	"TradeUpdate", -- server -> client: what the trade window shows, or nil when the trade closes
 	"ClaimMail", -- client -> server: claim a letter in your Inbox (its id, or "*" for all of them)
 	"Equip", -- client -> server: wear a pet, armor piece or shield (item id), or take it off if worn
-	"OpenCrate", -- client -> server: open one of your Loot Crates
-	"CrateOpened", -- server -> client: what your crate gave (a list of item id, count, good)
+	"PlaceCrate", -- client -> server: put one of your Loot Crates down here (a position) and open it
+	"CrateOpened", -- server -> client: your crate is down (its id) and what it gave (a list of item id, count, good)
+	"CrateDone", -- client -> server: you're done with this crate (its id, whether you closed it before spinning them all)
+	"CratePopped", -- server -> all clients: a crate went here (position, whether it held something good): confetti
 	"KitOpen", -- client -> server: send me what's for sale
 	"KitState", -- server -> client: each kit (on sale, owned, seconds until your next claim) and single crates
 	"KitClaim", -- client -> server: claim this kit's reward (kit id)
@@ -151,8 +153,10 @@ return {
 	TradeUpdate = folder:WaitForChild("TradeUpdate") :: RemoteEvent,
 	ClaimMail = folder:WaitForChild("ClaimMail") :: RemoteEvent,
 	Equip = folder:WaitForChild("Equip") :: RemoteEvent,
-	OpenCrate = folder:WaitForChild("OpenCrate") :: RemoteEvent,
+	PlaceCrate = folder:WaitForChild("PlaceCrate") :: RemoteEvent,
 	CrateOpened = folder:WaitForChild("CrateOpened") :: RemoteEvent,
+	CrateDone = folder:WaitForChild("CrateDone") :: RemoteEvent,
+	CratePopped = folder:WaitForChild("CratePopped") :: RemoteEvent,
 	KitOpen = folder:WaitForChild("KitOpen") :: RemoteEvent,
 	KitState = folder:WaitForChild("KitState") :: RemoteEvent,
 	KitClaim = folder:WaitForChild("KitClaim") :: RemoteEvent,

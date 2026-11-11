@@ -20,6 +20,7 @@ export type Window = {
 	Body: Frame,
 	Title: TextLabel,
 	IsOpen: boolean,
+	HidesHud: boolean, -- the hotbar and the rest of the HUD hide the whole time it's open (a Loot Crate's spins)
 	OnOpen: (() -> ())?,
 	OnClose: (() -> ())?,
 	Fit: () -> (),
@@ -199,7 +200,7 @@ function Window.new(name: string, title: string, size: Vector2): Window
 		fitScale.Scale = scale
 		holder.Position = UDim2.fromOffset(x, y)
 		if current == window then
-			showHud(y + size.Y * scale / 2 <= view.Y - HUD_HEIGHT * Theme.screenScale())
+			showHud(not window.HidesHud and y + size.Y * scale / 2 <= view.Y - HUD_HEIGHT * Theme.screenScale())
 		end
 	end
 	local function refit()
@@ -244,6 +245,7 @@ function Window.new(name: string, title: string, size: Vector2): Window
 		Body = body,
 		Title = titleLabel,
 		IsOpen = false,
+		HidesHud = false,
 		OnOpen = nil,
 		OnClose = nil,
 		Fit = fit,

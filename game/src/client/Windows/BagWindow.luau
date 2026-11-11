@@ -138,7 +138,7 @@ local function describe(itemId: string): (string, string)
 	elseif item.Equip == "Shield" then
 		return "Shield", "Hold right-click in the Warzone to block hits from the front."
 	elseif item.Crate then
-		return "Loot crate", "Shift-click it to open it."
+		return "Loot crate", "Hold it and right-click anywhere to put it down and open it."
 	elseif itemId == Boosts.Item then
 		return "Boost crystal",
 			"Hold it and right-click to redeem it, then place it in Menu > Boosts. It can't be traded."

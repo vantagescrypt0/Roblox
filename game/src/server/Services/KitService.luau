@@ -145,8 +145,9 @@ local function onClaim(player: Player, id: unknown)
 	local first = rewards[1]
 	StateService.Notify(
 		player,
-		if #rewards == 1
-			then `{kit.Name}: {first.Count} {Items[first.Item].Name}!`
+		if #rewards == 1 and first.Item == LootCrates.Item
+			then `{kit.Name}: {first.Count} {Items[first.Item].Name}! Hold it and right-click anywhere to open it`
+			elseif #rewards == 1 then `{kit.Name}: {first.Count} {Items[first.Item].Name}!`
 			else `{kit.Name}: it's all in your Bag`,
 		"level"
 	)
@@ -188,7 +189,7 @@ local products: { [number]: (player: Player) -> () } = {}
 
 local function giveCrate(player: Player)
 	InventoryService.Add(player, LootCrates.Item, 1)
-	StateService.Notify(player, "Thanks! A Loot Crate is in your Bag", "level")
+	StateService.Notify(player, "Thanks! Hold your Loot Crate and right-click anywhere to open it", "level")
 end
 
 -- Pays out one purchase, once however often Roblox asks, and only says it's done when that's really saved: the
