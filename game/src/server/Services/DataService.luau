@@ -36,6 +36,8 @@ local TEMPLATE = {
 	XP = 0,
 	-- The season this save is on (Seasons.luau; SeasonService resets it for a new one)
 	Season = 1,
+	-- Your Beta Tester number, 0 if you haven't got one (BetaService)
+	Beta = 0,
 	Settings = { Music = 1, Effects = 1 },
 	KitClaims = {} :: { [string]: number }, -- kit id -> os.time() of its last claim (KitService)
 	Receipts = {} :: { [string]: number }, -- Robux purchases already paid out: purchase id -> when (KitService)

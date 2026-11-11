@@ -11,6 +11,7 @@ local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 
+local BetaTag = require(ReplicatedStorage.Shared.BetaTag)
 local Items = require(ReplicatedStorage.Shared.Items)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
@@ -56,6 +57,7 @@ export type Snapshot = {
 	Trades: number,
 	Kits: number,
 	TradeLevel: number,
+	Beta: number?,
 }
 
 type SlotView = { Box: Frame, Icon: Frame, Name: TextLabel }
@@ -71,6 +73,7 @@ local headshot: ImageLabel
 local nameLabel: TextLabel
 local handleLabel: TextLabel
 local titleChip: TextLabel
+local betaChip: TextLabel
 local levelNumber: TextLabel
 local levelBar: Theme.Bar
 local coinsLabel: TextLabel
@@ -243,6 +246,9 @@ local function render(now: Snapshot)
 	nameLabel.Text = now.DisplayName
 	handleLabel.Text = `@{now.Name}`
 	titleChip.Text = now.Title
+	local beta = now.Beta or 0
+	betaChip.Text = `BETA TESTER #{beta}`
+	betaChip.Visible = beta > 0
 	levelNumber.Text = tostring(now.Level)
 	levelBar.Set(
 		now.Progress,
@@ -301,6 +307,7 @@ function ProfileWindow.Open(player: Player)
 	nameLabel.Text = player.DisplayName
 	handleLabel.Text = `@{player.Name}`
 	titleChip.Text = "..."
+	betaChip.Visible = false
 	Remotes.ProfileOpen:FireServer(player)
 	if not window.IsOpen then
 		Window.open(window)
@@ -406,6 +413,11 @@ local function build()
 	handleLabel.Position = UDim2.fromOffset(0, 30)
 	titleChip = Theme.chip(nameplate, "", C.Gold)
 	titleChip.Position = UDim2.fromOffset(0, 54)
+	-- A Beta Tester's number, in the stage's top corner
+	betaChip = Theme.chip(stageFrame, "", BetaTag.Color)
+	betaChip.Position = UDim2.fromOffset(14, 14)
+	betaChip.ZIndex = 3
+	betaChip.Visible = false
 
 	-- The right-hand side
 	local side = Theme.make("Frame", {

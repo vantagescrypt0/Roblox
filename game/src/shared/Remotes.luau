@@ -56,6 +56,7 @@ local NAMES = {
 	"CrateOpened", -- server -> client: your crate is down (its id) and what it gave (a list of item id, count, good)
 	"CrateDone", -- client -> server: you're done with this crate (its id, whether you closed it before spinning them all)
 	"CratePopped", -- server -> all clients: a crate went here (position, whether it held something good): confetti
+	"BetaTagGiven", -- server -> client: you've just become Beta Tester number n (for the celebration)
 	"KitOpen", -- client -> server: send me what's for sale
 	"KitState", -- server -> client: each kit (on sale, owned, seconds until your next claim) and single crates
 	"KitClaim", -- client -> server: claim this kit's reward (kit id)
@@ -157,6 +158,7 @@ return {
 	CrateOpened = folder:WaitForChild("CrateOpened") :: RemoteEvent,
 	CrateDone = folder:WaitForChild("CrateDone") :: RemoteEvent,
 	CratePopped = folder:WaitForChild("CratePopped") :: RemoteEvent,
+	BetaTagGiven = folder:WaitForChild("BetaTagGiven") :: RemoteEvent,
 	KitOpen = folder:WaitForChild("KitOpen") :: RemoteEvent,
 	KitState = folder:WaitForChild("KitState") :: RemoteEvent,
 	KitClaim = folder:WaitForChild("KitClaim") :: RemoteEvent,

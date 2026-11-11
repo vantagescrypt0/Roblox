@@ -57,6 +57,9 @@ Config.Flyers = table.freeze({
 Config.Admins = table.freeze({
 	[545120355] = true,
 })
+-- Beta Tester tags (shared/BetaTag.luau): how many numbered tags there are. Set it to the number given out so far to
+-- close the beta; raise it and anyone who missed out gets one the next time they join.
+Config.BetaTags = 1000
 Config.FlySpeed = 70 -- studs per second, across
 Config.FlyClimb = 45 -- studs per second, up and down
 

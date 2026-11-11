@@ -1,8 +1,8 @@
 --!strict
 -- Player profiles (your call, 2026-11-10): left-click (tap) another player anywhere but the Warzone and their
 -- profile opens (client/Windows/ProfileWindow). The server answers with a snapshot of their save: level, coins,
--- skills, what they wear (armour, shield, pet) and hold, their boosts, island, kits, trades and season, and a title
--- from their best skill. Nothing private: no inbox, no trade details, no anti-cheat record.
+-- skills, what they wear (armour, shield, pet) and hold, their boosts, island, kits, trades and season, a title
+-- from their best skill, and their Beta Tester number if they have one. Nothing private: no inbox, no trade details, no anti-cheat record.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -106,6 +106,7 @@ local function snapshot(target: Player, data: DataService.Data)
 		Trades = #data.Trades,
 		Kits = kits,
 		TradeLevel = Leveling.TradeLevel,
+		Beta = data.Beta, -- their Beta Tester number, 0 for none
 	}
 end
 

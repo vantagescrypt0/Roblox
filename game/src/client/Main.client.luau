@@ -12,6 +12,7 @@ local Remotes = require(ReplicatedStorage.Shared.Remotes)
 local IslandTiers = require(ReplicatedStorage.Shared.IslandTiers)
 local MusicController = require(script.Parent.MusicController)
 local AmbientController = require(script.Parent.AmbientController)
+local BetaTagController = require(script.Parent.BetaTagController)
 local BlockController = require(script.Parent.BlockController)
 local CombatController = require(script.Parent.CombatController)
 local FirstPersonController = require(script.Parent.FirstPersonController)
@@ -79,6 +80,7 @@ SettingsWindow.Start()
 ChallengesWindow.Start()
 QuestTracker.Start(ChallengesWindow.OpenTracked)
 PromptUI.Start()
+BetaTagController.Start()
 Hud.Start({
 	OnBag = BagWindow.Toggle,
 	OnSkills = SkillsWindow.Toggle,

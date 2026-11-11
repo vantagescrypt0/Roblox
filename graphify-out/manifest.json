@@ -66,9 +66,9 @@
     "semantic_hash": ""
   },
   "game/src/client/Main.client.luau": {
-    "mtime": 1794361664.5663168,
-    "seen": 1794362367.2376478,
-    "ast_hash": "567b823d29488c4ceb7f4223ea766871",
+    "mtime": 1794413762.2772145,
+    "seen": 1794415146.7671437,
+    "ast_hash": "b9a7328d0855960b15ae341ebfab0445",
     "semantic_hash": ""
   },
   "game/src/client/PromptUI.luau": {
@@ -120,9 +120,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Main.server.luau": {
-    "mtime": 1794325353.5080163,
-    "seen": 1794328808.3140993,
-    "ast_hash": "93e4c5562e77ac4d2b2db9c97c8ae7d7",
+    "mtime": 1794413722.9073508,
+    "seen": 1794415146.7672787,
+    "ast_hash": "7cb664e900af72e890c0d2d8566aa821",
     "semantic_hash": ""
   },
   "game/src/server/Services/BlockService.luau": {
@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/DataService.luau": {
-    "mtime": 1794319091.8759458,
-    "seen": 1794323059.9059682,
-    "ast_hash": "ea6897f7e424f3ad5dbcaa7ce6bba4da",
+    "mtime": 1794413706.708045,
+    "seen": 1794415146.767328,
+    "ast_hash": "787a4d501ba9f4764a0a4361799bf188",
     "semantic_hash": ""
   },
   "game/src/server/Services/DevService.luau": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/Config.luau": {
-    "mtime": 1794281595.8213398,
-    "seen": 1794284252.041033,
-    "ast_hash": "b68286b1ead1551d98e54ba5c19f9259",
+    "mtime": 1794413706.70666,
+    "seen": 1794415146.767612,
+    "ast_hash": "3be1e2f2774323f786c1381de9e2f67c",
     "semantic_hash": ""
   },
   "game/src/shared/Crops.luau": {
@@ -294,9 +294,9 @@
     "semantic_hash": ""
   },
   "game/src/shared/Remotes.luau": {
-    "mtime": 1794361506.567409,
-    "seen": 1794362367.2379563,
-    "ast_hash": "1b85451ed0f1221a32cca1d952b9fa16",
+    "mtime": 1794413706.708045,
+    "seen": 1794415146.767709,
+    "ast_hash": "dc8d63f21b2a639768a3dc64a1ad48f7",
     "semantic_hash": ""
   },
   "game/src/shared/Tools.luau": {
@@ -420,9 +420,9 @@
     "semantic_hash": ""
   },
   "07 Roadmap/Decision Log.md": {
-    "mtime": 1794343846.434927,
-    "seen": 1794362367.2380512,
-    "ast_hash": "e2a193dc782574de17415d0cc55d6c15",
+    "mtime": 1794362383.686533,
+    "seen": 1794415146.7678807,
+    "ast_hash": "1a09692e2800a9ff900074e2717abc25",
     "semantic_hash": ""
   },
   "07 Roadmap/Open Questions.md": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "00 Inbox/Handoff.md": {
-    "mtime": 1794360125.1928146,
-    "seen": 1794362367.2379875,
-    "ast_hash": "60154fb0291a0f74605d5ba5ab5a8a39",
+    "mtime": 1794409647.5778325,
+    "seen": 1794415146.7677677,
+    "ast_hash": "b581c044683bb4b2aa14a911023f0839",
     "semantic_hash": ""
   },
   "art/scripts/icon_sheet_fbx.py": {
@@ -2082,9 +2082,9 @@
     "semantic_hash": ""
   },
   "game/src/client/Windows/ProfileWindow.luau": {
-    "mtime": 1794328287.7739694,
-    "seen": 1794328808.3140826,
-    "ast_hash": "9265fd012a80c2e91854dd877f66cacf",
+    "mtime": 1794413762.2782156,
+    "seen": 1794415146.7672515,
+    "ast_hash": "9a691776e744ebc47dfbef20ea0a6514",
     "semantic_hash": ""
   },
   "game/src/server/Services/AuctionService.luau": {
@@ -2094,9 +2094,9 @@
     "semantic_hash": ""
   },
   "game/src/server/Services/ProfileService.luau": {
-    "mtime": 1794326020.0829103,
-    "seen": 1794328808.3141613,
-    "ast_hash": "50f31d8e68f89e9e18aa31de509157ce",
+    "mtime": 1794413762.2782156,
+    "seen": 1794415146.7673826,
+    "ast_hash": "4f730633f98d7186cc424e67fed8f8a7",
     "semantic_hash": ""
   },
   "game/src/server/Util/AuctionStore.luau": {
@@ -2127,6 +2127,72 @@
     "mtime": 1794331953.4964404,
     "seen": 1794332986.5372424,
     "ast_hash": "c35d1416afa7d5177242f06f3451accc",
+    "semantic_hash": ""
+  },
+  "art/scripts/profile_pic.py": {
+    "mtime": 1794372242.6695075,
+    "seen": 1794415146.7669847,
+    "ast_hash": "87e369279dc50261e886256d8b3cfc05",
+    "semantic_hash": ""
+  },
+  "art/scripts/sfx.py": {
+    "mtime": 1794404615.8467002,
+    "seen": 1794415146.7669961,
+    "ast_hash": "ea4751038119fc1c99d83ca7a5785be5",
+    "semantic_hash": ""
+  },
+  "art/scripts/tiktok_crate.py": {
+    "mtime": 1794404944.1071732,
+    "seen": 1794415146.7670603,
+    "ast_hash": "70d8fbb0d59e49fe373a42eed4196bc3",
+    "semantic_hash": ""
+  },
+  "art/scripts/tiktok_day100.py": {
+    "mtime": 1794404669.7190742,
+    "seen": 1794415146.7670643,
+    "ast_hash": "eb9f957237f6371f29a021d86ef9dc9c",
+    "semantic_hash": ""
+  },
+  "art/scripts/tiktok_pickaxe.py": {
+    "mtime": 1794405231.5622668,
+    "seen": 1794415146.767068,
+    "ast_hash": "8585d699dae7a8853d65d6d7d7e55e02",
+    "semantic_hash": ""
+  },
+  "game/src/client/BetaTagController.luau": {
+    "mtime": 1794414443.0403905,
+    "seen": 1794415146.767105,
+    "ast_hash": "a1727b75db8db9d33b7a0941ed430728",
+    "semantic_hash": ""
+  },
+  "game/src/server/Services/BetaService.luau": {
+    "mtime": 1794413867.969953,
+    "seen": 1794415146.767296,
+    "ast_hash": "930e3748d7a5f46fa69369c0f2ae6284",
+    "semantic_hash": ""
+  },
+  "game/src/shared/BetaTag.luau": {
+    "mtime": 1794413706.0343244,
+    "seen": 1794415146.7675893,
+    "ast_hash": "a5fbfb0d5504a76d2356d912c4cd55c6",
+    "semantic_hash": ""
+  },
+  "art/marketing/TikTok_Day1_Day100.mp4": {
+    "mtime": 1794404690.490166,
+    "seen": 1794415146.7682652,
+    "ast_hash": "8f7a088aaffbdeb53f4cea0c88136834",
+    "semantic_hash": ""
+  },
+  "art/marketing/TikTok_LootCrate.mp4": {
+    "mtime": 1794408859.376152,
+    "seen": 1794415146.7682698,
+    "ast_hash": "c6fdcb40a78c276ed7cf3656a4ce3fe3",
+    "semantic_hash": ""
+  },
+  "art/marketing/TikTok_Pickaxes.mp4": {
+    "mtime": 1794409622.835261,
+    "seen": 1794415146.7682726,
+    "ast_hash": "7fc244853f307bd77e756c63be23142a",
     "semantic_hash": ""
   }
 }
